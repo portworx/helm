@@ -1,0 +1,24 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: px-etcd-preinstall-hook
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded, hook-failed
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: pre-install-job
+        terminationMessagePath: "/tmp/preinstall-termination-log"      
+        imagePullPolicy: Always
+        image: "hrishi/px-etcd-preinstall-hook:v1"
+        command: ['/bin/sh']
+        args: ['/usr/bin/etcdStatus.sh',"{{ .Values.etcdEndPoint }}"]

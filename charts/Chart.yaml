@@ -1,0 +1,4 @@
+apiVersion: v1
+description: A Helm chart for installing Portworx on Kubernetes
+name: portworx-helm
+version: 0.0.1

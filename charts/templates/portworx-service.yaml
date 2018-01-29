@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: portworx-service
+  namespace: kube-system
+spec:
+  selector:
+    name: portworx
+  ports:
+    - protocol: TCP
+      port: 9001
+      targetPort: 9001
