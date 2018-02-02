@@ -6,7 +6,7 @@
 {{- $managementInterface := .Values.managementInterface | default "none" }}
 
 {{- $lighthouseToken := .Values.lighthouse.token | default "none" }}
-{{- $lighthouseEnvVars := .Values.lighthouse.envVars | default "none" }}
+{{- $envVars := .Values.envVars | default "none" }}
 
 {{- $etcdCredentials := .Values.etcd.credentials | default "none:none" }}
 {{- $etcdCA := .Values.etcd.ca | default "none" }}
@@ -129,6 +129,15 @@ spec:
           env:
             - name: "PX_TEMPLATE_VERSION"
               value: "v2"
+              {{- if not (eq $envVars "none") }}
+              {{- $vars := $envVars | split ":" }}
+              {{- range $key, $val := $vars }}
+              {{-  $envVariable := $val | split "=" -}}
+            - name: {{ $envVariable._0 | quote }}
+              value: {{ $envVariable._1 | quote }}
+              {{- end -}}
+              {{- end }}
+              
           livenessProbe:
             periodSeconds: 30
             initialDelaySeconds: 840 # allow image pull in slow networks
@@ -155,8 +164,13 @@ spec:
           volumeMounts:
             - name: dockersock
               mountPath: /var/run/docker.sock
+          {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
+            - name: kubelet
+              mountPath: /var/lib/origin/openshift.local.volumes:shared
+          {{- else }}
             - name: kubelet
               mountPath: /var/lib/kubelet:shared
+          {{- end }}
             - name: libosd
               mountPath: /var/lib/osd:shared
             - name: etcpwx
@@ -190,9 +204,15 @@ spec:
         - name: dockersock
           hostPath:
             path: /var/run/docker.sock
+          {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
+        - name: kubelet
+          hostPath:
+            path: /var/lib/origin/openshift.local.volumes:shared
+          {{- else }}
         - name: kubelet
           hostPath:
             path: /var/lib/kubelet
+          {{- end }}
         - name: libosd
           hostPath:
             path: /var/lib/osd
