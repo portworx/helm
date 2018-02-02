@@ -13,6 +13,15 @@ This chart deploys Portworx to all nodes in your cluster via a DaemonSet.
 
 ## Installing the Chart
 
+#### IMPORTANT NOTE: 
+
+Provide tiller the right RBAC permissions. Portworx delete hooks use the service account name as `tiller`. 
+```
+kubectl create serviceaccount --namespace kube-system tiller
+kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
+kubectl edit deploy --namespace kube-system tiller-deploy 
+```
+
 To install the chart with the release name `my-release` run:
 
 Clone the repository. 
