@@ -54,8 +54,6 @@ The following tables lists the configurable parameters of the Datadog chart and 
 | `isTargetOSCoreOS`        | Is target CoreOS       | `false`                                     |
 | `etcdEndpoint`          | (REQUIRED) ETCD endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>:2379" | `etcd:http://<your-etcd-endpoint>:2379`                    |
 | `clusterName`           | Portworx Cluster Name  | `mycluster`                                     |
-| `runOnMaster`             | Run Portworx on Kubernetes Master? | `false`                              |
-| `zeroStorage`           | Run Portworx on Master with Zero Storage? | `false`                     |
 | `usefileSystemDrive`      | Should Portworx use an unmounted drive even with a filesystem ? | `false`                |
 | `usedrivesAndPartitions`  | Should Portworx use the drives as well as partitions on the disk ? | `false`             | 
 | `secretType`      | Secrets store to be used can be AWS/KVDB/Vault          | `none`                                    |
@@ -63,7 +61,7 @@ The following tables lists the configurable parameters of the Datadog chart and 
 | `dataInterface`   | Name of the interface <ethX>             | `none`                                   |
 | `managementInterface`   | Name of the interface <ethX>             | `none`                                   |
 | `envVars`  | Colon-separated list of environment variables that will be exported to portworx. (example: API_SERVER=http://lighthouse-new.portworx.com:MYENV1=val1:MYENV2=val2) | `none`                                    |
-| `lighthouse.token`  | Portworx lighthouse token for cluster. (example: token-a980f3a8-5091-4d9c-871a-cbbeb030d1e6) | `none`                                    |
+| `stork`    | Storage Orchestration for Hyperconvergence.     | `false`       |
 | `etcd.credentials`  | Username and password for ETCD authentication in the form user:password | `none:none`                                    |
 | `etcd.ca`  | Location of CA file for ETCD authentication. Should be /path/to/server.ca | `none`                                    |
 | `etcd.cert`  | Location of certificate for ETCD authentication. Should be /path/to/server.crt | `none`                                    |

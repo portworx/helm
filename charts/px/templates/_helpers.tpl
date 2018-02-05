@@ -20,3 +20,7 @@ release: {{ .Release.Name | quote }}
 {{ $v := .Values.installOptions.drives | split "," }}
 {{$v._0}}
 {{- end -}}
+
+{{- define "px.kubernetesVersion" -}}
+{{ $version := .Capabilities.KubeVersion.GitVersion | split "+" }}{{ $version._0 }}
+{{- end -}}

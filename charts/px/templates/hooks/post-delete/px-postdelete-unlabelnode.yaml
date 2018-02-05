@@ -23,7 +23,7 @@ spec:
           path: /usr/bin/kubectl
       containers:
       - name: post-delete-job
-        image: "lachlanevenson/k8s-kubectl:{{ .Capabilities.KubeVersion.GitVersion }}"
+        image: "lachlanevenson/k8s-kubectl:{{ template "px.kubernetesVersion" . }}"
         volumeMounts:
         - name: kubectl
           mountPath: /kubectl
