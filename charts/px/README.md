@@ -48,7 +48,7 @@ The following tables lists the configurable parameters of the Datadog chart and 
 
 |             Parameter       |            Description             |                    Default                |
 |-----------------------------|------------------------------------|-------------------------------------------|
-| `deploymentType`            | The deployment type. Can be either docker/OCI   | `oci`                 |
+| `deploymentType`            | The deployment type. Can be either docker/oci   | `oci`                 |
 | `imageVersion`              | The image tag to pull              | `latest`                                  |
 | `openshiftInstall`               | Installing on Openshift? | `false`                               |
 | `isTargetOSCoreOS`        | Is target CoreOS       | `false`                                     |
@@ -61,7 +61,7 @@ The following tables lists the configurable parameters of the Datadog chart and 
 | `dataInterface`   | Name of the interface <ethX>             | `none`                                   |
 | `managementInterface`   | Name of the interface <ethX>             | `none`                                   |
 | `envVars`  | Colon-separated list of environment variables that will be exported to portworx. (example: API_SERVER=http://lighthouse-new.portworx.com:MYENV1=val1:MYENV2=val2) | `none`                                    |
-| `stork`    | Storage Orchestration for Hyperconvergence.     | `false`       |
+| `stork`    | Storage Orchestration for Hyperconvergence.     | `true`       |
 | `etcd.credentials`  | Username and password for ETCD authentication in the form user:password | `none:none`                                    |
 | `etcd.ca`  | Location of CA file for ETCD authentication. Should be /path/to/server.ca | `none`                                    |
 | `etcd.cert`  | Location of certificate for ETCD authentication. Should be /path/to/server.crt | `none`                                    |
