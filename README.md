@@ -6,6 +6,10 @@ Portworx is a software defined persistent storage solution designed and purpose 
 
 The specification and code is licensed under the Apache 2.0 license found in the LICENSE file of this repository.
 
+### Helm Chart for Portworx
+
+Follow these [instructions](/charts/px/README.md) to install Portworx onto your kubernetes cluster using Helm
+
 ## Join us on Slack!
 [![](/doc/media//slack.png)](http://slack.portworx.com)
 
