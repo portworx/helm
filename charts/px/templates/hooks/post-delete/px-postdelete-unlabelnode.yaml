@@ -17,17 +17,7 @@ spec:
     spec:
       serviceAccountName: tiller
       restartPolicy: OnFailure
-      volumes:
-      - name: kubectl
-        hostPath:
-          path: /usr/bin/kubectl
       containers:
       - name: post-delete-job
         image: "lachlanevenson/k8s-kubectl:{{ template "px.kubernetesVersion" . }}"
-        volumeMounts:
-        - name: kubectl
-          mountPath: /kubectl
-        command:
-        - sh
-        - -c
-        - "kubectl label nodes --all px/enabled-"
+        args: ['label','nodes','--all','px/enabled-']

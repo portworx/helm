@@ -30,7 +30,7 @@ rules:
   verbs: ["get", "list", "watch"]
 - apiGroups: [""]
   resources: ["endpoints", "services"]
-  verbs: ["create", "delete", "get"]
+  verbs: ["*"]
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get", "list"]
@@ -95,7 +95,7 @@ spec:
         - --address=0.0.0.0
         - --controllers=persistentvolume-binder
         - --use-service-account-credentials=true
-        - --leader-elect-resource-lock=configmaps
+        - --leader-elect-resource-lock=endpoints
         image: gcr.io/google_containers/kube-controller-manager-amd64:{{ template "px.kubernetesVersion" . }}
         livenessProbe:
           failureThreshold: 8
