@@ -87,6 +87,8 @@ helm install --name my-release -f values.yaml ./helm/charts/px
 
 ### Basic troubleshooting
 
+#### Helm install errors with `no available release name found`
+
 ``` 
 helm install --dry-run --debug --set etcdEndPoint=etcd:http://192.168.70.90:2379,clusterName=$(uuid) ./helm/charts/px/
 [debug] Created tunnel using local port: '37304'
@@ -104,6 +106,8 @@ You can verify the tiller logs
 [tiller] 2018/02/07 06:00:13 warning: No available release names found after 5 tries
 [tiller] 2018/02/07 06:00:13 failed install prepare step: no available release name found
 ```
+
+#### Helm install errors with  `Job failed: BackoffLimitExceeded`
 
 ```
 helm install --debug --set dataInterface=eth1,managementInterface=eth1,etcdEndPoint=etcd:http://192.168.70.179:2379,clusterName=$(uuid) ./helm/charts/px/
