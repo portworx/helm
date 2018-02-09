@@ -63,7 +63,7 @@ The following tables lists the configurable parameters of the Datadog chart and 
 | `dataInterface`   | Name of the interface <ethX>             | `none`                                   |
 | `managementInterface`   | Name of the interface <ethX>             | `none`                                   |
 | `envVars`  | Colon-separated list of environment variables that will be exported to portworx. (example: API_SERVER=http://lighthouse-new.portworx.com:MYENV1=val1:MYENV2=val2) | `none`                                    |
-| `stork`    | Storage Orchestration for Hyperconvergence.     | `true`       |
+| `stork`    | Storage Orchestration Runtime for Hyperconvergence.     | `true`       |
 | `etcd.credentials`  | Username and password for ETCD authentication in the form user:password | `none:none`                                    |
 | `etcd.ca`  | Location of CA file for ETCD authentication. Should be /path/to/server.ca | `none`                                    |
 | `etcd.cert`  | Location of certificate for ETCD authentication. Should be /path/to/server.crt | `none`                                    |
@@ -96,8 +96,8 @@ helm install --dry-run --debug --set etcdEndPoint=etcd:http://192.168.70.90:2379
 
 Error: no available release name found
 ```
-This most likely indicates that Tiller doesnt have the right RBAC permissions.
-Verify the tiller logs 
+This most likely indicates that Tiller doesn't have the right RBAC permissions.
+You can verify the tiller logs 
 ```
 [storage/driver] 2018/02/07 06:00:13 get: failed to get "singing-bison.v1": configmaps "singing-bison.v1" is forbidden: User "system:serviceaccount:kube-system:default" cannot get configmaps in the namespace "kube-system"
 [tiller] 2018/02/07 06:00:13 info: generated name singing-bison is taken. Searching again.
