@@ -10,6 +10,7 @@ Follow these [instructions](/charts/px/README.md) to install Portworx onto your 
 
 The specification and code is licensed under the Apache 2.0 license found in the LICENSE file of this repository.
 
+
 ## Join us on Slack!
 [![](/doc/media//slack.png)](http://slack.portworx.com)
 
