@@ -23,8 +23,8 @@ kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"templat
 To install the chart with the release name `my-release` run the following commands substituting relevant values for your setup:
 
 ##### NOTE: 
-`etcdEndPoint` is a required field. The chart installation would no proceed unless provided with this option. provide the etcd endpoint  
-`clusterName` should be a unique name identifying your Portworx cluster. The default value is `mycluster`, but it is suggested to update it with contextual to your requirement.  
+`etcdEndPoint` is a required field. The chart installation would not proceed unless this option is provided.
+`clusterName` should be a unique name identifying your Portworx cluster. The default value is `mycluster`, but it is suggested to update it with your naming scheme.  
 
 For eg: 
 ```
@@ -63,7 +63,7 @@ The following tables lists the configurable parameters of the Datadog chart and 
 | `dataInterface`   | Name of the interface <ethX>             | `none`                                   |
 | `managementInterface`   | Name of the interface <ethX>             | `none`                                   |
 | `envVars`  | Colon-separated list of environment variables that will be exported to portworx. (example: API_SERVER=http://lighthouse-new.portworx.com:MYENV1=val1:MYENV2=val2) | `none`                                    |
-| `stork`    | Storage Orchestration Runtime for Hyperconvergence.     | `true`       |
+| `stork`    | [Storage Orchestration for Hyperconvergence](https://github.com/libopenstorage/stork).     | `true`       |
 | `etcd.credentials`  | Username and password for ETCD authentication in the form user:password | `none:none`                                    |
 | `etcd.ca`  | Location of CA file for ETCD authentication. Should be /path/to/server.ca | `none`                                    |
 | `etcd.cert`  | Location of certificate for ETCD authentication. Should be /path/to/server.crt | `none`                                    |
@@ -85,7 +85,7 @@ helm install --name my-release -f values.yaml ./helm/charts/px
 > **Tip**: You can use the default [values.yaml](values.yaml) and make changes as per your requirement
 
 
-### Basic debugging. 
+### Basic troubleshooting
 
 ``` 
 helm install --dry-run --debug --set etcdEndPoint=etcd:http://192.168.70.90:2379,clusterName=$(uuid) ./helm/charts/px/
