@@ -105,4 +105,35 @@ Verify the tiller logs
 [tiller] 2018/02/07 06:00:13 failed install prepare step: no available release name found
 ```
 
+```
+helm install --debug --set dataInterface=eth1,managementInterface=eth1,etcdEndPoint=etcd:http://192.168.70.179:2379,clusterName=$(uuid) ./helm/charts/px/
+[debug] Created tunnel using local port: '36389'
+
+[debug] SERVER: "127.0.0.1:36389"
+
+[debug] Original chart version: ""
+[debug] CHART PATH: /root/k8s-helm-dev/helm/charts/px
+
+Error: Job failed: BackoffLimitExceeded
+```
+This most likely indicates that the pre-install hook for the helm chart has failed due to a misconfigured or inaccessible ETCD url. 
+Follow the below steps to check the reason for failure. 
+
+```
+kubectl get pods -nkube-system -a | grep preinstall
+px-etcd-preinstall-hook-hxvmb   0/1       Error     0          57s
+
+kubectl logs po/px-etcd-preinstall-hook-hxvmb -nkube-system
+Initializing...
+Verifying if the provided etcd url is accessible: http://192.168.70.179:2379
+Response Code: 000
+Incorrect ETCD URL provided. It is either not reachable or is incorrect...
+
+```
+Ensure the correct etcd URL is set as a parameter to the `helm install` command. 
+The hook resource wouldnt be cleared by itself and hence please delete the `pre-install-hook` after identifying the root cause of the failure. 
+```
+kubectl delete jobs px-etcd-preinstall-hook -nkube-system
+```
+
 Follow the steps mentioned in the pre-requisites to provide the right RBAC permissions to the serviceaccount running tiller. 
