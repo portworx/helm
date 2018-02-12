@@ -32,18 +32,6 @@ git clone https://github.com/portworx/helm.git
 helm install --debug --name my-release --set etcdEndPoint=etcd:http://192.168.70.90:2379,clusterName=$(uuid) ./helm/charts/px/
 ```
 
-## Uninstalling the Chart
-
-To uninstall/delete the `my-release` deployment:
-The chart would follow the process as outlined here. (https://docs.portworx.com/scheduler/kubernetes/install.html#uninstall)
-
-> **Tip** > The Portworx configuration files under `/etc/pwx/` directory are preserved, and will not be deleted.
-
-```
-helm delete my-release
-```
-The command removes all the Kubernetes components associated with the chart and deletes the release.
-
 ## Configuration
 
 The following tables lists the configurable parameters of the Datadog chart and their default values.
@@ -80,10 +68,21 @@ helm install --name my-release --set deploymentType=docker,imageVersion=1.2.12.0
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 ```
-helm install --name my-release -f values.yaml ./helm/charts/px
+helm install --name my-release -f ./helm/charts/px/values.yaml ./helm/charts/px
 ```
 > **Tip**: You can use the default [values.yaml](values.yaml) and make changes as per your requirement
 
+## Uninstalling the Chart
+
+To uninstall/delete the `my-release` deployment:
+The chart would follow the process as outlined here. (https://docs.portworx.com/scheduler/kubernetes/install.html#uninstall)
+
+> **Tip** > The Portworx configuration files under `/etc/pwx/` directory are preserved, and will not be deleted.
+
+```
+helm delete my-release
+```
+The command removes all the Kubernetes components associated with the chart and deletes the release.
 
 ### Basic troubleshooting
 
