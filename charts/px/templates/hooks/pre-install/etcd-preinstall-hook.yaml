@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   namespace: kube-system
-  name: px-etcd-preinstall-hook
+  name: px-etcd-preinstall-hook-{{ .Release.Name }}
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}

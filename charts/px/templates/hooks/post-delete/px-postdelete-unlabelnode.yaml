@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   namespace: kube-system
-  name: px-postdelete-unlabelnode
+  name: px-postdelete-unlabelnode-{{ .Release.Name }}
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
