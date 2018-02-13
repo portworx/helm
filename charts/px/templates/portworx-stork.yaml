@@ -18,7 +18,6 @@ data:
         {"name": "NoVolumeNodeConflict"},
         {"name": "PodToleratesNodeTaints"},
         {"name": "CheckNodeMemoryPressure"},
-        {"name": "NoVolumeZoneConflict"},
         {"name": "MaxEBSVolumeCount"},
         {"name": "MaxGCEPDVolumeCount"},
         {"name": "MatchInterPodAffinity"},
