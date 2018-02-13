@@ -12,10 +12,10 @@ data:
       "apiVersion": "v1",
       "predicates": [
     {{ if lt .Capabilities.KubeVersion.Minor "9" }}
-        {"name": "NoVolumeZoneConflict"}, 
+        {"name": "NoVolumeNodeConflict"}, 
     {{ end }}
         {"name": "MaxAzureDiskVolumeCount"},
-        {"name": "NoVolumeNodeConflict"},
+        {"name": "NoVolumeZoneConflict"},
         {"name": "PodToleratesNodeTaints"},
         {"name": "CheckNodeMemoryPressure"},
         {"name": "MaxEBSVolumeCount"},
