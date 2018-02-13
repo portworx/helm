@@ -11,9 +11,9 @@ data:
       "kind": "Policy",
       "apiVersion": "v1",
       "predicates": [
-{{ if ge .Capabilities.KubeVersion.Minor "9" -}}
+{{ if ge .Capabilities.KubeVersion.Minor "9" }}
         {"name": "NoVolumeZoneConflict"}, 
-{{ end -}}
+{{ end }}
         {"name": "MaxAzureDiskVolumeCount"},
         {"name": "NoVolumeNodeConflict"},
         {"name": "PodToleratesNodeTaints"},
@@ -147,7 +147,7 @@ spec:
         - --verbose
         - --leader-elect=true
         imagePullPolicy: Always
-        image: openstorage/stork:1.0
+        image: openstorage/stork:1.0.1
         resources:
           requests:
             cpu: '0.1'
@@ -265,9 +265,9 @@ spec:
         - --policy-configmap=stork-config
         - --policy-configmap-namespace=kube-system      
         - --lock-object-name=stork-scheduler
-      {{- if eq $isCoreOS true}}
+      {{ if eq $isCoreOS true }}
         image: quay.io/coreos/hyperkube:{{ $version := .Capabilities.KubeVersion.GitVersion | split "+" }}{{ $version._0 }}_coreos.0
-      {{- end -}}        
+      {{ end }}        
         image: gcr.io/google_containers/kube-scheduler-amd64:{{ $version := .Capabilities.KubeVersion.GitVersion | split "+" }}{{ $version._0 }}
         livenessProbe:
           httpGet:
