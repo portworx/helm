@@ -11,14 +11,13 @@ data:
       "kind": "Policy",
       "apiVersion": "v1",
       "predicates": [
-{{ if ge .Capabilities.KubeVersion.Minor "9" }}
+    {{ if lt .Capabilities.KubeVersion.Minor "9" }}
         {"name": "NoVolumeZoneConflict"}, 
-{{ end }}
+    {{ end }}
         {"name": "MaxAzureDiskVolumeCount"},
         {"name": "NoVolumeNodeConflict"},
         {"name": "PodToleratesNodeTaints"},
         {"name": "CheckNodeMemoryPressure"},
-        {"name": "NoVolumeZoneConflict"},
         {"name": "MaxEBSVolumeCount"},
         {"name": "MaxGCEPDVolumeCount"},
         {"name": "MatchInterPodAffinity"},
