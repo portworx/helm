@@ -1,4 +1,5 @@
 {{- if (.Values.stork) and (eq .Values.stork true)}}
+{{- $isCoreOS := .Values.isTargetOSCoreOS | default false }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -10,6 +11,9 @@ data:
       "kind": "Policy",
       "apiVersion": "v1",
       "predicates": [
+{{- if ge .Capabilities.KubeVersion.Minor "9" -}}
+        {"name": "NoVolumeZoneConflict"}, 
+{{- end -s}}
         {"name": "MaxAzureDiskVolumeCount"},
         {"name": "NoVolumeNodeConflict"},
         {"name": "PodToleratesNodeTaints"},
@@ -259,7 +263,11 @@ spec:
         - --leader-elect=true
         - --scheduler-name=stork
         - --policy-configmap=stork-config
+        - --policy-configmap-namespace=kube-system      
         - --lock-object-name=stork-scheduler
+      {{- if eq $isCoreOS true}}
+        image: quay.io/coreos/hyperkube:{{ $version := .Capabilities.KubeVersion.GitVersion | split "+" }}{{ $version._0 }}_coreos.0
+      {{- end -}}        
         image: gcr.io/google_containers/kube-scheduler-amd64:{{ $version := .Capabilities.KubeVersion.GitVersion | split "+" }}{{ $version._0 }}
         livenessProbe:
           httpGet:
