@@ -13,7 +13,7 @@ data:
       "predicates": [
 {{- if ge .Capabilities.KubeVersion.Minor "9" -}}
         {"name": "NoVolumeZoneConflict"}, 
-{{- end -s}}
+{{- end -}}
         {"name": "MaxAzureDiskVolumeCount"},
         {"name": "NoVolumeNodeConflict"},
         {"name": "PodToleratesNodeTaints"},
