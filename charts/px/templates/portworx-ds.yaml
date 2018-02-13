@@ -8,6 +8,7 @@
 {{- $managementInterface := .Values.managementInterface | default "none" }}
 
 {{- $envVars := .Values.envVars | default "none" }}
+{{- $isCoreOS := .Values.isTargetOSCoreOS | default false }}
 
 {{- $etcdCredentials := .Values.etcd.credentials | default "none:none" }}
 {{- $etcdCA := .Values.etcd.ca | default "none" }}
@@ -201,8 +202,13 @@ spec:
               mountPath: /dev
             - name: cores
               mountPath: /var/cores
+          {{- if eq $isCoreOS true}}
+            - name: src
+              mountPath: /lib/modules
+          {{- else -}}
             - name: src
               mountPath: /usr/src
+          {{- end -}}
             - name: dockerplugins
               mountPath: /run/docker/plugins
             - name: hostproc
@@ -251,9 +257,15 @@ spec:
         - name: cores
           hostPath:
             path: /var/cores
+        {{- if eq $isCoreOS true}}
+        - name: src
+          hostPath:
+            path: /lib/modules
+        {{- else -}}
         - name: src
           hostPath:
             path: /usr/src
+        {{- end -}}
         - name: dockerplugins
           hostPath:
             path: /run/docker/plugins
