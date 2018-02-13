@@ -10,11 +10,11 @@ data:
       "kind": "Policy",
       "apiVersion": "v1",
       "predicates": [
+        {"name": "NoVolumeZoneConflict"}, 
         {"name": "MaxAzureDiskVolumeCount"},
         {"name": "NoVolumeNodeConflict"},
         {"name": "PodToleratesNodeTaints"},
         {"name": "CheckNodeMemoryPressure"},
-        {"name": "NoVolumeZoneConflict"},
         {"name": "MaxEBSVolumeCount"},
         {"name": "MaxGCEPDVolumeCount"},
         {"name": "MatchInterPodAffinity"},
