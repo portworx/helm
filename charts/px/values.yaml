@@ -2,7 +2,7 @@
 
   deploymentType: oci                     # accepts "oci" or "docker"
   imageType: none                         # 
-  imageVersion: 1.2.16                    # Version of the PX Image. 
+  imageVersion: 1.2.18                    # Version of the PX Image. 
   openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
   isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
 
