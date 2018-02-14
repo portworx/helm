@@ -12,7 +12,7 @@ metadata:
     "helm.sh/hook-weight": "-5"
     "helm.sh/hook-delete-policy": hook-succeeded
 spec:
-{{ if ge .Capabilities.KubeVersion.Minor "7" }}
+{{ if ge .Capabilities.KubeVersion.Minor "8" }}
   backoffLimit: 0
 {{ end }}
   template:
