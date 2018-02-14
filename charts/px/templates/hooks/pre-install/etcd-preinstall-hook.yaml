@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   namespace: kube-system
-  name: px-etcd-preinstall-hook-{{ .Release.Name }}
+  name: px-hook-etcd-preinstall
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
@@ -12,7 +12,9 @@ metadata:
     "helm.sh/hook-weight": "-5"
     "helm.sh/hook-delete-policy": hook-succeeded
 spec:
+{{ if ge .Capabilities.KubeVersion.Minor "7" }}
   backoffLimit: 0
+{{ end }}
   template:
     spec:
       restartPolicy: Never
