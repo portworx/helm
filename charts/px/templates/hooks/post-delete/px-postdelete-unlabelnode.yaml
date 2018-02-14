@@ -2,7 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   namespace: kube-system
-  name: px-postdelete-unlabelnode-{{ .Release.Name }}
+  name: px-hook-postdelete-unlabelnode
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
@@ -12,11 +12,15 @@ metadata:
     "helm.sh/hook-weight": "-5"
     "helm.sh/hook-delete-policy": hook-succeeded
 spec:
-  backoffLimit: 1
+{{ if ge .Capabilities.KubeVersion.Minor "8" }}
+  backoffLimit: 0
+{{ else }}
+  activeDeadlineSeconds: 30
+{{ end }}
   template:
     spec:
       serviceAccountName: tiller
-      restartPolicy: OnFailure
+      restartPolicy: Never
       containers:
       - name: post-delete-job
         image: "lachlanevenson/k8s-kubectl:{{ template "px.kubernetesVersion" . }}"

@@ -134,9 +134,39 @@ Incorrect ETCD URL provided. It is either not reachable or is incorrect...
 
 ```
 Ensure the correct etcd URL is set as a parameter to the `helm install` command. 
-The hook resource wouldnt be cleared by itself and hence please delete the `pre-install-hook` after identifying the root cause of the failure. 
-```
-kubectl delete jobs px-etcd-preinstall-hook -nkube-system
 ```
 
+```
+Follow the steps mentioned in the pre-requisites to provide the right RBAC permissions to the serviceaccount running tiller. 
+
+#### Helm install errors with `Job failed: Deadline exceeded`
+
+```
+helm install --debug --set dataInterface=eth1,managementInterface=eth1,etcdEndPoint=etcd:http://192.168.20.290:2379,clusterName=$(uuid) ./charts/px/
+[debug] Created tunnel using local port: '39771'
+
+[debug] SERVER: "127.0.0.1:39771"
+
+[debug] Original chart version: ""
+[debug] CHART PATH: /root/k8s-1.7/helm/charts/px
+
+Error: Job failed: DeadlineExceeded
+```
+This error indicates that the pre-install hook for the helm chart has failed to run to completion correctly. Verify that the etcd URL is accessible. This error is also visible on kubernetes cluster with version below 1.8 
+Follow the below steps to check the reason for failure. 
+
+```
+kubectl get pods -nkube-system -a | grep preinstall
+px-hook-etcd-preinstall-dzmkl    0/1       Error     0          6m
+px-hook-etcd-preinstall-nlqwl    0/1       Error     0          6m
+px-hook-etcd-preinstall-nsjrj    0/1       Error     0          5m
+px-hook-etcd-preinstall-r9gmz    0/1       Error     0          6m
+
+kubectl logs po/px-hook-etcd-preinstall-dzmkl -nkube-system
+Initializing...
+Verifying if the provided etcd url is accessible: http://192.168.20.290:2379
+Response Code: 000
+Incorrect ETCD URL provided. It is either not reachable or is incorrect...
+```
+Ensure the correct etcd URL is set as a parameter to the `helm install` command. 
 Follow the steps mentioned in the pre-requisites to provide the right RBAC permissions to the serviceaccount running tiller. 
