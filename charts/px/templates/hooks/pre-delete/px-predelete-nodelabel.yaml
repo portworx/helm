@@ -14,11 +14,13 @@ metadata:
 spec:
 {{ if ge .Capabilities.KubeVersion.Minor "8" }}
   backoffLimit: 0
+{{ else }}
+  activeDeadlineSeconds: 30  
 {{ end }}
   template:
     spec:
       serviceAccountName: tiller
-      restartPolicy: OnFailure
+      restartPolicy: Never
       containers:
       - name: pre-delete-job
         image: "lachlanevenson/k8s-kubectl:{{ template "px.kubernetesVersion" . }}"

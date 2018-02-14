@@ -14,6 +14,8 @@ metadata:
 spec:
 {{ if ge .Capabilities.KubeVersion.Minor "8" }}
   backoffLimit: 0
+{{ else }}
+  activeDeadlineSeconds: 30
 {{ end }}
   template:
     spec:
