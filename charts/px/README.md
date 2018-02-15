@@ -152,7 +152,7 @@ helm install --debug --set dataInterface=eth1,managementInterface=eth1,etcdEndPo
 
 Error: Job failed: DeadlineExceeded
 ```
-This error indicates that the pre-install hook for the helm chart has failed to run to completion correctly. Verify that the etcd URL is accessible. This error is also visible on kubernetes cluster with version below 1.8 
+This error indicates that the pre-install hook for the helm chart has failed to run to completion correctly. Verify that the etcd URL is accessible. This error occurs on kubernetes cluster(s) with version below 1.8 
 Follow the below steps to check the reason for failure. 
 
 ```
