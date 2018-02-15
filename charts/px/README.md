@@ -93,7 +93,7 @@ helm install --dry-run --debug --set etcdEndPoint=etcd:http://192.168.70.90:2379
 [debug] Created tunnel using local port: '37304'
 [debug] SERVER: "127.0.0.1:37304"
 [debug] Original chart version: ""
-[debug] CHART PATH: /root/k8s-helm-dev/helm/charts/px
+[debug] CHART PATH: /root/helm/charts/px
 
 Error: no available release name found
 ```
@@ -115,7 +115,7 @@ helm install --debug --set dataInterface=eth1,managementInterface=eth1,etcdEndPo
 [debug] SERVER: "127.0.0.1:36389"
 
 [debug] Original chart version: ""
-[debug] CHART PATH: /root/k8s-helm-dev/helm/charts/px
+[debug] CHART PATH: /root/helm/charts/px
 
 Error: Job failed: BackoffLimitExceeded
 ```
@@ -148,7 +148,7 @@ helm install --debug --set dataInterface=eth1,managementInterface=eth1,etcdEndPo
 [debug] SERVER: "127.0.0.1:39771"
 
 [debug] Original chart version: ""
-[debug] CHART PATH: /root/k8s-1.7/helm/charts/px
+[debug] CHART PATH: /root/helm/charts/px
 
 Error: Job failed: DeadlineExceeded
 ```
