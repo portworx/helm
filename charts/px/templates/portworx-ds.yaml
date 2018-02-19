@@ -141,13 +141,13 @@ spec:
           env:
             - name: "PX_TEMPLATE_VERSION"
               value: "v2"
-              {{- if not (eq $envVars "none") }}
-              {{- $vars := $envVars | split ":" }}
+              {{ if not (eq $envVars "none") }}
+              {{- $vars := $envVars | split ";" }}
               {{- range $key, $val := $vars }}
-              {{-  $envVariable := $val | split "=" -}}
+              {{-  $envVariable := $val | split "=" }}
             - name: {{ $envVariable._0 | quote }}
               value: {{ $envVariable._1 | quote }}
-              {{- end -}}
+              {{ end }}
               {{- end }}
           livenessProbe:
             periodSeconds: 30
