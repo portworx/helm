@@ -34,7 +34,7 @@ helm install --debug --name my-release --set etcdEndPoint=etcd:http://192.168.70
 
 ## Configuration
 
-The following tables lists the configurable parameters of the Datadog chart and their default values.
+The following tables lists the configurable parameters of the Portworx chart and their default values.
 
 |             Parameter       |            Description             |                    Default                |
 |-----------------------------|------------------------------------|-------------------------------------------|
