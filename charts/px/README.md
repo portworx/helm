@@ -42,7 +42,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `imageVersion`              | The image tag to pull              | `latest`                                  |
 | `openshiftInstall`               | Installing on Openshift? | `false`                               |
 | `isTargetOSCoreOS`        | Is target CoreOS       | `false`                                     |
-| `etcdEndpoint`          | (REQUIRED) ETCD endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>" | `etcd:http://<your-etcd-endpoint>`                    |
+| `etcdEndPoint`          | (REQUIRED) ETCD endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>" | `etcd:http://<your-etcd-endpoint>`                    |
 | `clusterName`           | Portworx Cluster Name  | `mycluster`                                     |
 | `usefileSystemDrive`      | Should Portworx use an unmounted drive even with a filesystem ? | `false`                |
 | `usedrivesAndPartitions`  | Should Portworx use the drives as well as partitions on the disk ? | `false`             | 
