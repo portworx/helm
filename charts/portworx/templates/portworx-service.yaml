@@ -3,10 +3,13 @@ apiVersion: v1
 metadata:
   name: portworx-service
   namespace: kube-system
+  labels:
+    name: portworx
 spec:
   selector:
     name: portworx
   ports:
-    - protocol: TCP
+    - name: px-api
+      protocol: TCP
       port: 9001
       targetPort: 9001

@@ -39,7 +39,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 |             Parameter       |            Description             |                    Default                |
 |-----------------------------|------------------------------------|-------------------------------------------|
 | `deploymentType`            | The deployment type. Can be either docker/oci   | `oci`                 |
-| `imageVersion`              | The image tag to pull              | `latest`                                  |
+| `imageVersion`              | The image tag to pull              | `1.3.1.4`                                  |
 | `openshiftInstall`               | Installing on Openshift? | `false`                               |
 | `isTargetOSCoreOS`        | Is target CoreOS       | `false`                                     |
 | `etcdEndPoint`          | (REQUIRED) ETCD endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>" | `etcd:http://<your-etcd-endpoint>`                    |
@@ -52,6 +52,11 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `managementInterface`   | Name of the interface <ethX>             | `none`                                   |
 | `envVars`  | Colon-separated list of environment variables that will be exported to portworx. (example: API_SERVER=http://lighthouse-new.portworx.com:MYENV1=val1:MYENV2=val2) | `none`                                    |
 | `stork`    | [Storage Orchestration for Hyperconvergence](https://github.com/libopenstorage/stork).     | `true`       |
+| `storkVersion`    | The version of stork     | `1.0.3`       |
+| `customRegistryURL`    | Custom Docker registry     | `none`       |
+| `journalDevice`    | Journal device for Portworx metadata     | `none`       |
+| `registrySecret`   | Registry secret  | `none` |
+
 | `etcd.credentials`  | Username and password for ETCD authentication in the form user:password | `none:none`                                    |
 | `etcd.ca`  | Location of CA file for ETCD authentication. Should be /path/to/server.ca | `none`                                    |
 | `etcd.cert`  | Location of certificate for ETCD authentication. Should be /path/to/server.crt | `none`                                    |

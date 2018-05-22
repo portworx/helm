@@ -1,5 +1,8 @@
 {{- if (.Values.stork) and (eq .Values.stork true)}}
 {{- $isCoreOS := .Values.isTargetOSCoreOS | default false }}
+{{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
+{{- $secretType := .Values.secretType | default "none" }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -11,9 +14,7 @@ data:
       "kind": "Policy",
       "apiVersion": "v1",
       "predicates": [
-    {{ if lt .Capabilities.KubeVersion.Minor "9" }}
-        {"name": "NoVolumeNodeConflict"}, 
-    {{ end }}
+        {"name": "NoVolumeNodeConflict"},
         {"name": "MaxAzureDiskVolumeCount"},
         {"name": "NoVolumeZoneConflict"},
         {"name": "PodToleratesNodeTaints"},
@@ -139,6 +140,10 @@ spec:
         name: stork
         tier: control-plane
     spec:
+      {{- if not (eq $secretType "none") }}
+      imagePullSecrets:
+        - name: {{ $secretType }}
+      {{- end }}
       containers:
       - command:
         - /stork
@@ -146,7 +151,7 @@ spec:
         - --verbose
         - --leader-elect=true
         imagePullPolicy: Always
-        image: openstorage/stork:1.0.1
+        image: openstorage/stork:{{ required "A valid Image tag is required in the SemVer format" .Values.storkVersion }}
         resources:
           requests:
             cpu: '0.1'

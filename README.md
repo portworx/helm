@@ -4,7 +4,7 @@ Portworx is a software defined persistent storage solution designed and purpose 
 
 ## Helm Chart for Portworx
 
-Follow these [instructions](/charts/px/README.md) to install Portworx onto your kubernetes cluster using Helm
+Follow these [instructions](/charts/portworx/README.md) to install Portworx onto your kubernetes cluster using Helm
 
 ## Contributing
 
