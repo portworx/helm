@@ -21,7 +21,7 @@
 {{- $etcdCA := .Values.etcd.ca | default "none" }}
 {{- $etcdCert := .Values.etcd.cert | default "none" }}
 {{- $etcdKey := .Values.etcd.key | default "none" }}
-{{- $etcdACL := .Values.etcd.acl | default "none" }}
+{{- $consulToken := .Values.consul.token | default "none" }}
 
 
 apiVersion: extensions/v1beta1
@@ -41,7 +41,6 @@ spec:
         app: portworx
         name: portworx
         # {{- include "px.labels" . | indent 8 }}  
-      namespace: kube-system
     spec:
       affinity:
         nodeAffinity:
@@ -67,12 +66,19 @@ spec:
       {{- end }}
       containers:
         - name: portworx
-
           {{- if eq $customRegistryURL "none" }}
+          {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
+          image: registry.connect.redhat.com/portworx/px-monitor:{{ required "A valid Image tag is required in the SemVer format" .Values.imageVersion }}
+	  {{- else }}
           image: portworx/oci-monitor:{{ required "A valid Image tag is required in the SemVer format" .Values.imageVersion }}
-          {{- else -}}
+          {{- end}}
+          {{- else }}
+          {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
+          image: {{ $customRegistryURL }}/registry.connect.redhat.com/portworx/px-monitor:{{ required "A valid Image tag is required in the SemVer format" .Values.imageVersion }}
+          {{- else}}
           image: {{ $customRegistryURL }}/portworx/oci-monitor:{{ required "A valid Image tag is required in the SemVer format" .Values.imageVersion }}
-          {{- end }}
+          {{- end}}
+          {{- end}}
 
           terminationMessagePath: "/tmp/px-termination-log"
           imagePullPolicy: Always
@@ -94,10 +100,14 @@ spec:
                 {{- if eq $drives "none" }}
               "-A",
                 {{- end -}}
-              {{- end -}}              
+              {{- end -}} 
+ 
+              {{- if eq $internalKVDB true }}
+              "-b",
+              {{- end -}}             
 
-              {{- if eq $journalDevice "none" }}
-              "-j", {{ $journalDevice }},
+              {{- if not (eq $journalDevice "none") }}
+              "-j", "{{ $journalDevice }}" ,
               {{- end -}}
   
               "-k", 
@@ -140,9 +150,9 @@ spec:
               "{{ $etcdKey }}",
               {{- end -}}              
 
-              {{- if not (eq $etcdACL "none") }}
+              {{- if not (eq $consulToken "none") }}
               "-acltoken",
-              "{{ $etcdACL }}",
+              "{{ $consulToken }}",
               {{- end -}}              
 
               "-x",
@@ -165,9 +175,9 @@ spec:
             - name: REGISTRY_CONFIG
               valueFrom:
                 secretKeyRef:
-                {{- if (ge .Capabilities.KubeVersion.Minor "9" || (.Values.openshiftInstall && ge .Capabilities.KubeVersion.Minor "8")) -}}
+                {{- if (ge .Capabilities.KubeVersion.Minor "9") or (.Values.openshiftInstall and ge .Capabilities.KubeVersion.Minor "8") }}
                   key: ".dockerconfigjson"
-                {{- else -}}  
+                {{- else }}  
                   key: ".dockercfg"
                 {{- end }}  
                   name: "{{ $registrySecret }}"
@@ -197,10 +207,10 @@ spec:
           {{- if eq (.Values.deploymentType | upper | lower) "oci" }}
               path: /health
               port: 9015
-          {{- else - }}
+          {{- else }}
               path: /v1/cluster/nodehealth
               port: 9001
-          {{- end }}
+          {{- end}}
           securityContext:
             privileged: true
           volumeMounts:
@@ -218,7 +228,7 @@ spec:
           {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
             - name: proc1nsmount
               mountPath: /host_proc
-          {{- else -}}
+          {{- else }}
             - name: proc1nsmount
               mountPath: /host_proc/1/ns
           {{- end }}
@@ -234,7 +244,7 @@ spec:
               mountPath: /run/docker/plugins
             - name: hostproc
               mountPath: /hostproc              
-          {{- if (le .Capabilities.KubeVersion.Minor "9" }}
+          {{- if le .Capabilities.KubeVersion.Minor "9" }}
             - name: libosd
               mountPath: /var/lib/osd:shared              
           {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
@@ -245,7 +255,7 @@ spec:
               mountPath: /var/lib/kubelet:shared
           {{- end }}
 
-          {{- else -}}
+          {{- else }}
             - name: libosd
               mountPath: /var/lib/osd
               mountPropagation: "Bidirectional"
@@ -264,7 +274,7 @@ spec:
           {{- if eq $isCoreOS true}}
             - name: src
               mountPath: /lib/modules
-          {{- else -}}
+          {{- else }}
             - name: src
               mountPath: /usr/src
           {{- end }}
@@ -275,7 +285,7 @@ spec:
           imagePullPolicy: Always
           {{- if eq $customRegistryURL "none" }}
           image: "quay.io/k8scsi/driver-registrar:v0.2.0"
-          {{- else -}}
+          {{- else }}
           image: "{{ $customRegistryURL }}/quay.io/k8scsi/driver-registrar:v0.2.0"
           {{- end}}
           args:
@@ -298,12 +308,12 @@ spec:
       volumes:
         - name: dockersock
           hostPath:
-          {{- if $pksInstall eq true }}
+          {{- if eq $pksInstall true }}
             path: /var/vcap/sys/run/docker/docker.sock
-          {{- else -}}
+          {{- else }}
             path: /var/run/docker.sock
           {{- end}}
-          {{- if $csi eq true}}
+          {{- if eq $csi true}}
         - name: csi-driver-path
           hostPath:
             path: /var/lib/kubelet/plugins/com.openstorage.pxd
@@ -314,11 +324,11 @@ spec:
             path: /etc/pwx
         
         {{- if eq (.Values.deploymentType | upper | lower) "oci" }}
-        {{- if $pksInstall eq true }}
+        {{- if eq $pksInstall true }}
         - name: optpwx
           hostPath:
             path: /var/vcap/store/opt/pwx
-        {{- else -}}
+        {{- else }}
         - name: optpwx
           hostPath:
             path: /opt/pwx
@@ -326,11 +336,11 @@ spec:
         - name: dbusmount
           hostPath:
             path: /var/run/dbus
-        {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
+        {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true) }}
         - name: proc1nsmount
           hostPath:
             path: /proc
-        {{- else -}}
+        {{- else }}
         - name: proc1nsmount
           hostPath:
             path: /proc/1/ns
@@ -365,11 +375,11 @@ spec:
         - name: src
           hostPath:
             path: /lib/modules
-        {{- else -}}
+        {{- else }}
         - name: src
           hostPath:
             path: /usr/src
-        {{- end -}}
+        {{- end }}
         - name: dockerplugins
           hostPath:
             path: /run/docker/plugins

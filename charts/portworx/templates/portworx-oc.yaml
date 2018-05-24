@@ -1,10 +1,8 @@
 {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
 {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
 {{- $secretType := .Values.secretType | default "none" }}
-{{- $registrySecret := .Values.registrySecret | default "none" }}
-{{- if $registrySecret eq "none" }}
+{{- $registrySecret := .Values.registrySecret }}
 {{ required "A registry secret is required for openshift installation" .Values.registrySecret }}
-{{- end}}
 
 apiVersion: v1
 kind: ServiceAccount

@@ -32,3 +32,4 @@ release: {{ .Release.Name | quote }}
 {{- else -}}
 ".dockercfg"
 {{- end -}}
+{{- end -}}
