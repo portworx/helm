@@ -13,8 +13,11 @@ data:
     {
       "kind": "Policy",
       "apiVersion": "v1",
+{{- if ge .Capabilities.KubeVersion.Minor "9" }}
       "predicates": [
+{{- if ge .Capabilities.KubeVersion.Minor "8" }}
         {"name": "NoVolumeNodeConflict"},
+{{- end}}
         {"name": "MaxAzureDiskVolumeCount"},
         {"name": "NoVolumeZoneConflict"},
         {"name": "PodToleratesNodeTaints"},
@@ -35,6 +38,7 @@ data:
         {"name": "BalancedResourceAllocation", "weight": 1},
         {"name": "NodePreferAvoidPodsPriority", "weight": 1}
       ],
+{{- end}}
       "extenders": [
         {
           "urlPrefix": "http://stork-service.kube-system.svc.cluster.local:8099",
