@@ -50,7 +50,7 @@ data:
           "nodeCacheCapable": false
         }
       ]
-    }
+    }    
 ---
 apiVersion: v1
 kind: ServiceAccount
