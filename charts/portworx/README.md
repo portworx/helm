@@ -42,7 +42,6 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `imageVersion`              | The image tag to pull              | `1.3.1.4`                                  |
 | `openshiftInstall`               | Installing on Openshift? | `false`                               |
 | `pksInstall`               | Installing on Pivotal Container service? | `false`                               |
-
 | `etcdEndPoint`          | (REQUIRED) ETCD endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>" | `etcd:http://<your-etcd-endpoint>`                    |
 | `clusterName`           | Portworx Cluster Name  | `mycluster`                                     |
 | `usefileSystemDrive`      | Should Portworx use an unmounted drive even with a filesystem ? | `false`                |
@@ -59,7 +58,6 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `journalDevice`    | Journal device for Portworx metadata     | `none`       |
 | `csi`              | Enable CSI (Tech Preview only)           | `false`      |
 | `internalKVDB`              | Internal KVDB store           | `false`      |
-
 | `etcd.credentials`  | Username and password for ETCD authentication in the form user:password | `none:none`                                    |
 | `etcd.ca`  | Location of CA file for ETCD authentication. Should be /path/to/server.ca | `none`                                    |
 | `etcd.cert`  | Location of certificate for ETCD authentication. Should be /path/to/server.crt | `none`                                    |
