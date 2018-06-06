@@ -24,3 +24,12 @@ release: {{ .Release.Name | quote }}
 {{- define "px.kubernetesVersion" -}}
 {{ $version := .Capabilities.KubeVersion.GitVersion | split "+" }}{{ $version._0 }}
 {{- end -}}
+
+
+{{- define "px.registryConfigType" -}}
+{{- if ge .Capabilities.KubeVersion.Minor "9" -}}
+".dockerconfigjson"
+{{- else -}}
+".dockercfg"
+{{- end -}}
+{{- end -}}

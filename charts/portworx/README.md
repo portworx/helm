@@ -39,9 +39,10 @@ The following tables lists the configurable parameters of the Portworx chart and
 |             Parameter       |            Description             |                    Default                |
 |-----------------------------|------------------------------------|-------------------------------------------|
 | `deploymentType`            | The deployment type. Can be either docker/oci   | `oci`                 |
-| `imageVersion`              | The image tag to pull              | `latest`                                  |
+| `imageVersion`              | The image tag to pull              | `1.3.1.4`                                  |
 | `openshiftInstall`               | Installing on Openshift? | `false`                               |
-| `isTargetOSCoreOS`        | Is target CoreOS       | `false`                                     |
+| `pksInstall`               | Installing on Pivotal Container service? | `false`                               |
+
 | `etcdEndPoint`          | (REQUIRED) ETCD endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>" | `etcd:http://<your-etcd-endpoint>`                    |
 | `clusterName`           | Portworx Cluster Name  | `mycluster`                                     |
 | `usefileSystemDrive`      | Should Portworx use an unmounted drive even with a filesystem ? | `false`                |
@@ -52,11 +53,18 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `managementInterface`   | Name of the interface <ethX>             | `none`                                   |
 | `envVars`  | Colon-separated list of environment variables that will be exported to portworx. (example: API_SERVER=http://lighthouse-new.portworx.com:MYENV1=val1:MYENV2=val2) | `none`                                    |
 | `stork`    | [Storage Orchestration for Hyperconvergence](https://github.com/libopenstorage/stork).     | `true`       |
+| `storkVersion`    | The version of stork     | `1.0.3`       |
+| `customRegistryURL`    | Custom Docker registry     | `none`       |
+| `registrySecret`   | Registry secret  | `none` |
+| `journalDevice`    | Journal device for Portworx metadata     | `none`       |
+| `csi`              | Enable CSI (Tech Preview only)           | `false`      |
+| `internalKVDB`              | Internal KVDB store           | `false`      |
+
 | `etcd.credentials`  | Username and password for ETCD authentication in the form user:password | `none:none`                                    |
 | `etcd.ca`  | Location of CA file for ETCD authentication. Should be /path/to/server.ca | `none`                                    |
 | `etcd.cert`  | Location of certificate for ETCD authentication. Should be /path/to/server.crt | `none`                                    |
 | `etcd.key`  | Location of certificate key for ETCD authentication Should be /path/to/servery.key | `none`                                    |
-| `etcd.acl`  | ACL token value used for Consul authentication. (example: 398073a8-5091-4d9c-871a-bbbeb030d1f6) | `none`                                    |
+| `consul.acl`  | ACL token value used for Consul authentication. (example: 398073a8-5091-4d9c-871a-bbbeb030d1f6) | `none`                                    |
 
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,

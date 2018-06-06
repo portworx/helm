@@ -1,4 +1,9 @@
 {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
+{{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
+{{- $secretType := .Values.secretType | default "none" }}
+{{- $registrySecret := .Values.registrySecret }}
+{{ required "A registry secret is required for openshift installation" .Values.registrySecret }}
+
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -88,6 +93,10 @@ spec:
         tier: control-plane
         # {{- include "px.labels" . | indent 8 }}  
     spec:
+      {{- if not (eq $registrySecret "none") }}
+      imagePullSecrets:
+        - name: {{ $registrySecret }}
+      {{- end }}
       containers:
       - command:
         - kube-controller-manager
