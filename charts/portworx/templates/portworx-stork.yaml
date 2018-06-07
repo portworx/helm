@@ -13,9 +13,9 @@ data:
     {
       "kind": "Policy",
       "apiVersion": "v1",
-{{- if ge .Capabilities.KubeVersion.Minor "9" }}
+{{- if le .Capabilities.KubeVersion.Minor "9" }}
       "predicates": [
-{{- if ge .Capabilities.KubeVersion.Minor "8" }}
+{{- if le .Capabilities.KubeVersion.Minor "8" }}
         {"name": "NoVolumeNodeConflict"},
 {{- end}}
         {"name": "MaxAzureDiskVolumeCount"},
