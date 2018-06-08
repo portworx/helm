@@ -276,7 +276,7 @@ spec:
       {{ if eq $isCoreOS true }}
         image: quay.io/coreos/hyperkube:{{ $version := .Capabilities.KubeVersion.GitVersion | split "+" }}{{ $version._0 }}_coreos.0
       {{ end }}        
-        image: gcr.io/google_containers/kube-scheduler-amd64:{{ $version := .Capabilities.KubeVersion.GitVersion | split "+" }}{{ $version._0 }}
+        image: gcr.io/google_containers/kube-scheduler-amd64:{{ template "px.kubernetesVersion" . }}
         livenessProbe:
           httpGet:
             path: /healthz

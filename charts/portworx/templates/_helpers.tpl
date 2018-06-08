@@ -22,7 +22,7 @@ release: {{ .Release.Name | quote }}
 {{- end -}}
 
 {{- define "px.kubernetesVersion" -}}
-{{ $version := .Capabilities.KubeVersion.GitVersion | split "+" }}{{ $version._0 }}
+{{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+"}}{{$version}}
 {{- end -}}
 
 
