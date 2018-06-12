@@ -89,7 +89,7 @@ spec:
               "-a",
               "-f",
               {{- else }}
-              {{ $driveNames := .drives | split "," }}
+              {{ $driveNames := .drives | split ";" }}
               {{- range $index, $name := $driveNames }}
               "-s", 
               {{ $name }},
@@ -166,8 +166,8 @@ spec:
               {{- $vars := $envVars | split ";" }}
               {{- range $key, $val := $vars }}
               {{-  $envVariable := $val | split "=" }}
-            - name: {{ $envVariable._0 | quote }}
-              value: {{ $envVariable._1 | quote }}
+            - name: {{ $envVariable._0 | trim | quote }}
+              value: {{ $envVariable._1 | trim | quote }}
               {{ end }}
               {{- end }}
 
