@@ -31,6 +31,6 @@ spec:
         image: "hrishi/px-etcd-preinstall-hook:v1"
         {{- else}}
         image: "{{ $customRegistryURL }}/hrishi/px-etcd-preinstall-hook:v1"
-        {{-end}}
+        {{- end}}
         command: ['/bin/sh']
         args: ['/usr/bin/etcdStatus.sh',"{{ .Values.etcdEndPoint }}"]

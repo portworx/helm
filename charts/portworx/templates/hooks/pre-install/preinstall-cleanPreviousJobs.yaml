@@ -27,8 +27,8 @@ spec:
       - name: px-clean
         {{- if eq $customRegistryURL "none" }}
         image: "lachlanevenson/k8s-kubectl:{{ template "px.kubernetesVersion" . }}"
-        {{- else}}
+        {{- else }}
         image: "{{ $customRegistryURL }}/lachlanevenson/k8s-kubectl:{{ template "px.kubernetesVersion" . }}"
-        {{-end}}
+        {{- end }}
         command: ['/bin/sh']
         args: ['-c','kubectl get jobs -nkube-system | grep px-hook | cut -f1 -d " " | xargs -r kubectl delete -nkube-system jobs']

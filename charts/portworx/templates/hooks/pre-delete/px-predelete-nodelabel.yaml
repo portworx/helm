@@ -29,5 +29,5 @@ spec:
         image: "lachlanevenson/k8s-kubectl:{{ template "px.kubernetesVersion" . }}"
         {{- else}}
         image: "{{ $customRegistryURL }}/lachlanevenson/k8s-kubectl:{{ template "px.kubernetesVersion" . }}"
-        {{-end}}
+        {{- end}}
         args: ['label','nodes','--all','px/enabled=remove','--overwrite']
