@@ -14,7 +14,7 @@
   usefileSystemDrive: false             # true/false Instructs PX to use an unmounted Drive even if it has a filesystem.
   usedrivesAndPartitions: false         # Defaults to false. Change to true and PX will use unmounted drives and partitions. 
   secretType: none                      # Defaults to None, but can be AWS / KVDB / Vault.
-  drives: none                          # Defaults to use -A switch. 
+  drives: none                          # NOTE: This is a ";" seperated list of drives. For eg: "/dev/sda;/dev/sdb;/dev/sdc" Defaults to use -A switch. 
   dataInterface: none                   # Name of the interface <ethX>
   managementInterface: none             # Name of the interface <ethX>
   envVars: none                         # NOTE: This is a ";" seperated list of environment variables. For eg: MYENV1=myvalue1;MYENV2=myvalue2 
