@@ -47,10 +47,10 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `usefileSystemDrive`      | Should Portworx use an unmounted drive even with a filesystem ? | `false`                |
 | `usedrivesAndPartitions`  | Should Portworx use the drives as well as partitions on the disk ? | `false`             | 
 | `secretType`      | Secrets store to be used can be AWS/KVDB/Vault          | `none`                                    |
-| `drives` | Comma seperated list of drives to be used for storage           | `none`                                   |
+| `drives` | Semi-colon seperated list of drives to be used for storage (example: "/dev/sda;/dev/sdb")           | `none`                                   |
 | `dataInterface`   | Name of the interface <ethX>             | `none`                                   |
 | `managementInterface`   | Name of the interface <ethX>             | `none`                                   |
-| `envVars`  | Colon-separated list of environment variables that will be exported to portworx. (example: API_SERVER=http://lighthouse-new.portworx.com:MYENV1=val1:MYENV2=val2) | `none`                                    |
+| `envVars`  | semi-colon-separated list of environment variables that will be exported to portworx. (example: API_SERVER=http://lighthouse-new.portworx.com;MYENV1=val1;MYENV2=val2) | `none`                                    |
 | `stork`    | [Storage Orchestration for Hyperconvergence](https://github.com/libopenstorage/stork).     | `true`       |
 | `storkVersion`    | The version of stork     | `1.0.3`       |
 | `customRegistryURL`    | Custom Docker registry     | `none`       |
