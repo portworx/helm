@@ -1,3 +1,5 @@
+{{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
+
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -23,6 +25,10 @@ spec:
       restartPolicy: Never
       containers:
       - name: px-clean
+        {{- if eq $customRegistryURL "none" }}
         image: "lachlanevenson/k8s-kubectl:{{ template "px.kubernetesVersion" . }}"
+        {{- else }}
+        image: "{{ $customRegistryURL }}/lachlanevenson/k8s-kubectl:{{ template "px.kubernetesVersion" . }}"
+        {{- end }}
         command: ['/bin/sh']
         args: ['-c','kubectl get jobs -nkube-system | grep px-hook | cut -f1 -d " " | xargs -r kubectl delete -nkube-system jobs']
