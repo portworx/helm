@@ -14,7 +14,7 @@ metadata:
     "helm.sh/hook-weight": "-5"
     "helm.sh/hook-delete-policy": hook-succeeded
 spec:
-{{ if ge .Capabilities.KubeVersion.Minor "8" }}
+{{ if semverCompare ">= 1.8" .Capabilities.KubeVersion.GitVersion }}
   backoffLimit: 0
 {{ else }}
   activeDeadlineSeconds: 30

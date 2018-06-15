@@ -2,7 +2,7 @@
 */}}
 
 {{- define "rbac.apiVersion" -}}
-{{- if ge .Capabilities.KubeVersion.Minor "8" -}}
+{{- if semverCompare ">= 1.8" .Capabilities.KubeVersion.GitVersion -}}
 "rbac.authorization.k8s.io/v1"
 {{- else -}}
 "rbac.authorization.k8s.io/v1beta1"
@@ -27,7 +27,7 @@ release: {{ .Release.Name | quote }}
 
 
 {{- define "px.registryConfigType" -}}
-{{- if ge .Capabilities.KubeVersion.Minor "9" -}}
+{{- if semverCompare ">=1.9" .Capabilities.KubeVersion.GitVersion -}}
 ".dockerconfigjson"
 {{- else -}}
 ".dockercfg"
