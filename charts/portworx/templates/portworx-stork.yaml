@@ -93,9 +93,15 @@ rules:
   - apiGroups: [""]
     resources: ["services"]
     verbs: ["get"]
-  - apiGroups: ["storage.k8s.io"]
-    resources: ["storageclasses"]
-    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get"]
+  - apiGroups: ["*"]
+    resources: ["deployments", "deployments/extensions"]
+    verbs: ["list", "get", "watch", "patch", "update", "initialize"]
+  - apiGroups: ["*"]
+    resources: ["statefulsets", "statefulsets/extensions"]
+    verbs: ["list", "get", "watch", "patch", "update", "initialize"]
 ---
 kind: ClusterRoleBinding
 apiVersion: {{ template "rbac.apiVersion" . }}
@@ -239,6 +245,9 @@ rules:
     verbs: ["get", "list", "watch"]
   - apiGroups: [""]
     resources: ["persistentvolumeclaims", "persistentvolumes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
     verbs: ["get", "list", "watch"]
 ---
 kind: ClusterRoleBinding
