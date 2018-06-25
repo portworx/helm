@@ -27,6 +27,7 @@
 
   journalDevice:
 
+  deployOnMaster:  false                # For POC only
   csi: false                            # Enable CSI
 
   internalKVDB: false                   # internal KVDB

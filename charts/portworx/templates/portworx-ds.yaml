@@ -50,14 +50,15 @@ spec:
               {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
               - key: openshift-infra
                 operator: DoesNotExist
-              {{- else }}
+              {{- else if (not .Values.deployOnMaster) or (eq .Values.deployOnMaster false)}}
               - key: node-role.kubernetes.io/master
                 operator: DoesNotExist
-              {{- end }}
+              {{- else }}
               - key: px/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       hostNetwork: true
       hostPID: true
       {{- if not (eq $registrySecret "none") }}
