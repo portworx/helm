@@ -1,4 +1,5 @@
 {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
+{{- $registrySecret := .Values.registrySecret | default "none" }}
 
 apiVersion: batch/v1
 kind: Job
@@ -21,6 +22,11 @@ spec:
 {{ end }}
   template:
     spec:
+      {{- if not (.Values.registrySecret) }}
+      imagePullSecrets:
+        - name: {{ .Values.registrySecret }}
+      {{- end }}    
+
       serviceAccountName: tiller
       restartPolicy: Never
       containers:

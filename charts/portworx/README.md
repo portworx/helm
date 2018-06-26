@@ -42,6 +42,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `imageVersion`              | The image tag to pull              | `1.3.1.4`                                  |
 | `openshiftInstall`               | Installing on Openshift? | `false`                               |
 | `pksInstall`               | Installing on Pivotal Container service? | `false`                               |
+| `AKSorEKSInstall`               | Installing on AKS(Azure Kubernetes service) or EKS (Amazon Elastic Container service) | `false`                               |
+
 | `etcdEndPoint`          | (REQUIRED) ETCD endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>" | `etcd:http://<your-etcd-endpoint>`                    |
 | `clusterName`           | Portworx Cluster Name  | `mycluster`                                     |
 | `usefileSystemDrive`      | Should Portworx use an unmounted drive even with a filesystem ? | `false`                |

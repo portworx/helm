@@ -1,8 +1,5 @@
-{{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
+{{- if ((.Values.openshiftInstall) and (eq .Values.openshiftInstall true)) or ((.Values.AKSorEKSInstall) and (eq .Values.AKSorEKSInstall true))}}
 {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
-{{- $secretType := .Values.secretType | default "none" }}
-{{- $registrySecret := .Values.registrySecret }}
-{{ required "A registry secret is required for openshift installation" .Values.registrySecret }}
 
 apiVersion: v1
 kind: ServiceAccount
@@ -35,7 +32,7 @@ rules:
   verbs: ["get", "list", "watch"]
 - apiGroups: [""]
   resources: ["endpoints", "services"]
-  verbs: ["*"]
+  verbs: ["create", "delete", "get"]
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get", "list"]
@@ -50,7 +47,7 @@ rules:
   verbs: ["create", "patch", "update"]
 - apiGroups: [""]
   resources: ["serviceaccounts"]
-  verbs: ["get"]
+  verbs: ["get", "create"]
 - apiGroups: [""]
   resources: ["configmaps"]
   verbs: ["get", "create", "update"]
@@ -91,11 +88,20 @@ spec:
       labels:
         name: portworx-pvc-controller
         tier: control-plane
-        # {{- include "px.labels" . | indent 8 }}  
     spec:
+     {{- if ((.Values.openshiftInstall) and (eq .Values.openshiftInstall true))}}
+     {{- $registrySecret := .Values.registrySecret | default "none" }}
+     {{ required "A registry secret is required for openshift installation" .Values.registrySecret }}
       {{- if not (eq $registrySecret "none") }}
       imagePullSecrets:
         - name: {{ $registrySecret }}
+      {{- end }}
+
+      {{- else }}    
+      {{- if not (eq $registrySecret "none") }}
+      imagePullSecrets:
+        - name: {{ $registrySecret }}
+      {{- end }}    
       {{- end }}
       containers:
       - command:
@@ -104,8 +110,12 @@ spec:
         - --address=0.0.0.0
         - --controllers=persistentvolume-binder
         - --use-service-account-credentials=true
-        - --leader-elect-resource-lock=endpoints
+        - --leader-elect-resource-lock=configmaps
+      {{- if eq $customRegistryURL "none" }}
         image: gcr.io/google_containers/kube-controller-manager-amd64:{{ template "px.kubernetesVersion" . }}
+      {{- else}}
+        image: {{$customRegistryURL}}/gcr.io/google_containers/kube-controller-manager-amd64:{{ template "px.kubernetesVersion" . }}
+      {{- end}}
         livenessProbe:
           failureThreshold: 8
           httpGet:
