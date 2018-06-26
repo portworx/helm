@@ -15,18 +15,17 @@ metadata:
     "helm.sh/hook-weight": "-5"
     "helm.sh/hook-delete-policy": hook-succeeded
 spec:
-{{ if semverCompare ">=1.8" .Capabilities.KubeVersion.GitVersion }}
+{{ if semverCompare ">= 1.8" .Capabilities.KubeVersion.GitVersion }}
   backoffLimit: 0
 {{ else }}
   activeDeadlineSeconds: 30
 {{ end }}
   template:
     spec:
-      {{- if not (.Values.registrySecret) }}
+      {{- if not (eq $registrySecret "none") }}
       imagePullSecrets:
-        - name: {{ .Values.registrySecret }}
-      {{- end }}    
-
+        - name: {{ $registrySecret }}
+      {{- end }}   
       restartPolicy: Never
       containers:
       - name: pre-install-job
