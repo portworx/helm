@@ -1,4 +1,4 @@
-{{- if ((.Values.openshiftInstall) and (eq .Values.openshiftInstall true)) or ((.Values.AKSorEKSInstall) and (eq .Values.AKSorEKSInstall true))}}
+{{- if or ((.Values.openshiftInstall) and (eq .Values.openshiftInstall true)) ((.Values.AKSorEKSInstall) and (eq .Values.AKSorEKSInstall true))}}
 {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
 
 apiVersion: v1
@@ -97,7 +97,8 @@ spec:
         - name: {{ $registrySecret }}
       {{- end }}
 
-      {{- else }}    
+      {{- else }}
+      {{- $registrySecret := .Values.registrySecret | default "none" }}
       {{- if not (eq $registrySecret "none") }}
       imagePullSecrets:
         - name: {{ $registrySecret }}
