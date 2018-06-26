@@ -22,9 +22,9 @@ spec:
 {{ end }}
   template:
     spec:
-      {{- if not (eq $secretType "none") }}
+      {{- if not (eq $registrySecret "none") }}
       imagePullSecrets:
-        - name: {{ $secretType }}
+        - name: {{ $registrySecret }}
       {{- end }}    
       serviceAccountName: tiller
       restartPolicy: Never
