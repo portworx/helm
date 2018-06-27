@@ -8,7 +8,7 @@
   isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
   pksInstall: false                       # installation on PKS (Pivotal Container Service)
   AKSorEKSInstall: false                  # installation on AKS or EKS. 
-  etcdEndPoint:                         # The ETCD endpoint. Should be in the format etcd:http://<your-etcd-endpoint>:2379 
+  etcdEndPoint:                         # The ETCD endpoint. Should be in the format etcd:http://<your-etcd-endpoint>:2379. If there are multiple etcd endpoints they need to be ";" seperated. 
                                         # the default value is empty since it requires to be explicity set using either the --set option of -f values.yaml.  
   clusterName: mycluster                # This is the default. please change it to your cluster name.  
   usefileSystemDrive: false             # true/false Instructs PX to use an unmounted Drive even if it has a filesystem.
