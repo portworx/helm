@@ -39,7 +39,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 |             Parameter       |            Description             |                    Default                |
 |-----------------------------|------------------------------------|-------------------------------------------|
 | `deploymentType`            | The deployment type. Can be either docker/oci   | `oci`                 |
-| `imageVersion`              | The image tag to pull              | `1.3.1.4`                                  |
+| `imageVersion`              | The image tag to pull              | `1.3.4`                                  |
 | `openshiftInstall`               | Installing on Openshift? | `false`                               |
 | `pksInstall`               | Installing on Pivotal Container service? | `false`                               |
 | `AKSorEKSInstall`               | Installing on AKS(Azure Kubernetes service) or EKS (Amazon Elastic Container service) | `false`                               |
@@ -53,7 +53,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `managementInterface`   | Name of the interface <ethX>             | `none`                                   |
 | `envVars`  | semi-colon-separated list of environment variables that will be exported to portworx. (example: API_SERVER=http://lighthouse-new.portworx.com;MYENV1=val1;MYENV2=val2) | `none`                                    |
 | `stork`    | [Storage Orchestration for Hyperconvergence](https://github.com/libopenstorage/stork).     | `true`       |
-| `storkVersion`    | The version of stork     | `1.0.3`       |
+| `storkVersion`    | The version of stork     | `1.1.1`       |
 | `customRegistryURL`    | Custom Docker registry     | `none`       |
 | `registrySecret`   | Registry secret  | `none` |
 | `journalDevice`    | Journal device for Portworx metadata     | `none`       |
