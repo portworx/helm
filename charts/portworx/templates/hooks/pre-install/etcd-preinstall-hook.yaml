@@ -32,10 +32,31 @@ spec:
         terminationMessagePath: '/dev/termination-log'    
         terminationMessagePolicy: 'FallbackToLogsOnError'        
         imagePullPolicy: Always
+
         {{- if eq $customRegistryURL "none" }}
-        image: "hrishi/px-etcd-preinstall-hook:v1"
+        image: "hrishi/px-etcd-preinstall-hook:v2"
         {{- else}}
         image: "{{ $customRegistryURL }}/hrishi/px-etcd-preinstall-hook:v2"
         {{- end}}
-        command: ['/bin/sh']
+        
+        {{- if (not .Values.etcd.certPath) and  (not eq .Values.etcd.certPath "none") }}
+        command: ['/bin/bash']
+        args: ['/usr/bin/etcdStatus.sh',"{{ .Values.etcdEndPoint }}","{{.Values.etcd.ca}}","{{.Values.etcd.cert}}","{{.Values.etcd.key}}"]
+        volumeMounts:
+        - mountPath: {{.Values.etcd.certPath}}
+          name: etcdcerts
+      volumes:
+      - name: etcdcerts
+        secret:
+          secretName: px-etcd-certs
+          items:
+          - key: ca.crt
+            path: ca.crt
+          - key: client.crt
+            path: client.crt
+          - key: client.key
+            path: client.key
+        {{- else}}
+        command: ['/bin/bash']
         args: ['/usr/bin/etcdStatus.sh',"{{ .Values.etcdEndPoint }}"]
+        {{- end}}
