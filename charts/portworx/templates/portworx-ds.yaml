@@ -217,7 +217,7 @@ spec:
             privileged: true
           volumeMounts:
           {{- if not (eq $etcdCertPath "none") }}
-            - mountPath: {{ $etcdCertPath }}
+            - mountPath: /etc/pwx/etcdcerts 
               name: etcdcerts
           {{- end }}
             - name: dockersock
@@ -317,12 +317,12 @@ spec:
           secret:
             secretName: px-etcd-certs
             items:
-            - key: ca.crt
-              path: ca.crt
-            - key: client.crt
-              path: client.crt
-            - key: client.key
-              path: client.key
+            - key: ca.pem
+              path: ca.pem
+            - key: client.pem
+              path: client.pem
+            - key: client-key.pem
+              path: client-key.key
           {{- end}}
         - name: dockersock
           hostPath:
