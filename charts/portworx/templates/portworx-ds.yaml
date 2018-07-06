@@ -18,6 +18,7 @@
 {{- $csi := .Values.csi | default false }}
 
 {{- $etcdCredentials := .Values.etcd.credentials | default "none:none" }}
+{{- $etcdCertPath := .Values.etcd.certPath | default "none" }}
 {{- $etcdCA := .Values.etcd.ca | default "none" }}
 {{- $etcdCert := .Values.etcd.cert | default "none" }}
 {{- $etcdKey := .Values.etcd.key | default "none" }}
@@ -215,6 +216,10 @@ spec:
           securityContext:
             privileged: true
           volumeMounts:
+          {{- if not (eq $etcdCertPath "none") }}
+            - mountPath: {{ $etcdCertPath }}
+              name: etcdcerts
+          {{- end }}
             - name: dockersock
               mountPath: /var/run/docker.sock
             - name: etcpwx
@@ -307,6 +312,18 @@ spec:
       restartPolicy: Always
       serviceAccountName: px-account
       volumes:
+          {{- if not (eq $etcdCertPath "none") }}
+        - name: etcdcerts
+          secret:
+            secretName: px-etcd-certs
+            items:
+            - key: ca.crt
+              path: ca.crt
+            - key: client.crt
+              path: client.crt
+            - key: client.key
+              path: client.key
+          {{- end}}
         - name: dockersock
           hostPath:
           {{- if eq $pksInstall true }}
