@@ -32,7 +32,7 @@ If the etcdcluster being used is a secured ETCD (SSL/TLS) then please follow ins
 For eg: 
 ```
 git clone https://github.com/portworx/helm.git
-helm install --debug --name my-release --set etcdEndPoint=etcd:http://192.168.70.90:2379,clusterName=$(uuid) ./helm/charts/px/
+helm install --debug --name my-release --set etcdEndPoint=etcd:http://192.168.70.90:2379,clusterName=$(uuid) ./helm/charts/portworx/
 ```
 
 ## Configuration
