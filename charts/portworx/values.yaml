@@ -4,6 +4,7 @@
   imageType: none                         # 
   imageVersion: 1.4.0                     # Version of the PX Image. 
 
+
   openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
   isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
   pksInstall: false                       # installation on PKS (Pivotal Container Service)
@@ -34,6 +35,7 @@
 
   etcd:
     credentials: none:none              # Username and password for ETCD authentication in the form user:password   
+    certPath: none                      # Base path where the certificates are placed. (example: if the certificates ca,crt and the key are in /etc/pwx/etcdcerts the value should be provided as /etc/pwx/etcdcerts)
     ca: none                            # Location of CA file for ETCD authentication. Should be /path/to/server.ca
     cert: none                          # Location of certificate for ETCD authentication. Should be /path/to/server.crt
     key: none                           # Location of certificate key for ETCD authentication Should be /path/to/servery.key
