@@ -4,6 +4,7 @@
   imageType: none                         # 
   imageVersion: 1.4.0                     # Version of the PX Image. 
 
+
   openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
   isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
   pksInstall: false                       # installation on PKS (Pivotal Container Service)
