@@ -1,5 +1,7 @@
 {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
 {{- $registrySecret := .Values.registrySecret | default "none" }}
+{{- $etcdCertPath := .Values.etcd.certPath | default "none" }}
+
 
 apiVersion: batch/v1
 kind: Job
@@ -32,10 +34,31 @@ spec:
         terminationMessagePath: '/dev/termination-log'    
         terminationMessagePolicy: 'FallbackToLogsOnError'        
         imagePullPolicy: Always
+
         {{- if eq $customRegistryURL "none" }}
-        image: "hrishi/px-etcd-preinstall-hook:v1"
+        image: "hrishi/px-etcd-preinstall-hook:v2"
         {{- else}}
         image: "{{ $customRegistryURL }}/hrishi/px-etcd-preinstall-hook:v2"
-        {{- end}}
-        command: ['/bin/sh']
+        {{- end }}
+        
+        {{- if  not (eq $etcdCertPath "none") }}
+        command: ['/bin/bash']
+        args: ['/usr/bin/etcdStatus.sh',"{{ .Values.etcdEndPoint }}","{{.Values.etcd.ca}}","{{.Values.etcd.cert}}","{{.Values.etcd.key}}"]
+        volumeMounts:
+        - mountPath: /etc/pwx/etcdcerts
+          name: etcdcerts
+      volumes:
+      - name: etcdcerts
+        secret:
+          secretName: px-etcd-certs
+          items:
+          - key: ca.pem
+            path: ca.pem
+          - key: client.pem
+            path: client.pem
+          - key: client-key.pem
+            path: client-key.pem
+        {{- else}}
+        command: ['/bin/bash']
         args: ['/usr/bin/etcdStatus.sh',"{{ .Values.etcdEndPoint }}"]
+        {{- end}}

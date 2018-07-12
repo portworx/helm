@@ -24,6 +24,9 @@ To install the chart with the release name `my-release` run the following comman
 
 ##### NOTE: 
 `etcdEndPoint` is a required field. The chart installation would not proceed unless this option is provided.
+If the etcdcluster being used is a secured ETCD (SSL/TLS) then please follow instructions to create a kubernetes secret with the certs. https://docs.portworx.com/scheduler/kubernetes/etcd-certs-using-secrets.html#create-kubernetes-secret
+
+
 `clusterName` should be a unique name identifying your Portworx cluster. The default value is `mycluster`, but it is suggested to update it with your naming scheme.  
 
 For eg: 
@@ -39,7 +42,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 |             Parameter       |            Description             |                    Default                |
 |-----------------------------|------------------------------------|-------------------------------------------|
 | `deploymentType`            | The deployment type. Can be either docker/oci   | `oci`                 |
-| `imageVersion`              | The image tag to pull              | `1.3.4`                                  |
+| `imageVersion`              | The image tag to pull              | `1.4.0`                                  |
 | `openshiftInstall`               | Installing on Openshift? | `false`                               |
 | `pksInstall`               | Installing on Pivotal Container service? | `false`                               |
 | `AKSorEKSInstall`               | Installing on AKS(Azure Kubernetes service) or EKS (Amazon Elastic Container service) | `false`                               |
@@ -60,6 +63,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `csi`              | Enable CSI (Tech Preview only)           | `false`      |
 | `internalKVDB`              | Internal KVDB store           | `false`      |
 | `etcd.credentials`  | Username and password for ETCD authentication in the form user:password | `none:none`                                    |
+| `etcd.certPath`  | Base path where the certificates are placed. (example: if the certificates ca,.crt and the .key are in /etc/pwx/etcdcerts the value should be provided as /etc/pwx/etcdcerts Refer: https://docs.portworx.com/scheduler/kubernetes/etcd-certs-using-secrets.html) | `none`                                    |
 | `etcd.ca`  | Location of CA file for ETCD authentication. Should be /path/to/server.ca | `none`                                    |
 | `etcd.cert`  | Location of certificate for ETCD authentication. Should be /path/to/server.crt | `none`                                    |
 | `etcd.key`  | Location of certificate key for ETCD authentication Should be /path/to/servery.key | `none`                                    |
