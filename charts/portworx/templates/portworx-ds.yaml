@@ -23,9 +23,7 @@
 {{- $etcdCert := .Values.etcd.cert | default "none" }}
 {{- $etcdKey := .Values.etcd.key | default "none" }}
 {{- $consulToken := .Values.consul.token | default "none" }}
-
-{{- required "A valid ETCD url in the format etcd:http://<your-etcd-endpoint> is required. Verify that the key is correct and there isnt any typo in specifying that, also ensure it is accessible from all node of your kubernetes cluster" .Values.etcdEndPoint}}
-{{ $etcdEndPoints := regexReplaceAllLiteral "(;)" .Values.etcdEndPoint "," }}
+{{ $etcdEndPoints := .Values.etcdEndPoint }}
 
 apiVersion: extensions/v1beta1
 kind: DaemonSet
@@ -114,8 +112,15 @@ spec:
               "-j", "{{ $journalDevice }}" ,
               {{- end -}}
   
+              {{- if empty $etcdEndPoints -}}
+                {{- if eq $internalKVDB false -}}
+                  "{{ required "A valid ETCD url in the format etcd:http://<your-etcd-endpoint> is required. Verify that the key is correct and there isnt any typo in specifying that, also ensure it is accessible from all node of your kubernetes cluster" .etcdEndPoint}}"
+                {{- end -}}
+              {{- else -}}
               "-k", 
-              "{{ $etcdEndPoints }}",
+              "{{ regexReplaceAllLiteral "(;)" .etcdEndPoint "," }}",                  
+              {{- end -}}
+
               "-c", 
               "{{ required "Clustername cannot be empty" .clusterName }}", 
 
