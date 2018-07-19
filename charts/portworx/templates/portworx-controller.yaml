@@ -88,20 +88,14 @@ spec:
         tier: control-plane
     spec:
      {{- if (and (.Values.openshiftInstall) (eq .Values.openshiftInstall true))}}
-     {{- $registrySecret := .Values.registrySecret | default "none" }}
-     {{ required "A registry secret is required for openshift installation" .Values.registrySecret }}
-      {{- if not (eq $registrySecret "none") }}
       imagePullSecrets:
-        - name: {{ $registrySecret }}
-      {{- end }}
-
-      {{- else }}
-      {{- $registrySecret := .Values.registrySecret | default "none" }}
-      {{- if not (eq $registrySecret "none") }}
+        - name: {{ required "A registry secret is required for openshift installation" .Values.registrySecret }}
+     {{- else }}
+      {{- if .Values.registrySecret }}
       imagePullSecrets:
         - name: {{ $registrySecret }}
       {{- end }}    
-      {{- end }}
+     {{- end }}
       containers:
       - command:
         - kube-controller-manager
