@@ -67,21 +67,9 @@ spec:
         - name: {{ $registrySecret }}
       {{- end }}
       containers:
+      # {{ template "px.getImage"}}
         - name: portworx
-          {{- if eq $customRegistryURL "none" }}
-          {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
-          image: registry.connect.redhat.com/portworx/px-monitor:{{ required "A valid Image tag is required in the SemVer format" .Values.imageVersion }}
-	  {{- else }}
-          image: portworx/oci-monitor:{{ required "A valid Image tag is required in the SemVer format" .Values.imageVersion }}
-          {{- end}}
-          {{- else }}
-          {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
-          image: {{ $customRegistryURL }}/registry.connect.redhat.com/portworx/px-monitor:{{ required "A valid Image tag is required in the SemVer format" .Values.imageVersion }}
-          {{- else}}
-          image: {{ $customRegistryURL }}/portworx/oci-monitor:{{ required "A valid Image tag is required in the SemVer format" .Values.imageVersion }}
-          {{- end}}
-          {{- end}}
-
+          image: {{ template "px.getImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.imageVersion }}
           terminationMessagePath: "/tmp/px-termination-log"
           imagePullPolicy: Always
           args:

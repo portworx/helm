@@ -164,11 +164,7 @@ spec:
         - --verbose
         - --leader-elect=true
         imagePullPolicy: Always
-      {{- if eq $customRegistryURL "none" }}
-        image: openstorage/stork:{{ required "A valid Image tag is required in the SemVer format" .Values.storkVersion }}
-      {{- else }}
-        image: {{ $customRegistryURL }}/openstorage/stork:{{ required "A valid Image tag is required in the SemVer format" .Values.storkVersion }}
-      {{- end}}
+        image: {{ template "px.getStorkImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.storkVersion }}
         resources:
           requests:
             cpu: '0.1'
@@ -289,14 +285,7 @@ spec:
         - --policy-configmap=stork-config
         - --policy-configmap-namespace=kube-system      
         - --lock-object-name=stork-scheduler
-      {{ if eq $isCoreOS true }}
-        image: quay.io/coreos/hyperkube:{{ $version := .Capabilities.KubeVersion.GitVersion | split "+" }}{{ $version._0 }}_coreos.0
-      {{ end }}
-      {{- if eq $customRegistryURL "none" }}
-        image: gcr.io/google_containers/kube-scheduler-amd64:{{ template "px.kubernetesVersion" . }}
-      {{- else}}
-        image: {{$customRegistryURL}}/gcr.io/google_containers/kube-scheduler-amd64:{{ template "px.kubernetesVersion" . }}
-      {{- end}}
+        image: {{ template "px.getk8sSchedulerImage" . }}:{{ template "px.kubernetesVersion" . }}
         livenessProbe:
           httpGet:
             path: /healthz
