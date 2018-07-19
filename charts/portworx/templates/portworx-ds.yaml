@@ -172,7 +172,7 @@ spec:
             - name: REGISTRY_CONFIG
               valueFrom:
                 secretKeyRef:
-                {{- if (semverCompare ">=1.9" .Capabilities.KubeVersion) or (.Values.openshiftInstall and semverCompare ">=1.8" .Capabilities.KubeVersion) }}
+                {{- if (semverCompare ">=1.9" .Capabilities.KubeVersion.GitVersion) or (.Values.openshiftInstall and semverCompare ">=1.8" .Capabilities.KubeVersion.GitVersion) }}
                   key: ".dockerconfigjson"
                 {{- else }}  
                   key: ".dockercfg"
