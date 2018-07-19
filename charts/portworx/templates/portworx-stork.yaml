@@ -285,7 +285,7 @@ spec:
         - --policy-configmap=stork-config
         - --policy-configmap-namespace=kube-system      
         - --lock-object-name=stork-scheduler
-        image: {{ template "px.getk8sSchedulerImage" . }}:{{ template "px.kubernetesVersion" . }}
+        image: "{{ template "px.getk8sImages" . }}/kube-scheduler-amd64:{{ template "px.kubernetesVersion" . }}"
         livenessProbe:
           httpGet:
             path: /healthz

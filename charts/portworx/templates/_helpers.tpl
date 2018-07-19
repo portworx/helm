@@ -70,52 +70,27 @@ release: {{ .Release.Name | quote }}
 {{- end -}}
 {{- end -}}
 
-{{- define "px.getk8sSchedulerImage" -}}
+{{- define "px.getk8sImages" -}}
 {{- if (.Values.customRegistryURL) -}}
     {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
-        {{ cat (trim .Values.customRegistryURL) "/kube-scheduler-amd64" | replace " " ""}}
+        {{ trim .Values.customRegistryURL }}
     {{- else -}}
-        {{cat (trim .Values.customRegistryURL) "/gcr.io/google_containers/kube-scheduler-amd64" | replace " " ""}}
+        {{cat (trim .Values.customRegistryURL) "/gcr.io/google_containers" | replace " " ""}}
     {{- end -}}
 {{- else -}}
-        {{ "gcr.io/google_containers/kube-scheduler-amd64" }}
+        {{ "gcr.io/google_containers" }}
 {{- end -}}
 {{- end -}}
 
-
-{{- define "px.getk8sControllerImage" -}}
+{{- define "px.getcsiImages" -}}
 {{- if (.Values.customRegistryURL) -}}
     {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
-        {{ cat (trim .Values.customRegistryURL) "/kube-controller-manager-amd64" | replace " " ""}}
+        {{ trim .Values.customRegistryURL }}
     {{- else -}}
-        {{cat (trim .Values.customRegistryURL) "/gcr.io/google_containers/kube-controller-manager-amd64" | replace " " ""}}
+        {{cat (trim .Values.customRegistryURL) "/quay.io/k8scsi" | replace " " ""}}
     {{- end -}}
 {{- else -}}
-        {{ "gcr.io/google_containers/kube-controller-manager-amd64" }}
-{{- end -}}
-{{- end -}}
-
-{{- define "px.getcsiAttacher" -}}
-{{- if (.Values.customRegistryURL) -}}
-    {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
-        {{ cat (trim .Values.customRegistryURL) "/csi-attacher" | replace " " ""}}
-    {{- else -}}
-        {{cat (trim .Values.customRegistryURL) "/quay.io/k8scsi/csi-attacher" | replace " " ""}}
-    {{- end -}}
-{{- else -}}
-        {{ "quay.io/k8scsi/csi-attacher" }}
-{{- end -}}
-{{- end -}}
-
-{{- define "px.getcsiProvisioner" -}}
-{{- if (.Values.customRegistryURL) -}}
-    {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
-        {{ cat (trim .Values.customRegistryURL) "/csi-provisioner" | replace " " ""}}
-    {{- else -}}
-        {{cat (trim .Values.customRegistryURL) "/quay.io/k8scsi/csi-provisioner" | replace " " ""}}
-    {{- end -}}
-{{- else -}}
-        {{ "quay.io/k8scsi/csi-provisioner" }}
+        {{ "quay.io/k8scsi" }}
 {{- end -}}
 {{- end -}}
 
