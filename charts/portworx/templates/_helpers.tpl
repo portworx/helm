@@ -55,18 +55,10 @@ release: {{ .Release.Name | quote }}
     {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
         {{ cat (trim .Values.customRegistryURL) "/stork" | replace " " ""}}
     {{- else -}}
-        {{- if .Values.openshiftInstall -}}
-            {{cat (trim .Values.customRegistryURL) "/portworx/stork" | replace " " ""}}
-        {{- else -}}
-            {{cat (trim .Values.customRegistryURL) "/openstorage/stork" | replace " " ""}}
-        {{- end -}}
+        {{cat (trim .Values.customRegistryURL) "/openstorage/stork" | replace " " ""}}
     {{- end -}}
 {{- else -}}
-    {{- if .Values.openshiftInstall -}}
-        {{ "registry.connect.redhat.com/portworx/stork" }}
-    {{- else -}}
-        {{ "openstorage/stork" }}
-    {{- end -}}
+    {{ "openstorage/stork" }}
 {{- end -}}
 {{- end -}}
 
