@@ -1,6 +1,4 @@
-{{- if or ((.Values.openshiftInstall) and (eq .Values.openshiftInstall true)) ((.Values.AKSorEKSInstall) and (eq .Values.AKSorEKSInstall true))}}
-{{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
-
+{{- if or ((.Values.openshiftInstall) and (eq .Values.openshiftInstall true)) ((.Values.AKSorEKSInstall) and (eq .Values.AKSorEKSInstall true)) ((.Capabilities.KubeVersion.GitVersion | regexMatch "gke")) }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -89,21 +87,15 @@ spec:
         name: portworx-pvc-controller
         tier: control-plane
     spec:
-     {{- if ((.Values.openshiftInstall) and (eq .Values.openshiftInstall true))}}
-     {{- $registrySecret := .Values.registrySecret | default "none" }}
-     {{ required "A registry secret is required for openshift installation" .Values.registrySecret }}
-      {{- if not (eq $registrySecret "none") }}
+     {{- if (and (.Values.openshiftInstall) (eq .Values.openshiftInstall true))}}
       imagePullSecrets:
-        - name: {{ $registrySecret }}
-      {{- end }}
-
-      {{- else }}
-      {{- $registrySecret := .Values.registrySecret | default "none" }}
-      {{- if not (eq $registrySecret "none") }}
+        - name: {{ required "A registry secret is required for openshift installation" .Values.registrySecret }}
+     {{- else }}
+      {{- if .Values.registrySecret }}
       imagePullSecrets:
         - name: {{ $registrySecret }}
       {{- end }}    
-      {{- end }}
+     {{- end }}
       containers:
       - command:
         - kube-controller-manager
@@ -112,11 +104,7 @@ spec:
         - --controllers=persistentvolume-binder
         - --use-service-account-credentials=true
         - --leader-elect-resource-lock=configmaps
-      {{- if eq $customRegistryURL "none" }}
-        image: gcr.io/google_containers/kube-controller-manager-amd64:{{ template "px.kubernetesVersion" . }}
-      {{- else}}
-        image: {{$customRegistryURL}}/gcr.io/google_containers/kube-controller-manager-amd64:{{ template "px.kubernetesVersion" . }}
-      {{- end}}
+        image: "{{ template "px.getk8sImages" . }}/kube-controller-manager-amd64:{{ template "px.kubernetesVersion" . }}"
         livenessProbe:
           failureThreshold: 8
           httpGet:
