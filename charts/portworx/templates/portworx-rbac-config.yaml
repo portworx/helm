@@ -17,10 +17,13 @@ rules:
   verbs: ["watch", "get", "update", "list"]
 - apiGroups: [""]
   resources: ["pods"]
+  verbs: ["delete", "get", "list"]
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims", "persistentvolumes"]
   verbs: ["get", "list"]
 - apiGroups: [""]
-  resources: ["persistentvolumeclaims"]
-  verbs: ["get", "list"]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "update", "create"]
 ---
 
 kind: ClusterRoleBinding
