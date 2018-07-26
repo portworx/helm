@@ -91,9 +91,9 @@ spec:
       imagePullSecrets:
         - name: {{ required "A registry secret is required for openshift installation" .Values.registrySecret }}
      {{- else }}
-      {{- if .Values.registrySecret }}
+      {{- if not empty .Values.registrySecret }}
       imagePullSecrets:
-        - name: {{ $registrySecret }}
+        - name: {{ .Values.registrySecret }}
       {{- end }}    
      {{- end }}
       containers:

@@ -23,7 +23,10 @@
   storkVersion: 1.1.3
 
   customRegistryURL: none
-  registrySecret:   
+  registrySecret:
+
+  lighthouse: false
+  lighthouseVersion: 1.4.0
 
   journalDevice:
 
