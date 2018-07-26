@@ -32,7 +32,7 @@ If the etcdcluster being used is a secured ETCD (SSL/TLS) then please follow ins
 For eg: 
 ```
 git clone https://github.com/portworx/helm.git
-helm install --debug --name my-release --set etcdEndPoint=etcd:http://192.168.70.90:2379,clusterName=$(uuid) ./helm/charts/px/
+helm install --debug --name my-release --set etcdEndPoint=etcd:http://192.168.70.90:2379,clusterName=$(uuid) ./helm/charts/portworx/
 ```
 
 ## Configuration
@@ -42,7 +42,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 |             Parameter       |            Description             |                    Default                |
 |-----------------------------|------------------------------------|-------------------------------------------|
 | `deploymentType`            | The deployment type. Can be either docker/oci   | `oci`                 |
-| `imageVersion`              | The image tag to pull              | `1.3.4`                                  |
+| `imageVersion`              | The image tag to pull              | `1.4.0`                                  |
 | `openshiftInstall`               | Installing on Openshift? | `false`                               |
 | `pksInstall`               | Installing on Pivotal Container service? | `false`                               |
 | `AKSorEKSInstall`               | Installing on AKS(Azure Kubernetes service) or EKS (Amazon Elastic Container service) | `false`                               |
