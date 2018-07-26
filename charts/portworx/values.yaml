@@ -22,8 +22,11 @@
   stork: true                           # Use Stork https://docs.portworx.com/scheduler/kubernetes/stork.html for hyperconvergence.
   storkVersion: 1.1.3
 
-  customRegistryURL: none
-  registrySecret:   
+  customRegistryURL:
+  registrySecret:
+
+  lighthouse: false
+  lighthouseVersion: 1.4.0
 
   journalDevice:
 
