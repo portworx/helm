@@ -42,7 +42,7 @@ spec:
       labels:
         app: portworx
         name: portworx
-        # {{- include "px.labels" . | indent 8 }}  
+        # {{- include "px.labels" . | indent 8 }}
     spec:
       affinity:
         nodeAffinity:
@@ -95,7 +95,7 @@ spec:
               {{- if ne $journalDevice "none" }}
               "-j", "{{ $journalDevice }}",
               {{- end -}}
-  
+
               {{- if empty $etcdEndPoints }}
                 {{- if eq $internalKVDB false }}
                   "{{ required "A valid ETCD url in the format etcd:http://<your-etcd-endpoint> is required. Verify that the key is correct and there isnt any typo in specifying that, also ensure it is accessible from all node of your kubernetes cluster" .etcdEndPoint}}"
@@ -170,7 +170,7 @@ spec:
                 {{- end }}
                   name: "{{ $registrySecret }}"
             {{- end }}
- 
+
             {{- if eq $pksInstall true }}
             - name: "PRE-EXEC"
               value: "if [ ! -x /bin/systemctl ]; then apt-get update; apt-get install -y systemd; fi"
@@ -203,7 +203,7 @@ spec:
             privileged: true
           volumeMounts:
           {{- if not (eq $etcdCertPath "none") }}
-            - mountPath: /etc/pwx/etcdcerts 
+            - mountPath: /etc/pwx/etcdcerts
               name: etcdcerts
           {{- end }}
             - name: dockersock
@@ -326,7 +326,7 @@ spec:
         - name: etcpwx
           hostPath:
             path: /etc/pwx
-        
+
         {{- if eq (.Values.deploymentType | upper | lower) "oci" }}
         {{- if eq $pksInstall true }}
         - name: optpwx

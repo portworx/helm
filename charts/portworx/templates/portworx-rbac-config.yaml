@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   name: px-account
   namespace: kube-system
----  
+---
 
 kind: ClusterRole
 apiVersion: {{ template "rbac.apiVersion" . }}
