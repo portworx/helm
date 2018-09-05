@@ -11,11 +11,13 @@ metadata:
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
+    app.kubernetes.io/managed-by: {{.Release.Service | quote }}
+    app.kubernetes.io/instance: {{.Release.Name | quote }}
     chart: "{{.Chart.Name}}-{{.Chart.Version}}"
   annotations:
     "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "-5"
-    "helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-delete-policy": before-hook-creation
 spec:
 {{ if semverCompare ">= 1.8" .Capabilities.KubeVersion.GitVersion }}
   backoffLimit: 0
@@ -27,12 +29,12 @@ spec:
       {{- if not (eq $registrySecret "none") }}
       imagePullSecrets:
         - name: {{ $registrySecret }}
-      {{- end }}   
+      {{- end }}
       restartPolicy: Never
       containers:
       - name: pre-install-job
-        terminationMessagePath: '/dev/termination-log'    
-        terminationMessagePolicy: 'FallbackToLogsOnError'        
+        terminationMessagePath: '/dev/termination-log'
+        terminationMessagePolicy: 'FallbackToLogsOnError'
         imagePullPolicy: Always
 
         {{- if eq $customRegistryURL "none" }}
@@ -40,7 +42,7 @@ spec:
         {{- else}}
         image: "{{ $customRegistryURL }}/hrishi/px-etcd-preinstall-hook:v2"
         {{- end }}
-        
+
         {{- if  not (eq $etcdCertPath "none") }}
         command: ['/bin/bash']
         args: ['/usr/bin/etcdStatus.sh',"{{ .Values.etcdEndPoint }}","{{.Values.etcd.ca}}","{{.Values.etcd.cert}}","{{.Values.etcd.key}}"]

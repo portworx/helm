@@ -1,4 +1,4 @@
-{{/* Gets the correct API Version based on the version of the cluster 
+{{/* Gets the correct API Version based on the version of the cluster
 */}}
 
 {{- define "rbac.apiVersion" -}}
@@ -103,5 +103,38 @@ release: {{ .Release.Name | quote }}
 ".dockerconfigjson"
 {{- else -}}
 ".dockercfg"
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for hooks
+*/}}
+{{- define "px.hookServiceAccount" -}}
+{{- if .Values.serviceAccount.hook.create -}}
+    {{- printf "%s-hook" .Chart.Name | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.hook.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the cluster role to use for hooks
+*/}}
+{{- define "px.hookClusterRole" -}}
+{{- if .Values.serviceAccount.hook.create -}}
+    {{- printf "%s-hook" .Chart.Name | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.hook.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the cluster role binding to use for hooks
+*/}}
+{{- define "px.hookClusterRoleBinding" -}}
+{{- if .Values.serviceAccount.hook.create -}}
+    {{- printf "%s-hook" .Chart.Name | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.hook.name }}
 {{- end -}}
 {{- end -}}
