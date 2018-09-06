@@ -210,6 +210,8 @@ spec:
               mountPath: /var/run/docker.sock
             - name: etcpwx
               mountPath: /etc/pwx
+            - name: cores
+              mountPath: /var/cores
           {{- if eq (.Values.deploymentType | upper | lower) "oci" }}
             - name: optpwx
               mountPath: /opt/pwx
@@ -230,8 +232,6 @@ spec:
               mountPath: /dev
             - name: optpwx
               mountPath: /export_bin
-            - name: cores
-              mountPath: /var/cores
             - name: dockerplugins
               mountPath: /run/docker/plugins
             - name: hostproc
@@ -326,7 +326,9 @@ spec:
         - name: etcpwx
           hostPath:
             path: /etc/pwx
-
+        - name: cores
+          hostPath:
+            path: /var/cores
         {{- if eq (.Values.deploymentType | upper | lower) "oci" }}
         {{- if eq $pksInstall true }}
         - name: optpwx
@@ -352,7 +354,6 @@ spec:
         - name: sysdmount
           hostPath:
             path: /etc/systemd/system
-
         {{- else if eq (.Values.deploymentType | upper | lower) "docker" }}
         - name: libosd
           hostPath:
@@ -363,9 +364,6 @@ spec:
         - name: dev
           hostPath:
             path: /dev
-        - name: cores
-          hostPath:
-            path: /var/cores
         {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
         - name: kubelet
           hostPath:
