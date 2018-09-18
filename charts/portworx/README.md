@@ -65,14 +65,14 @@ The following tables lists the configurable parameters of the Portworx chart and
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
-> **Tip**: In this case the chart is located at `./helm/charts/px`, do change it as per your setup.
+> **Tip**: In this case the chart is located at `./helm/charts/portworx`, do change it as per your setup.
 ```
-helm install --name my-release --set deploymentType=docker,imageVersion=1.2.12.0,etcdEndPoint=etcd:http://192.168.70.90:2379 ./helm/charts/px/
+helm install --name my-release --set deploymentType=docker,imageVersion=1.2.12.0,etcdEndPoint=etcd:http://192.168.70.90:2379 ./helm/charts/portworx/
 ```
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 ```
-helm install --name my-release -f ./helm/charts/px/values.yaml ./helm/charts/px
+helm install --name my-release -f ./helm/charts/portworx/values.yaml ./helm/charts/portworx
 ```
 > **Tip**: You can use the default [values.yaml](values.yaml) and make changes as per your requirement
 
@@ -93,11 +93,11 @@ The command removes all the Kubernetes components associated with the chart and 
 #### Helm install errors with `no available release name found`
 
 ```
-helm install --dry-run --debug --set etcdEndPoint=etcd:http://192.168.70.90:2379,clusterName=$(uuid) ./helm/charts/px/
+helm install --dry-run --debug --set etcdEndPoint=etcd:http://192.168.70.90:2379,clusterName=$(uuid) ./helm/charts/portworx/
 [debug] Created tunnel using local port: '37304'
 [debug] SERVER: "127.0.0.1:37304"
 [debug] Original chart version: ""
-[debug] CHART PATH: /root/helm/charts/px
+[debug] CHART PATH: /root/helm/charts/portworx
 
 Error: no available release name found
 ```
@@ -113,13 +113,13 @@ You can verify the tiller logs
 #### Helm install errors with  `Job failed: BackoffLimitExceeded`
 
 ```
-helm install --debug --set dataInterface=eth1,managementInterface=eth1,etcdEndPoint=etcd:http://192.168.70.179:2379,clusterName=$(uuid) ./helm/charts/px/
+helm install --debug --set dataInterface=eth1,managementInterface=eth1,etcdEndPoint=etcd:http://192.168.70.179:2379,clusterName=$(uuid) ./helm/charts/portworx/
 [debug] Created tunnel using local port: '36389'
 
 [debug] SERVER: "127.0.0.1:36389"
 
 [debug] Original chart version: ""
-[debug] CHART PATH: /root/helm/charts/px
+[debug] CHART PATH: /root/helm/charts/portworx
 
 Error: Job failed: BackoffLimitExceeded
 ```
@@ -145,13 +145,13 @@ Ensure the correct etcd URL is set as a parameter to the `helm install` command.
 #### Helm install errors with `Job failed: Deadline exceeded`
 
 ```
-helm install --debug --set dataInterface=eth1,managementInterface=eth1,etcdEndPoint=etcd:http://192.168.20.290:2379,clusterName=$(uuid) ./charts/px/
+helm install --debug --set dataInterface=eth1,managementInterface=eth1,etcdEndPoint=etcd:http://192.168.20.290:2379,clusterName=$(uuid) ./charts/portworx/
 [debug] Created tunnel using local port: '39771'
 
 [debug] SERVER: "127.0.0.1:39771"
 
 [debug] Original chart version: ""
-[debug] CHART PATH: /root/helm/charts/px
+[debug] CHART PATH: /root/helm/charts/portworx
 
 Error: Job failed: DeadlineExceeded
 ```
