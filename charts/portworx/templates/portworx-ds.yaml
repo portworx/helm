@@ -85,7 +85,7 @@ spec:
               "-f",
                 {{- end }}
               {{- else }}
-                {{- $driveNames := .drives | split ";" }}
+                {{- $driveNames := $drives | split ";" }}
                 {{- range $index, $name := $driveNames }}
               "-s", "{{ $name }}",
                 {{- end -}}
