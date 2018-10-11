@@ -1,4 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
+{{- $deployEnvironmentIKS := .Capabilities.KubeVersion.GitVersion | regexMatch "IKS" }}
 {{- $usefileSystemDrive := .Values.usefileSystemDrive | default false }}
 {{- $drives := .Values.drives | default "none" }}
 {{- $usedrivesAndPartitions := .Values.usedrivesAndPartitions | default false }}
@@ -81,6 +82,9 @@ spec:
                 {{- else }}
               "-a",
                 {{- end -}}
+                {{- if and ((eq $usefileSystemDrive false)) (($deployEnvironmentIKS)) }}
+              "-f",
+                {{- end }}
                 {{- if eq $usefileSystemDrive true }}
               "-f",
                 {{- end }}
