@@ -43,7 +43,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `clusterName`           | Portworx Cluster Name  | `mycluster`                                     |
 | `usefileSystemDrive`      | Should Portworx use an unmounted drive even with a filesystem ? | `false`                |
 | `usedrivesAndPartitions`  | Should Portworx use the drives as well as partitions on the disk ? | `false`             |
-| `secretType`      | Secrets store to be used can be AWS/KVDB/Vault          | `none`                                    |
+| `secretType`      | Secrets store to be used can be AWS KMS/KVDB/Vault/K8s/IBM Key Protect          | `none`                                    |
 | `drives` | Semi-colon seperated list of drives to be used for storage (example: "/dev/sda;/dev/sdb")           | `none`                                   |
 | `dataInterface`   | Name of the interface <ethX>             | `none`                                   |
 | `managementInterface`   | Name of the interface <ethX>             | `none`                                   |

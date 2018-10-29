@@ -112,6 +112,10 @@ spec:
 
               {{- if ne $secretType "none" }}
               "-secret_type", "{{ $secretType }}",
+              {{- else }}
+                {{- if $deployEnvironmentIKS }}
+              "-secret_type", "ibm-kp",
+                {{- end -}}
               {{- end -}}
 
               {{- if ne $dataInterface "none" }}
