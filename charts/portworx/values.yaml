@@ -13,7 +13,7 @@ etcdEndPoint:                         # The ETCD endpoint. Should be in the form
 clusterName: mycluster                # This is the default. please change it to your cluster name.
 usefileSystemDrive: false             # true/false Instructs PX to use an unmounted Drive even if it has a filesystem.
 usedrivesAndPartitions: false         # Defaults to false. Change to true and PX will use unmounted drives and partitions.
-secretType: none                      # Defaults to None, but can be AWS / KVDB / Vault.
+secretType: none                      # Defaults to None, but can be kvdb/k8s/aws-kms/vault/ibm-kp
 drives: none                          # NOTE: This is a ";" seperated list of drives. For eg: "/dev/sda;/dev/sdb;/dev/sdc" Defaults to use -A switch.
 dataInterface: none                   # Name of the interface <ethX>
 managementInterface: none             # Name of the interface <ethX>
@@ -48,4 +48,3 @@ serviceAccount:
   hook:
     create: true
     name:
-
