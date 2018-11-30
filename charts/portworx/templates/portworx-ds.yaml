@@ -229,14 +229,8 @@ spec:
               mountPath: /etc/systemd/system
             - name: dbusmount
               mountPath: /var/run/dbus
-          {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
-            - name: proc1nsmount
+            - name: hostproc
               mountPath: /host_proc
-          {{- else }}
-            - name: proc1nsmount
-              mountPath: /host_proc/1/ns
-          {{- end }}
-
           {{- else if eq (.Values.deploymentType | upper | lower) "docker" }}
             - name: dev
               mountPath: /dev
@@ -351,15 +345,9 @@ spec:
         - name: dbusmount
           hostPath:
             path: /var/run/dbus
-        {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true) }}
-        - name: proc1nsmount
+        - name: hostproc
           hostPath:
             path: /proc
-        {{- else }}
-        - name: proc1nsmount
-          hostPath:
-            path: /proc/1/ns
-        {{- end }}
         - name: sysdmount
           hostPath:
             path: /etc/systemd/system
