@@ -50,6 +50,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `envVars`  | semi-colon-separated list of environment variables that will be exported to portworx. (example: API_SERVER=http://lighthouse-new.portworx.com;MYENV1=val1;MYENV2=val2) | `none`                                    |
 | `stork`    | [Storage Orchestration for Hyperconvergence](https://github.com/libopenstorage/stork).     | `true`       |
 | `storkVersion`    | The version of stork     | `1.1.1`       |
+| `lighthouse`    | Whether to install Lighthouse (Portworx GUI)    | `true`       |
 | `customRegistryURL`    | Custom Docker registry     | `none`       |
 | `registrySecret`   | Registry secret  | `none` |
 | `journalDevice`    | Journal device for Portworx metadata     | `none`       |

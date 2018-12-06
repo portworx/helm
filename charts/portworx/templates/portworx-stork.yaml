@@ -233,7 +233,7 @@ rules:
   - apiGroups: [""]
     resources: ["replicationcontrollers", "services"]
     verbs: ["get", "list", "watch"]
-  - apiGroups: ["app", "extensions"]
+  - apiGroups: ["apps", "extensions"]
     resources: ["replicasets"]
     verbs: ["get", "list", "watch"]
   - apiGroups: ["apps"]
