@@ -32,6 +32,9 @@ kind: DaemonSet
 metadata:
   name: portworx
   namespace: kube-system
+  annotations:
+    portworx.com/install-source: helm/{{.Release.Service}}-r{{.Release.Revision}}
+    portworx.com/helm-vars: chart="{{.Chart.Name}}-{{.Chart.Version}}"{{range $k, $v := .Values }}{{if $v}},{{ $k }}="{{ $v }}"{{end}}{{end}}
 spec:
   minReadySeconds: 0
   updateStrategy:
@@ -227,6 +230,12 @@ spec:
               mountPath: /opt/pwx
             - name: sysdmount
               mountPath: /etc/systemd/system
+            - name: journalmount1
+              mountPath: /var/run/log
+              readOnly: true
+            - name: journalmount2
+              mountPath: /var/log
+              readOnly: true
             - name: dbusmount
               mountPath: /var/run/dbus
             - name: hostproc
@@ -331,26 +340,26 @@ spec:
             path: /etc/pwx
         - name: cores
           hostPath:
-            path: /var/cores
+            path: {{if eq $pksInstall true }}/var/vcap/store/cores{{else}}/var/cores{{end}}
         {{- if eq (.Values.deploymentType | upper | lower) "oci" }}
-        {{- if eq $pksInstall true }}
         - name: optpwx
           hostPath:
-            path: /var/vcap/store/opt/pwx
-        {{- else }}
-        - name: optpwx
+            path: {{if eq $pksInstall true }}/var/vcap/store/opt/pwx{{else}}/opt/pwx{{end}}
+        - name: sysdmount
           hostPath:
-            path: /opt/pwx
-        {{- end }}
+            path: /etc/systemd/system
+        - name: journalmount1
+          hostPath:
+            path: /var/run/log
+        - name: journalmount2
+          hostPath:
+            path: /var/log
         - name: dbusmount
           hostPath:
             path: /var/run/dbus
         - name: hostproc
           hostPath:
             path: /proc
-        - name: sysdmount
-          hostPath:
-            path: /etc/systemd/system
         {{- else if eq (.Values.deploymentType | upper | lower) "docker" }}
         - name: libosd
           hostPath:
