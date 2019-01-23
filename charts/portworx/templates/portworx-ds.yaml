@@ -110,7 +110,7 @@ spec:
 
               "-c", "{{ required "Clustername cannot be empty" .clusterName }}",
 
-              {{- if ne $secretType "k8s" }}
+              {{- if ne $secretType "none" }}
               "-secret_type", "{{ $secretType }}",
               {{- else }}
                 {{- if $deployEnvironmentIKS }}
