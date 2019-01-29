@@ -72,7 +72,7 @@ spec:
     spec:
       initContainers:
       - name: config-init
-        image: "{{ template "px.getLighthouseImages" . }}/lh-config-sync:0.2"
+        image: "{{ template "px.getLighthouseImages" . }}/lh-config-sync:{{.Values.lighthouseSyncVersion}}"
         imagePullPolicy: Always
         args:
         - "init"
@@ -90,13 +90,16 @@ spec:
         - name: config
           mountPath: /config/lh
       - name: config-sync
-        image: "{{ template "px.getLighthouseImages" . }}/lh-config-sync:0.2"
+        image: "{{ template "px.getLighthouseImages" . }}/lh-config-sync:{{.Values.lighthouseSyncVersion}}"
         imagePullPolicy: Always
         args:
         - "sync"
         volumeMounts:
         - name: config
           mountPath: /config/lh
+      - name: stork-connector
+        image: portworx/lh-stork-connector:0.1
+        imagePullPolicy: Always
       serviceAccountName: px-lh-account
       volumes:
       - name: config
