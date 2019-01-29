@@ -62,6 +62,32 @@ release: {{ .Release.Name | quote }}
 {{- end -}}
 {{- end -}}
 
+{{- define "px.getGrafanaImage" -}}
+{{- if (.Values.customRegistryURL) -}}
+    {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
+        {{ cat (trim .Values.customRegistryURL) "/grafana" | replace " " ""}}
+    {{- else -}}
+        {{cat (trim .Values.customRegistryURL) "/grafana/grafana" | replace " " ""}}
+    {{- end -}}
+{{- else -}}
+    {{ "grafana/grafana" }}
+{{- end -}}
+{{- end -}}
+
+
+{{- define "px.getPrometheusImage" -}}
+{{- if (.Values.customRegistryURL) -}}
+    {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
+        {{ cat (trim .Values.customRegistryURL) "/prometheus-operator" | replace " " ""}}
+    {{- else -}}
+        {{cat (trim .Values.customRegistryURL) "/quay.io/coreos/prometheus-operator" | replace " " ""}}
+    {{- end -}}
+{{- else -}}
+    {{ "quay.io/coreos/prometheus-operator" }}
+{{- end -}}
+{{- end -}}
+
+
 {{- define "px.getk8sImages" -}}
 {{- if (.Values.customRegistryURL) -}}
     {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}

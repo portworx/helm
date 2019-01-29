@@ -25,6 +25,11 @@ storkVersion: 2.0.1
 customRegistryURL:
 registrySecret:
 
+px-monitor: 
+  monitoring: true
+  grafanaVersion: 5.0.4
+  prometheusVersion: 0.25.0
+
 lighthouse: true
 lighthouseVersion: 2.0.1
 lighthouseSyncVersion: 0.3
