@@ -98,7 +98,7 @@ spec:
         - name: config
           mountPath: /config/lh
       - name: stork-connector
-        image: portworx/lh-stork-connector:0.1
+        image: "{{ template "px.getLighthouseImages" . }}/lh-stork-connector:{{.Values.lighthouseStorkConnectorVersion}}"
         imagePullPolicy: Always
       serviceAccountName: px-lh-account
       volumes:
