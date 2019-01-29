@@ -3,7 +3,7 @@
 {{- $usefileSystemDrive := .Values.usefileSystemDrive | default false }}
 {{- $drives := .Values.drives | default "none" }}
 {{- $usedrivesAndPartitions := .Values.usedrivesAndPartitions | default false }}
-{{- $secretType := .Values.secretType | default "none" }}
+{{- $secretType := .Values.secretType | default "k8s" }}
 {{- $journalDevice := .Values.journalDevice | default "none" }}
 {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
 {{- $registrySecret := .Values.registrySecret | default "none" }}
