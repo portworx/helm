@@ -1,7 +1,9 @@
 {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
 {{- $registrySecret := .Values.registrySecret | default "none" }}
 {{- $etcdCertPath := .Values.etcd.certPath | default "none" }}
-
+{{- $etcdCA := .Values.etcd.ca | default "none" }}
+{{- $etcdCert := .Values.etcd.cert | default "none" }}
+{{- $etcdKey := .Values.etcd.key | default "none" }}
 
 apiVersion: batch/v1
 kind: Job
@@ -56,10 +58,14 @@ spec:
           items:
           - key: ca.pem
             path: ca.pem
+          {{- if ne $etcdCert "none" }}
           - key: client.pem
             path: client.pem
+          {{- end -}}
+          {{- if ne $etcdKey "none" }}
           - key: client-key.pem
             path: client-key.pem
+          {{- end -}}
         {{- else}}
         command: ['/bin/bash']
         args: ['/usr/bin/etcdStatus.sh',"{{ .Values.etcdEndPoint }}"]

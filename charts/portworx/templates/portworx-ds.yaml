@@ -318,10 +318,14 @@ spec:
             items:
             - key: ca.pem
               path: ca.pem
+            {{- if ne $etcdCert "none" }}
             - key: client.pem
               path: client.pem
+            {{- end -}}
+            {{- if ne $etcdKey "none" }}
             - key: client-key.pem
               path: client-key.key
+            {{- end -}}
           {{- end}}
         - name: dockersock
           hostPath:
