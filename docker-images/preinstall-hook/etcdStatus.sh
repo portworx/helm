@@ -26,10 +26,17 @@ echo "Verifying if the provided etcd url is accessible: $etcdURL"
 #Verify with certs if it is a secured etcd. 
 if [[ ! -z $etcdca ]]
 then
-    echo "Verifying connectivity to secure etcd... The certs need to be at the location $etcdca $etcdcert and $etcdkey"
-    response=$(curl --write-out %{http_code} --silent --output /dev/null --cacert $etcdca --cert $etcdcert --key $etcdkey -L "$etcdURL/version" )
-    echo "Response Code: $response"
-    verifyresponse $response
+    if [[ ! -z $etcdcert ]]
+        echo "Verifying connectivity to secure etcd... The certs need to be at the location $etcdca $etcdcert and $etcdkey"
+        response=$(curl --write-out %{http_code} --silent --output /dev/null --cacert $etcdca --cert $etcdcert --key $etcdkey -L "$etcdURL/version" )
+        echo "Response Code: $response"
+        verifyresponse $response
+    else
+        echo "Verifying connectivity to secure etcd... The ca cert needs to be at the location $etcdca"
+        response=$(curl --write-out %{http_code} --silent --output /dev/null --cacert $etcdca -L "$etcdURL/version" )
+        echo "Response Code: $response"
+        verifyresponse $response
+    fi
 else
     echo "Verifying connectivity to Insecure etcd "
     response=$(curl --write-out %{http_code} --silent --output /dev/null "$etcdURL/version")
