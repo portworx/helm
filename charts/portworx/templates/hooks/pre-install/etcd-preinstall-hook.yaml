@@ -40,9 +40,9 @@ spec:
         imagePullPolicy: Always
 
         {{- if eq $customRegistryURL "none" }}
-        image: "portworx/px-etcd-preinstall-hook:v1.1"
+        image: "portworx/px-etcd-preinstall-hook:v1.2"
         {{- else}}
-        image: "{{ $customRegistryURL }}/portworx/px-etcd-preinstall-hook:v1.1"
+        image: "{{ $customRegistryURL }}/portworx/px-etcd-preinstall-hook:v1.2"
         {{- end }}
 
         {{- if  not (eq $etcdCertPath "none") }}
