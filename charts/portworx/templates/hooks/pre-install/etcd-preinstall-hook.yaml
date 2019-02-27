@@ -47,7 +47,18 @@ spec:
 
         {{- if  not (eq $etcdCertPath "none") }}
         command: ['/bin/bash']
-        args: ['/usr/bin/etcdStatus.sh',"{{ .Values.etcdEndPoint }}","{{.Values.etcd.ca}}","{{.Values.etcd.cert}}","{{.Values.etcd.key}}"]
+        args: ['/usr/bin/etcdStatus.sh',
+        "{{ .Values.etcdEndPoint }}",
+        {{- if ne $etcdCA "none" }}
+        "{{$etcdCA}}",
+        {{- end -}}
+        {{- if ne $etcdCert "none" }}
+        "{{$etcdCert}}",
+        {{- end -}}
+        {{- if ne $etcdKey "none" }}
+        "{{$etcdKey}}",
+        {{- end -}}
+        ]
         volumeMounts:
         - mountPath: /etc/pwx/etcdcerts
           name: etcdcerts
