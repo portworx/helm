@@ -21,7 +21,7 @@ rules:
     resources: ["nodes", "services"]
     verbs: ["get", "list", "watch"]
   - apiGroups: ["stork.libopenstorage.org"]
-    resources: ["clusterpairs","migrations"]
+    resources: ["clusterpairs","migrations","groupvolumesnapshots"]
     verbs: ["get", "list", "create", "update", "delete"]
 ---
 kind: ClusterRoleBinding
