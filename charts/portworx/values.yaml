@@ -29,7 +29,7 @@ lighthouse: true
 lighthouseVersion: 2.0.2
 lighthouseSyncVersion: 0.3
 lighthouseStorkConnectorVersion: 0.1
-pxCentral: false
+monitoring: false
 
 journalDevice:
 
