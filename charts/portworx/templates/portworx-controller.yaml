@@ -73,7 +73,7 @@ metadata:
   name: portworx-pvc-controller
   namespace: kube-system
 spec:
-  replicas: 3
+  replicas: {{ .Values.replicas }}
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -94,7 +94,7 @@ spec:
       {{- if not empty .Values.registrySecret }}
       imagePullSecrets:
         - name: {{ .Values.registrySecret }}
-      {{- end }}    
+      {{- end }}
      {{- end }}
       containers:
       - command:

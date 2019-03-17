@@ -36,6 +36,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 |-----------------------------|------------------------------------|-------------------------------------------|
 | `deploymentType`            | The deployment type. Can be either docker/oci   | `oci`                 |
 | `imageVersion`              | The image tag to pull              | `1.7.0`                                  |
+| `replicas`                  | Number of replicas to use          | `3`                                |
 | `openshiftInstall`               | Installing on Openshift? | `false`                               |
 | `pksInstall`               | Installing on Pivotal Container service? | `false`                               |
 | `AKSorEKSInstall`               | Installing on AKS(Azure Kubernetes service) or EKS (Amazon Elastic Container service) | `false`                               |

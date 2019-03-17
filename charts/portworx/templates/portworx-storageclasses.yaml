@@ -4,7 +4,7 @@ metadata:
   name: portworx-db-sc
 provisioner: kubernetes.io/portworx-volume
 parameters:
-  repl: "3"
+  repl: "{{ .Values.replicas }}"
   io_profile: "db"
 ---
 kind: StorageClass
@@ -13,7 +13,7 @@ metadata:
   name: portworx-db2-sc
 provisioner: kubernetes.io/portworx-volume
 parameters:
-   repl: "3"
+   repl: "{{ .Values.replicas }}"
    block_size: "512b"
    io_profile: "db"
 ---
@@ -23,7 +23,7 @@ metadata:
   name: portworx-shared-sc
 provisioner: kubernetes.io/portworx-volume
 parameters:
-   repl: "3"
+   repl: "{{ .Values.replicas }}"
    shared: "true"
 ---
 #
