@@ -324,7 +324,7 @@ spec:
             {{- end -}}
             {{- if ne $etcdKey "none" }}
             - key: client-key.pem
-              path: client-key.key
+              path: client-key.pem
             {{- end -}}
           {{- end}}
         - name: dockersock
