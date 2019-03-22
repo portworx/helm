@@ -50,10 +50,8 @@ spec:
   ports:
     - name: http
       port: 80
-      nodePort: 32678
     - name: https
       port: 443
-      nodePort: 32679
   selector:
     tier: px-web-console
 ---
