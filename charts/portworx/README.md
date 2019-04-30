@@ -68,7 +68,7 @@ Specify each parameter using the `--set key=value[,key=value]` argument to `helm
 
 > **Tip**: In this case the chart is located at `./helm/charts/portworx`, do change it as per your setup.
 ```
-helm install --name my-release --set deploymentType=docker,imageVersion=1.2.12.0,etcdEndPoint=etcd:http://192.168.70.90:2379 ./helm/charts/portworx/
+helm install --name my-release --set imageVersion=1.2.12.0,etcdEndPoint=etcd:http://192.168.70.90:2379 ./helm/charts/portworx/
 ```
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
