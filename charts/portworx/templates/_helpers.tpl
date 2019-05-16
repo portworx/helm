@@ -91,7 +91,7 @@ release: {{ .Release.Name | quote }}
     {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
         {{ trim .Values.customRegistryURL }}
     {{- else -}}
-        {{cat (trim .Values.customRegistryURL) "/portworx/" | replace " " ""}}
+        {{cat (trim .Values.customRegistryURL) "/portworx" | replace " " ""}}
     {{- end -}}
 {{- else -}}
         {{ "portworx" }}
