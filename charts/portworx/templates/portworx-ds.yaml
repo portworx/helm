@@ -16,6 +16,7 @@
 
 {{- $pksInstall := .Values.pksInstall | default false }}
 {{- $internalKVDB := .Values.internalKVDB | default false }}
+{{- $metaDrive := .Values.metaDrive | default "none" }}
 {{- $csi := .Values.csi | default false }}
 
 {{- $etcdCredentials := .Values.etcd.credentials | default "none:none" }}
@@ -96,6 +97,9 @@ spec:
               {{- end -}}
 
               {{- if eq $internalKVDB true }}
+                {{- if not (eq $metaDrive "none")  }}
+                "-metadata", "{{ $metaDrive }}",
+                {{- end -}}
               "-b",
               {{- end -}}
 

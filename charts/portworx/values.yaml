@@ -37,6 +37,7 @@ deployOnMaster:  false                # For POC only
 csi: false                            # Enable CSI
 
 internalKVDB: false                   # internal KVDB
+metaDrive: none                       # Declare a single drive for KVDB operations. For eg: "type=gp2,size=64"
 
 etcd:
   credentials: none:none              # Username and password for ETCD authentication in the form user:password
