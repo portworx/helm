@@ -2,7 +2,7 @@
 
 deploymentType: oci                     # accepts "oci" or "docker"
 imageType: none                         #
-imageVersion: 2.0.3.4                     # Version of the PX Image.
+imageVersion: 2.0.3.6                     # Version of the PX Image.
 
 openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
 isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
@@ -27,8 +27,8 @@ registrySecret:
 
 lighthouse: true
 lighthouseVersion: 2.0.4
-lighthouseSyncVersion: 0.3
-lighthouseStorkConnectorVersion: 0.1
+lighthouseSyncVersion: 0.4
+lighthouseStorkConnectorVersion: 0.2
 monitoring: false
 
 journalDevice:
@@ -46,6 +46,12 @@ etcd:
   key: none                           # Location of certificate key for ETCD authentication Should be /path/to/servery.key
 consul:
   token: none                           # ACL token value used for Consul authentication. (example: 398073a8-5091-4d9c-871a-bbbeb030d1f6)
+
+tolerations:                           # Add tolerations
+  #  - key: "key"
+  #    operator: "Equal|Exists"
+  #    value: "value"
+  #    effect: "NoSchedule|PreferNoSchedule|NoExecute(1.6 only)"
 
 serviceAccount:
   hook:
