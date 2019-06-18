@@ -94,7 +94,7 @@ spec:
       {{- if not (empty .Values.registrySecret) }}
       imagePullSecrets:
         - name: {{ .Values.registrySecret }}
-      {{- end }}    
+      {{- end }}
      {{- end }}
       containers:
       - command:
@@ -120,6 +120,14 @@ spec:
             cpu: 200m
       hostNetwork: true
       affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: px/enabled
+                operator: NotIn
+                values:
+                - "false"
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:

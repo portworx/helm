@@ -65,7 +65,7 @@ spec:
       containers:
         - name: csi-external-provisioner
           imagePullPolicy: Always
-          image: "{{ template "px.getcsiProvisioner" . }}/csi-provisioner:v0.2.0"
+          image: "{{ template "px.getcsiImages" . }}/csi-provisioner:v0.2.0"
           args:
             - "--v=5"
             - "--provisioner=com.openstorage.pxd"
@@ -93,4 +93,13 @@ spec:
           hostPath:
             path: /var/lib/kubelet/plugins/com.openstorage.pxd
             type: DirectoryOrCreate
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: px/enabled
+                operator: NotIn
+                values:
+                - "false"
 {{- end }}
