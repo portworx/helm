@@ -67,7 +67,7 @@ release: {{ .Release.Name | quote }}
     {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
         {{ trim .Values.customRegistryURL }}
     {{- else -}}
-        {{cat (trim .Values.customRegistryURL) "/gcr.io/google_containers" | replace " " ""}}
+        {{cat (trim .Values.customRegistryURL) "/google_containers" | replace " " ""}}
     {{- end -}}
 {{- else -}}
         {{ "gcr.io/google_containers" }}
@@ -79,7 +79,7 @@ release: {{ .Release.Name | quote }}
     {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
         {{ trim .Values.customRegistryURL }}
     {{- else -}}
-        {{cat (trim .Values.customRegistryURL) "/quay.io/k8scsi" | replace " " ""}}
+        {{cat (trim .Values.customRegistryURL) "/k8scsi" | replace " " ""}}
     {{- end -}}
 {{- else -}}
         {{ "quay.io/k8scsi" }}
