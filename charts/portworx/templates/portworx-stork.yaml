@@ -180,14 +180,6 @@ spec:
         name: stork
       hostPID: false
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: px/enabled
-                operator: NotIn
-                values:
-                - "false"
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
@@ -317,14 +309,6 @@ spec:
           requests:
             cpu: '0.1'
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: px/enabled
-                operator: NotIn
-                values:
-                - "false"
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
