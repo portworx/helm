@@ -112,6 +112,8 @@ spec:
       volumes:
       - name: config
         emptyDir: {}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
