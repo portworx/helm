@@ -73,7 +73,7 @@ metadata:
   name: portworx-pvc-controller
   namespace: kube-system
 spec:
-  replicas: 3
+  replicas: {{ .Values.replicas }}
   strategy:
     rollingUpdate:
       maxSurge: 1

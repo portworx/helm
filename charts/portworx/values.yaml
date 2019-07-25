@@ -22,6 +22,8 @@ envVars: none                         # NOTE: This is a ";" seperated list of en
 stork: true                           # Use Stork https://docs.portworx.com/scheduler/kubernetes/stork.html for hyperconvergence.
 storkVersion: 2.1.1
 
+replicas: 3                           # Number of replicas to use.
+
 customRegistryURL:
 registrySecret:
 

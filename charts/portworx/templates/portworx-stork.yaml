@@ -153,7 +153,7 @@ spec:
       maxSurge: 1
       maxUnavailable: 1
     type: RollingUpdate
-  replicas: 3
+  replicas: {{ .Values.replicas }}
   template:
     metadata:
       annotations:
@@ -285,7 +285,7 @@ metadata:
   name: stork-scheduler
   namespace: kube-system
 spec:
-  replicas: 3
+  replicas: {{ .Values.replicas }}
   template:
     metadata:
       labels:
