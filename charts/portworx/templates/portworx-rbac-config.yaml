@@ -17,7 +17,7 @@ rules:
   verbs: ["watch", "get", "update", "list"]
 - apiGroups: [""]
   resources: ["pods"]
-  verbs: ["delete", "get", "list"]
+  verbs: ["delete", "get", "list", "watch"]
 - apiGroups: [""]
   resources: ["persistentvolumeclaims", "persistentvolumes"]
   verbs: ["get", "list"]
@@ -28,6 +28,9 @@ rules:
   resources: ["podsecuritypolicies"]
   resourceNames: ["privileged"]
   verbs: ["use"]
+- apiGroups: ["portworx.io"]
+  resources: ["volumeplacementstrategies"]
+  verbs: ["get", "list"]
 ---
 
 kind: ClusterRoleBinding
