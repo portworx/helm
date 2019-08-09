@@ -1,4 +1,5 @@
-{{- if or ((.Values.openshiftInstall) and (eq .Values.openshiftInstall true)) ((.Values.AKSorEKSInstall) and (eq .Values.AKSorEKSInstall true)) ((.Capabilities.KubeVersion.GitVersion | regexMatch "gke")) }}
+{{- $AKSorEKSInstall := or .Values.AKSInstall  .Values.EKSInstall  }}
+{{- if or ((.Values.openshiftInstall) and (eq .Values.openshiftInstall true)) ($AKSorEKSInstall) ((.Capabilities.KubeVersion.GitVersion | regexMatch "gke")) }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:

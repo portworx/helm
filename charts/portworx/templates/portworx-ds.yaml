@@ -49,7 +49,7 @@ spec:
         # {{- include "px.labels" . | indent 8 }}
     spec:
       tolerations:
-{{ toYaml .Values.tolerations | indent 8 }} 
+{{ toYaml .Values.tolerations | indent 8 }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -82,18 +82,20 @@ spec:
           {{- with .Values }}
             [
               {{- if eq $drives "none" }}
-                {{- if eq $usedrivesAndPartitions true }}
-              "-A",
-                {{- else }}
-              "-a",
-                {{- end -}}
-                {{- if or $usefileSystemDrive $deployEnvironmentIKS }}
-              "-f",
-                {{- end }}
-              {{- else }}
+                  {{- if .AKSInstall -}}
+                   "-s", "type=Premium_LRS,size=150",
+                  {{- else if eq $usedrivesAndPartitions true }}
+                      "-A",
+                  {{- else }}
+                     "-a",
+                  {{- end -}}
+                 {{- if or $usefileSystemDrive $deployEnvironmentIKS }}
+                      "-f",
+                  {{- end }}
+              {{- else -}}
                 {{- $driveNames := $drives | split ";" }}
                 {{- range $index, $name := $driveNames }}
-              "-s", "{{ $name }}",
+                  "-s", "{{ $name }}",
                 {{- end -}}
               {{- end -}}
 
@@ -161,6 +163,23 @@ spec:
              ]
            {{- end }}
           env:
+          {{ if .Values.AKSInstall }}
+            - name: AZURE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: px-azure
+                  key: AZURE_CLIENT_SECRET
+            - name: AZURE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: px-azure
+                  key: AZURE_CLIENT_ID
+            - name: AZURE_TENANT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: px-azure
+                  key: AZURE_TENANT_ID
+          {{ end }}
             - name: "PX_TEMPLATE_VERSION"
               value: "v2"
               {{ if not (eq $envVars "none") }}
