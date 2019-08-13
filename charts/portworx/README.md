@@ -35,10 +35,11 @@ The following tables lists the configurable parameters of the Portworx chart and
 |             Parameter       |            Description             |                    Default                |
 |-----------------------------|------------------------------------|-------------------------------------------|
 | `deploymentType`            | The deployment type. Can be either docker/oci   | `oci`                 |
-| `imageVersion`              | The image tag to pull              | `2.0.3.4`                                  |
+| `imageVersion`              | The image tag to pull              | `2.1.3`                                  |
 | `openshiftInstall`               | Installing on Openshift? | `false`                               |
 | `pksInstall`               | Installing on Pivotal Container service? | `false`                               |
-| `AKSorEKSInstall`               | Installing on AKS(Azure Kubernetes service) or EKS (Amazon Elastic Container service) | `false`                               |
+| `EKSInstall`               | Installing EKS (Amazon Elastic Container service) | `false`                               |
+| `AKSInstall`               | Installing on AKS (Azure Kubernetes service) | `false`                               |
 | `etcdEndPoint`          | (REQUIRED) ETCD endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>". Multiple Urls should be semi-colon seperated example: etcd:http://<your-etcd-endpoint1>;etcd:http://<your-etcd-endpoint2>  | `etcd:http://<your-etcd-endpoint>`                    |
 | `clusterName`           | Portworx Cluster Name  | `mycluster`                                     |
 | `usefileSystemDrive`      | Should Portworx use an unmounted drive even with a filesystem ? | `false`                |
@@ -65,6 +66,12 @@ The following tables lists the configurable parameters of the Portworx chart and
 
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
+
+## Cloud installs
+
+#### Installing on AKS 
+
+Details are [here](https://docs.portworx.com/portworx-install-with-kubernetes/cloud/azure/aks/2-deploy-px/).
 
 > **Tip**: In this case the chart is located at `./helm/charts/portworx`, do change it as per your setup.
 ```
