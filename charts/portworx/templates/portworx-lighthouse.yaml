@@ -74,7 +74,7 @@ spec:
   selector:
     tier: px-web-console
 ---
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: px-lighthouse
@@ -82,14 +82,14 @@ metadata:
   labels:
     tier: px-web-console
 spec:
+  selector:
+    matchLabels:
+      tier: px-web-console
   strategy:
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 1
     type: RollingUpdate
-  selector:
-    matchLabels:
-      tier: px-web-console
   replicas: 1
   template:
     metadata:

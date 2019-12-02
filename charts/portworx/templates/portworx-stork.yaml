@@ -93,7 +93,7 @@ spec:
       port: 8099
       targetPort: 8099
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
@@ -103,6 +103,9 @@ metadata:
   name: stork
   namespace: kube-system
 spec:
+  selector:
+    matchLabels:
+      name: stork
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -228,21 +231,26 @@ roleRef:
   name: stork-scheduler-role
   apiGroup: rbac.authorization.k8s.io
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
     component: scheduler
     tier: control-plane
+    name: stork-scheduler
   name: stork-scheduler
   namespace: kube-system
 spec:
+  selector:
+    matchLabels:
+      name: stork-scheduler
   replicas: 3
   template:
     metadata:
       labels:
         component: scheduler
         tier: control-plane
+        name: stork-scheduler
       name: stork-scheduler
     spec:
       containers:
