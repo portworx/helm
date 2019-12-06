@@ -49,11 +49,14 @@ spec:
   clusterIP: None
 ---
 kind: StatefulSet
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 metadata:
   name: px-csi-ext
   namespace: kube-system
 spec:
+  selector:
+    matchLabels:
+      app: px-csi-driver
   serviceName: "px-csi-service"
   replicas: 1
   template:
