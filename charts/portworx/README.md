@@ -32,38 +32,37 @@ helm install --debug --name my-release --set etcdEndPoint=etcd:http://192.168.70
 
 The following tables lists the configurable parameters of the Portworx chart and their default values.
 
-|             Parameter       |            Description             |                    Default                |
-|-----------------------------|------------------------------------|-------------------------------------------|
-| `deploymentType`            | The deployment type. Can be either docker/oci   | `oci`                 |
-| `imageVersion`              | The image tag to pull              | `2.1.3`                                  |
-| `openshiftInstall`               | Installing on Openshift? | `false`                               |
-| `pksInstall`               | Installing on Pivotal Container service? | `false`                               |
-| `EKSInstall`               | Installing EKS (Amazon Elastic Container service) | `false`                               |
-| `AKSInstall`               | Installing on AKS (Azure Kubernetes service) | `false`                               |
-| `etcdEndPoint`          | (REQUIRED) ETCD endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>". Multiple Urls should be semi-colon seperated example: etcd:http://<your-etcd-endpoint1>;etcd:http://<your-etcd-endpoint2>  | `etcd:http://<your-etcd-endpoint>`                    |
-| `clusterName`           | Portworx Cluster Name  | `mycluster`                                     |
-| `usefileSystemDrive`      | Should Portworx use an unmounted drive even with a filesystem ? | `false`                |
-| `usedrivesAndPartitions`  | Should Portworx use the drives as well as partitions on the disk ? | `false`             |
-| `secretType`      | Secrets store to be used can be AWS KMS/KVDB/Vault/K8s/IBM Key Protect          | `none`                                    |
-| `drives` | Semi-colon seperated list of drives to be used for storage (example: "/dev/sda;/dev/sdb")           | `none`                                   |
-| `dataInterface`   | Name of the interface <ethX>             | `none`                                   |
-| `managementInterface`   | Name of the interface <ethX>             | `none`                                   |
-| `envVars`  | semi-colon-separated list of environment variables that will be exported to portworx. (example: API_SERVER=http://lighthouse-new.portworx.com;MYENV1=val1;MYENV2=val2) | `none`                                    |
-| `stork`    | [Storage Orchestration for Hyperconvergence](https://github.com/libopenstorage/stork).     | `true`       |
-| `storkVersion`    | The version of stork     | `2.1.1`       |
-| `lighthouse`    | Whether to install Lighthouse (Portworx GUI)    | `true`       |
-| `customRegistryURL`    | Custom Docker registry     | `none`       |
-| `registrySecret`   | Registry secret  | `none` |
-| `journalDevice`    | Journal device for Portworx metadata     | `none`       |
-| `csi`              | Enable CSI (Tech Preview only)           | `false`      |
-| `internalKVDB`              | Internal KVDB store           | `false`      |
-| `etcd.credentials`  | Username and password for ETCD authentication in the form user:password | `none:none`                                    |
-| `etcd.certPath`  | Base path where the certificates are placed. (example: if the certificates ca,.crt and the .key are in /etc/pwx/etcdcerts the value should be provided as /etc/pwx/etcdcerts Refer: https://docs.portworx.com/scheduler/kubernetes/etcd-certs-using-secrets.html) | `none`                                    |
-| `etcd.ca`  | Location of CA file for ETCD authentication. Should be /path/to/server.ca | `none`                                    |
-| `etcd.cert`  | Location of certificate for ETCD authentication. Should be /path/to/server.crt | `none`                                    |
-| `etcd.key`  | Location of certificate key for ETCD authentication Should be /path/to/servery.key | `none`                                    |
-| `consul.acl`  | ACL token value used for Consul authentication. (example: 398073a8-5091-4d9c-871a-bbbeb030d1f6) | `none`                                    |
-
+| Parameter | Description |
+|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `deploymentType` | The deployment type. Can be either docker/oci |
+| `imageVersion` | The image tag to pull |
+| `openshiftInstall` | Installing on Openshift? |
+| `pksInstall` | Installing on Pivotal Container service? |
+| `EKSInstall` | Installing EKS (Amazon Elastic Container service) |
+| `AKSInstall` | Installing on AKS (Azure Kubernetes service) |
+| `etcdEndPoint` | (REQUIRED) ETCD endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>". Multiple Urls should be semi-colon seperated example: etcd:http://<your-etcd-endpoint1>;etcd:http://<your-etcd-endpoint2> |
+| `clusterName` | Portworx Cluster Name |
+| `usefileSystemDrive` | Should Portworx use an unmounted drive even with a filesystem ? |
+| `usedrivesAndPartitions` | Should Portworx use the drives as well as partitions on the disk ? |
+| `secretType` | Secrets store to be used can be AWS KMS/KVDB/Vault/K8s/IBM Key Protect |
+| `drives` | Semi-colon seperated list of drives to be used for storage (example: "/dev/sda;/dev/sdb") |
+| `dataInterface` | Name of the interface <ethX> |
+| `managementInterface` | Name of the interface <ethX> |
+| `envVars` | semi-colon-separated list of environment variables that will be exported to portworx. (example: API_SERVER=http://lighthouse-new.portworx.com;MYENV1=val1;MYENV2=val2) |
+| `stork` | [Storage Orchestration for Hyperconvergence](https://github.com/libopenstorage/stork). |
+| `storkVersion` | The version of stork |
+| `lighthouse` | Whether to install Lighthouse (Portworx GUI) |
+| `customRegistryURL` | Custom Docker registry |
+| `registrySecret` | Registry secret |
+| `journalDevice` | Journal device for Portworx metadata |
+| `csi` | Enable CSI (Tech Preview only) |
+| `internalKVDB` | Internal KVDB store |
+| `etcd.credentials` | Username and password for ETCD authentication in the form user:password |
+| `etcd.certPath` | Base path where the certificates are placed. (example: if the certificates ca,.crt and the .key are in /etc/pwx/etcdcerts the value should be provided as /etc/pwx/etcdcerts Refer: https://docs.portworx.com/scheduler/kubernetes/etcd-certs-using-secrets.html) |
+| `etcd.ca` | Location of CA file for ETCD authentication. Should be /path/to/server.ca |
+| `etcd.cert` | Location of certificate for ETCD authentication. Should be /path/to/server.crt |
+| `etcd.key` | Location of certificate key for ETCD authentication Should be /path/to/servery.key |
+| `consul.acl` | ACL token value used for Consul authentication. (example: 398073a8-5091-4d9c-871a-bbbeb030d1f6) |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
