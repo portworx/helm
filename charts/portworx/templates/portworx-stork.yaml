@@ -157,6 +157,17 @@ spec:
               topologyKey: "kubernetes.io/hostname"
       serviceAccountName: stork-account
 ---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: stork-pdb
+  namespace: kube-system
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      name: stork
+---
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
@@ -296,4 +307,15 @@ spec:
               topologyKey: "kubernetes.io/hostname"
       hostPID: false
       serviceAccountName: stork-scheduler-account
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: stork-scheduler-pdb
+  namespace: kube-system
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      name: stork-scheduler
 {{- end }}
