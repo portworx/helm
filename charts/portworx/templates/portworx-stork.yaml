@@ -190,8 +190,8 @@ rules:
     verbs: ["get", "create", "update"]
   - apiGroups: [""]
     resources: ["configmaps"]
-    verbs: ["get"]
-  - apiGroups: [""]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["", "events.k8s.io"]
     resources: ["events"]
     verbs: ["create", "patch", "update"]
   - apiGroups: [""]
@@ -226,8 +226,11 @@ rules:
     resources: ["persistentvolumeclaims", "persistentvolumes"]
     verbs: ["get", "list", "watch"]
   - apiGroups: ["storage.k8s.io"]
-    resources: ["storageclasses"]
+    resources: ["storageclasses", "csinodes"]
     verbs: ["get", "list", "watch"]
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["create", "update", "get", "list", "watch"]
 ---
 kind: ClusterRoleBinding
 apiVersion: {{ template "rbac.apiVersion" . }}
