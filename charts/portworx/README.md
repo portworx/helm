@@ -83,6 +83,32 @@ helm install --name my-release -f ./helm/charts/portworx/values.yaml ./helm/char
 ```
 > **Tip**: You can use the default [values.yaml](values.yaml) and make changes as per your requirement
 
+#### Installing on IKS [ IBM Cloud ] 
+
+Refer the IBM charts [here](https://github.com/IBM/charts/tree/master/community/portworx)
+
+> **Tip**: You will need to add the IBM charts repo with the repo path set to rawgithub
+```
+helm repo add ibm-porx https://raw.githubusercontent.com/IBM/charts/master/repo/community
+```
+
+## Upgrading Portworx Install
+
+You can update the `imageVersion` value in the YAML file that specifies the values for the parameters used while installing the chart.
+```
+helm upgrade my-release -f ./helm/charts/portworx/values.yaml ./helm/charts/portworx
+```
+
+Alternatively, you can also use the `--set` directive to do the same. For example,
+```
+helm upgrade my-release --set imageVersion=<px-version>,etcdEndPoint=<list-of-etcd-endpoints>,clusterName=<cluster-name> -f ./helm/charts/portworx/values.yaml  ./helm/charts/portworx 
+```
+
+> **Tip**: You can check the upgrade with the new values took effect using. Check the reference for upgrade [here](https://v2.helm.sh/docs/using_helm/#helm-upgrade-and-helm-rollback-upgrading-a-release-and-recovering-on-failure)
+```
+helm get values my-release
+```
+
 ## Uninstalling the Chart
 
 To uninstall/delete the `my-release` deployment:
