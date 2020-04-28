@@ -96,6 +96,8 @@ spec:
           hostPath:
             path: /var/lib/kubelet/plugins/com.openstorage.pxd
             type: DirectoryOrCreate
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
