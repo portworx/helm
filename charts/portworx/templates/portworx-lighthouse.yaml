@@ -131,8 +131,10 @@ spec:
       volumes:
       - name: config
         emptyDir: {}
+    {{- with .Values.tolerations }}
       tolerations:
-{{ toYaml .Values.tolerations | indent 8 }}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

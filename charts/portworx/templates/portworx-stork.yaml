@@ -137,8 +137,10 @@ spec:
             cpu: '0.1'
         name: stork
       hostPID: false
+    {{- with .Values.tolerations }}
       tolerations:
-{{ toYaml .Values.tolerations | indent 8 }}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -292,8 +294,10 @@ spec:
         resources:
           requests:
             cpu: '0.1'
+    {{- with .Values.tolerations }}
       tolerations:
-{{ toYaml .Values.tolerations | indent 8 }}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
