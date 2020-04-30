@@ -120,10 +120,10 @@ spec:
           requests:
             cpu: 200m
       hostNetwork: true
-      {{ with .Values.tolerations }}
+    {{ with .Values.tolerations }}
       tolerations:
-      {{ toYaml . | indent 8 }}
-      {{- end }}
+        {{ toYaml . | nindent 8 }}
+    {{- end }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
