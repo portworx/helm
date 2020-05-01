@@ -80,6 +80,19 @@ release: {{ .Release.Name | quote }}
 {{- end -}}
 {{- end -}}
 
+
+{{- define "px.getPauseImage" -}}
+{{- if (.Values.customRegistryURL) -}}
+    {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
+        {{ trim .Values.customRegistryURL }}
+    {{- else -}}
+        {{cat (trim .Values.customRegistryURL) "/k8s.gcr.io" | replace " " ""}}
+    {{- end -}}
+{{- else -}}
+        {{ "k8s.gcr.io" }}
+{{- end -}}
+{{- end -}}
+
 {{- define "px.getcsiImages" -}}
 {{- if (.Values.customRegistryURL) -}}
     {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
