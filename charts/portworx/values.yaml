@@ -58,3 +58,13 @@ serviceAccount:
   hook:
     create: true
     name:
+
+api:
+  enabled: true                     # Deploy portworx-api daemonset.
+
+dynamicProvision:
+  enabled: false                    # Allow dynamic provisioning of persistent volumes from persistent volume claims. Requires api.enable to be true
+  secretName: px-vol-encryption
+
+replicas: 3                         # Replica count for pvc-controller, stork, stork-scheduler.
+

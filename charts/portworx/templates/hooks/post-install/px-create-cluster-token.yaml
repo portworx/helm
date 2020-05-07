@@ -1,0 +1,61 @@
+{{- if (.Values.api.enabled) and (.Values.dynamicProvision.enabled) }}
+{{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
+  {{- $registrySecret := .Values.registrySecret | default "none" }}
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: kube-system
+  name: px-set-cluster-token
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    app.kubernetes.io/managed-by: {{.Release.Service | quote }}
+    app.kubernetes.io/instance: {{.Release.Name | quote }}
+  annotations:
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  {{ if semverCompare ">= 1.8" .Capabilities.KubeVersion.GitVersion }}
+  backoffLimit: 0
+  {{ else }}
+  activeDeadlineSeconds: 360
+  {{ end }}
+  template:
+    spec:
+      {{- if not (eq $registrySecret "none") }}
+      imagePullSecrets:
+        - name: {{ $registrySecret }}
+      {{- end }}
+      restartPolicy: Never
+      serviceAccountName: {{ template "px.hookServiceAccount" . }}
+      containers:
+        - name: post-install-job
+          {{- if eq $customRegistryURL "none" }}
+          image: "bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
+          {{- else}}
+          image: "{{ $customRegistryURL }}/bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
+            {{- end }}
+          env:
+            - name: NS
+              value: kube-system
+            - name: KEY
+              value: cluster-wide-secret-key
+          command: ['/bin/sh', '-c']
+          args:
+            - kubectl -n $NS exec $(kubectl get pods -l app=portworx -n $NS --no-headers -o name| head -n1) -- /opt/pwx/bin/pxctl secrets set-cluster-key --secret $KEY
+      initContainers:
+        - name: post-install-job-init
+          {{- if eq $customRegistryURL "none" }}
+          image: "bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
+          {{- else}}
+          image: "{{ $customRegistryURL }}/bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
+          {{- end }}
+          env:
+            - name: NS
+              value: kube-system
+          command: ['/bin/sh', '-c', "kubectl wait --for=condition=ready pod --timeout=120s -l app=portworx -n $NS"]
+
+{{- end }}
