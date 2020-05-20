@@ -1,4 +1,4 @@
-{{- if (.Values.api.enabled) and (.Values.dynamicProvision.enabled) }}
+{{- if (.Values.clusterToken.create) }}
 {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
   {{- $registrySecret := .Values.registrySecret | default "none" }}
 
@@ -56,6 +56,6 @@ spec:
           env:
             - name: NS
               value: kube-system
-          command: ['/bin/sh', '-c', "kubectl wait --for=condition=ready pod --timeout=120s -l app=portworx -n $NS"]
+          command: ['/bin/sh', '-c', "kubectl wait --for=condition=ready pod --timeout=600s -l app=portworx -n $NS"]
 
 {{- end }}
