@@ -53,8 +53,10 @@ spec:
         name: portworx
         # {{- include "px.labels" . | indent 8 }}
     spec:
+    {{- with .Values.tolerations }}
       tolerations:
-{{ toYaml .Values.tolerations | indent 8 }}
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
