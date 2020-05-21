@@ -111,7 +111,7 @@ spec:
       maxSurge: 1
       maxUnavailable: 1
     type: RollingUpdate
-  replicas: 3
+  replicas: {{ .Values.replicas }}
   template:
     metadata:
       annotations:
@@ -262,7 +262,7 @@ spec:
   selector:
     matchLabels:
       name: stork-scheduler
-  replicas: 3
+  replicas: {{ .Values.replicas }}
   template:
     metadata:
       labels:

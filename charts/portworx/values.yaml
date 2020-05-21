@@ -58,3 +58,10 @@ serviceAccount:
   hook:
     create: true
     name:
+
+clusterToken:
+  create: false                    # Create cluster token
+  secretName: px-vol-encryption    # Name of kubernetes secret to be created. Requires clusterToken.create to be true.
+
+replicas: 3                         # Replica count for pvc-controller, stork, stork-scheduler.
+

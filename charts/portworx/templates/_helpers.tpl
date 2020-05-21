@@ -157,3 +157,34 @@ Create the name of the cluster role binding to use for hooks
     {{ default "default" .Values.serviceAccount.hook.name }}
 {{- end -}}
 {{- end -}}
+
+
+{{/*
+Create the name of the role to use for hooks
+*/}}
+{{- define "px.hookRole" -}}
+{{- if .Values.serviceAccount.hook.create -}}
+    {{- printf "%s-hook" .Chart.Name | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.hook.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the role binding to use for hooks
+*/}}
+{{- define "px.hookRoleBinding" -}}
+{{- if .Values.serviceAccount.hook.create -}}
+    {{- printf "%s-hook" .Chart.Name | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.hook.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Generate a random token for storage provisioning
+*/}}
+
+{{- define "portworx-cluster-key" -}}
+{{- randAlphaNum 16 | nospace | b64enc -}}
+{{- end -}}
