@@ -1,0 +1,92 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $customRegistryEnabled := .Values.customeRegistryEnabled | default false }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-apiserver
+  namespace: {{ .Values.namespace }} 
+  labels:
+    app: pxcentral-apiserver
+spec:
+  selector:
+    app: pxcentral-apiserver
+  ports:
+    - name: pxcentral-grpc
+      protocol: TCP
+      port: 10005
+      targetPort: 10005
+    - name: pxcentral-rest
+      protocol: TCP
+      port: 10006
+      targetPort: 10006
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pxcentral-apiserver
+  namespace: {{ .Values.namespace }} 
+spec:
+  selector:
+    matchLabels:
+      app: pxcentral-apiserver
+  replicas: 1
+  minReadySeconds: 0
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: pxcentral-apiserver
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: {{ .Values.nodeAffinityKey }}
+                operator: NotIn
+                values:
+                - "{{ .Values.nodeAffinityValue }}"
+      containers:
+      - name: pxcentral-apiserver
+        image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.pxcentralApiServerImage.imageName .Values.pxcentralApiServerImage.tag }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        env:
+          - name: PXC_NAMESPACE
+            value: {{ .Values.namespace }} 
+          - name: DOMAIN_ENABLED
+            value: "false"
+          - name: INGRESS_ENABLED
+            value: "true"
+          - name: METRICS_STORE_DOMAIN
+            value: {{ .Values.centralEndpoint }}
+        readinessProbe:
+          httpGet:
+            path: /v1/ping
+            port: 10006
+          initialDelaySeconds: 10
+          timeoutSeconds: 120
+          periodSeconds: 20
+        ports:
+          - name: pxcentral-grpc
+            containerPort: 10005
+          - name: pxcentral-rest
+            containerPort: 10006
+        securityContext:
+            privileged: true
+        command:
+        - /pxcentral-onprem
+        - start
+      {{- if eq $customRegistryEnabled true }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+      {{- end }}
+      restartPolicy: Always

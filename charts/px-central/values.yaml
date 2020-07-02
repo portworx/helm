@@ -1,0 +1,59 @@
+namespace: px-backup
+
+customeRegistryEnabled: false
+dockerRegistryURL: docker.io
+dockerImageRepoName: portworx
+imagePullSecrets: docregistry-secret
+imagePullPolicy: Always
+
+persistentStorage:
+  enabled: false
+  storageClassName:
+
+nodeAffinityKey: pxc/enabled
+nodeAffinityValue: false
+storkRequired: false
+isOpenshiftCluster: false
+ingressControllerSetup: true
+centralEndpoint: None
+
+centralOIDC:
+  enabled: true
+  username: admin
+  password: admin
+  email: admin@portworx.com
+  keyCloakBackendPassword: keycloak
+  clientId: "pxcentral"
+  clientSecret: "dummy"
+
+externalOIDC:
+  enabled: false
+  clientID: "test"
+  clientSecret: "test"
+  endpoint: "test"
+
+pxbackup:
+  enabled: true
+  orgName: portworx
+
+pxcentralApiServerImage:
+  imageName: pxcentral-onprem-api
+  tag: 1.0.4-dev
+pxcentralFrontendImage:
+  imageName: pxcentral-onprem-ui-frontend
+  tag: 1.1.1
+pxcentralBackendImage:
+  imageName: pxcentral-onprem-ui-backend
+  tag: 1.1.1
+pxcentralMiddlewareImage:
+  imageName: pxcentral-onprem-ui-lhbackend
+  tag: 1.1.1
+pxBackupImage:
+  imageName: px-backup-base
+  tag: master
+postSetupImage:
+  imageName: pxcentral-onprem-post-setup
+  tag: 1.0.4-dev
+preSetupImage:
+  imageName: pxcentral-onprem-pre-setup
+  tag: 1.0.4-dev

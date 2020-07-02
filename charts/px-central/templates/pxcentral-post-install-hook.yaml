@@ -1,0 +1,42 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $customRegistryEnabled := .Values.customeRegistryEnabled | default false }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pxcentral-post-install-hook
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/managed-by: Helm
+    name: pxcentral-pre-install-hook
+spec:
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: {{ .Values.nodeAffinityKey }}
+                operator: NotIn
+                values:
+                - "{{ .Values.nodeAffinityValue }}"
+      serviceAccountName: pxcentral-onprem-job
+      containers:
+      - name: pxcentral-post-setup
+        image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.postSetupImage.imageName .Values.postSetupImage.tag }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        securityContext:
+          privileged: true
+        env:
+          - name: LOG_LEVEL
+            value: INFO
+          - name: PXC_NAMESPACE
+            value: {{ .Values.namespace }}
+        command: ["python",  "/pxcentral-post-install/pxc-post-setup.py"]
+      {{- if eq $customRegistryEnabled true }}
+      imagePullSecrets:
+        - name: {{ .Values.imagePullSecrets }}
+      {{- end }}
+      restartPolicy: Never
+  backoffLimit: 5
+  activeDeadlineSeconds: 2400
