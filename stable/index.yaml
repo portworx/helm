@@ -11,7 +11,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
-    - https://raw.githubusercontent.com/tusharraut1994/helm/master/stable/portworx-1.0.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/master/stable/portworx-1.0.0.tgz
     version: 1.0.0
   px-backup:
   - apiVersion: v1
@@ -33,7 +33,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/tusharraut1994/helm/master/stable/px-backup-1.0.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.0.0.tgz
     version: 1.0.0
   px-central:
   - apiVersion: v1
@@ -58,6 +58,6 @@ entries:
     sources:
     - https://github.com/portworx/px-central
     urls:
-    - https://raw.githubusercontent.com/tusharraut1994/helm/master/stable/px-central-1.0.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-central-1.0.0.tgz
     version: 1.0.0
 generated: "2020-07-06T05:21:12.000824922Z"
