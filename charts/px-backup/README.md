@@ -1,12 +1,12 @@
-# PX-Central
+# PX-Backup
 
-PX-Central is a unified, multi-user, multi-cluster management interface. Using PX-Central, users can backup/restore Kubernetes clusters with PX-Backup. Optionally, users can also use PX-Central to manage and monitor their PX clusters from a single place. PX-Central can also host a license server to manage Portworx licenses across your environment.
+PX-Central is a unified, multi-user, multi-cluster management interface. Using PX-Backup, users can backup/restore Kubernetes clusters with PX-Backup.
 
 ## Installing the Chart
 
 To install the chart with the release name `px-backup`:
 
-Add portworx/px-central helm repository using command:
+Add portworx/px-backup helm repository using command:
 ```console
 $ helm repo add portworx https://raw.githubusercontent.com/portworx/helm/master/stable
 ```
@@ -24,17 +24,17 @@ Output:
 ```console
 NAME                    CHART VERSION   APP VERSION     DESCRIPTION                                       
 portworx/portworx       1.0.0                           A Helm chart for installing Portworx on Kuberne...
-portworx/px-central     1.0.0                           A Helm chart for installing PX-Backup with PX-C...
+portworx/px-backup      1.0.0                           A Helm chart for installing PX-Backup with PX-C...
 ```
 
 Helm 3:
 ```console
-$ helm install px-backup portworx/px-central --namespace px-backup --create-namespace
+$ helm install px-backup portworx/px-backup --namespace px-backup --create-namespace
 ```
 
 Helm 2:
 ```console
-$ helm install --name px-backup portworx/px-central --namespace px-backup
+$ helm install --name px-backup portworx/px-backup --namespace px-backup
 ```
 
 ## Uninstalling the Chart
@@ -67,7 +67,6 @@ Parameter | Description | Default
 `nodeAffinityKey` | Node affinity key to deploy all central components on specific nodes | `pxc/enabled`
 `nodeAffinityValue` | Node affinity value to deploy all central components on specific nodes | `false`
 `storkRequired` | Scheduler name as stork | `false`
-`isOpenshiftCluster` | Deployment on openshift cluster | `false`
 `ingressControllerSetup` | Ingress controller deployment required | `true`
 `centralEndpoint` | PX-Central ingress endpoint (Hostname or public IP) | default `None`
 `centralOIDC` | PX-Central OIDC | `[]`

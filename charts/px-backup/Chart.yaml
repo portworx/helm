@@ -9,10 +9,7 @@ keywords:
 - portworx
 - px-central
 - lighthouse
-- px-license-server
-- logging
-- monitoring
-name: px-central
+name: px-backup
 sources:
-- https://github.com/portworx/px-central
+- https://github.com/portworx/helm/tree/master/charts/px-backup
 version: 1.0.0

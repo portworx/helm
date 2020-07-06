@@ -2,9 +2,9 @@ apiVersion: v1
 entries:
   portworx:
   - apiVersion: v1
-    created: "2020-07-03T08:12:57.266037423Z"
+    created: "2020-07-06T05:21:12.004341091Z"
     description: A Helm chart for installing Portworx on Kubernetes.
-    digest: 36759374c56c48e9f335c65bf4fa8f7031d258f8843827a42c9c7d337fb3270c
+    digest: 74dde97b5000b145904e6070eaa0ad16159ca8d8f846780c6934b20fffc6b774
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     name: portworx
@@ -13,9 +13,31 @@ entries:
     urls:
     - https://raw.githubusercontent.com/tusharraut1994/helm/master/stable/portworx-1.0.0.tgz
     version: 1.0.0
+  px-backup:
+  - apiVersion: v1
+    created: "2020-07-06T05:21:12.007101921Z"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
+      and Openshift
+    digest: 81dc1139bd2358918932f58cb8c3701b64a419c58f60b763a8648694d7269998
+    home: https://portworx.com/
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
+    keywords:
+    - px-backup
+    - storage
+    - persistent disk
+    - pvc
+    - portworx
+    - px-central
+    - lighthouse
+    name: px-backup
+    sources:
+    - https://github.com/portworx/helm/tree/master/charts/px-backup
+    urls:
+    - https://raw.githubusercontent.com/tusharraut1994/helm/master/stable/px-backup-1.0.0.tgz
+    version: 1.0.0
   px-central:
   - apiVersion: v1
-    created: "2020-07-03T08:12:57.267854662Z"
+    created: "2020-07-06T05:21:12.010897267Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: ebd699ebfa8ff2319be49a464ed965850086a2069fc587e61a06e4fc27f6c3d7
@@ -38,4 +60,4 @@ entries:
     urls:
     - https://raw.githubusercontent.com/tusharraut1994/helm/master/stable/px-central-1.0.0.tgz
     version: 1.0.0
-generated: "2020-07-03T08:12:57.262659208Z"
+generated: "2020-07-06T05:21:12.000824922Z"

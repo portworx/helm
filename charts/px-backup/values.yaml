@@ -13,7 +13,6 @@ persistentStorage:
 nodeAffinityKey: pxc/enabled
 nodeAffinityValue: false
 storkRequired: false
-isOpenshiftCluster: false
 ingressControllerSetup: true
 centralEndpoint: None
 
