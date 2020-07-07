@@ -1,18 +1,22 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $customRegistryEnabled := .Values.customeRegistryEnabled | default false }}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
-{{- $centralOIDC := .Values.centralOIDC.enabled | default false -}}
+{{- $centralOIDC := .Values.oidc.centralOIDC.enabled | default false -}}
 {{- if eq $centralOIDC true }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: px-keycloak-account
+  labels:
+{{- include "px-backup.labels" . | nindent 4 }}
   namespace: {{ .Values.namespace }} 
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: px-keycloak-role
+  labels:
+{{- include "px-backup.labels" . | nindent 4 }}
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
@@ -21,25 +25,31 @@ rules:
 apiVersion: v1
 kind: Secret
 metadata:
+  labels:
+{{- include "px-backup.labels" . | nindent 4 }}
   name: pxcentral-keycloak-postgresql
   namespace: {{ .Values.namespace }} 
 type: Opaque
 stringData:
-  postgresql-password: {{ .Values.centralOIDC.keyCloakBackendPassword }}
+  postgresql-password: {{ .Values.oidc.centralOIDC.keyCloakBackendPassword }}
 ---
 apiVersion: v1
 kind: Secret
 metadata:
+  labels:
+{{- include "px-backup.labels" . | nindent 4 }}
   name: pxcentral-keycloak-http
   namespace: {{ .Values.namespace }} 
 type: Opaque
 stringData:
-  password: {{ .Values.centralOIDC.password }}
+  password: {{ .Values.oidc.centralOIDC.defaultPassword }}
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: px-keycloak-role-binding
+  labels:
+{{- include "px-backup.labels" . | nindent 4 }}
 subjects:
 - kind: ServiceAccount
   name: px-keycloak-account
@@ -56,6 +66,7 @@ metadata:
   namespace: {{ .Values.namespace }} 
   labels:
     app.kubernetes.io/name: keycloak
+{{- include "px-backup.labels" . | nindent 4 }}
 data:
   keycloak.sh: |
     #!/usr/bin/env bash
@@ -72,6 +83,7 @@ metadata:
   namespace: {{ .Values.namespace }} 
   labels:
     app.kubernetes.io/name: keycloak
+{{- include "px-backup.labels" . | nindent 4 }}
 data:
   keycloak.cli: |
     embed-server --std-out=echo
@@ -117,6 +129,7 @@ metadata:
   namespace: {{ .Values.namespace }} 
   labels:
     app: postgresql
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   clusterIP: None
@@ -134,6 +147,7 @@ metadata:
   namespace: {{ .Values.namespace }} 
   labels:
     app: postgresql
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:
@@ -152,6 +166,7 @@ metadata:
   labels:
     app.kubernetes.io/name: keycloak
     service: headless
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   clusterIP: None
@@ -176,6 +191,7 @@ metadata:
   labels:
     app.kubernetes.io/name: keycloak
     service: http
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   ports:
     - name: http
@@ -198,6 +214,7 @@ metadata:
   labels:
     app: postgresql
     role: master
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   serviceName: pxcentral-keycloak-postgresql-headless
   replicas: 1
@@ -325,6 +342,7 @@ metadata:
   namespace: {{ .Values.namespace }} 
   labels:
     app.kubernetes.io/name: keycloak
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
@@ -411,7 +429,7 @@ spec:
             - /scripts/keycloak.sh
           env:
             - name: KEYCLOAK_USER
-              value: {{ .Values.centralOIDC.username }}
+              value: {{ .Values.oidc.centralOIDC.defaultUsername }}
             - name: KEYCLOAK_PASSWORD_FILE
               value: /secrets/password
             - name: JAVA_TOOL_OPTIONS

@@ -6,8 +6,8 @@ metadata:
   name: pxcentral-post-install-hook
   namespace: {{ .Values.namespace }}
   labels:
-    app.kubernetes.io/managed-by: Helm
-    name: pxcentral-pre-install-hook
+    name: pxcentral-post-install-hook
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   template:
     spec:
@@ -23,7 +23,7 @@ spec:
       serviceAccountName: pxcentral-onprem-job
       containers:
       - name: pxcentral-post-setup
-        image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.postSetupImage.imageName .Values.postSetupImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.images.postSetupImage.imageName .Values.images.postSetupImage.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         securityContext:
           privileged: true

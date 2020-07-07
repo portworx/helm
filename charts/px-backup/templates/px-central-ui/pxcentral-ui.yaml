@@ -6,6 +6,8 @@ kind: ConfigMap
 metadata:
   name: pxcentral-frontend-nginx-config
   namespace: {{ .Values.namespace }} 
+  labels:
+{{- include "px-backup.labels" . | nindent 4 }}
 data:
   default.conf: |
     # Add upstream for letsencrypt job
@@ -65,6 +67,8 @@ kind: PersistentVolumeClaim
 metadata:
   name: pxcentral-mysql-pvc
   namespace: {{ .Values.namespace }} 
+  labels:
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce
@@ -79,6 +83,8 @@ kind: Deployment
 metadata:
   name: pxcentral-backend
   namespace: {{ .Values.namespace }} 
+  labels:
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
@@ -105,7 +111,7 @@ spec:
                 - "{{ .Values.nodeAffinityValue }}"
       containers:
         - name: pxcentral-backend
-          image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.pxcentralBackendImage.imageName .Values.pxcentralBackendImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           ports:
             - containerPort: 80
@@ -124,7 +130,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: pxcentral-frontend
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Values.namespace }}
+  labels:
+{{- include "px-backup.labels" . | nindent 4 }} 
 spec:
   selector:
     matchLabels:
@@ -151,7 +159,7 @@ spec:
                 - "{{ .Values.nodeAffinityValue }}"
       containers:
         - name: pxcentral-frontend
-          image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.pxcentralFrontendImage.imageName .Values.pxcentralFrontendImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.images.pxcentralFrontendImage.imageName .Values.images.pxcentralFrontendImage.tag }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           ports:
             - name : http
@@ -181,6 +189,7 @@ kind: StatefulSet
 metadata:
   labels:
     run: pxcentral-mysql
+{{- include "px-backup.labels" . | nindent 4 }}
   name: pxcentral-mysql
   namespace: {{ .Values.namespace }} 
 spec:
@@ -271,6 +280,7 @@ metadata:
   labels:
     name: pxcentral-mysql
     run: pxcentral-mysql
+{{- include "px-backup.labels" . | nindent 4 }}
   name: pxcentral-mysql
   namespace: {{ .Values.namespace }} 
 spec:
@@ -289,6 +299,7 @@ metadata:
   namespace: {{ .Values.namespace }} 
   labels:
     run: pxcentral-frontend
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     run: pxcentral-frontend
@@ -309,6 +320,7 @@ metadata:
   namespace: {{ .Values.namespace }} 
   labels:
     run: pxcentral-backend
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     run: pxcentral-backend

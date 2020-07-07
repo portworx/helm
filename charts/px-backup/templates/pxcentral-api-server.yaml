@@ -7,6 +7,7 @@ metadata:
   namespace: {{ .Values.namespace }} 
   labels:
     app: pxcentral-apiserver
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     app: pxcentral-apiserver
@@ -25,6 +26,8 @@ kind: Deployment
 metadata:
   name: pxcentral-apiserver
   namespace: {{ .Values.namespace }} 
+  labels:
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
@@ -57,7 +60,7 @@ spec:
                 - "{{ .Values.nodeAffinityValue }}"
       containers:
       - name: pxcentral-apiserver
-        image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.pxcentralApiServerImage.imageName .Values.pxcentralApiServerImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.images.pxcentralApiServerImage.imageName .Values.images.pxcentralApiServerImage.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         env:
           - name: PXC_NAMESPACE

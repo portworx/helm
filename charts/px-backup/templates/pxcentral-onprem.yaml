@@ -3,22 +3,26 @@ kind: ConfigMap
 metadata:
   name: pxcentral-admin-user
   namespace: {{ .Values.namespace }}
+  labels:
+{{- include "px-backup.labels" . | nindent 4 }}
 data:
-  name: {{ .Values.centralOIDC.username }}
-  password: {{ .Values.centralOIDC.password }}
-  email: {{ .Values.centralOIDC.email }}
-  centralOIDCEnabled: "{{ .Values.centralOIDC.enabled }}"
-  centralOIDCClientId: {{ .Values.centralOIDC.clientId }}
-  externalOIDCEnabled: "{{ .Values.externalOIDC.enabled }}"
-  externalOIDCEndpoint: {{ .Values.externalOIDC.endpoint }}
-  externalOIDCClientId: {{ .Values.externalOIDC.clientID }}
-  externalOIDCClientSecret: {{ .Values.externalOIDC.clientSecret }}
+  name: {{ .Values.oidc.centralOIDC.defaultUsername }}
+  password: {{ .Values.oidc.centralOIDC.defaultPassword }}
+  email: {{ .Values.oidc.centralOIDC.defaultEmail }}
+  centralOIDCEnabled: "{{ .Values.oidc.centralOIDC.enabled }}"
+  centralOIDCClientId: {{ .Values.oidc.centralOIDC.clientId }}
+  externalOIDCEnabled: "{{ .Values.oidc.externalOIDC.enabled }}"
+  externalOIDCEndpoint: {{ .Values.oidc.externalOIDC.endpoint }}
+  externalOIDCClientId: {{ .Values.oidc.externalOIDC.clientID }}
+  externalOIDCClientSecret: {{ .Values.oidc.externalOIDC.clientSecret }}
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: pxcentral-modules
   namespace: {{ .Values.namespace }} 
+  labels:
+{{- include "px-backup.labels" . | nindent 4 }}
 data:
   lighthouse: "true"
   backup: "{{ .Values.pxbackup.enabled }}"
@@ -26,9 +30,9 @@ data:
   forwardingProxy: "false"
   metrics: "false"
   minik8s: "false"
-  sso: "{{ .Values.centralOIDC.enabled }}"
-  centralOIDCEnabled: "{{ .Values.centralOIDC.enabled }}"
-  externalOIDCEnabled: "{{ .Values.externalOIDC.enabled }}"
+  sso: "{{ .Values.oidc.centralOIDC.enabled }}"
+  centralOIDCEnabled: "{{ .Values.oidc.centralOIDC.enabled }}"
+  externalOIDCEnabled: "{{ .Values.oidc.externalOIDC.enabled }}"
   centralEndpoint: {{ .Values.centralEndpoint }}
 ---
 apiVersion: networking.k8s.io/v1beta1
@@ -40,6 +44,8 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /$2
   name: pxcentral-onprem-central-ingress
   namespace: {{ .Values.namespace }}
+  labels:
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   rules:
   - http:
@@ -68,6 +74,8 @@ metadata:
     kubernetes.io/ingress.class: nginx
   name: pxcentral-onprem-keycloak-ingress
   namespace: {{ .Values.namespace }}
+  labels:
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   rules:
   - http:

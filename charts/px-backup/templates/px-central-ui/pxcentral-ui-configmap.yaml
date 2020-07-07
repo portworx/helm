@@ -1,6 +1,6 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $customRegistryEnabled := .Values.customeRegistryEnabled | default false }}
-{{- $oidcEnabled := .Values.centralOIDC.enabled  | default false }}
+{{- $oidcEnabled := .Values.oidc.centralOIDC.enabled  | default false }}
 {{- $pxcentralEndpoint := .Values.centralEndpoint -}}
 {{- $pxcentralOIDCEndpoint := .Values.centralEndpoint -}}
 apiVersion: v1
@@ -8,6 +8,8 @@ kind: ConfigMap
 metadata:
   name: pxcentral-ui-configmap
   namespace: {{ .Values.namespace }}
+  labels:
+{{- include "px-backup.labels" . | nindent 4 }}
 data:
   FRONTEND_UI_URL: {{ printf "http://%s/pxcentral" $pxcentralEndpoint }}
   BASE_ROOT_PATH: /pxcentral/
@@ -46,7 +48,7 @@ data:
   SESSION_DRIVER: file
   SESSION_LIFETIME: "120"
   OIDC_AUTHSERVERURL: {{ printf "http://%s/keycloak/realms/master" $pxcentralOIDCEndpoint }}
-  OIDC_CLIENT_ID: {{ .Values.centralOIDC.clientId }}
-  OIDC_CLIENT_SECRET: {{ .Values.centralOIDC.clientSecret }}
+  OIDC_CLIENT_ID: {{ .Values.oidc.centralOIDC.clientId }}
+  OIDC_CLIENT_SECRET: {{ .Values.oidc.centralOIDC.clientSecret }}
   OIDC_CLIENT_CALLBACK: {{ printf "http://%s/pxcentral/landing/oauth/oidc" $pxcentralEndpoint }}
   OIDC_REDIRECTURI: {{ printf "http://%s/pxcentral/landing/oauth/oidc" $pxcentralEndpoint }}

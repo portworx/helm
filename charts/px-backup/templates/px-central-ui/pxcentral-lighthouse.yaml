@@ -7,6 +7,7 @@ metadata:
   namespace: {{ .Values.namespace }} 
   labels:
     run: pxcentral-lh-middleware
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     run: pxcentral-lh-middleware
@@ -25,6 +26,8 @@ kind: Deployment
 metadata:
   name: pxcentral-lh-middleware
   namespace: {{ .Values.namespace }} 
+  labels:
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
@@ -57,7 +60,7 @@ spec:
                 - "{{ .Values.nodeAffinityValue }}"
       containers:
       - name: pxcentral-lighthouse-backend
-        image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.pxcentralMiddlewareImage.imageName .Values.pxcentralMiddlewareImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.images.pxcentralMiddlewareImage.imageName .Values.images.pxcentralMiddlewareImage.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         env:
           - name: PX_NAMESPACE

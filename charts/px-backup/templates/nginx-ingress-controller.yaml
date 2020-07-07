@@ -7,10 +7,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.31.1
-    app.kubernetes.io/component: controller
+{{- include "ingress-controller.labels" . | nindent 4 }}
   name: ingress-nginx
   namespace: {{ .Values.namespace }} 
 ---
@@ -19,9 +16,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.31.1
+{{- include "ingress-controller.labels" . | nindent 4 }}
   name: ingress-nginx
   namespace: {{ .Values.namespace }} 
 rules:
@@ -88,9 +83,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.31.1
+{{- include "ingress-controller.labels" . | nindent 4 }}
   name: ingress-nginx
   namespace: {{ .Values.namespace }} 
 roleRef:
@@ -107,10 +100,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.31.1
-    app.kubernetes.io/component: controller
+{{- include "ingress-controller.labels" . | nindent 4 }}
   name: ingress-nginx
   namespace: {{ .Values.namespace }} 
 rules:
@@ -200,10 +190,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.31.1
-    app.kubernetes.io/component: controller
+{{- include "ingress-controller.labels" . | nindent 4 }}
   name: ingress-nginx
   namespace: {{ .Values.namespace }} 
 roleRef:
@@ -220,10 +207,7 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.31.1
-    app.kubernetes.io/component: controller
+{{- include "ingress-controller.labels" . | nindent 4 }}
   name: ingress-nginx-controller-admission
   namespace: {{ .Values.namespace }} 
 spec:
@@ -242,10 +226,7 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.31.1
-    app.kubernetes.io/component: controller
+{{- include "ingress-controller.labels" . | nindent 4 }}
   name: ingress-nginx-controller
   namespace: {{ .Values.namespace }} 
 spec:
@@ -270,10 +251,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.31.1
-    app.kubernetes.io/component: controller
+{{- include "ingress-controller.labels" . | nindent 4 }}
   name: ingress-nginx-controller
   namespace: {{ .Values.namespace }} 
 spec:
@@ -394,10 +372,7 @@ apiVersion: admissionregistration.k8s.io/v1beta1
 kind: ValidatingWebhookConfiguration
 metadata:
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.31.1
-    app.kubernetes.io/component: admission-webhook
+{{- include "ingress-controller-webhook.labels" . | nindent 4 }}
   name: ingress-nginx-admission
   namespace: {{ .Values.namespace }} 
 webhooks:
@@ -426,11 +401,7 @@ kind: ClusterRole
 metadata:
   name: ingress-nginx-admission
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.31.1
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/component: admission-webhook
+{{- include "ingress-controller-webhook.labels" . | nindent 4 }}
   namespace: {{ .Values.namespace }} 
 rules:
   - apiGroups:
@@ -447,11 +418,7 @@ kind: ClusterRoleBinding
 metadata:
   name: ingress-nginx-admission
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.31.1
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/component: admission-webhook
+{{- include "ingress-controller-webhook.labels" . | nindent 4 }}
   namespace: {{ .Values.namespace }} 
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -468,10 +435,7 @@ kind: Job
 metadata:
   name: ingress-nginx-admission-create
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.31.1
-    app.kubernetes.io/component: admission-webhook
+{{- include "ingress-controller-webhook.labels" . | nindent 4 }}
   namespace: {{ .Values.namespace }} 
 spec:
   template:
@@ -512,10 +476,7 @@ kind: Job
 metadata:
   name: ingress-nginx-admission-patch
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.31.1
-    app.kubernetes.io/component: admission-webhook
+{{- include "ingress-controller-webhook.labels" . | nindent 4 }}
   namespace: {{ .Values.namespace }} 
 spec:
   template:
@@ -558,10 +519,7 @@ kind: Role
 metadata:
   name: ingress-nginx-admission
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.31.1
-    app.kubernetes.io/component: admission-webhook
+{{- include "ingress-controller-webhook.labels" . | nindent 4 }}
   namespace: {{ .Values.namespace }} 
 rules:
   - apiGroups:
@@ -578,10 +536,7 @@ kind: RoleBinding
 metadata:
   name: ingress-nginx-admission
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.31.1
-    app.kubernetes.io/component: admission-webhook
+{{- include "ingress-controller-webhook.labels" . | nindent 4 }}
   namespace: {{ .Values.namespace }} 
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -598,10 +553,7 @@ kind: ServiceAccount
 metadata:
   name: ingress-nginx-admission
   labels:
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/version: 0.31.1
-    app.kubernetes.io/component: admission-webhook
+{{- include "ingress-controller-webhook.labels" . | nindent 4 }}
   namespace: {{ .Values.namespace }} 
 ---
 {{- end -}}

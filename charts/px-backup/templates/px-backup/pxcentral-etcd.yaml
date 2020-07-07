@@ -12,6 +12,7 @@ metadata:
   labels:
     app.kubernetes.io/name: etcd
     app.kubernetes.io/instance: px-backup-etcd
+  {{- include "px-backup.labels" . | nindent 4 }}
 data:
   setup.sh: |-
     #!/bin/bash
@@ -161,6 +162,7 @@ metadata:
   labels:
     app.kubernetes.io/name: etcd
     app.kubernetes.io/instance: px-backup-etcd
+{{- include "px-backup.labels" . | nindent 4 }}
   annotations:
     service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
 spec:
@@ -185,6 +187,7 @@ metadata:
   labels:
     app.kubernetes.io/name: etcd
     app.kubernetes.io/instance: px-backup-etcd
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:
@@ -208,6 +211,7 @@ metadata:
   labels:
     app.kubernetes.io/name: etcd
     app.kubernetes.io/instance: px-backup-etcd
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:

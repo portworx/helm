@@ -7,9 +7,10 @@ metadata:
   namespace: {{ .Values.namespace }}
   annotations:
     "helm.sh/hook": "pre-install"
-    "helm.sh/hook-weight": "-2"
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation
   labels:
-    app.kubernetes.io/managed-by: Helm
+{{- include "px-backup.labels" . | nindent 4 }}
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
@@ -18,9 +19,9 @@ metadata:
   namespace: {{ .Values.namespace }}
   annotations:
     "helm.sh/hook": "pre-install"
-    "helm.sh/hook-weight": "-2"
+    "helm.sh/hook-weight": "-5"
   labels:
-    app.kubernetes.io/managed-by: Helm
+{{- include "px-backup.labels" . | nindent 4 }}
 rules:
   - apiGroups: ["*"]
     resources: ["*"]
@@ -33,9 +34,9 @@ metadata:
   namespace: {{ .Values.namespace }}
   annotations:
     "helm.sh/hook": "pre-install"
-    "helm.sh/hook-weight": "-2"
+    "helm.sh/hook-weight": "-5"
   labels:
-    app.kubernetes.io/managed-by: Helm
+{{- include "px-backup.labels" . | nindent 4 }}
 subjects:
 - kind: ServiceAccount
   name: pxcentral-onprem-job
@@ -51,26 +52,26 @@ metadata:
   name: pxcentral-pre-install-hook
   namespace: {{ .Values.namespace }}
   labels:
-    app.kubernetes.io/managed-by: Helm
     name: pxcentral-pre-install-hook
+{{- include "px-backup.labels" . | nindent 4 }}
   annotations:
     "helm.sh/hook": "pre-install"
-    "helm.sh/hook-weight": "-2"
+    "helm.sh/hook-weight": "-5"
 spec:
   template:
     spec:
       serviceAccountName: pxcentral-onprem-job
       containers:
       - name: pxcentral-pre-install
-        image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.preSetupImage.imageName .Values.preSetupImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.images.preSetupImage.imageName .Values.images.preSetupImage.tag }}
         imagePullPolicy: {{ .Values.imagePullPolicy }}
         securityContext:
           privileged: true
-        args: ["--pxcentral-namespace", "{{ .Values.namespace }}", "--ingress-controller", "{{ .Values.ingressControllerSetup }}", "--persistent-storage", "{{ .Values.persistentStorage.enabled }}","--storage-class-name", "{{ .Values.persistentStorage.storageClassName }}", "--custom-registry-enabled", "{{ .Values.customeRegistryEnabled }}", "--custom-registry-url", "{{ .Values.dockerRegistryURL }}", "--image-repo-name", "{{ .Values.dockerImageRepoName }}", "--image-pull-secret", "{{ .Values.imagePullSecrets }}", "--external-oidc-enabled", "{{ .Values.externalOIDC.enabled }}", "--external-oidc-endpoint", "{{ .Values.externalOIDC.endpoint }}", "--external-oidc-client-id", "{{ .Values.externalOIDC.clientID }}", "--external-oidc-client-secret", "{{ .Values.externalOIDC.clientSecret }}"]
+        args: ["--pxcentral-namespace", "{{ .Values.namespace }}", "--ingress-controller", "{{ .Values.ingressControllerSetup }}", "--persistent-storage", "{{ .Values.persistentStorage.enabled }}","--storage-class-name", "{{ .Values.persistentStorage.storageClassName }}", "--custom-registry-enabled", "{{ .Values.customeRegistryEnabled }}", "--custom-registry-url", "{{ .Values.dockerRegistryURL }}", "--image-repo-name", "{{ .Values.dockerImageRepoName }}", "--image-pull-secret", "{{ .Values.imagePullSecrets }}", "--external-oidc-enabled", "{{ .Values.oidc.externalOIDC.enabled }}", "--external-oidc-endpoint", "{{ .Values.oidc.externalOIDC.endpoint }}", "--external-oidc-client-id", "{{ .Values.oidc.externalOIDC.clientID }}", "--external-oidc-client-secret", "{{ .Values.oidc.externalOIDC.clientSecret }}"]
       {{- if eq $customRegistryEnabled true }}
       imagePullSecrets:
         - name: {{ .Values.imagePullSecrets }}
       {{- end }}
       restartPolicy: Never
-  backoffLimit: 5
+  backoffLimit: 2
   activeDeadlineSeconds: 2400
