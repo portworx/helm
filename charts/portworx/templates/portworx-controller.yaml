@@ -133,9 +133,9 @@ spec:
             nodeSelectorTerms:
             - matchExpressions:
               - key: px/enabled
-                operator: NotIn
+                operator: {{ template "px.affinityPxEnabledOperator" . }}
                 values:
-                - "false"
+                - {{ template "px.affinityPxEnabledValue" . }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
