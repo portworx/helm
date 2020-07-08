@@ -1,5 +1,4 @@
 {{/* Setting defaults if they are omitted. */}}
-{{- $customRegistryEnabled := .Values.customeRegistryEnabled | default false }}
 {{- $oidcEnabled := .Values.oidc.centralOIDC.enabled  | default false }}
 {{- $pxcentralEndpoint := .Values.centralEndpoint -}}
 {{- $pxcentralOIDCEndpoint := .Values.centralEndpoint -}}

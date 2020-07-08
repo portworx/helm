@@ -1,5 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
-{{- $customRegistryEnabled := .Values.customeRegistryEnabled | default false }}
+{{- $customRegistryEnabled := .Values.images.customRegistryEnabled | default false }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -7,6 +7,7 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     name: pxcentral-post-install-hook
+    app.kubernetes.io/component: pxcentral-post-install-hook
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
   template:
@@ -16,15 +17,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: {{ .Values.nodeAffinityKey }}
+              - key: pxbackup/enabled
                 operator: NotIn
                 values:
-                - "{{ .Values.nodeAffinityValue }}"
+                - "false"
       serviceAccountName: pxcentral-onprem-job
       containers:
       - name: pxcentral-post-setup
-        image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.images.postSetupImage.imageName .Values.images.postSetupImage.tag }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        image: {{ printf "%s/%s/%s:%s" .Values.images.registry .Values.images.repo .Values.images.postSetupImage.imageName .Values.images.postSetupImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         securityContext:
           privileged: true
         env:
@@ -33,10 +34,8 @@ spec:
           - name: PXC_NAMESPACE
             value: {{ .Values.namespace }}
         command: ["python",  "/pxcentral-post-install/pxc-post-setup.py"]
-      {{- if eq $customRegistryEnabled true }}
       imagePullSecrets:
-        - name: {{ .Values.imagePullSecrets }}
-      {{- end }}
+        - name: {{ .Values.images.pullSecrets }}
       restartPolicy: Never
   backoffLimit: 5
   activeDeadlineSeconds: 2400

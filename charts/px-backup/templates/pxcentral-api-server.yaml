@@ -1,5 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
-{{- $customRegistryEnabled := .Values.customeRegistryEnabled | default false }}
+{{- $customRegistryEnabled := .Values.images.customRegistryEnabled | default false }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -7,6 +7,7 @@ metadata:
   namespace: {{ .Values.namespace }} 
   labels:
     app: pxcentral-apiserver
+    app.kubernetes.io/component: pxcentral-apiserver
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
@@ -27,11 +28,13 @@ metadata:
   name: pxcentral-apiserver
   namespace: {{ .Values.namespace }} 
   labels:
+    app.kubernetes.io/component: pxcentral-apiserver
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
       app: pxcentral-apiserver
+      app.kubernetes.io/component: pxcentral-apiserver
   replicas: 1
   minReadySeconds: 0
   strategy:
@@ -48,20 +51,21 @@ spec:
     metadata:
       labels:
         app: pxcentral-apiserver
+        app.kubernetes.io/component: pxcentral-apiserver
     spec:
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: {{ .Values.nodeAffinityKey }}
+              - key: pxbackup/enabled
                 operator: NotIn
                 values:
-                - "{{ .Values.nodeAffinityValue }}"
+                - "false"
       containers:
       - name: pxcentral-apiserver
-        image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.images.pxcentralApiServerImage.imageName .Values.images.pxcentralApiServerImage.tag }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        image: {{ printf "%s/%s/%s:%s" .Values.images.registry .Values.images.repo .Values.images.pxcentralApiServerImage.imageName .Values.images.pxcentralApiServerImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
           - name: PXC_NAMESPACE
             value: {{ .Values.namespace }} 
@@ -88,8 +92,7 @@ spec:
         command:
         - /pxcentral-onprem
         - start
-      {{- if eq $customRegistryEnabled true }}
       imagePullSecrets:
-        - name: {{ .Values.imagePullSecrets }}
-      {{- end }}
+        - name: {{ .Values.images.pullSecrets }}
+      serviceAccountName: pxcentral-onprem-job
       restartPolicy: Always

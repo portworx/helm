@@ -1,5 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
-{{- $customRegistryEnabled := .Values.customeRegistryEnabled | default false }}
+{{- $customRegistryEnabled := .Values.images.customRegistryEnabled | default false }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -10,32 +10,60 @@ metadata:
     "helm.sh/hook-weight": "-5"
     "helm.sh/hook-delete-policy": before-hook-creation
   labels:
+    app.kubernetes.io/component: pxcentral-pre-install-hook
 {{- include "px-backup.labels" . | nindent 4 }}
 ---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: pxcentral-onprem-job
-  namespace: {{ .Values.namespace }}
   annotations:
     "helm.sh/hook": "pre-install"
     "helm.sh/hook-weight": "-5"
   labels:
+    app.kubernetes.io/component: pxcentral-pre-install-hook
 {{- include "px-backup.labels" . | nindent 4 }}
 rules:
-  - apiGroups: ["*"]
-    resources: ["*"]
-    verbs: ["*"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "update", "create", "patch"]
+- apiGroups: [""]
+  resources: ["pods", "services"]
+  verbs: ["delete", "get", "list", "watch", "update"]
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resources: ["pods/status"]
+  verbs: ["patch", "update"]
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims", "persistentvolumes"]
+  verbs: ["get", "list"]
+- apiGroups: ["storage.k8s.io"]
+  resources: ["storageclasses"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "update", "create", "patch"]
+- apiGroups: ["extensions"]
+  resources: ["ingresses", "ingresses/status", "networkpolicies"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["extensions", "apps"]
+  resources: ["deployments", "statefulsets", "deployments/status", "statefulsets/status"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses", "ingresses/status", "networkpolicies"]
+  verbs: ["get", "list", "watch"]
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: pxcentral-onprem-job
-  namespace: {{ .Values.namespace }}
   annotations:
     "helm.sh/hook": "pre-install"
     "helm.sh/hook-weight": "-5"
   labels:
+    app.kubernetes.io/component: pxcentral-pre-install-hook
 {{- include "px-backup.labels" . | nindent 4 }}
 subjects:
 - kind: ServiceAccount
@@ -52,6 +80,7 @@ metadata:
   name: pxcentral-pre-install-hook
   namespace: {{ .Values.namespace }}
   labels:
+    app.kubernetes.io/component: pxcentral-pre-install-hook
     name: pxcentral-pre-install-hook
 {{- include "px-backup.labels" . | nindent 4 }}
   annotations:
@@ -60,18 +89,25 @@ metadata:
 spec:
   template:
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
       serviceAccountName: pxcentral-onprem-job
       containers:
       - name: pxcentral-pre-install
-        image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.images.preSetupImage.imageName .Values.images.preSetupImage.tag }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        image: {{ printf "%s/%s/%s:%s" .Values.images.registry .Values.images.repo .Values.images.preSetupImage.imageName .Values.images.preSetupImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         securityContext:
           privileged: true
-        args: ["--pxcentral-namespace", "{{ .Values.namespace }}", "--ingress-controller", "{{ .Values.ingressControllerSetup }}", "--persistent-storage", "{{ .Values.persistentStorage.enabled }}","--storage-class-name", "{{ .Values.persistentStorage.storageClassName }}", "--custom-registry-enabled", "{{ .Values.customeRegistryEnabled }}", "--custom-registry-url", "{{ .Values.dockerRegistryURL }}", "--image-repo-name", "{{ .Values.dockerImageRepoName }}", "--image-pull-secret", "{{ .Values.imagePullSecrets }}", "--external-oidc-enabled", "{{ .Values.oidc.externalOIDC.enabled }}", "--external-oidc-endpoint", "{{ .Values.oidc.externalOIDC.endpoint }}", "--external-oidc-client-id", "{{ .Values.oidc.externalOIDC.clientID }}", "--external-oidc-client-secret", "{{ .Values.oidc.externalOIDC.clientSecret }}"]
-      {{- if eq $customRegistryEnabled true }}
+        args: ["--pxcentral-namespace", "{{ .Values.namespace }}", "--ingress-controller", "{{ .Values.ingressControllerSetup }}", "--persistent-storage", "{{ .Values.persistentStorage.enabled }}","--storage-class-name", "{{ .Values.persistentStorage.storageClassName }}", "--custom-registry-enabled", "{{ .Values.images.customeRegistryEnabled }}", "--custom-registry-url", "{{ .Values.images.registry }}", "--image-repo-name", "{{ .Values.images.repo }}", "--image-pull-secret", "{{ .Values.images.pullSecrets }}", "--external-oidc-enabled", "{{ .Values.oidc.externalOIDC.enabled }}", "--external-oidc-endpoint", "{{ .Values.oidc.externalOIDC.endpoint }}", "--external-oidc-client-id", "{{ .Values.oidc.externalOIDC.clientID }}", "--external-oidc-client-secret", "{{ .Values.oidc.externalOIDC.clientSecret }}"]
       imagePullSecrets:
-        - name: {{ .Values.imagePullSecrets }}
-      {{- end }}
+        - name: {{ .Values.images.pullSecrets }}
       restartPolicy: Never
   backoffLimit: 2
   activeDeadlineSeconds: 2400

@@ -1,19 +1,11 @@
 namespace: px-backup
 
-customeRegistryEnabled: false
-dockerRegistryURL: docker.io
-dockerImageRepoName: portworx
-imagePullSecrets: docregistry-secret
-imagePullPolicy: Always
-
 persistentStorage:
   enabled: false
   storageClassName:
 
-nodeAffinityKey: pxc/enabled
-nodeAffinityValue: false
 storkRequired: false
-ingressControllerSetup: true
+ingressControllerSetup: false
 centralEndpoint: None
 
 oidc:
@@ -37,6 +29,12 @@ pxbackup:
   orgName: portworx
 
 images:
+  customRegistryEnabled: false
+  registry: docker.io
+  repo: portworx
+  pullSecrets: docregistry-secret
+  pullPolicy: Always
+
   pxcentralApiServerImage:
     imageName: pxcentral-onprem-api
     tag: 1.0.4-dev

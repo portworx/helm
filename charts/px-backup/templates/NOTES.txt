@@ -1,24 +1,15 @@
---------------------------------
-NOTE:
---------------------------------
 Your Release is named: {{ .Release.Name | quote }}
 PX-Backup deployed namespace: {{ .Release.Namespace }}
 
 --------------------------------
 TO RETRIEVE INGRESS_ENDPOINT:
 --------------------------------
-To retrieve the px-backup install status information, check the pxcentral-post-install-hook pods logs in namespace: {{ .Release.Namespace }}.
-To get the INGRESS_ENDPOINT, check ingress *pxcentral-onprem-central-ingress* endpoint in namespace: {{ .Release.Namespace }}.
-
-Commands to get INGRESS_ENDPOINT:
 IP: kubectl get ingress --namespace {{ .Release.Namespace }} pxcentral-onprem-central-ingress -o jsonpath="{.status.loadBalancer.ingress[0].ip}"
 Hostname: kubectl get ingress --namespace {{ .Release.Namespace }} pxcentral-onprem-central-ingress -o jsonpath="{.status.loadBalancer.ingress[0].hostname}"
 
 --------------------------------
 ACCESS PX-Backup:
 --------------------------------
-PX-Backup can be accessed:
-
 PX-Backup Access URL:  http://<INGRESS_ENDPOINT>/pxcentral
 PX-Backup OIDC Access URL:  http://<INGRESS_ENDPOINT>/keycloak
 

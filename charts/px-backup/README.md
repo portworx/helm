@@ -39,49 +39,51 @@ $ helm install --name px-backup portworx/px-backup --namespace px-backup
 
 ## Uninstalling the Chart
 
-To uninstall/delete the `px-backup` chart:
+1. To uninstall/delete the `px-backup` chart:
 
 ```console
 $ helm delete px-backup --namespace px-backup
 ```
-OR
+
+2. To cleanup secrets and pvc created by px-backup:
+
 ```console
 $ kubectl delete ns px-backup
 ```
 
 ## Configuration
 
-The following table lists the configurable parameters of the Keycloak chart and their default values.
+The following table lists the configurable parameters of the PX-Backup chart and their default values.
 
 Parameter | Description | Default
 --- | --- | ---
 `namespace` | Namespace to install px-central and px-backup | `px-backup`
-`customeRegistryEnabled` | Custom registry based install | `false`
-`dockerRegistryURL` | Docker registry URl | `docker.io`
-`dockerImageRepoName` | Docker images repository name | `portworx`
-`imagePullSecrets` | Image pull secret for custom registry | `docregistry-secret`
-`imagePullPolicy` | Image pull policy | `Always`
 `persistentStorage` | Persistent storage for all px-central components | `[]`
-`persistentStorage.enabled` | Enable persistent storage | `true`
+`persistentStorage.enabled` | Enable persistent storage | `false`
 `persistentStorage.storageClassName` | Provide storage class name which exists | `[]`
-`nodeAffinityKey` | Node affinity key to deploy all central components on specific nodes | `pxc/enabled`
-`nodeAffinityValue` | Node affinity value to deploy all central components on specific nodes | `false`
 `storkRequired` | Scheduler name as stork | `false`
-`ingressControllerSetup` | Ingress controller deployment required | `true`
+`ingressControllerSetup` | Ingress controller deployment required | `false`
 `centralEndpoint` | PX-Central ingress endpoint (Hostname or public IP) | default `None`
-`centralOIDC` | PX-Central OIDC | `[]`
-`centralOIDC.enabled` | PX-Central OIDC | `true`
-`centralOIDC.username` | PX-Central OIDC username | `admin`
-`centralOIDC.password` | PX-Central OIDC admin user password | `admin`
-`centralOIDC.email` | PX-Central OIDC admin user email | `admin@portworx.com`
-`centralOIDC.keyCloakBackendPassword` | Keycloak backend store password | `keycloak`
-`centralOIDC.clientId` | PX-Central OIDC client id | `pxcentral`
-`centralOIDC.clientSecret` | PX-Central OIDC client secret | `dummy`
-`externalOIDC` | Enable external OIDC provider | `[]`
-`externalOIDC.enabled` | Enabled external OIDC provider | `false`
-`externalOIDC.clientID` | External OIDC client ID | default `test`
-`externalOIDC.clientSecret` | External OIDC client secret | `test`
-`externalOIDC.endpoint` | External OIDC endpoint | `test`
+`oidc` | Enable OIDC for PX-Central and PX-backup for RBAC | `[]`
+`oidc.centralOIDC` | PX-Central OIDC | `[]`
+`oidc.centralOIDC.enabled` | PX-Central OIDC | `true`
+`oidc.centralOIDC.defaultUsername` | PX-Central OIDC username | `admin`
+`oidc.centralOIDC.defaultPassword` | PX-Central OIDC admin user password | `admin`
+`oidc.centralOIDC.defaultEmail` | PX-Central OIDC admin user email | `admin@portworx.com`
+`oidc.centralOIDC.keyCloakBackendPassword` | Keycloak backend store password | `keycloak`
+`oidc.centralOIDC.clientId` | PX-Central OIDC client id | `pxcentral`
+`oidc.centralOIDC.clientSecret` | PX-Central OIDC client secret | `dummy`
+`oidc.externalOIDC` | Enable external OIDC provider | `[]`
+`oidc.externalOIDC.enabled` | Enabled external OIDC provider | `false`
+`oidc.externalOIDC.clientID` | External OIDC client ID | default `test`
+`oidc.externalOIDC.clientSecret` | External OIDC client secret | `test`
+`oidc.externalOIDC.endpoint` | External OIDC endpoint | `test`
+`images` | PX-Backup deployment images | `[]`
+`images.customRegistryEnabled` | Custom registry based install | `false`
+`images.registry` | Docker registry URl | `docker.io`
+`images.repo` | Docker images repository name | `portworx`
+`images.pullSecrets` | Image pull secret for custom registry | `docregistry-secret`
+`images.pullPolicy` | Image pull policy | `Always`
 `pxbackup` | Enable PX-Backup | `[]`
 `pxbackup.enabled` | Enabled PX-Backup | `true`
 `pxbackup.orgName` | PX-Backup organization name | `portworx`

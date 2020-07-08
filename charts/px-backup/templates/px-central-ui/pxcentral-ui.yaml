@@ -1,5 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
-{{- $customRegistryEnabled := .Values.customeRegistryEnabled | default false }}
+{{- $customRegistryEnabled := .Values.images.customRegistryEnabled | default false }}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 apiVersion: v1
 kind: ConfigMap
@@ -7,6 +7,7 @@ metadata:
   name: pxcentral-frontend-nginx-config
   namespace: {{ .Values.namespace }} 
   labels:
+    app.kubernetes.io/component: pxcentral-frontend
 {{- include "px-backup.labels" . | nindent 4 }}
 data:
   default.conf: |
@@ -84,11 +85,13 @@ metadata:
   name: pxcentral-backend
   namespace: {{ .Values.namespace }} 
   labels:
+    app.kubernetes.io/component: pxcentral-backend
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
       run: pxcentral-backend
+      app.kubernetes.io/component: pxcentral-backend
   replicas: 1
   strategy:
     rollingUpdate:
@@ -99,30 +102,29 @@ spec:
     metadata:
       labels:
         run: pxcentral-backend
+        app.kubernetes.io/component: pxcentral-backend
     spec:
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: {{ .Values.nodeAffinityKey }}
+              - key: pxbackup/enabled
                 operator: NotIn
                 values:
-                - "{{ .Values.nodeAffinityValue }}"
+                - "false"
       containers:
         - name: pxcentral-backend
-          image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          image: {{ printf "%s/%s/%s:%s" .Values.images.registry .Values.images.repo .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
           ports:
             - containerPort: 80
           envFrom:
             - configMapRef:
                 name: pxcentral-ui-configmap
           resources: {}
-      {{- if eq $customRegistryEnabled true }}
       imagePullSecrets:
-        - name: {{ .Values.imagePullSecrets }}
-      {{- end }}
+        - name: {{ .Values.images.pullSecrets }}
       restartPolicy: Always
 status: {}
 ---
@@ -132,11 +134,13 @@ metadata:
   name: pxcentral-frontend
   namespace: {{ .Values.namespace }}
   labels:
+    app.kubernetes.io/component: pxcentral-frontend
 {{- include "px-backup.labels" . | nindent 4 }} 
 spec:
   selector:
     matchLabels:
       run: pxcentral-frontend
+      app.kubernetes.io/component: pxcentral-frontend
   replicas: 1
   strategy:
     rollingUpdate:
@@ -147,20 +151,21 @@ spec:
     metadata:
       labels:
         run: pxcentral-frontend
+        app.kubernetes.io/component: pxcentral-frontend
     spec:
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: {{ .Values.nodeAffinityKey }}
+              - key: pxbackup/enabled
                 operator: NotIn
                 values:
-                - "{{ .Values.nodeAffinityValue }}"
+                - "false"
       containers:
         - name: pxcentral-frontend
-          image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.images.pxcentralFrontendImage.imageName .Values.images.pxcentralFrontendImage.tag }}
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          image: {{ printf "%s/%s/%s:%s" .Values.images.registry .Values.images.repo .Values.images.pxcentralFrontendImage.imageName .Values.images.pxcentralFrontendImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
           ports:
             - name : http
               containerPort: 80
@@ -177,10 +182,8 @@ spec:
         - name: frontend-nginx-configs
           configMap:
             name: pxcentral-frontend-nginx-config
-      {{- if eq $customRegistryEnabled true }}
       imagePullSecrets:
-        - name: {{ .Values.imagePullSecrets }}
-      {{- end }}
+        - name: {{ .Values.images.pullSecrets }}
       restartPolicy: Always
 status: {}
 ---
@@ -189,6 +192,7 @@ kind: StatefulSet
 metadata:
   labels:
     run: pxcentral-mysql
+    app.kubernetes.io/component: pxcentral-mysql
 {{- include "px-backup.labels" . | nindent 4 }}
   name: pxcentral-mysql
   namespace: {{ .Values.namespace }} 
@@ -196,6 +200,7 @@ spec:
   selector:
     matchLabels:
       run: pxcentral-mysql
+      app.kubernetes.io/component: pxcentral-mysql
   replicas: 1
   serviceName: pxcentral-mysql
   updateStrategy:
@@ -203,29 +208,29 @@ spec:
   template:
     metadata:
       labels:
-        app: pxcentral-mysql
         run: pxcentral-mysql
+        app.kubernetes.io/component: pxcentral-mysql
     spec:
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: {{ .Values.nodeAffinityKey }}
+              - key: pxbackup/enabled
                 operator: NotIn
                 values:
-                - "{{ .Values.nodeAffinityValue }}"
+                - "false"
       {{- if eq .Values.storkRequired true }}
       schedulerName: stork
       {{- end }}
       containers:
         - name: mysql
           {{- if eq $customRegistryEnabled true }}
-          image: {{ printf "%s/%s/mysql:5.7.22" .Values.dockerRegistryURL .Values.dockerImageRepoName }}
+          image: {{ printf "%s/%s/mysql:5.7.22" .Values.images.registry .Values.images.repo }}
           {{- else }}
           image: "mysql:5.7.22"
           {{- end }}
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
             - "--ignore-db-dir=lost+found"
           tty: true
@@ -269,10 +274,8 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-      {{- if eq $customRegistryEnabled true }}
       imagePullSecrets:
-        - name: {{ .Values.imagePullSecrets }}
-      {{- end }}
+        - name: {{ .Values.images.pullSecrets }}
 ---
 apiVersion: v1
 kind: Service
@@ -280,6 +283,7 @@ metadata:
   labels:
     name: pxcentral-mysql
     run: pxcentral-mysql
+    app.kubernetes.io/component: pxcentral-mysql
 {{- include "px-backup.labels" . | nindent 4 }}
   name: pxcentral-mysql
   namespace: {{ .Values.namespace }} 
@@ -299,6 +303,7 @@ metadata:
   namespace: {{ .Values.namespace }} 
   labels:
     run: pxcentral-frontend
+    app.kubernetes.io/component: pxcentral-frontend
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
@@ -320,6 +325,7 @@ metadata:
   namespace: {{ .Values.namespace }} 
   labels:
     run: pxcentral-backend
+    app.kubernetes.io/component: pxcentral-backend
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:

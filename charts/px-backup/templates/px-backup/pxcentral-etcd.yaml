@@ -1,6 +1,6 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $etcdEnabled := .Values.pxbackup.enabled | default false }}
-{{- $customRegistryEnabled := .Values.customeRegistryEnabled | default false }}
+{{- $customRegistryEnabled := .Values.images.customRegistryEnabled | default false }}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- if eq $etcdEnabled true }}
@@ -10,8 +10,7 @@ metadata:
   name: px-backup-etcd-scripts
   namespace: {{ .Values.namespace }} 
   labels:
-    app.kubernetes.io/name: etcd
-    app.kubernetes.io/instance: px-backup-etcd
+    app.kubernetes.io/component: px-backup-etcd
   {{- include "px-backup.labels" . | nindent 4 }}
 data:
   setup.sh: |-
@@ -160,8 +159,7 @@ metadata:
   name: px-backup-etcd-headless
   namespace: {{ .Values.namespace }}
   labels:
-    app.kubernetes.io/name: etcd
-    app.kubernetes.io/instance: px-backup-etcd
+    app.kubernetes.io/component: px-backup-etcd
 {{- include "px-backup.labels" . | nindent 4 }}
   annotations:
     service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
@@ -176,8 +174,7 @@ spec:
       port: 2380
       targetPort: peer
   selector:
-    app.kubernetes.io/name: etcd
-    app.kubernetes.io/instance: px-backup-etcd
+    app.kubernetes.io/component: px-backup-etcd
 ---
 apiVersion: v1
 kind: Service
@@ -185,8 +182,7 @@ metadata:
   name: px-backup-etcd
   namespace: {{ .Values.namespace }}
   labels:
-    app.kubernetes.io/name: etcd
-    app.kubernetes.io/instance: px-backup-etcd
+    app.kubernetes.io/component: px-backup-etcd
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
@@ -200,8 +196,7 @@ spec:
       targetPort: peer
       nodePort: null
   selector:
-    app.kubernetes.io/name: etcd
-    app.kubernetes.io/instance: px-backup-etcd
+    app.kubernetes.io/component: px-backup-etcd
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -209,14 +204,13 @@ metadata:
   name: px-backup-etcd
   namespace: {{ .Values.namespace }} 
   labels:
-    app.kubernetes.io/name: etcd
-    app.kubernetes.io/instance: px-backup-etcd
+    app.kubernetes.io/component: px-backup-etcd
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: etcd
-      app.kubernetes.io/instance: px-backup-etcd
+{{- include "px-backup.labels" . | nindent 6 }}
+      app.kubernetes.io/component: px-backup-etcd
   serviceName: px-backup-etcd-headless
   podManagementPolicy: Parallel
   replicas: 3
@@ -225,25 +219,23 @@ spec:
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: etcd
-        app.kubernetes.io/instance: px-backup-etcd
+{{- include "px-backup.labels" . | nindent 8 }}
+        app.kubernetes.io/component: px-backup-etcd
     spec:
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: {{ .Values.nodeAffinityKey }}
+              - key: pxbackup/enabled
                 operator: NotIn
                 values:
-                - "{{ .Values.nodeAffinityValue }}"
+                - "false"
       {{- if eq .Values.storkRequired true }}
       schedulerName: stork
       {{- end }}
-      {{- if eq $customRegistryEnabled true }}
       imagePullSecrets:
-        - name: {{ .Values.imagePullSecrets }}
-      {{- end }}
+        - name: {{ .Values.images.pullSecrets }}
       serviceAccountName: px-backup-account
       {{- if $isOpenshiftCluster }}
       securityContext:
@@ -256,11 +248,11 @@ spec:
       containers:
         - name: etcd
           {{- if eq $customRegistryEnabled true }}
-          image: {{ printf "%s/%s/etcd:3.4.7-debian-10-r14" .Values.dockerRegistryURL .Values.dockerImageRepoName }} 
+          image: {{ printf "%s/%s/etcd:3.4.7-debian-10-r14" .Values.images.registry .Values.images.repo }} 
           {{- else }}
           image: docker.io/bitnami/etcd:3.4.7-debian-10-r14
           {{- end }}
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
             - /scripts/setup.sh
           resources:

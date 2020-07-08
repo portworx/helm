@@ -36,27 +36,9 @@ Common labels
 */}}
 {{- define "px-backup.labels" -}}
 app.kubernetes.io/name: {{ template "px-backup.name" . }}
-helm.sh/chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 app.kubernetes.io/instance: {{.Release.Name | quote }}
 app.kubernetes.io/version: {{ .Chart.Version | quote }}
-app.kubernetes.io/managed-by: {{.Release.Service | quote }}
-{{- end -}}
-
-{{- define "ingress-controller.labels" -}}
-app.kubernetes.io/name: ingress-nginx
-helm.sh/chart: ingress-nginx-2.0.2
-app.kubernetes.io/instance: ingress-nginx
-app.kubernetes.io/version: 0.31.1
-app.kubernetes.io/component: controller
-app.kubernetes.io/managed-by: {{.Release.Service | quote }}
-{{- end -}}
-
-{{- define "ingress-controller-webhook.labels" -}}
-app.kubernetes.io/name: ingress-nginx
-helm.sh/chart: ingress-nginx-2.0.2
-app.kubernetes.io/instance: ingress-nginx
-app.kubernetes.io/version: 0.31.1
-app.kubernetes.io/component: admission-webhook
 app.kubernetes.io/managed-by: {{.Release.Service | quote }}
 {{- end -}}
 

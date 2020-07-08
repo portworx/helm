@@ -1,5 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
-{{- $customRegistryEnabled := .Values.customeRegistryEnabled | default false }}
+{{- $customRegistryEnabled := .Values.images.customRegistryEnabled | default false }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -7,6 +7,7 @@ metadata:
   namespace: {{ .Values.namespace }} 
   labels:
     run: pxcentral-lh-middleware
+    app.kubernetes.io/component: pxcentral-lh-middleware
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
@@ -27,11 +28,13 @@ metadata:
   name: pxcentral-lh-middleware
   namespace: {{ .Values.namespace }} 
   labels:
+    app.kubernetes.io/component: pxcentral-lh-middleware
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
       run: pxcentral-lh-middleware
+      app.kubernetes.io/component: pxcentral-lh-middleware
   replicas: 1
   minReadySeconds: 0
   strategy:
@@ -48,20 +51,21 @@ spec:
     metadata:
       labels:
         run: pxcentral-lh-middleware
+        app.kubernetes.io/component: pxcentral-lh-middleware
     spec:
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: {{ .Values.nodeAffinityKey }}
+              - key: pxbackup/enabled
                 operator: NotIn
                 values:
-                - "{{ .Values.nodeAffinityValue }}"
+                - "false"
       containers:
       - name: pxcentral-lighthouse-backend
-        image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.images.pxcentralMiddlewareImage.imageName .Values.images.pxcentralMiddlewareImage.tag }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        image: {{ printf "%s/%s/%s:%s" .Values.images.registry .Values.images.repo .Values.images.pxcentralMiddlewareImage.imageName .Values.images.pxcentralMiddlewareImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
           - name: PX_NAMESPACE
             value: {{ .Values.namespace }} 
@@ -70,8 +74,6 @@ spec:
             containerPort: 8091
           - name: https
             containerPort: 8092
-      {{- if eq $customRegistryEnabled true }}
       imagePullSecrets:
-        - name: {{ .Values.imagePullSecrets }}
-      {{- end }}
+        - name: {{ .Values.images.pullSecrets }}
       restartPolicy: Always

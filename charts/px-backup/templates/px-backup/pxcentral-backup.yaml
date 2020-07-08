@@ -1,5 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
-{{- $customRegistryEnabled := .Values.customeRegistryEnabled | default false }}
+{{- $customRegistryEnabled := .Values.images.customRegistryEnabled | default false }}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- if eq $pxBackupEnabled true }}
 apiVersion: v1
@@ -10,10 +10,11 @@ metadata:
   labels:
 {{- include "px-backup.labels" . | nindent 4 }}
 ---
-kind: ClusterRole
+kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
    name: px-backup-role
+   namespace: {{ .Values.namespace }}
    labels:
 {{- include "px-backup.labels" . | nindent 4 }}
 rules:
@@ -21,10 +22,11 @@ rules:
     resources: ["secrets"]
     verbs: ["get"]
 ---
-kind: ClusterRoleBinding
+kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: px-backup-role-binding
+  namespace: {{ .Values.namespace }}
   labels:
 {{- include "px-backup.labels" . | nindent 4 }}
 subjects:
@@ -32,7 +34,7 @@ subjects:
   name: px-backup-account
   namespace: {{ .Values.namespace }} 
 roleRef:
-  kind: ClusterRole
+  kind: Role
   name: px-backup-role
   apiGroup: rbac.authorization.k8s.io
 ---
@@ -62,6 +64,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
+    app.kubernetes.io/component: px-backup
 {{- include "px-backup.labels" . | nindent 4 }}
   name: px-backup
   namespace: {{ .Values.namespace }} 
@@ -85,18 +88,18 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: {{ .Values.nodeAffinityKey }}
+              - key: pxbackup/enabled
                 operator: NotIn
                 values:
-                - "{{ .Values.nodeAffinityValue }}"
+                - "false"
       containers:
       - env:
         - name: SECRET_NAMESPACE
           value: {{ .Values.namespace }}
         - name: PX_BACKUP_DEFAULT_ORG
           value: {{ .Values.pxbackup.orgName }}
-        image: {{ printf "%s/%s/%s:%s" .Values.dockerRegistryURL .Values.dockerImageRepoName .Values.images.pxBackupImage.imageName .Values.images.pxBackupImage.tag }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        image: {{ printf "%s/%s/%s:%s" .Values.images.registry .Values.images.repo .Values.images.pxBackupImage.imageName .Values.images.pxBackupImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         name: px-backup
         ports:
         - containerPort: 10002
@@ -121,6 +124,6 @@ spec:
         - --datastoreEndpoints=etcd:http://px-backup-etcd-0.px-backup-etcd-headless:2379,etcd:http://px-backup-etcd-1.px-backup-etcd-headless:2379,etcd:http://px-backup-etcd-2.px-backup-etcd-headless:2379
       serviceAccountName: px-backup-account
       imagePullSecrets:
-        - name: docregistry-secret
+        - name: {{ .Values.images.pullSecrets }}
 ---
 {{- end -}}

@@ -1,5 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
-{{- $customRegistryEnabled := .Values.customeRegistryEnabled | default false }}
+{{- $customRegistryEnabled := .Values.images.customRegistryEnabled | default false }}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $centralOIDC := .Values.oidc.centralOIDC.enabled | default false -}}
 {{- if eq $centralOIDC true }}
@@ -8,14 +8,17 @@ kind: ServiceAccount
 metadata:
   name: px-keycloak-account
   labels:
+    app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
   namespace: {{ .Values.namespace }} 
 ---
-kind: ClusterRole
+kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: px-keycloak-role
+  namespace: {{ .Values.namespace }}
   labels:
+    app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
 rules:
   - apiGroups: [""]
@@ -26,6 +29,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   labels:
+    app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
   name: pxcentral-keycloak-postgresql
   namespace: {{ .Values.namespace }} 
@@ -37,6 +41,7 @@ apiVersion: v1
 kind: Secret
 metadata:
   labels:
+    app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
   name: pxcentral-keycloak-http
   namespace: {{ .Values.namespace }} 
@@ -44,18 +49,20 @@ type: Opaque
 stringData:
   password: {{ .Values.oidc.centralOIDC.defaultPassword }}
 ---
-kind: ClusterRoleBinding
+kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: px-keycloak-role-binding
+  namespace: {{ .Values.namespace }}
   labels:
+    app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
 subjects:
 - kind: ServiceAccount
   name: px-keycloak-account
   namespace: {{ .Values.namespace }}
 roleRef:
-  kind: ClusterRole
+  kind: Role
   name: px-keycloak-role
   apiGroup: rbac.authorization.k8s.io
 ---
@@ -65,7 +72,7 @@ metadata:
   name: pxcentral-keycloak-sh
   namespace: {{ .Values.namespace }} 
   labels:
-    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
 data:
   keycloak.sh: |
@@ -82,7 +89,7 @@ metadata:
   name: pxcentral-keycloak-startup
   namespace: {{ .Values.namespace }} 
   labels:
-    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
 data:
   keycloak.cli: |
@@ -128,6 +135,7 @@ metadata:
   name: pxcentral-keycloak-postgresql-headless
   namespace: {{ .Values.namespace }} 
   labels:
+    app.kubernetes.io/component: keycloak
     app: postgresql
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
@@ -147,6 +155,7 @@ metadata:
   namespace: {{ .Values.namespace }} 
   labels:
     app: postgresql
+    app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
@@ -164,7 +173,7 @@ metadata:
   name: pxcentral-keycloak-headless
   namespace: {{ .Values.namespace }} 
   labels:
-    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: keycloak
     service: headless
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
@@ -180,8 +189,7 @@ spec:
       targetPort: https
       protocol: TCP
   selector:
-    app.kubernetes.io/name: keycloak
-    app.kubernetes.io/instance: "pxcentral-keycloak"
+    app.kubernetes.io/component: keycloak
 ---
 apiVersion: v1
 kind: Service
@@ -189,7 +197,7 @@ metadata:
   name: pxcentral-keycloak-http
   namespace: {{ .Values.namespace }} 
   labels:
-    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: keycloak
     service: http
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
@@ -203,8 +211,7 @@ spec:
       targetPort: https
       protocol: TCP
   selector:
-    app.kubernetes.io/name: keycloak
-    app.kubernetes.io/instance: "pxcentral-keycloak"
+    app.kubernetes.io/component: keycloak
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -214,6 +221,7 @@ metadata:
   labels:
     app: postgresql
     role: master
+    app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
   serviceName: pxcentral-keycloak-postgresql-headless
@@ -236,28 +244,26 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: {{ .Values.nodeAffinityKey }}
+              - key: pxbackup/enabled
                 operator: NotIn
                 values:
-                - "{{ .Values.nodeAffinityValue }}"
+                - "false"
       serviceAccountName: px-keycloak-account
       {{- if eq .Values.storkRequired true }}
       schedulerName: stork
       {{- end }}
-      {{- if eq $customRegistryEnabled true }}
       imagePullSecrets:
-        - name: {{ .Values.imagePullSecrets }}
-      {{- end }}
+        - name: {{ .Values.images.pullSecrets }}
       securityContext:
         fsGroup: 1001
       containers:
         - name: pxcentral-keycloak-postgresql
           {{- if eq $customRegistryEnabled true }}
-          image: {{ printf "%s/%s/postgresql:11.7.0-debian-10-r9" .Values.dockerRegistryURL .Values.dockerImageRepoName }}
+          image: {{ printf "%s/%s/postgresql:11.7.0-debian-10-r9" .Values.images.registry .Values.images.repo }}
           {{- else }}
           image: docker.io/bitnami/postgresql:11.7.0-debian-10-r9
           {{- end }}
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
           securityContext:
             runAsUser: 1001
           env:
@@ -341,13 +347,13 @@ metadata:
   name: pxcentral-keycloak
   namespace: {{ .Values.namespace }} 
   labels:
-    app.kubernetes.io/name: keycloak
+    app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/name: keycloak
-      app.kubernetes.io/instance: "pxcentral-keycloak"
+      app.kubernetes.io/component: keycloak
+{{- include "px-backup.labels" . | nindent 6 }}
   replicas: 1
   serviceName: pxcentral-keycloak-headless
   podManagementPolicy: Parallel
@@ -356,35 +362,33 @@ spec:
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: keycloak
-        app.kubernetes.io/instance: "pxcentral-keycloak"
+        app.kubernetes.io/component: keycloak
+{{- include "px-backup.labels" . | nindent 8 }}
     spec:
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              - key: {{ .Values.nodeAffinityKey }}
+              - key: pxbackup/enabled
                 operator: NotIn
                 values:
-                - "{{ .Values.nodeAffinityValue }}"
+                - "false"
       restartPolicy: Always
       serviceAccountName: px-keycloak-account
       {{- if eq .Values.storkRequired true }}
       schedulerName: stork
       {{- end }}
-      {{- if eq $customRegistryEnabled true }}
       imagePullSecrets:
-        - name: {{ .Values.imagePullSecrets }}
-      {{- end }}
+        - name: {{ .Values.images.pullSecrets }}
       initContainers:
         - name: wait-for-postgresql
           {{- if eq $customRegistryEnabled true }}
-          image: {{ printf "%s/%s/busybox:1.31" .Values.dockerRegistryURL .Values.dockerImageRepoName }}
+          image: {{ printf "%s/%s/busybox:1.31" .Values.images.registry .Values.images.repo }}
           {{- else }}
           image: "busybox:1.31"
           {{- end }}
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
           securityContext:
             privileged: true
           command:
@@ -400,11 +404,11 @@ spec:
             {}
         - name: px-keycloak-login-theme
           {{- if eq $customRegistryEnabled true }}
-          image: {{ printf "%s/%s/keycloak-login-theme:1.0.1" .Values.dockerRegistryURL .Values.dockerImageRepoName }}
+          image: {{ printf "%s/%s/keycloak-login-theme:1.0.1" .Values.images.registry .Values.images.repo }}
           {{- else }}
           image: portworx/keycloak-login-theme:1.0.1
           {{- end }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
             - sh
           args:
@@ -418,11 +422,11 @@ spec:
       containers:
         - name: keycloak
           {{- if eq $customRegistryEnabled true }}
-          image: {{ printf "%s/%s/keycloak:9.0.2" .Values.dockerRegistryURL .Values.dockerImageRepoName }}
+          image: {{ printf "%s/%s/keycloak:9.0.2" .Values.images.registry .Values.images.repo }}
           {{- else }}
           image: "jboss/keycloak:9.0.2"
           {{- end }}
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
           securityContext:
             privileged: true
           command:
