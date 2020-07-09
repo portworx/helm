@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pxcentral-admin-user
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-frontend
+{{- include "px-backup.labels" . | nindent 4 }}
+data:
+  name: {{ .Values.oidc.centralOIDC.defaultUsername }}
+  password: {{ .Values.oidc.centralOIDC.defaultPassword }}
+  email: {{ .Values.oidc.centralOIDC.defaultEmail }}
+  centralOIDCEnabled: "{{ .Values.oidc.centralOIDC.enabled }}"
+  centralOIDCClientId: {{ .Values.oidc.centralOIDC.clientId }}
+  externalOIDCEnabled: "{{ .Values.oidc.externalOIDC.enabled }}"
+  externalOIDCEndpoint: {{ .Values.oidc.externalOIDC.endpoint }}
+  externalOIDCClientId: {{ .Values.oidc.externalOIDC.clientID }}
+  externalOIDCClientSecret: {{ .Values.oidc.externalOIDC.clientSecret }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pxcentral-modules
+  namespace: {{ .Values.namespace }} 
+  labels:
+    app.kubernetes.io/component: pxcentral-backend
+{{- include "px-backup.labels" . | nindent 4 }}
+data:
+  lighthouse: "true"
+  backup: "{{ .Values.pxbackup.enabled }}"
+  licenseserver: "false"
+  forwardingProxy: "false"
+  metrics: "false"
+  minik8s: "false"
+  sso: "{{ .Values.oidc.centralOIDC.enabled }}"
+  centralOIDCEnabled: "{{ .Values.oidc.centralOIDC.enabled }}"
+  externalOIDCEnabled: "{{ .Values.oidc.externalOIDC.enabled }}"
+  centralEndpoint: {{ .Values.centralEndpoint }}
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/app-root: /pxcentral
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  name: pxcentral-onprem-central-ingress
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-frontend
+{{- include "px-backup.labels" . | nindent 4 }}
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: pxcentral-frontend
+          servicePort: 80
+        path: /pxcentral(/|$)(.*)
+  - http:
+      paths:
+      - backend:
+          serviceName: pxcentral-backend
+          servicePort: 80
+        path: /backend(/|$)(.*)
+  - http:
+      paths:
+      - backend:
+          serviceName: pxcentral-lh-middleware
+          servicePort: 8091
+        path: /lhBackend(/|$)(.*)
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+  name: pxcentral-onprem-keycloak-ingress
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-frontend
+{{- include "px-backup.labels" . | nindent 4 }}
+spec:
+  rules:
+  - http:
+      paths:
+      - backend:
+          serviceName: pxcentral-keycloak-http
+          servicePort: 80
+        path: /keycloak
+---
