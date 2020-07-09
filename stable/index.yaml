@@ -2,21 +2,43 @@ apiVersion: v1
 entries:
   portworx:
   - apiVersion: v1
-    created: "2020-07-09T04:20:08.034799485Z"
+    created: "2020-07-09T12:02:57.534169667Z"
     description: A Helm chart for installing Portworx on Kubernetes.
-    digest: eeb72d445d23b7dc3a9344ce542aabe1148694bffb29f7635366c58a607f8f9f
+    digest: a9228262cfdef429b86ea8c7bb0c77f604b0dcfda740a5a9bc928dc0a9b05953
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     name: portworx
     sources:
     - https://github.com/portworx/helm
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/portworx-1.0.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/px-backup-dev/stable/portworx-1.0.0.tgz
     version: 1.0.0
   px-backup:
   - apiVersion: v1
     appVersion: 1.0.2-rc1
-    created: "2020-07-09T04:20:08.036741068Z"
+    created: "2020-07-09T12:02:57.539300516Z"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
+      and Openshift
+    digest: d03f0ab905231e0b0cd29fafd56633425ae5b6212b8d68bbb2363007f53ccd73
+    home: https://portworx.com/
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
+    keywords:
+    - px-backup
+    - storage
+    - persistent disk
+    - pvc
+    - portworx
+    - px-central
+    - lighthouse
+    name: px-backup
+    sources:
+    - https://github.com/portworx/helm/tree/master/charts/px-backup
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/px-backup-dev/stable/px-backup-1.0.0.tgz
+    version: 1.0.0
+  - apiVersion: v1
+    appVersion: 1.0.2-rc1
+    created: "2020-07-09T12:02:57.536078388Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 260c675f099b7ddadd5c839a2243c5f7442b09fc09d4ad4ba6d6ebb9585bf97a
@@ -34,6 +56,6 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.0.0-rc1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/px-backup-dev/stable/px-backup-1.0.0-rc1.tgz
     version: 1.0.0-rc1
-generated: "2020-07-09T04:20:08.031411915Z"
+generated: "2020-07-09T12:02:57.530920117Z"
