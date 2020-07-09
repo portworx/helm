@@ -38,7 +38,7 @@ images:
 
   pxcentralApiServerImage:
     imageName: pxcentral-onprem-api
-    tag: 1.0.4-dev
+    tag: 1.0.4-rc1
   pxcentralFrontendImage:
     imageName: pxcentral-onprem-ui-frontend
     tag: 1.1.1
@@ -49,11 +49,11 @@ images:
     imageName: pxcentral-onprem-ui-lhbackend
     tag: 1.1.1
   pxBackupImage:
-    imageName: px-backup-base
-    tag: master
+    imageName: px-backup
+    tag: 1.0.2-rc1
   postSetupImage:
     imageName: pxcentral-onprem-post-setup
-    tag: 1.0.4-dev
+    tag: 1.0.4-rc1
   preSetupImage:
     imageName: pxcentral-onprem-pre-setup
-    tag: 1.0.4-dev
+    tag: 1.0.4-rc1
