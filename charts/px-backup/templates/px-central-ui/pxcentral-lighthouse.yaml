@@ -63,7 +63,7 @@ spec:
                 values:
                 - "false"
       containers:
-      - name: pxcentral-lighthouse-backend
+      - name: pxcentral-lh-middleware
         image: {{ printf "%s/%s/%s:%s" .Values.images.registry .Values.images.repo .Values.images.pxcentralMiddlewareImage.imageName .Values.images.pxcentralMiddlewareImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
@@ -74,6 +74,10 @@ spec:
             containerPort: 8091
           - name: https
             containerPort: 8092
+      {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
-        - name: {{ .Values.images.pullSecrets }}
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
       restartPolicy: Always

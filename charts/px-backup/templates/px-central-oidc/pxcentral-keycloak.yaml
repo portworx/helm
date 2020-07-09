@@ -252,8 +252,12 @@ spec:
       {{- if eq .Values.storkRequired true }}
       schedulerName: stork
       {{- end }}
+      {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
-        - name: {{ .Values.images.pullSecrets }}
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
       securityContext:
         fsGroup: 1001
       containers:
@@ -379,8 +383,12 @@ spec:
       {{- if eq .Values.storkRequired true }}
       schedulerName: stork
       {{- end }}
+      {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
-        - name: {{ .Values.images.pullSecrets }}
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
       initContainers:
         - name: wait-for-postgresql
           {{- if eq $customRegistryEnabled true }}
@@ -455,18 +463,6 @@ spec:
                 secretKeyRef:
                   name: pxcentral-keycloak-postgresql
                   key: postgresql-password
-            # - name: KEYCLOAK_LOGLEVEL
-            #   value: DEBUG
-            # - name: WILDFLY_LOGLEVEL
-            #   value: DEBUG
-            # - name: CACHE_OWNERS
-            #   value: "2"
-            # - name: DB_QUERY_TIMEOUT
-            #   value: "60"
-            # - name: DB_VALIDATE_ON_MATCH
-            #   value: true
-            # - name: DB_USE_CAST_FAIL
-            #   value: false
           volumeMounts:
             - name: sh
               mountPath: /scripts

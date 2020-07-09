@@ -69,6 +69,7 @@ metadata:
   name: pxcentral-mysql-pvc
   namespace: {{ .Values.namespace }} 
   labels:
+    app.kubernetes.io/component: pxcentral-mysql
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
   accessModes:
@@ -123,8 +124,12 @@ spec:
             - configMapRef:
                 name: pxcentral-ui-configmap
           resources: {}
+      {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
-        - name: {{ .Values.images.pullSecrets }}
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
       restartPolicy: Always
 status: {}
 ---
@@ -182,8 +187,12 @@ spec:
         - name: frontend-nginx-configs
           configMap:
             name: pxcentral-frontend-nginx-config
+      {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
-        - name: {{ .Values.images.pullSecrets }}
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
       restartPolicy: Always
 status: {}
 ---
@@ -274,8 +283,12 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+      {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
-        - name: {{ .Values.images.pullSecrets }}
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service

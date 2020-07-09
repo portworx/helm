@@ -32,7 +32,8 @@ images:
   customRegistryEnabled: false
   registry: docker.io
   repo: portworx
-  pullSecrets: docregistry-secret
+  pullSecrets:
+    - docregistry-secret
   pullPolicy: Always
 
   pxcentralApiServerImage:

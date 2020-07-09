@@ -7,7 +7,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: ingress-controller
 {{- include "px-backup.labels" . | nindent 4 }}
   name: ingress-nginx
   namespace: {{ .Values.namespace }} 
@@ -17,7 +17,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: ingress-controller
 {{- include "px-backup.labels" . | nindent 4 }}
   name: ingress-nginx
   namespace: {{ .Values.namespace }}
@@ -85,7 +85,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: ingress-controller
 {{- include "px-backup.labels" . | nindent 4 }}
   name: ingress-nginx
   namespace: {{ .Values.namespace }}
@@ -103,7 +103,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   labels:
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: ingress-controller
 {{- include "px-backup.labels" . | nindent 4 }}
   name: ingress-nginx
   namespace: {{ .Values.namespace }} 
@@ -194,7 +194,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   labels:
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: ingress-controller
 {{- include "px-backup.labels" . | nindent 4 }}
   name: ingress-nginx
   namespace: {{ .Values.namespace }} 
@@ -212,7 +212,7 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: ingress-controller
 {{- include "px-backup.labels" . | nindent 4 }}
   name: ingress-nginx-controller-admission
   namespace: {{ .Values.namespace }} 
@@ -223,14 +223,14 @@ spec:
       port: 443
       targetPort: webhook
   selector:
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: ingress-controller
 ---
 # Source: ingress-nginx/templates/controller-service.yaml
 apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: ingress-controller
 {{- include "px-backup.labels" . | nindent 4 }}
   name: ingress-nginx-controller
   namespace: {{ .Values.namespace }} 
@@ -247,27 +247,27 @@ spec:
       protocol: TCP
       targetPort: https
   selector:
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: ingress-controller
 ---
 # Source: ingress-nginx/templates/controller-deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app.kubernetes.io/component: controller
+    app.kubernetes.io/component: ingress-controller
 {{- include "px-backup.labels" . | nindent 4 }}
   name: ingress-nginx-controller
   namespace: {{ .Values.namespace }} 
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/component: controller
+      app.kubernetes.io/component: ingress-controller
   revisionHistoryLimit: 10
   minReadySeconds: 0
   template:
     metadata:
       labels:
-        app.kubernetes.io/component: controller
+        app.kubernetes.io/component: ingress-controller
     spec:
       affinity:
         nodeAffinity:
@@ -279,8 +279,12 @@ spec:
                 values:
                 - "false"
       dnsPolicy: ClusterFirst
+      {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
-        - name: {{ .Values.images.pullSecrets }}
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
       containers:
         - name: controller
           {{- if eq $customRegistryEnabled true }}
@@ -370,7 +374,7 @@ apiVersion: admissionregistration.k8s.io/v1beta1
 kind: ValidatingWebhookConfiguration
 metadata:
   labels:
-    app.kubernetes.io/component: admission-webhook
+    app.kubernetes.io/component: ingress-admission-webhook
 {{- include "px-backup.labels" . | nindent 4 }}
   name: ingress-nginx-admission
   namespace: {{ .Values.namespace }} 
@@ -400,7 +404,7 @@ kind: ClusterRole
 metadata:
   name: ingress-nginx-admission
   labels:
-    app.kubernetes.io/component: admission-webhook
+    app.kubernetes.io/component: ingress-admission-webhook
 {{- include "px-backup.labels" . | nindent 4 }}
 rules:
   - apiGroups:
@@ -417,7 +421,7 @@ kind: ClusterRoleBinding
 metadata:
   name: ingress-nginx-admission
   labels:
-    app.kubernetes.io/component: admission-webhook
+    app.kubernetes.io/component: ingress-admission-webhook
 {{- include "px-backup.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -434,7 +438,7 @@ kind: Job
 metadata:
   name: ingress-nginx-admission-create
   labels:
-    app.kubernetes.io/component: admission-webhook
+    app.kubernetes.io/component: ingress-admission-webhook
 {{- include "px-backup.labels" . | nindent 4 }}
   namespace: {{ .Values.namespace }} 
 spec:
@@ -442,10 +446,14 @@ spec:
     metadata:
       name: ingress-nginx-admission-create
       labels:
-        app.kubernetes.io/component: admission-webhook
+        app.kubernetes.io/component: ingress-admission-webhook
     spec:
+      {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
-        - name: {{ .Values.images.pullSecrets }}
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
       containers:
         - name: create
           {{- if eq $customRegistryEnabled true }}
@@ -471,7 +479,7 @@ kind: Job
 metadata:
   name: ingress-nginx-admission-patch
   labels:
-    app.kubernetes.io/component: admission-webhook
+    app.kubernetes.io/component: ingress-admission-webhook
 {{- include "px-backup.labels" . | nindent 4 }}
   namespace: {{ .Values.namespace }} 
 spec:
@@ -479,10 +487,14 @@ spec:
     metadata:
       name: ingress-nginx-admission-patch
       labels:
-        app.kubernetes.io/component: admission-webhook
+        app.kubernetes.io/component: ingress-admission-webhook
     spec:
+      {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
-        - name: {{ .Values.images.pullSecrets }}
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
       containers:
         - name: patch
           {{- if eq $customRegistryEnabled true }}
@@ -510,7 +522,7 @@ kind: Role
 metadata:
   name: ingress-nginx-admission
   labels:
-    app.kubernetes.io/component: admission-webhook
+    app.kubernetes.io/component: ingress-admission-webhook
 {{- include "px-backup.labels" . | nindent 4 }}
   namespace: {{ .Values.namespace }} 
 rules:
@@ -528,7 +540,7 @@ kind: RoleBinding
 metadata:
   name: ingress-nginx-admission
   labels:
-    app.kubernetes.io/component: admission-webhook
+    app.kubernetes.io/component: ingress-admission-webhook
 {{- include "px-backup.labels" . | nindent 4 }}
   namespace: {{ .Values.namespace }} 
 roleRef:
@@ -546,7 +558,7 @@ kind: ServiceAccount
 metadata:
   name: ingress-nginx-admission
   labels:
-    app.kubernetes.io/component: admission-webhook
+    app.kubernetes.io/component: ingress-admission-webhook
 {{- include "px-backup.labels" . | nindent 4 }}
   namespace: {{ .Values.namespace }} 
 ---

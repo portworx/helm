@@ -4,6 +4,7 @@ metadata:
   name: pxcentral-admin-user
   namespace: {{ .Values.namespace }}
   labels:
+    app.kubernetes.io/component: pxcentral-frontend
 {{- include "px-backup.labels" . | nindent 4 }}
 data:
   name: {{ .Values.oidc.centralOIDC.defaultUsername }}
@@ -22,6 +23,7 @@ metadata:
   name: pxcentral-modules
   namespace: {{ .Values.namespace }} 
   labels:
+    app.kubernetes.io/component: pxcentral-backend
 {{- include "px-backup.labels" . | nindent 4 }}
 data:
   lighthouse: "true"
@@ -45,6 +47,7 @@ metadata:
   name: pxcentral-onprem-central-ingress
   namespace: {{ .Values.namespace }}
   labels:
+    app.kubernetes.io/component: pxcentral-frontend
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
   rules:
@@ -75,6 +78,7 @@ metadata:
   name: pxcentral-onprem-keycloak-ingress
   namespace: {{ .Values.namespace }}
   labels:
+    app.kubernetes.io/component: pxcentral-frontend
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
   rules:

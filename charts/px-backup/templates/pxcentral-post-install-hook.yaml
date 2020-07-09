@@ -21,7 +21,7 @@ spec:
                 operator: NotIn
                 values:
                 - "false"
-      serviceAccountName: pxcentral-onprem-job
+      serviceAccountName: pxcentral-apiserver
       containers:
       - name: pxcentral-post-setup
         image: {{ printf "%s/%s/%s:%s" .Values.images.registry .Values.images.repo .Values.images.postSetupImage.imageName .Values.images.postSetupImage.tag }}
@@ -34,8 +34,12 @@ spec:
           - name: PXC_NAMESPACE
             value: {{ .Values.namespace }}
         command: ["python",  "/pxcentral-post-install/pxc-post-setup.py"]
+      {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
-        - name: {{ .Values.images.pullSecrets }}
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
       restartPolicy: Never
   backoffLimit: 5
   activeDeadlineSeconds: 2400

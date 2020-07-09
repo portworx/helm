@@ -24,36 +24,9 @@ metadata:
     app.kubernetes.io/component: pxcentral-pre-install-hook
 {{- include "px-backup.labels" . | nindent 4 }}
 rules:
-- apiGroups: [""]
-  resources: ["secrets"]
-  verbs: ["get", "list", "update", "create", "patch"]
-- apiGroups: [""]
-  resources: ["pods", "services"]
-  verbs: ["delete", "get", "list", "watch", "update"]
-- apiGroups: [""]
-  resources: ["pods/exec"]
-  verbs: ["create"]
-- apiGroups: [""]
-  resources: ["pods/status"]
-  verbs: ["patch", "update"]
-- apiGroups: [""]
-  resources: ["persistentvolumeclaims", "persistentvolumes"]
-  verbs: ["get", "list"]
 - apiGroups: ["storage.k8s.io"]
   resources: ["storageclasses"]
   verbs: ["get", "list"]
-- apiGroups: [""]
-  resources: ["configmaps"]
-  verbs: ["get", "list", "update", "create", "patch"]
-- apiGroups: ["extensions"]
-  resources: ["ingresses", "ingresses/status", "networkpolicies"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: ["extensions", "apps"]
-  resources: ["deployments", "statefulsets", "deployments/status", "statefulsets/status"]
-  verbs: ["get", "list", "watch"]
-- apiGroups: ["networking.k8s.io"]
-  resources: ["ingresses", "ingresses/status", "networkpolicies"]
-  verbs: ["get", "list", "watch"]
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -106,8 +79,12 @@ spec:
         securityContext:
           privileged: true
         args: ["--pxcentral-namespace", "{{ .Values.namespace }}", "--ingress-controller", "{{ .Values.ingressControllerSetup }}", "--persistent-storage", "{{ .Values.persistentStorage.enabled }}","--storage-class-name", "{{ .Values.persistentStorage.storageClassName }}", "--custom-registry-enabled", "{{ .Values.images.customRegistryEnabled }}", "--custom-registry-url", "{{ .Values.images.registry }}", "--image-repo-name", "{{ .Values.images.repo }}", "--image-pull-secret", "{{ .Values.images.pullSecrets }}", "--external-oidc-enabled", "{{ .Values.oidc.externalOIDC.enabled }}", "--external-oidc-endpoint", "{{ .Values.oidc.externalOIDC.endpoint }}", "--external-oidc-client-id", "{{ .Values.oidc.externalOIDC.clientID }}", "--external-oidc-client-secret", "{{ .Values.oidc.externalOIDC.clientSecret }}"]
+      {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
-        - name: {{ .Values.images.pullSecrets }}
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
       restartPolicy: Never
   backoffLimit: 2
   activeDeadlineSeconds: 2400

@@ -8,6 +8,7 @@ metadata:
   name: pxcentral-ui-configmap
   namespace: {{ .Values.namespace }}
   labels:
+    app.kubernetes.io/component: pxcentral-frontend
 {{- include "px-backup.labels" . | nindent 4 }}
 data:
   FRONTEND_UI_URL: {{ printf "http://%s/pxcentral" $pxcentralEndpoint }}
