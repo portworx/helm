@@ -8,7 +8,7 @@ To install the chart with the release name `px-backup`:
 
 Add portworx/px-backup helm repository using command:
 ```console
-$ helm repo add portworx https://raw.githubusercontent.com/portworx/helm/master/stable
+$ helm repo add portworx https://charts.portworx.io
 ```
 
 Update helm repository:
@@ -22,9 +22,9 @@ $ helm search repo portworx
 ```
 Output:
 ```console
-NAME                    CHART VERSION   APP VERSION     DESCRIPTION                                       
-portworx/portworx       1.0.0                           A Helm chart for installing Portworx on Kuberne...
-portworx/px-backup      1.0.0                           A Helm chart for installing PX-Backup with PX-C...
+NAME                    CHART VERSION   APP VERSION         DESCRIPTION                                       
+portworx/portworx       1.0.0                               A Helm chart for installing Portworx on Kuberne...
+portworx/px-backup      1.0.0-rc1                           A Helm chart for installing PX-Backup with PX-C...
 ```
 
 Helm 3:
