@@ -20,9 +20,9 @@ oidc:
 
   externalOIDC:
     enabled: false
-    clientID: "test"
-    clientSecret: "test"
-    endpoint: "test"
+    clientID: "none"
+    clientSecret: "none"
+    endpoint: "none"
 
 pxbackup:
   enabled: true

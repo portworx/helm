@@ -43,7 +43,7 @@ data:
   PX_LICENSE_SERVER: "pxcentral-license.{{ .Values.namespace }}.svc.{{ .Values.clusterDomain }}:7070"
   PX_LICENSE_PASSWORD: "Admin@123"
   PX_LICENSE_USER: admin
-  PX_STATUS_ENDPOINT: {{ printf "http://pxcentral-apiserver.%s.svc.{{ .Values.clusterDomain }}:10006" .Values.namespace }}
+  PX_STATUS_ENDPOINT: {{ printf "http://pxcentral-apiserver.%s.svc.%s:10006" .Values.namespace .Values.clusterDomain }}
   QUEUE_CONNECTION: sync
   SESSION_DRIVER: file
   SESSION_LIFETIME: "120"
