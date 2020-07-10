@@ -259,7 +259,7 @@ spec:
         {{- end }}
       {{- end }}
       securityContext:
-        fsGroup: 1001
+{{ toYaml .Values.securityContext | indent 8 }}
       containers:
         - name: pxcentral-keycloak-postgresql
           {{- if eq $customRegistryEnabled true }}
@@ -268,8 +268,6 @@ spec:
           image: docker.io/bitnami/postgresql:11.7.0-debian-10-r9
           {{- end }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
-          securityContext:
-            runAsUser: 1001
           env:
             - name: BITNAMI_DEBUG
               value: "false"
@@ -389,6 +387,8 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
       initContainers:
         - name: wait-for-postgresql
           {{- if eq $customRegistryEnabled true }}
@@ -397,8 +397,6 @@ spec:
           image: "busybox:1.31"
           {{- end }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
-          securityContext:
-            privileged: true
           command:
             - sh
             - -c
@@ -435,8 +433,6 @@ spec:
           image: "jboss/keycloak:9.0.2"
           {{- end }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
-          securityContext:
-            privileged: true
           command:
             - /scripts/keycloak.sh
           env:
@@ -463,6 +459,10 @@ spec:
                 secretKeyRef:
                   name: pxcentral-keycloak-postgresql
                   key: postgresql-password
+            - name: JGROUPS_DISCOVERY_PROTOCOL
+              value: "dns.DNS_PING"
+            - name: JGROUPS_DISCOVERY_PROPERTIES
+              value: "dns_query=pxcentral-keycloak-headless.{{ .Values.namespace }}.svc.{{ .Values.clusterDomain }}"
           volumeMounts:
             - name: sh
               mountPath: /scripts

@@ -34,6 +34,6 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.0.0-rc1.tgz
-    version: 1.0.0-rc1
+    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.0.0.tgz
+    version: 1.0.0
 generated: "2020-07-09T04:20:08.031411915Z"

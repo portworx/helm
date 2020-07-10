@@ -470,8 +470,7 @@ spec:
       restartPolicy: OnFailure
       serviceAccountName: ingress-nginx-admission
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 2000
+{{ toYaml .Values.securityContext | indent 8 }}
 ---
 # Source: ingress-nginx/templates/admission-webhooks/job-patch/job-patchWebhook.yaml
 apiVersion: batch/v1
@@ -513,8 +512,7 @@ spec:
       restartPolicy: OnFailure
       serviceAccountName: ingress-nginx-admission
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 2000
+{{ toYaml .Values.securityContext | indent 8 }}
 ---
 # Source: ingress-nginx/templates/admission-webhooks/job-patch/role.yaml
 apiVersion: rbac.authorization.k8s.io/v1
