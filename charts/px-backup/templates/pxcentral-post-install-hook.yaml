@@ -22,12 +22,12 @@ spec:
                 values:
                 - "false"
       serviceAccountName: pxcentral-apiserver
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
       containers:
       - name: pxcentral-post-setup
         image: {{ printf "%s/%s/%s:%s" .Values.images.registry .Values.images.repo .Values.images.postSetupImage.imageName .Values.images.postSetupImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
-        securityContext:
-          privileged: true
         env:
           - name: LOG_LEVEL
             value: INFO

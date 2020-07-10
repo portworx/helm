@@ -18,7 +18,7 @@ data:
   LH_MIDDLEWARE_URL: {{ printf "%s/lhBackend" $pxcentralEndpoint }}
   FRONTEND_ENABLED_MODULES: COMPANY,LH,SSO,USERS,PXBACKUP
   LIGHT_HOUSE_TYPE: PRODUCTION
-  PX_BACKUP_ENDPOINT: "px-backup.{{ .Values.namespace }}.svc.cluster.local:10002"
+  PX_BACKUP_ENDPOINT: "px-backup.{{ .Values.namespace }}.svc.{{ .Values.clusterDomain }}:10002"
   FRONTEND_GRAFANA_URL: {{ printf "http://%s/grafana" $pxcentralEndpoint }}
   PX_BACKUP_ORGID: {{ .Values.pxbackup.orgName }}
   APACHE_RUN_GROUP: www-data
@@ -40,10 +40,10 @@ data:
   DB_PORT: "3306"
   DB_USERNAME: root
   LOG_CHANNEL: stderr
-  PX_LICENSE_SERVER: "pxcentral-license.{{ .Values.namespace }}.svc.cluster.local:7070"
+  PX_LICENSE_SERVER: "pxcentral-license.{{ .Values.namespace }}.svc.{{ .Values.clusterDomain }}:7070"
   PX_LICENSE_PASSWORD: "Admin@123"
   PX_LICENSE_USER: admin
-  PX_STATUS_ENDPOINT: {{ printf "http://pxcentral-apiserver.%s.svc.cluster.local:10006" .Values.namespace }}
+  PX_STATUS_ENDPOINT: {{ printf "http://pxcentral-apiserver.%s.svc.%s:10006" .Values.namespace .Values.clusterDomain }}
   QUEUE_CONNECTION: sync
   SESSION_DRIVER: file
   SESSION_LIFETIME: "120"

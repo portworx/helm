@@ -148,8 +148,6 @@ spec:
             containerPort: 10005
           - name: pxcentral-rest
             containerPort: 10006
-        securityContext:
-            privileged: true
         command:
         - /pxcentral-onprem
         - start
@@ -159,5 +157,7 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
       serviceAccountName: pxcentral-apiserver
       restartPolicy: Always
