@@ -1,10 +1,9 @@
 {{/* Setting defaults if they are omitted. */}}
-{{- $customRegistryEnabled := .Values.images.customRegistryEnabled | default false }}
 apiVersion: v1
 kind: Service
 metadata:
   name: pxcentral-lh-middleware
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }}
   labels:
     run: pxcentral-lh-middleware
     app.kubernetes.io/component: pxcentral-lh-middleware
@@ -26,8 +25,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: pxcentral-lh-middleware
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }}
   labels:
+    run: pxcentral-lh-middleware
     app.kubernetes.io/component: pxcentral-lh-middleware
 {{- include "px-backup.labels" . | nindent 4 }}
 spec:
@@ -64,11 +64,11 @@ spec:
                 - "false"
       containers:
       - name: pxcentral-lh-middleware
-        image: {{ printf "%s/%s/%s:%s" .Values.images.registry .Values.images.repo .Values.images.pxcentralMiddlewareImage.imageName .Values.images.pxcentralMiddlewareImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralMiddlewareImage.registry .Values.images.pxcentralMiddlewareImage.repo .Values.images.pxcentralMiddlewareImage.imageName .Values.images.pxcentralMiddlewareImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
           - name: PX_NAMESPACE
-            value: {{ .Values.namespace }} 
+            value: {{ .Release.Namespace }}
         ports:
           - name: http
             containerPort: 8091

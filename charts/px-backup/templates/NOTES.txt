@@ -1,25 +1,28 @@
 Your Release is named: {{ .Release.Name | quote }}
 PX-Backup deployed namespace: {{ .Release.Namespace }}
 
---------------------------------
-TO RETRIEVE INGRESS_ENDPOINT:
---------------------------------
-IP: kubectl get ingress --namespace {{ .Release.Namespace }} pxcentral-onprem-central-ingress -o jsonpath="{.status.loadBalancer.ingress[0].ip}"
-Hostname: kubectl get ingress --namespace {{ .Release.Namespace }} pxcentral-onprem-central-ingress -o jsonpath="{.status.loadBalancer.ingress[0].hostname}"
+--------------------------------------------------
+Access PX-Backup UI on localhost:
+--------------------------------------------------
+Using the node ip address of current cluster: ENDPOINT="NODE_IP_ADDRESS:31234"
+OR
+Using loadbalancer endpoint: 
+ENDPOINT=$(kubectl get svc px-backup-ui --namespace {{ .Release.Namespace }} -o jsonpath="{.status.loadBalancer.ingress[0].ip}")
+ENDPOINT=$(kubectl get svc px-backup-ui --namespace {{ .Release.Namespace }} -o jsonpath="{.status.loadBalancer.ingress[0].hostname}")
 
---------------------------------
-ACCESS PX-Backup:
---------------------------------
-PX-Backup Access URL:  http://<INGRESS_ENDPOINT>/pxcentral
-PX-Backup OIDC Access URL:  http://<INGRESS_ENDPOINT>/keycloak
+PX-Backup access url:  http://ENDPOINT
+Keycloak access url:  http://ENDPOINT/auth
 
 Login with the following default credentials:
 Username: {{ .Values.oidc.centralOIDC.defaultUsername }}
 Password: {{ .Values.oidc.centralOIDC.defaultPassword }}
 
---------------------------------
-MONITOR INSTALL:
---------------------------------
+--------------------------------------------------
+Monitor PX-Backup install:
+--------------------------------------------------
 Wait for px-backup setup to complete, pxcentral-post-install-hook pod status to be "Completed".
 kubectl get po --namespace {{ .Release.Namespace }} -ljob-name=pxcentral-post-install-hook  -o wide | awk '{print $1, $3}' | grep -iv error
+
+To get the logs of post install hook:
+kubectl logs -f --namespace {{ .Release.Namespace }} -ljob-name=pxcentral-post-install-hook
 

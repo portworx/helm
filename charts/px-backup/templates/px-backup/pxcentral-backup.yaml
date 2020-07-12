@@ -1,12 +1,11 @@
 {{/* Setting defaults if they are omitted. */}}
-{{- $customRegistryEnabled := .Values.images.customRegistryEnabled | default false }}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- if eq $pxBackupEnabled true }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: px-backup-account
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
 {{- include "px-backup.labels" . | nindent 4 }}
@@ -15,7 +14,7 @@ kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: px-backup-role
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
 {{- include "px-backup.labels" . | nindent 4 }}
@@ -24,18 +23,28 @@ rules:
     resources: ["secrets"]
     verbs: ["get"]
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pxc-backup-secret
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+stringData:
+  OIDC_CLIENT_ID: "{{ .Values.oidc.centralOIDC.clientId }}"
+  OIDC_ENDPOINT: "http://{{ .Values.oidc.endpoint }}:31234/auth/realms/master"
+---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: px-backup-role-binding
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
 {{- include "px-backup.labels" . | nindent 4 }}
 subjects:
 - kind: ServiceAccount
   name: px-backup-account
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
   name: px-backup-role
@@ -49,7 +58,7 @@ metadata:
     app.kubernetes.io/component: px-backup
 {{- include "px-backup.labels" . | nindent 4 }}
   name: px-backup
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }}
 spec:
   ports:
   - protocol: TCP
@@ -71,7 +80,7 @@ metadata:
     app.kubernetes.io/component: px-backup
 {{- include "px-backup.labels" . | nindent 4 }}
   name: px-backup
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }}
 spec:
   strategy:
     rollingUpdate:
@@ -99,10 +108,10 @@ spec:
       containers:
       - env:
         - name: SECRET_NAMESPACE
-          value: {{ .Values.namespace }}
+          value: {{ .Release.Namespace }}
         - name: PX_BACKUP_DEFAULT_ORG
           value: {{ .Values.pxbackup.orgName }}
-        image: {{ printf "%s/%s/%s:%s" .Values.images.registry .Values.images.repo .Values.images.pxBackupImage.imageName .Values.images.pxBackupImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupImage.registry .Values.images.pxBackupImage.repo .Values.images.pxBackupImage.imageName .Values.images.pxBackupImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         name: px-backup
         ports:
