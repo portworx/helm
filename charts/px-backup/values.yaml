@@ -5,7 +5,6 @@ persistentStorage:
 storkRequired: false
 
 oidc:
-  endpoint: None      #This field is not needed once we have fix for UI -> keycloak redirection/callback issue.
   centralOIDC:
     enabled: true
     defaultUsername: admin
@@ -60,8 +59,8 @@ images:
   pxBackupImage:
     registry: docker.io
     repo: portworx
-    imageName: px-backup
-    tag: 1.0.2-rc1
+    imageName: px-backup-base
+    tag: 1.0-dev
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
