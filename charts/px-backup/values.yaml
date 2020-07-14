@@ -24,7 +24,6 @@ pxbackup:
   enabled: true
   orgName: default
   externalAccessHttpPort: 31234
-  externalAccessHttpsPort: 31235
 
 securityContext:
   runAsUser: 1000

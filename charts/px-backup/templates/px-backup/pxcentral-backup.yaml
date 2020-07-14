@@ -31,7 +31,7 @@ metadata:
 type: Opaque
 stringData:
   OIDC_CLIENT_ID: "{{ .Values.oidc.centralOIDC.clientId }}"
-  OIDC_ENDPOINT: "http://pxcentral-keycloak-http/auth/realms/master"
+  OIDC_ENDPOINT: "http://pxcentral-keycloak-http:80/auth/realms/master"
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1

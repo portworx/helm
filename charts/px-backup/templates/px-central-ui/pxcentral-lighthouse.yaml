@@ -74,6 +74,20 @@ spec:
             containerPort: 8091
           - name: https
             containerPort: 8092
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 8091
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+          periodSeconds: 60
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 8091
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+          periodSeconds: 60
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}

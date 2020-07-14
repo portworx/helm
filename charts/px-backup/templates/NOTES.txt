@@ -23,6 +23,10 @@ Login with the following default credentials:
 Username: {{ .Values.oidc.centralOIDC.defaultUsername }}
 Password: {{ .Values.oidc.centralOIDC.defaultPassword }}
 
+For advanced configuration:
+1. To expose PX-Backup UI on ingress here is the reference example: https://github.com/portworx/helm/tree/master/charts/px-backup#advanced-configuration
+2. Once the UI is exposed on ingress use ENDPOINT as https://INGRESS_HOST
+
 --------------------------------------------------
 Monitor PX-Backup Install:
 --------------------------------------------------

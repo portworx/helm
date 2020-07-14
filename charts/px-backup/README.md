@@ -80,7 +80,6 @@ Parameter | Description | Default
 `pxbackup.enabled` | Enabled PX-Backup | `true`
 `pxbackup.orgName` | PX-Backup organization name | `default`
 `pxbackup.externalAccessHttpPort` | PX-Backup ui http port | `31234`
-`pxbackup.externalAccessHttpsPort` | PX-Backup ui https port | `31235`
 `securityContext` | Security context for the pod | `{runAsUser: 1000, fsGroup: 1000, runAsNonRoot: true}`
 `images.pullSecrets` | Image pull secrets | `docregistry-secret`
 `images.pullPolicy` | Image pull policy | `Always`
@@ -132,3 +131,59 @@ Parameter | Description | Default
 `images.mysqlImage.repo` | PX-Central cluster store mysql image repo | `library`
 `images.mysqlImage.imageName` | PX-Central cluster store mysql image name | `mysql`
 `images.mysqlImage.tag` | PX-Central cluster store mysql image tag | `5.7.22`
+
+## Advanced Configuration
+
+### Expose PX-Backup UI on ingress and access using https:
+
+1. Create the following spec:
+```
+cat <<< ' 
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.bluemix.net/redirect-to-https: "True"
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/x-forwarded-port: "443"
+  name: px-backup-ui-ingress
+  namespace: px-backup
+spec:
+  rules:
+  - host: px-backup-ui.test-1.us-east.containers.appdomain.cloud
+    http:
+      paths:
+      - backend:
+          serviceName: px-backup-ui
+          servicePort: 80
+        path: /
+      - backend:
+          serviceName: pxcentral-keycloak-http
+          servicePort: 80
+        path: /auth
+      - backend:
+          serviceName: pxcentral-lh-middleware
+          servicePort: 8091
+        path: /lhBackend
+      - backend:
+          serviceName: pxcentral-backend
+          servicePort: 80
+        path:  /backend
+  tls:
+  - hosts:
+    - px-backup-ui.test-1.us-east.containers.appdomain.cloud
+    secretName: test
+' > /tmp/px-backup-ui-ingress.yaml
+```
+
+2. Change the secret and hosts based on your configuration and apply the spec:
+```console
+$ kubectl apply -f /tmp/px-backup-ui-ingress.yaml
+```
+
+3. Retrieve the `INGRESS_ENDPOINT` using command:
+```console
+$ kubectl get ingress px-backup-ui-ingress --namespace px-backup -o jsonpath="{.status.loadBalancer.ingress[0].hostname}"
+```
+
+4. Access PX-Backup UI : `https://INGRESS_ENDPOINT` use default credentials (admin/admin) to login.
