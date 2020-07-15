@@ -187,3 +187,11 @@ $ kubectl get ingress px-backup-ui-ingress --namespace px-backup -o jsonpath="{.
 ```
 
 4. Access PX-Backup UI : `https://INGRESS_ENDPOINT` use default credentials (admin/admin) to login.
+
+## FAQ
+
+1. How to check install logs:
+   To get the logs of post install hook:
+
+            kubectl logs -f --namespace {{ .Release.Namespace }} -ljob-name=pxcentral-post-install-hook
+
