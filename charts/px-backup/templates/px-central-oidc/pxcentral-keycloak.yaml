@@ -1,7 +1,7 @@
 {{/* Setting defaults if they are omitted. */}}
-{{- $customRegistryEnabled := .Values.images.customRegistryEnabled | default false }}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $centralOIDC := .Values.oidc.centralOIDC.enabled | default false -}}
+{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- if eq $centralOIDC true }}
 apiVersion: v1
 kind: ServiceAccount
@@ -10,13 +10,13 @@ metadata:
   labels:
     app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }}
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: px-keycloak-role
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
@@ -32,7 +32,7 @@ metadata:
     app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
   name: pxcentral-keycloak-postgresql
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }}
 type: Opaque
 stringData:
   postgresql-password: {{ .Values.oidc.centralOIDC.keyCloakBackendPassword }}
@@ -44,7 +44,7 @@ metadata:
     app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
   name: pxcentral-keycloak-http
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }}
 type: Opaque
 stringData:
   password: {{ .Values.oidc.centralOIDC.defaultPassword }}
@@ -53,14 +53,14 @@ kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: px-keycloak-role-binding
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
 subjects:
 - kind: ServiceAccount
   name: px-keycloak-account
-  namespace: {{ .Values.namespace }}
+  namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
   name: px-keycloak-role
@@ -70,7 +70,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: pxcentral-keycloak-sh
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
@@ -87,7 +87,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: pxcentral-keycloak-startup
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
@@ -95,37 +95,34 @@ data:
   keycloak.cli: |
     embed-server --std-out=echo
     batch
-    # Changes the base path to be /keycloak.basepath instead of /auth
-    /subsystem=keycloak-server:write-attribute(name=web-context,value=keycloak)
-
     ## Sets the node identifier to the node name (= pod name). Node identifiers have to be unique. They can have a
     ## maximum length of 23 characters. Thus, the chart's fullname template truncates its length accordingly.
     /subsystem=transactions:write-attribute(name=node-identifier, value=${jboss.node.name})
-
-
+    
+    
     # Allow log level to be configured via environment variable
     /subsystem=logging/console-handler=CONSOLE:write-attribute(name=level, value=${env.WILDFLY_LOGLEVEL:INFO})
     /subsystem=logging/root-logger=ROOT:write-attribute(name=level, value=${env.WILDFLY_LOGLEVEL:INFO})
-
+    
     # Add dedicated eventsListener config element to allow configuring elements.
     /subsystem=keycloak-server/spi=eventsListener:add()
     /subsystem=keycloak-server/spi=eventsListener/provider=jboss-logging:add(enabled=true)
-
+    
     # Propagate success events to INFO instead of DEBUG, to expose successful logins for log analysis
     /subsystem=keycloak-server/spi=eventsListener/provider=jboss-logging:write-attribute(name=properties.success-level,value=info)
     /subsystem=keycloak-server/spi=eventsListener/provider=jboss-logging:write-attribute(name=properties.error-level,value=warn)
-
-
+    
+    
     # Configure datasource to use explicit query timeout in seconds
     /subsystem=datasources/data-source=KeycloakDS/:write-attribute(name=query-timeout,value=${env.DB_QUERY_TIMEOUT:300})
-
+    
     # Configure datasource to connection before use
     /subsystem=datasources/data-source=KeycloakDS/:write-attribute(name=validate-on-match,value=${env.DB_VALIDATE_ON_MATCH:true})
-
+    
     # Configure datasource to try all other connections before failing
     /subsystem=datasources/data-source=KeycloakDS/:write-attribute(name=use-fast-fail,value=${env.DB_USE_CAST_FAIL:false})
-
-
+    
+    
     run-batch
     stop-embedded-server
 ---
@@ -133,7 +130,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: pxcentral-keycloak-postgresql-headless
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: keycloak
     app: postgresql
@@ -152,7 +149,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: pxcentral-keycloak-postgresql
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }}
   labels:
     app: postgresql
     app.kubernetes.io/component: keycloak
@@ -171,7 +168,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: pxcentral-keycloak-headless
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: keycloak
     service: headless
@@ -195,7 +192,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: pxcentral-keycloak-http
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: keycloak
     service: http
@@ -217,7 +214,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: pxcentral-keycloak-postgresql
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }}
   labels:
     app: postgresql
     role: master
@@ -258,15 +255,14 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
       securityContext:
 {{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
       containers:
         - name: pxcentral-keycloak-postgresql
-          {{- if eq $customRegistryEnabled true }}
-          image: {{ printf "%s/%s/postgresql:11.7.0-debian-10-r9" .Values.images.registry .Values.images.repo }}
-          {{- else }}
-          image: docker.io/bitnami/postgresql:11.7.0-debian-10-r9
-          {{- end }}
+          image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakBackendImage.registry .Values.images.keycloakBackendImage.repo .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           env:
             - name: BITNAMI_DEBUG
@@ -347,7 +343,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: pxcentral-keycloak
-  namespace: {{ .Values.namespace }} 
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: keycloak
 {{- include "px-backup.labels" . | nindent 4 }}
@@ -387,15 +383,14 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
       securityContext:
 {{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
       initContainers:
         - name: wait-for-postgresql
-          {{- if eq $customRegistryEnabled true }}
-          image: {{ printf "%s/%s/busybox:1.31" .Values.images.registry .Values.images.repo }}
-          {{- else }}
-          image: "busybox:1.31"
-          {{- end }}
+          image: "{{ .Values.images.keycloakInitContainerImage.registry }}/{{ .Values.images.keycloakInitContainerImage.repo }}/{{ .Values.images.keycloakInitContainerImage.imageName }}:{{ .Values.images.keycloakInitContainerImage.tag }}"
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
             - sh
@@ -409,11 +404,7 @@ spec:
           resources:
             {}
         - name: px-keycloak-login-theme
-          {{- if eq $customRegistryEnabled true }}
-          image: {{ printf "%s/%s/keycloak-login-theme:1.0.1" .Values.images.registry .Values.images.repo }}
-          {{- else }}
-          image: portworx/keycloak-login-theme:1.0.1
-          {{- end }}
+          image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakLoginThemeImage.registry .Values.images.keycloakLoginThemeImage.repo .Values.images.keycloakLoginThemeImage.imageName .Values.images.keycloakLoginThemeImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
             - sh
@@ -427,11 +418,7 @@ spec:
             mountPath: /theme
       containers:
         - name: keycloak
-          {{- if eq $customRegistryEnabled true }}
-          image: {{ printf "%s/%s/keycloak:9.0.2" .Values.images.registry .Values.images.repo }}
-          {{- else }}
-          image: "jboss/keycloak:9.0.2"
-          {{- end }}
+          image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakFrontendImage.registry .Values.images.keycloakFrontendImage.repo .Values.images.keycloakFrontendImage.imageName .Values.images.keycloakFrontendImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
             - /scripts/keycloak.sh
@@ -462,7 +449,7 @@ spec:
             - name: JGROUPS_DISCOVERY_PROTOCOL
               value: "dns.DNS_PING"
             - name: JGROUPS_DISCOVERY_PROPERTIES
-              value: "dns_query=pxcentral-keycloak-headless.{{ .Values.namespace }}.svc.{{ .Values.clusterDomain }}"
+              value: "dns_query=pxcentral-keycloak-headless"
           volumeMounts:
             - name: sh
               mountPath: /scripts
@@ -484,13 +471,13 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /keycloak/
+              path: /auth/
               port: http
             initialDelaySeconds: 300
             timeoutSeconds: 5
           readinessProbe:
             httpGet:
-              path: /keycloak/realms/master
+              path: /auth/realms/master
               port: http
             initialDelaySeconds: 30
             timeoutSeconds: 1      
