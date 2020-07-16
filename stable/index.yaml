@@ -2,9 +2,9 @@ apiVersion: v1
 entries:
   portworx:
   - apiVersion: v1
-    created: "2020-07-15T12:02:04.309377+05:30"
+    created: "2020-07-16T13:18:02.622446+05:30"
     description: A Helm chart for installing Portworx on Kubernetes.
-    digest: 653f9048d985fe4d0553804c12a802583ec3222e6b721d495769d80eae152fe9
+    digest: 81bf2186b93c9c621555abe1211eabd8515a7d12acdc5257bff8cbb7cfe437f8
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     name: portworx
@@ -16,10 +16,10 @@ entries:
   px-backup:
   - apiVersion: v1
     appVersion: 1.0.2-rc1
-    created: "2020-07-15T12:02:04.310471+05:30"
+    created: "2020-07-16T13:18:02.623436+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
-    digest: b3b5c40385c34dbb729bc08aa7b5ef550701489dc4bd5aa81693c9d29e82245c
+    digest: d84d74a00b4a2da18b39d2401b4e9268f19a661b520fb482925f63fc94bf9bc3
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     keywords:
@@ -36,4 +36,4 @@ entries:
     urls:
     - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.0.0.tgz
     version: 1.0.0
-generated: "2020-07-15T12:02:04.302811+05:30"
+generated: "2020-07-16T13:18:02.617581+05:30"

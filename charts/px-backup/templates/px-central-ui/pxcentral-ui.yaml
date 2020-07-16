@@ -46,7 +46,7 @@ data:
         proxy_set_header X-Forwarded-Proto $myscheme;
         proxy_set_header X-Forwarded-Host  $http_host;
         proxy_set_header Port  $http_port;
-        proxy_set_header X-Forwarded-Port  $server_port;
+        proxy_set_header X-Forwarded-Port  $http_port;
       }
       location /lhBackend/ {
         proxy_pass http://lhBackend/;
@@ -62,7 +62,7 @@ data:
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Forwarded-Host  $http_host;
         proxy_set_header Port  $http_port;
-        proxy_set_header X-Forwarded-Port  $server_port;
+        proxy_set_header X-Forwarded-Port  $http_port;
       }
       error_page 404 =200 /index.html;
       error_page   500 502 503 504  /50x.html;

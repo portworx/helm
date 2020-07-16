@@ -188,10 +188,38 @@ $ kubectl get ingress px-backup-ui-ingress --namespace px-backup -o jsonpath="{.
 
 4. Access PX-Backup UI : `https://INGRESS_ENDPOINT` use default credentials (admin/admin) to login.
 
+5. Access Keycloak UI: `https://INGRESS_ENDPOINT/auth`
+
+### Access PX-Backup UI and Keycloak using node IP:
+1. Get any node public/external IP (NODE_IP) of current k8s cluster.
+
+2. Get the node port (NODE_PORT) of service: `px-backup-ui`. Default node port is set to 31234, but it is configurable and can be set using: `pxbackup.externalAccessHttpPort`
+
+3. PX-Backup UI is available at: `http://NODE_IP:NODE_PORT`
+
+4. Keycloak UI is available at: `http://NODE_IP:NODE_PORT/auth`
+
+
+### Access PX-Backup UI using Loadbalancer Endpoint:
+1. Get the loadbalancer endpoint (LB_ENDPOINT) using following commands:
+   - HOST: 
+   ```console
+   $ kubectl get ingress --namespace {{ .Release.Namespace }} px-backup-ui -o jsonpath="{.status.loadBalancer.ingress[0].hostname}"`
+   ```
+   - IP:
+   ```console
+   $ kubectl get ingress --namespace {{ .Release.Namespace }} px-backup-ui -o jsonpath="{.status.loadBalancer.ingress[0].ip}"`
+   ```
+  
+2. PX-Backup UI endpoint: `http://LB_ENDPOINT`
+
+3. Keycloak UI endpoint: `http://LB_ENDPOINT/auth`
+
+
 ## FAQ
 
 1. How to check install logs:
    To get the logs of post install hook:
-
-            kubectl logs -f --namespace {{ .Release.Namespace }} -ljob-name=pxcentral-post-install-hook
-
+   ```console
+   $ kubectl logs -f --namespace {{ .Release.Namespace }} -ljob-name=pxcentral-post-install-hook
+   ```
