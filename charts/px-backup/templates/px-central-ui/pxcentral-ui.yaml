@@ -1,5 +1,6 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
+{{- $operatorToChartUpgrade := .Values.operatorToChartUpgrade | default false -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -245,7 +246,11 @@ metadata:
   namespace: {{ .Release.Namespace }}
 type: Opaque
 stringData:
-  DB_PASSWORD: "Password1"
+  {{- if eq $operatorToChartUpgrade true }}
+  DB_PASSWORD: singapore
+  {{- else }}
+  DB_PASSWORD: Password1
+  {{- end }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
