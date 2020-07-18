@@ -59,7 +59,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 1.0.2-rc2
+    tag: 1.0.2-rc3
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
