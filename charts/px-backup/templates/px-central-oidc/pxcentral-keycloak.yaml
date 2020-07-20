@@ -36,6 +36,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 type: Opaque
 stringData:
+  postgresql-username: {{ .Values.oidc.centralOIDC.keyCloakBackendUserName }}
   postgresql-password: {{ .Values.oidc.centralOIDC.keyCloakBackendPassword }}
 ---
 apiVersion: v1
@@ -282,7 +283,10 @@ spec:
             - name: PGDATA
               value: "/bitnami/postgresql/data"
             - name: POSTGRES_USER
-              value: "keycloak"
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-keycloak-postgresql
+                  key: postgresql-username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -448,7 +452,10 @@ spec:
             - name: DB_DATABASE
               value: "keycloak"
             - name: DB_USER
-              value: "keycloak"
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-keycloak-postgresql
+                  key: postgresql-username
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:

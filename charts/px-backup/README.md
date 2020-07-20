@@ -61,12 +61,15 @@ Parameter | Description | Default
 `persistentStorage.enabled` | Enable persistent storage | `false`
 `persistentStorage.storageClassName` | Provide storage class name which exists | `""`
 `storkRequired` | Scheduler name as stork | `false`
+`pxcentralDBUserName` | PX-Central cluster store mysql database username | `root`
+`pxcentralDBPassword` | PX-Central cluster store mysql database password | `Password1`
 `oidc` | Enable OIDC for PX-Central and PX-backup for RBAC | `""`
 `oidc.centralOIDC` | PX-Central OIDC | `""`
 `oidc.centralOIDC.enabled` | PX-Central OIDC | `true`
 `oidc.centralOIDC.defaultUsername` | PX-Central OIDC username | `admin`
 `oidc.centralOIDC.defaultPassword` | PX-Central OIDC admin user password | `admin`
 `oidc.centralOIDC.defaultEmail` | PX-Central OIDC admin user email | `admin@portworx.com`
+`oidc.centralOIDC.keyCloakBackendUserName` | Keycloak backend store username | `keycloak`
 `oidc.centralOIDC.keyCloakBackendPassword` | Keycloak backend store password | `keycloak`
 `oidc.centralOIDC.clientId` | PX-Central OIDC client id | `pxcentral`
 `oidc.centralOIDC.clientSecret` | PX-Central OIDC client secret | `dummy`

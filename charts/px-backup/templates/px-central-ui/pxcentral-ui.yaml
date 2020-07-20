@@ -1,6 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
-{{- $operatorToChartUpgrade := .Values.operatorToChartUpgrade | default false -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -148,6 +147,17 @@ spec:
           envFrom:
             - configMapRef:
                 name: pxcentral-ui-configmap
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-mysql-secret
+                  key: DB_PASSWORD
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-mysql-secret
+                  key: DB_USERNAME
           resources: {}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -219,6 +229,17 @@ spec:
           envFrom:
             - configMapRef:
                 name: pxcentral-ui-configmap
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-mysql-secret
+                  key: DB_PASSWORD
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-mysql-secret
+                  key: DB_USERNAME
           volumeMounts:
             - name: frontend-nginx-configs
               mountPath: /etc/nginx/conf.d
@@ -246,11 +267,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
 type: Opaque
 stringData:
-  {{- if eq $operatorToChartUpgrade true }}
-  DB_PASSWORD: singapore
-  {{- else }}
-  DB_PASSWORD: Password1
-  {{- end }}
+  DB_USERNAME: {{ .Values.pxcentralDBUserName }}
+  DB_PASSWORD: {{ .Values.pxcentralDBPassword }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -303,6 +321,11 @@ spec:
                 configMapKeyRef:
                   name: pxcentral-ui-configmap
                   key: DB_DATABASE
+            - name: MYSQL_ROOT_USER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-mysql-secret
+                  key: DB_USERNAME
             - name: MYSQL_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
@@ -314,13 +337,13 @@ spec:
               value: dev
           livenessProbe:
             exec:
-              command: ["mysqladmin", "ping", "-u", "root", "-p$MYSQL_ROOT_PASSWORD"]
+              command: ["mysqladmin", "ping", "-u", "$MYSQL_ROOT_USER_NAME", "-p$MYSQL_ROOT_PASSWORD"]
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
           readinessProbe:
             exec:
-              command: ["mysqladmin", "ping", "-u", "root", "-p$MYSQL_ROOT_PASSWORD"]
+              command: ["mysqladmin", "ping", "-u", "$MYSQL_ROOT_USER_NAME", "-p$MYSQL_ROOT_PASSWORD"]
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
