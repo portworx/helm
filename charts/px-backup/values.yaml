@@ -4,6 +4,7 @@ persistentStorage:
 
 storkRequired: false
 
+pxcentralDBUserName: root
 pxcentralDBPassword: Password1
 
 oidc:
@@ -12,6 +13,7 @@ oidc:
     defaultUsername: admin
     defaultPassword: admin
     defaultEmail: admin@portworx.com
+    keyCloakBackendUserName: keycloak
     keyCloakBackendPassword: keycloak
     clientId: "pxcentral"
     clientSecret: "dummy"

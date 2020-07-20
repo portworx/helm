@@ -1,5 +1,3 @@
-{{/* Setting defaults if they are omitted. */}}
-{{- $oidcEnabled := .Values.oidc.centralOIDC.enabled  | default false }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -12,9 +10,7 @@ data:
   APP_KEY: base64:J1RH3W4+CILq3/eac9zqYbAMzeptqCJgR9KcWRdhtHw=
   BASE_ROOT_PATH: /
   DB_PORT: "3306"
-  DB_USERNAME: root
   DB_DATABASE: pxcentral
-  DB_PASSWORD: {{ .Values.pxcentralDBPassword }}
   FRONTEND_ENABLED_MODULES: COMPANY,LH,USERS,PXBACKUP,SSO
   OIDC_CLIENT_ID: "{{ .Values.oidc.centralOIDC.clientId }}"
   OIDC_CLIENT_SECRET: "{{ .Values.oidc.centralOIDC.clientSecret }}"
