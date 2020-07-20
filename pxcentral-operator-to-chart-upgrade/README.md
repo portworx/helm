@@ -28,8 +28,14 @@ $ storkctl get snapshot --namespace portworx
 ```
 
 3. Cleanup existing px-central-onprem deployment using cleanup script.
+- If current px-central-onprem is using existing portworx cluster for persistence storage then use following commands for cleanup:
 ```console
-$ curl -o px-central-cleanup.sh 'https://raw.githubusercontent.com/portworx/px-central-onprem/1.0.3/cleanup.sh'
+$ curl -o px-central-cleanup.sh 'https://raw.githubusercontent.com/portworx/px-central-onprem/1.0.4/cleanup.sh'
+$ bash px-central-cleanup.sh
+```
+- If portworx cluster deployment is part of px-central-onprem cluster, then use following commands for cleanup:
+```console
+$ curl -o px-central-cleanup.sh 'https://raw.githubusercontent.com/portworx/px-central-onprem/1.0.4/pxcentral-components-cleanup.sh'
 $ bash px-central-cleanup.sh
 ```
 
