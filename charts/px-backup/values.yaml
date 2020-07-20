@@ -25,6 +25,8 @@ pxbackup:
   orgName: default
   externalAccessHttpPort: 31234
 
+operatorToChartUpgrade: false
+
 securityContext:
   runAsUser: 1000
   fsGroup: 1000

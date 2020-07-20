@@ -137,7 +137,7 @@ spec:
         command:
         - /px-backup
         - start
-        - --datastoreEndpoints=etcd:http://px-backup-etcd-0.px-backup-etcd-headless:2379,etcd:http://px-backup-etcd-1.px-backup-etcd-headless:2379,etcd:http://px-backup-etcd-2.px-backup-etcd-headless:2379
+        - --datastoreEndpoints=etcd:http://pxc-backup-etcd-0.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-1.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-2.pxc-backup-etcd-headless:2379
       serviceAccountName: px-backup-account
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:

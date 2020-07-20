@@ -1,6 +1,7 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $centralOIDC := .Values.oidc.centralOIDC.enabled | default false -}}
+{{- $operatorToChartUpgrade := .Values.operatorToChartUpgrade | default false -}}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- if eq $centralOIDC true }}
 apiVersion: v1
@@ -264,6 +265,13 @@ spec:
         - name: pxcentral-keycloak-postgresql
           image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakBackendImage.registry .Values.images.keycloakBackendImage.repo .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
+          {{ if eq $operatorToChartUpgrade true }}
+          {{- if $isOpenshiftCluster}}
+          {{- else }}
+          securityContext:
+            runAsUser: 1001
+          {{- end }}
+          {{- end }}
           env:
             - name: BITNAMI_DEBUG
               value: "false"
