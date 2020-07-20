@@ -1,6 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
-{{- $operatorToChartUpgrade := .Values.operatorToChartUpgrade | default false -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -246,11 +245,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 type: Opaque
 stringData:
-  {{- if eq $operatorToChartUpgrade true }}
-  DB_PASSWORD: singapore
-  {{- else }}
-  DB_PASSWORD: Password1
-  {{- end }}
+  DB_PASSWORD: {{ .Values.pxcentralDBPassword }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet

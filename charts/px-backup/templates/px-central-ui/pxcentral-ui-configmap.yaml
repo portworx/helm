@@ -1,6 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $oidcEnabled := .Values.oidc.centralOIDC.enabled  | default false }}
-{{- $operatorToChartUpgrade := .Values.operatorToChartUpgrade | default false -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -15,11 +14,7 @@ data:
   DB_PORT: "3306"
   DB_USERNAME: root
   DB_DATABASE: pxcentral
-  {{- if eq $operatorToChartUpgrade true }}
-  DB_PASSWORD: singapore
-  {{- else }}
-  DB_PASSWORD: Password1
-  {{- end }}
+  DB_PASSWORD: {{ .Values.pxcentralDBPassword }}
   FRONTEND_ENABLED_MODULES: COMPANY,LH,USERS,PXBACKUP,SSO
   OIDC_CLIENT_ID: "{{ .Values.oidc.centralOIDC.clientId }}"
   OIDC_CLIENT_SECRET: "{{ .Values.oidc.centralOIDC.clientSecret }}"
