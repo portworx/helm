@@ -267,11 +267,8 @@ spec:
           image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakBackendImage.registry .Values.images.keycloakBackendImage.repo .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           {{ if eq $operatorToChartUpgrade true }}
-          {{- if $isOpenshiftCluster}}
-          {{- else }}
           securityContext:
             runAsUser: 1001
-          {{- end }}
           {{- end }}
           env:
             - name: BITNAMI_DEBUG
