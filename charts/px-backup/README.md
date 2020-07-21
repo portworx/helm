@@ -61,7 +61,6 @@ Parameter | Description | Default
 `persistentStorage.enabled` | Enable persistent storage | `false`
 `persistentStorage.storageClassName` | Provide storage class name which exists | `""`
 `storkRequired` | Scheduler name as stork | `false`
-`pxcentralDBUserName` | PX-Central cluster store mysql database username | `root`
 `pxcentralDBPassword` | PX-Central cluster store mysql database password | `Password1`
 `oidc` | Enable OIDC for PX-Central and PX-backup for RBAC | `""`
 `oidc.centralOIDC` | PX-Central OIDC | `""`
