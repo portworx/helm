@@ -267,7 +267,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 type: Opaque
 stringData:
-  DB_USERNAME: {{ .Values.pxcentralDBUserName }}
+  DB_USERNAME: "root"
   DB_PASSWORD: {{ .Values.pxcentralDBPassword }}
 ---
 apiVersion: apps/v1

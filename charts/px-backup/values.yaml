@@ -4,7 +4,6 @@ persistentStorage:
 
 storkRequired: false
 
-pxcentralDBUserName: root
 pxcentralDBPassword: Password1
 
 oidc:
