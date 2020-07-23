@@ -110,7 +110,7 @@ spec:
                 - "false"
       containers:
       - env:
-        - name: SECRET_NAMESPACE
+        - name: PX_BACKUP_NAMESPACE
           value: {{ .Release.Namespace }}
         - name: PX_BACKUP_DEFAULT_ORG
           value: {{ .Values.pxbackup.orgName }}

@@ -24,7 +24,7 @@ Output:
 ```console
 NAME                    CHART VERSION   APP VERSION         DESCRIPTION                                       
 portworx/portworx       1.0.0                               A Helm chart for installing Portworx on Kuberne...
-portworx/px-backup      1.0.0           1.0.2-rc1           A Helm chart for installing PX-Backup with PX-C...
+portworx/px-backup      1.0.0           1.0.2-rc5           A Helm chart for installing PX-Backup with PX-C...
 ```
 
 Helm 3:
@@ -87,27 +87,27 @@ Parameter | Description | Default
 `images.pxcentralApiServerImage.registry` | API server image registry | `docker.io`
 `images.pxcentralApiServerImage.repo` | API server image repo | `portworx`
 `images.pxcentralApiServerImage.imageName` | API server image name | `pxcentral-onprem-api`
-`images.pxcentralApiServerImage.tag` | API server image tag | `1.0.4`
+`images.pxcentralApiServerImage.tag` | API server image tag | `1.0.4-rc1`
 `images.pxcentralFrontendImage.registry` | PX-Central frontend image registry | `docker.io`
 `images.pxcentralFrontendImage.repo` | PX-Central frontend image repo | `portworx`
 `images.pxcentralFrontendImage.imageName` | PX-Central frontend image name | `pxcentral-onprem-ui-frontend`
-`images.pxcentralFrontendImage.tag` | PX-Central frontend image tag | `1.1.1`
+`images.pxcentralFrontendImage.tag` | PX-Central frontend image tag | `1.1.2-rc1`
 `images.pxcentralBackendImage.registry` | PX-Central backend image registry | `docker.io`
 `images.pxcentralBackendImage.repo` | PX-Central backend image repo | `portworx`
 `images.pxcentralBackendImage.imageName` | PX-Central backend image name | `pxcentral-onprem-ui-backend`
-`images.pxcentralBackendImage.tag` | PX-Central backend image tag | `1.1.1`
+`images.pxcentralBackendImage.tag` | PX-Central backend image tag | `1.1.2-rc1`
 `images.pxcentralMiddlewareImage.registry` | PX-Central middleware image registry | `docker.io`
 `images.pxcentralMiddlewareImage.repo` | PX-Central middleware image repo | `portworx`
 `images.pxcentralMiddlewareImage.imageName` | PX-Central middleware image name | `pxcentral-onprem-ui-lhbackend`
-`images.pxcentralMiddlewareImage.tag`| PX-Central middleware image tag | `1.1.1`
+`images.pxcentralMiddlewareImage.tag`| PX-Central middleware image tag | `1.1.2-rc1`
 `images.pxBackupImage.registry` | PX-Backup image registry | `docker.io`
 `images.pxBackupImage.repo` | PX-Backup image repo | `portworx`
 `images.pxBackupImage.imageName` | PX-Backup image name | `px-backup`
-`images.pxBackupImage.tag` | PX-Backup image tag | `1.0.2-rc1`
+`images.pxBackupImage.tag` | PX-Backup image tag | `1.0.2-rc5`
 `images.postInstallSetupImage.registry` | PX-Backup post install setup image registry | `docker.io`
 `images.postInstallSetupImage.repo` | PX-Backup post install setup image repo | `portworx`
 `images.postInstallSetupImage.imageName` | PX-Backup post install setup image name | `pxcentral-onprem-post-setup`
-`images.postInstallSetupImage.tag` | PX-Backup post install setup image tag | `1.0.4`
+`images.postInstallSetupImage.tag` | PX-Backup post install setup image tag | `1.0.4-rc1`
 `images.etcdImage.registry` | PX-Backup etcd image registry | `docker.io`
 `images.etcdImage.repo` | PX-Backup etcd image repo | `bitnami`
 `images.etcdImage.imageName` | PX-Backup etcd image name | `etcd`
