@@ -81,7 +81,6 @@ Parameter | Description | Default
 `pxbackup` | Enable PX-Backup | `""`
 `pxbackup.enabled` | Enabled PX-Backup | `true`
 `pxbackup.orgName` | PX-Backup organization name | `default`
-`pxbackup.externalAccessHttpPort` | PX-Backup ui http port | `31234`
 `securityContext` | Security context for the pod | `{runAsUser: 1000, fsGroup: 1000, runAsNonRoot: true}`
 `images.pullSecrets` | Image pull secrets | `docregistry-secret`
 `images.pullPolicy` | Image pull policy | `Always`
@@ -195,7 +194,7 @@ $ kubectl get ingress px-backup-ui-ingress --namespace px-backup -o jsonpath="{.
 ### Access PX-Backup UI and Keycloak using node IP:
 1. Get any node public/external IP (NODE_IP) of current k8s cluster.
 
-2. Get the node port (NODE_PORT) of service: `px-backup-ui`. Default node port is set to 31234, but it is configurable and can be set using: `pxbackup.externalAccessHttpPort`
+2. Get the node port (NODE_PORT) of service: `px-backup-ui`.
 
 3. PX-Backup UI is available at: `http://NODE_IP:NODE_PORT`
 

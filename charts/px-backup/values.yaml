@@ -26,7 +26,6 @@ oidc:
 pxbackup:
   enabled: true
   orgName: default
-  externalAccessHttpPort: 31234
 
 operatorToChartUpgrade: false
 
