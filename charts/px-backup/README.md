@@ -24,7 +24,7 @@ Output:
 ```console
 NAME                    CHART VERSION   APP VERSION         DESCRIPTION                                       
 portworx/portworx       1.0.0                               A Helm chart for installing Portworx on Kuberne...
-portworx/px-backup      1.0.0           1.0.2-rc5           A Helm chart for installing PX-Backup with PX-C...
+portworx/px-backup      1.0.0           1.0.2-rc6           A Helm chart for installing PX-Backup with PX-C...
 ```
 
 Helm 3:
@@ -103,7 +103,7 @@ Parameter | Description | Default
 `images.pxBackupImage.registry` | PX-Backup image registry | `docker.io`
 `images.pxBackupImage.repo` | PX-Backup image repo | `portworx`
 `images.pxBackupImage.imageName` | PX-Backup image name | `px-backup`
-`images.pxBackupImage.tag` | PX-Backup image tag | `1.0.2-rc5`
+`images.pxBackupImage.tag` | PX-Backup image tag | `1.0.2-rc6`
 `images.postInstallSetupImage.registry` | PX-Backup post install setup image registry | `docker.io`
 `images.postInstallSetupImage.repo` | PX-Backup post install setup image repo | `portworx`
 `images.postInstallSetupImage.imageName` | PX-Backup post install setup image name | `pxcentral-onprem-post-setup`
