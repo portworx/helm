@@ -43,32 +43,32 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 1.0.4-rc1
+    tag: 1.0.4
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 1.1.2-rc1
+    tag: 1.1.2
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 1.1.2-rc1
+    tag: 1.1.2
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 1.1.2-rc1
+    tag: 1.1.2
   pxBackupImage:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 1.0.2-rc6
+    tag: 1.0.2
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 1.0.4-rc1
+    tag: 1.0.4
   etcdImage:
     registry: docker.io
     repo: bitnami
@@ -88,7 +88,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: keycloak-login-theme
-    tag: 1.0.2-rc1
+    tag: 1.0.2
   keycloakInitContainerImage:
     registry: docker.io
     repo: library
