@@ -48,17 +48,17 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 1.1.2
+    tag: 1.1.2.1
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 1.1.2
+    tag: 1.1.2.1
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 1.1.2
+    tag: 1.1.2.1
   pxBackupImage:
     registry: docker.io
     repo: portworx
