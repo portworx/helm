@@ -37,6 +37,16 @@ Helm 2:
 $ helm install --name px-backup portworx/px-backup --namespace px-backup
 ```
 
+## Upgrade chart to latest version
+1. Need to delete all statefulset before helm upgrade:
+```console
+kubectl delete sts --namespace px-backup pxc-backup-etcd pxcentral-keycloak pxcentral-keycloak-postgresql
+```
+2. Run helm upgrade command:
+```console
+helm upgrade px-backup portworx/px-backup --namespace px-backup
+```
+
 ## Uninstalling the Chart
 
 1. To uninstall/delete the `px-backup` chart:
