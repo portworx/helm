@@ -2,9 +2,9 @@ apiVersion: v1
 entries:
   portworx:
   - apiVersion: v1
-    created: "2020-07-29T16:49:50.808865+05:30"
+    created: "2020-07-30T15:56:45.813205+05:30"
     description: A Helm chart for installing Portworx on Kubernetes.
-    digest: 78ed6e144e4bba22c62dba31ef6372426e12dbd0436653f5213eec96ab0d0fb9
+    digest: 8cefd8a44133c53332dff9e96888dbb39af2e6a9e41d81472a1d0787d58b309d
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     name: portworx
@@ -16,10 +16,10 @@ entries:
   px-backup:
   - apiVersion: v1
     appVersion: 1.0.2
-    created: "2020-07-29T16:49:50.813365+05:30"
+    created: "2020-07-30T15:56:45.816761+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
-    digest: 4774be3aaf762882bcb8a21c753e899325af6452f7dc86e27fe37134295698c8
+    digest: 72816b0213b599369ca99e368af87cadfac09ac2b2da762605c74179e1a15252
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     keywords:
@@ -38,7 +38,7 @@ entries:
     version: 1.0.1
   - apiVersion: v1
     appVersion: 1.0.2
-    created: "2020-07-29T16:49:50.812095+05:30"
+    created: "2020-07-30T15:56:45.815635+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 2bb9b69ade7b648d46ca618f2f798ba0af346022b42ce540d3988b2c8a387226
@@ -58,4 +58,22 @@ entries:
     urls:
     - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.0.0.tgz
     version: 1.0.0
-generated: "2020-07-29T16:49:50.802417+05:30"
+  px-license-server:
+  - apiVersion: v1
+    appVersion: 1.0.0
+    created: "2020-07-30T15:56:45.817285+05:30"
+    description: A Helm chart for install and configure PX-License-Server on Kubernetes
+      and Openshift
+    digest: bb595272c93ef8071e8bc606a3cf8bdb5d7099646d4f8066748f9bd57ac76af1
+    home: https://portworx.com/
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
+    keywords:
+    - px-central
+    - px-license-server
+    name: px-license-server
+    sources:
+    - https://github.com/portworx/helm/tree/master/charts/px-license-server
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-license-server-1.0.0.tgz
+    version: 1.0.0
+generated: "2020-07-30T15:56:45.807989+05:30"
