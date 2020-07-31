@@ -172,14 +172,6 @@ spec:
           serviceName: pxcentral-keycloak-http
           servicePort: 80
         path: /auth
-      - backend:
-          serviceName: pxcentral-lh-middleware
-          servicePort: 8091
-        path: /lhBackend
-      - backend:
-          serviceName: pxcentral-backend
-          servicePort: 80
-        path:  /backend
   tls:
   - hosts:
     - px-backup-ui.test-1.us-east.containers.appdomain.cloud
@@ -187,7 +179,12 @@ spec:
 ' > /tmp/px-backup-ui-ingress.yaml
 ```
 
-2. Change the secret and hosts based on your configuration and apply the spec:
+Note: Change the secret and hosts based on your configuration. Also, `secretName` -> `kubernetes TLS certificates secret` is required only when you want to terminate TLS on the host/domain.
+- Some examples:
+  - AKS: https://docs.microsoft.com/en-us/azure/aks/ingress-own-tls
+  - EKS: https://aws.amazon.com/blogs/opensource/network-load-balancer-nginx-ingress-controller-eks/
+
+2. Apply the spec:
 ```console
 $ kubectl apply -f /tmp/px-backup-ui-ingress.yaml
 ```
