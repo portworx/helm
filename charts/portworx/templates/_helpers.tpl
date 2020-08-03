@@ -188,3 +188,21 @@ Generate a random token for storage provisioning
 {{- define "portworx-cluster-key" -}}
 {{- randAlphaNum 16 | nospace | b64enc -}}
 {{- end -}}
+
+
+{{- define "px.affinityPxEnabledOperator" -}}
+{{- if .Values.requirePxEnabledTag -}}
+    {{- "In" }}
+{{- else -}}
+    {{ "NotIn" }}
+{{- end -}}
+{{- end -}}
+
+
+{{- define "px.affinityPxEnabledValue" -}}
+{{- if .Values.requirePxEnabledTag -}}
+    {{- "true"  | quote }}
+{{- else -}}
+    {{ "false" | quote }}
+{{- end -}}
+{{- end -}}

@@ -40,6 +40,7 @@ spec:
                 - "true"
       hostNetwork: true
       hostPID: false
+      serviceAccountName: pxcentral-license-server
       containers:
         - name: pxcentral-license-server
           image: {{ printf "%s/%s/%s:%s" .Values.images.licenseServerImage.registry .Values.images.licenseServerImage.repo .Values.images.licenseServerImage.imageName .Values.images.licenseServerImage.tag }}

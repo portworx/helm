@@ -63,9 +63,9 @@ spec:
             nodeSelectorTerms:
             - matchExpressions:
               - key: px/enabled
-                operator: NotIn
+                operator:  {{ template "px.affinityPxEnabledOperator" . }}
                 values:
-                - "false"
+                - {{ template "px.affinityPxEnabledValue" . }}
               {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
               - key: openshift-infra
                 operator: DoesNotExist
@@ -455,9 +455,9 @@ spec:
             nodeSelectorTerms:
               - matchExpressions:
                   - key: px/enabled
-                    operator: NotIn
+                    operator: {{ template "px.affinityPxEnabledOperator" . }}
                     values:
-                      - "false"
+                      -  {{ template "px.affinityPxEnabledValue" . }}
                   - key: node-role.kubernetes.io/master
                     operator: DoesNotExist
       hostNetwork: true
