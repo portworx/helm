@@ -1,0 +1,135 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
+{{- if eq $pxMonitorEnabled true }}
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: pxcentral-cortex-nginx
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: cortex-nginx
+    cortex: nginx
+{{- include "px-monitor.labels" . | nindent 4 }}
+data:
+  nginx.conf: |-
+    worker_processes  5;  ## Default: 1
+    error_log  /dev/stderr;
+    pid        /tmp/nginx.pid;
+    worker_rlimit_nofile 8192;
+
+    events {
+      worker_connections  4096;  ## Default: 1024
+    }
+
+    http {
+      default_type application/octet-stream;
+      log_format   main '$remote_addr - $remote_user [$time_local]  $status '
+        '"$request" $body_bytes_sent "$http_referer" '
+        '"$http_user_agent" "$http_x_forwarded_for"';
+      access_log   /dev/stderr  main;
+      sendfile     on;
+      tcp_nopush   on;
+      #resolver kube-dns.kube-system.svc.cluster.local;
+      resolver 127.0.0.1:53 ipv6=off valid=10s;
+
+      server { # simple reverse-proxy
+        listen 80;
+        proxy_set_header X-Scope-OrgID 0;
+
+        location = /api/prom/push {
+          proxy_pass      http://pxcentral-cortex-distributor.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}$request_uri;
+        }
+
+        location = /ring {
+          proxy_pass      http://pxcentral-cortex-distributor.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}$request_uri;
+        }
+        location = /all_user_stats {
+          proxy_pass      http://pxcentral-cortex-distributor.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}$request_uri;
+        }
+
+        location ~ /api/prom/.* {
+          proxy_pass      http://pxcentral-cortex-querier.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}$request_uri;
+        }
+      }
+    }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-cortex-nginx
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: cortex-nginx
+    cortex: nginx
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 80
+  selector:
+    name: nginx
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pxcentral-cortex-nginx
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: cortex-nginx
+    cortex: nginx
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: nginx
+      cortex: nginx
+{{- include "px-monitor.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        name: nginx
+        cortex: nginx
+{{- include "px-monitor.labels" . | nindent 8 }}
+      annotations:
+        prometheus.io.scrape: "false"
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: nginx
+        image: {{ printf "%s/%s/%s:%s" .Values.images.proxyConfigImage.registry .Values.images.proxyConfigImage.repo .Values.images.proxyConfigImage.imageName .Values.images.proxyConfigImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: 80
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/nginx
+      - name: dnsmasq
+        image: {{ printf "%s/%s/%s:%s" .Values.images.dnsmasqImage.registry .Values.images.dnsmasqImage.repo .Values.images.dnsmasqImage.imageName .Values.images.dnsmasqImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        args:
+          - --listen
+          - "127.0.0.1:53"
+          - --default-resolver
+          - --append-search-domains
+      volumes:
+        - name: config-volume
+          configMap:
+            name: pxcentral-cortex-nginx
+{{- end -}}

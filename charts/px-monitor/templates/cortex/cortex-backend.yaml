@@ -1,0 +1,113 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
+{{- if eq $pxMonitorEnabled true }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: pxcentral-cortex-cassandra
+    app.kubernetes.io/component: pxcentral-cortex-cassandra
+{{- include "px-monitor.labels" . | nindent 4 }}
+  name: pxcentral-cortex-cassandra
+  namespace: {{ .Release.Namespace }}
+spec:
+  clusterIP: None
+  ports:
+    - port: 9042
+  selector:
+    app: pxcentral-cortex-cassandra
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pxcentral-cortex-cassandra
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: pxcentral-cortex-cassandra
+    app.kubernetes.io/component: pxcentral-cortex-cassandra
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  serviceName: pxcentral-cortex-cassandra
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pxcentral-cortex-cassandra
+      app.kubernetes.io/component: pxcentral-cortex-cassandra
+{{- include "px-monitor.labels" . | nindent 6 }}
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: pxcentral-cortex-cassandra
+        app.kubernetes.io/component: pxcentral-cortex-cassandra
+{{- include "px-monitor.labels" . | nindent 8 }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      {{- if eq .Values.storkRequired true }}
+      schedulerName: stork
+      {{- end }}
+      containers:
+      - name: pxcentral-cortex-cassandra
+        image: "{{ .Values.images.cassandraImage.registry }}/{{ .Values.images.cassandraImage.repo }}/{{ .Values.images.cassandraImage.imageName }}:{{ .Values.images.cassandraImage.tag }}"
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        ports:
+          - containerPort: 7000
+            name: intra-node
+          - containerPort: 7001
+            name: tls-intra-node
+          - containerPort: 7199
+            name: jmx
+          - containerPort: 9042
+            name: cql
+        env:
+          - name: CASSANDRA_SEEDS
+            value: "pxcentral-cortex-cassandra-0.pxcentral-cortex-cassandra"
+          - name: MAX_HEAP_SIZE
+            value: 512M
+          - name: HEAP_NEWSIZE
+            value: 512M
+          - name: CASSANDRA_CLUSTER_NAME
+            value: "Cassandra"
+          - name: CASSANDRA_DC
+            value: "DC1"
+          - name: CASSANDRA_RACK
+            value: "Rack1"
+          - name: CASSANDRA_AUTO_BOOTSTRAP
+            value: "false"
+          - name: CASSANDRA_ENDPOINT_SNITCH
+            value: GossipingPropertyFileSnitch
+        volumeMounts:
+        - name: cassandra-data
+          mountPath: /cassandra_data
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      {{- if eq .Values.persistentStorage.enabled false }}
+      volumes:
+      - name: cassandra-data
+        emptyDir: {}
+      {{- end }}
+  {{- if eq .Values.persistentStorage.enabled true }}
+  volumeClaimTemplates:
+    - metadata:
+        name: cassandra-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: {{ .Values.persistentStorage.storageClassName }}
+        resources:
+          requests:
+            storage: 50Gi
+  {{- end }}
+{{- end -}}

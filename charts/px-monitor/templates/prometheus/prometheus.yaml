@@ -1,0 +1,373 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
+{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- if eq $pxMonitorEnabled true }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pxcentral-prometheus-operator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-prometheus
+{{- include "px-monitor.labels" . | nindent 4 }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pxcentral-prometheus
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-prometheus
+{{- include "px-monitor.labels" . | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pxcentral-prometheus
+  labels:
+    app.kubernetes.io/component: pxcentral-prometheus
+{{- include "px-monitor.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources:
+      - nodes
+      - services
+      - endpoints
+      - pods
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources:
+      - configmaps
+    verbs: ["get"]
+  - nonResourceURLs: ["/metrics", "/federate"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: pxcentral-prometheus
+  labels:
+    app.kubernetes.io/component: pxcentral-prometheus
+{{- include "px-monitor.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pxcentral-prometheus
+subjects:
+  - kind: ServiceAccount
+    name: pxcentral-prometheus
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  name: pxcentral-prometheus
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-prometheus
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  logLevel: debug
+  serviceAccountName: pxcentral-prometheus
+  image: {{ printf "%s/%s/%s:%s" .Values.images.prometheusImage.registry .Values.images.prometheusImage.repo .Values.images.prometheusImage.imageName .Values.images.prometheusImage.tag }}
+  {{- if .Values.images.pullSecrets }}
+  imagePullSecrets:
+    {{- range $sec := .Values.images.pullSecrets }}
+    - name: {{ $sec | quote }}
+    {{- end }}
+  {{- end }}
+  serviceMonitorSelector:
+    matchExpressions:
+    - key: prometheus
+      operator: In
+      values:
+      - portworx
+      - px-backup
+  remoteWrite:
+  - url: "http://pxcentral-cortex-nginx:80/api/prom/push"
+  resources:
+    requests:
+      memory: 400Mi
+  ruleSelector:
+    matchLabels:
+      prometheus: portworx
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: pxcentral-prometheus-operator
+  labels:
+    app.kubernetes.io/component: pxcentral-prometheus
+{{- include "px-monitor.labels" . | nindent 4 }}
+rules:
+  - apiGroups:
+      - extensions
+    resources:
+      - thirdpartyresources
+    verbs: ["*"]
+  - apiGroups:
+      - apiextensions.k8s.io
+    resources:
+      - customresourcedefinitions
+    verbs: ["*"]
+  - apiGroups:
+      - monitoring.coreos.com
+    resources:
+      - alertmanagers
+      - prometheuses
+      - prometheuses/finalizers
+      - servicemonitors
+      - prometheusrules
+      - podmonitors
+    verbs: ["*"]
+  - apiGroups:
+      - apps
+    resources:
+      - statefulsets
+    verbs: ["*"]
+  - apiGroups: [""]
+    resources:
+      - configmaps
+      - secrets
+    verbs: ["*"]
+  - apiGroups: [""]
+    resources:
+      - pods
+    verbs: ["list", "delete"]
+  - apiGroups: [""]
+    resources:
+      - services
+      - endpoints
+    verbs: ["get", "create", "update"]
+  - apiGroups: [""]
+    resources:
+      - nodes
+    verbs: ["list", "watch"]
+  - apiGroups: [""]
+    resources:
+      - namespaces
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: pxcentral-prometheus-operator
+  labels:
+    app.kubernetes.io/component: pxcentral-prometheus
+{{- include "px-monitor.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: pxcentral-prometheus-operator
+subjects:
+  - kind: ServiceAccount
+    name: pxcentral-prometheus-operator
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: pxcentral-prometheus-operator
+    app.kubernetes.io/component: pxcentral-prometheus
+{{- include "px-monitor.labels" . | nindent 4 }}
+  name: pxcentral-prometheus-operator
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      k8s-app: pxcentral-prometheus-operator
+      app.kubernetes.io/component: pxcentral-prometheus
+{{- include "px-monitor.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        k8s-app: pxcentral-prometheus-operator
+        app.kubernetes.io/component: pxcentral-prometheus
+{{- include "px-monitor.labels" . | nindent 8 }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      containers:
+        - args:
+            - -namespaces={{ .Release.Namespace }}
+            - --kubelet-service={{ .Release.Namespace }}/kubelet
+            - --config-reloader-image={{ printf "%s/%s/%s:%s" .Values.images.prometheusConfigReloadImage.registry .Values.images.prometheusConfigReloadImage.repo .Values.images.prometheusConfigReloadImage.imageName .Values.images.prometheusConfigReloadImage.tag }}
+            - --prometheus-config-reloader={{ printf "%s/%s/%s:%s" .Values.images.prometheusConfigReloadrImage.registry .Values.images.prometheusConfigReloadrImage.repo .Values.images.prometheusConfigReloadrImage.imageName .Values.images.prometheusConfigReloadrImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" .Values.images.prometheusOperatorImage.registry .Values.images.prometheusOperatorImage.repo .Values.images.prometheusOperatorImage.imageName .Values.images.prometheusOperatorImage.tag }}
+          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          name: pxcentral-prometheus-operator
+          ports:
+            - containerPort: 8080
+              name: http
+      {{- if $isOpenshiftCluster }}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      serviceAccountName: pxcentral-prometheus-operator
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    prometheus: portworx
+    role: prometheus-portworx-rulefiles
+    app.kubernetes.io/component: pxcentral-prometheus
+{{- include "px-monitor.labels" . | nindent 4 }}
+  name: prometheus-portworx-rules-portworx.rules.yaml
+  namespace: {{ .Release.Namespace }}
+spec:
+  groups:
+  - name: portworx.rules
+    rules:
+    - alert: PortworxVolumeUsageCritical
+      annotations:
+        description: {{`Portworx volume {{$labels.volumeid}} on {{$labels.host}} is over 80% used for
+          more than 10 minutes.`}}
+        summary: {{`Portworx volume capacity is at {{$value}}% used.`}}
+      expr: 100 * (px_volume_usage_bytes / px_volume_capacity_bytes) > 80
+      for: 5m
+      labels:
+        issue: {{`Portworx volume {{$labels.volumeid}} usage on {{$labels.host}} is high.`}}
+        severity: critical
+    - alert: PortworxVolumeUsage
+      annotations:
+        description: {{`Portworx volume {{$labels.volumeid}} on {{$labels.host}} is over 70% used for
+          more than 10 minutes.`}}
+        summary: {{`Portworx volume {{$labels.volumeid}} on {{$labels.host}} is at {{$value}}% used.`}}
+      expr: 100 * (px_volume_usage_bytes / px_volume_capacity_bytes) > 70
+      for: 5m
+      labels:
+        issue: {{`Portworx volume {{$labels.volumeid}} usage on {{$labels.host}} is critical.`}}
+        severity: warning
+    - alert: PortworxVolumeWillFill
+      annotations:
+        description: {{`Disk volume {{$labels.volumeid}} on {{$labels.host}} is over 70% full and has
+          been predicted to fill within 2 weeks for more than 10 minutes.`}}
+        summary: {{`Portworx volume {{$labels.volumeid}} on {{$labels.host}} is over 70% full and is
+          predicted to fill within 2 weeks.`}}
+      expr: (px_volume_usage_bytes / px_volume_capacity_bytes) > 0.7 and predict_linear(px_cluster_disk_available_bytes[1h],
+        14 * 86400) < 0
+      for: 10m
+      labels:
+        issue: {{`Disk volume {{$labels.volumeid}} on {{$labels.host}} is predicted to fill within
+          2 weeks.`}}
+        severity: warning
+    - alert: PortworxStorageUsageCritical
+      annotations:
+        description: {{`Portworx storage {{$labels.volumeid}} on {{$labels.host}} is over 80% used
+          for more than 10 minutes.`}}
+        summary: {{`Portworx storage capacity is at {{$value}}% used.`}}
+      expr: 100 * (1 - px_cluster_disk_utilized_bytes / px_cluster_disk_total_bytes)
+        < 20
+      for: 5m
+      labels:
+        issue: {{`Portworx storage {{$labels.volumeid}} usage on {{$labels.host}} is high.`}}
+        severity: critical
+    - alert: PortworxStorageUsage
+      annotations:
+        description: {{`Portworx storage {{$labels.volumeid}} on {{$labels.host}} is over 70% used
+          for more than 10 minutes.`}}
+        summary: {{`Portworx storage {{$labels.volumeid}} on {{$labels.host}} is at {{$value}}% used.`}}
+      expr: 100 * (1 - (px_cluster_disk_utilized_bytes / px_cluster_disk_total_bytes))
+        < 30
+      for: 5m
+      labels:
+        issue: {{`Portworx storage {{$labels.volumeid}} usage on {{$labels.host}} is critical.`}}
+        severity: warning
+    - alert: PortworxStorageWillFill
+      annotations:
+        description: {{`Portworx storage {{$labels.volumeid}} on {{$labels.host}} is over 70% full
+          and has been predicted to fill within 2 weeks for more than 10 minutes.`}}
+        summary: {{`Portworx storage {{$labels.volumeid}} on {{$labels.host}} is over 70% full and
+          is predicted to fill within 2 weeks.`}}
+      expr: (100 * (1 - (px_cluster_disk_utilized_bytes / px_cluster_disk_total_bytes)))
+        < 30 and predict_linear(px_cluster_disk_available_bytes[1h], 14 * 86400) <
+        0
+      for: 10m
+      labels:
+        issue: {{`Portworx storage {{$labels.volumeid}} on {{$labels.host}} is predicted to fill within
+          2 weeks.`}}
+        severity: warning
+    - alert: PortworxStorageNodeDown
+      annotations:
+        description: Portworx Storage Node has been offline for more than 5 minutes.
+        summary: Portworx Storage Node is Offline.
+      expr: max(px_cluster_status_nodes_storage_down) > 0
+      for: 5m
+      labels:
+        issue: Portworx Storage Node is Offline.
+        severity: critical
+    - alert: PortworxQuorumUnhealthy
+      annotations:
+        description: Portworx cluster Quorum Unhealthy for more than 5 minutes.
+        summary: Portworx Quorum Unhealthy.
+      expr: max(px_cluster_status_cluster_quorum) > 1
+      for: 5m
+      labels:
+        issue: Portworx Quorum Unhealthy.
+        severity: critical
+    - alert: PortworxMemberDown
+      annotations:
+        description: Portworx cluster member(s) has(have) been down for more than
+          5 minutes.
+        summary: Portworx cluster member(s) is(are) down.
+      expr: (max(px_cluster_status_cluster_size) - count(px_cluster_status_cluster_size))
+        > 0
+      for: 5m
+      labels:
+        issue: Portworx cluster member(s) is(are) down.
+        severity: critical
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-prometheus
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-prometheus
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  ports:
+    - name: web
+      port: 9090
+      targetPort: 9090
+  selector:
+    prometheus: pxcentral-prometheus
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: pxcentral-portworx
+  labels:
+    name: portworx
+    prometheus: portworx
+    app.kubernetes.io/component: pxcentral-prometheus
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec: 
+  selector:
+    matchLabels:
+      name: portworx
+  namespaceSelector:
+    any: true
+  endpoints:
+  - port: px-api
+  - port: px-kvdb
+{{- end -}}
