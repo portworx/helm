@@ -108,6 +108,6 @@ spec:
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         resources:
           requests:
-            storage: 50Gi
+            storage: {{ .Values.persistentStorage.cassandra.storage }}
   {{- end }}
 {{- end -}}

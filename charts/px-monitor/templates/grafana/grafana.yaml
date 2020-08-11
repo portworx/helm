@@ -120,7 +120,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 20Gi
+      storage: {{ .Values.persistentStorage.grafana.storage }}
   storageClassName: {{ .Values.persistentStorage.storageClassName }}
 ---
 kind: PersistentVolumeClaim
@@ -136,7 +136,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 20Gi
+      storage: {{ .Values.persistentStorage.grafana.storage }}
   storageClassName: {{ .Values.persistentStorage.storageClassName }}
 {{- end }}
 ---

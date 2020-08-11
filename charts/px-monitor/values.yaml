@@ -12,6 +12,12 @@ clusterDomain: "cluster.local"
 persistentStorage:
   enabled: false
   storageClassName:
+  cassandra:
+    storage: 50Gi
+  grafana:
+    storage: 20Gi
+  consul:
+    storage: 8Gi
 
 securityContext:
   runAsUser: 1000

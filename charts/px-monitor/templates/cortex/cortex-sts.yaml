@@ -423,6 +423,6 @@ spec:
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         resources:
           requests:
-            storage: 8Gi        
+            storage: {{ .Values.persistentStorage.consul.storage }}
   {{- end }}
 {{- end -}}
