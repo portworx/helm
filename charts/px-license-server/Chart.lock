@@ -1,0 +1,6 @@
+dependencies:
+- name: px-backup
+  repository: http://charts.portworx.io/
+  version: 1.0.1
+digest: sha256:614c18d0d798635e6fb05f7676ab852213f977b152db41f83044706c3c61ef52
+generated: "2020-08-13T11:33:30.056063+05:30"
