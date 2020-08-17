@@ -17,10 +17,12 @@ Using port forwarding:
 
 To access PX-Backup:  http://localhost:8080
 
+{{- if eq .Release.IsInstall true }}
 Login with the following credentials:
 
     Username: {{ .Values.oidc.centralOIDC.defaultUsername }}
     Password: {{ .Values.oidc.centralOIDC.defaultPassword }}
+{{- end }}
 
 For more information: https://github.com/portworx/helm/blob/master/charts/px-backup/README.md
 
