@@ -114,6 +114,10 @@ spec:
           value: {{ .Release.Namespace }}
         - name: PX_BACKUP_DEFAULT_ORG
           value: {{ .Values.pxbackup.orgName }}
+        {{- if .Values.caCertsSecretName }}
+        - name: X509_CA_BUNDLE
+          value: /tmp/certs/*.crt
+        {{- end }}
         image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupImage.registry .Values.images.pxBackupImage.repo .Values.images.pxBackupImage.imageName .Values.images.pxBackupImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         name: px-backup
@@ -134,10 +138,23 @@ spec:
           initialDelaySeconds: 15
           timeoutSeconds: 1
           periodSeconds: 60
+        {{- if .Values.caCertsSecretName }}  
+        volumeMounts:
+          - mountPath: /tmp/certs
+            readOnly: true
+            name: ssl-cert-dir
+        {{- end }}
         command:
         - /px-backup
         - start
         - --datastoreEndpoints=etcd:http://pxc-backup-etcd-0.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-1.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-2.pxc-backup-etcd-headless:2379
+      {{- if .Values.caCertsSecretName }}
+      volumes:
+        - name: ssl-cert-dir
+          secret:
+            defaultMode: 420
+            secretName: "{{ .Values.caCertsSecretName }}"
+      {{- end }}
       serviceAccountName: px-backup-account
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:

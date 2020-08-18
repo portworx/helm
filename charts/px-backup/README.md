@@ -72,6 +72,7 @@ Parameter | Description | Default
 `persistentStorage.storageClassName` | Provide storage class name which exists | `""`
 `storkRequired` | Scheduler name as stork | `false`
 `pxcentralDBPassword` | PX-Central cluster store mysql database password | `Password1`
+`caCertsSecretName` | Secret name where the CA certs are stored | `""`
 `oidc` | Enable OIDC for PX-Central and PX-backup for RBAC | `""`
 `oidc.centralOIDC` | PX-Central OIDC | `""`
 `oidc.centralOIDC.enabled` | PX-Central OIDC | `true`
@@ -84,7 +85,7 @@ Parameter | Description | Default
 `oidc.centralOIDC.clientSecret` | PX-Central OIDC client secret | `dummy`
 `oidc.externalOIDC` | Enable external OIDC provider | `""`
 `oidc.externalOIDC.enabled` | Enabled external OIDC provider | `false`
-`oidc.externalOIDC.clientID` | External OIDC client ID | default `""`
+`oidc.externalOIDC.clientID` | External OIDC client ID | `""`
 `oidc.externalOIDC.clientSecret` | External OIDC client secret | `""`
 `oidc.externalOIDC.endpoint` | External OIDC endpoint | `""`
 `images` | PX-Backup deployment images | `""`
@@ -223,6 +224,47 @@ $ kubectl get ingress px-backup-ui-ingress --namespace px-backup -o jsonpath="{.
 
 3. Keycloak UI endpoint: `http://LB_ENDPOINT/auth`
 
+### Configure custom ca certificate:
+1. Create secret with ca certificates into release namespace.
+
+Example:
+```
+apiVersion: v1
+stringData:
+  ca.crt: |
+    -----BEGIN CERTIFICATE-----
+    MIIEczCCA1ugAwIBAgIBADANBgkqhkiG9w0BAQQFAD..AkGA1UEBhMCR0Ix
+    EzARBgNVBAgTClNvbWUtU3RhdGUxFDASBgNVBAoTC0..0EgTHRkMTcwNQYD
+    VQQLEy5DbGFzcyAxIFB1YmxpYyBQcmltYXJ5IENlcn..XRpb24gQXV0aG9y
+    aXR5MRQwEgYDVQQDEwtCZXN0IENBIEx0ZDAeFw0wMD..TUwMTZaFw0wMTAy
+    MDQxOTUwMTZaMIGHMQswCQYDVQQGEwJHQjETMBEGA1..29tZS1TdGF0ZTEU
+    MBIGA1UEChMLQmVzdCBDQSBMdGQxNzA1BgNVBAsTLk..DEgUHVibGljIFBy
+    aW1hcnkgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkxFD..AMTC0Jlc3QgQ0Eg
+    THRkMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCg..Tz2mr7SZiAMfQyu
+    vBjM9OiJjRazXBZ1BjP5CE/Wm/Rr500PRK+Lh9x5eJ../ANBE0sTK0ZsDGM
+    ak2m1g7oruI3dY3VHqIxFTz0Ta1d+NAjwnLe4nOb7/..k05ShhBrJGBKKxb
+    8n104o/5p8HAsZPdzbFMIyNjJzBM2o5y5A13wiLitE..fyYkQzaxCw0Awzl
+    kVHiIyCuaF4wj571pSzkv6sv+4IDMbT/XpCo8L6wTa..sh+etLD6FtTjYbb
+    rvZ8RQM1tlKdoMHg2qxraAV++HNBYmNWs0duEdjUbJ..XI9TtnS4o1Ckj7P
+    OfljiQIDAQABo4HnMIHkMB0GA1UdDgQWBBQ8urMCRL..5AkIp9NJHJw5TCB
+    tAYDVR0jBIGsMIGpgBQ8urMCRLYYMHUKU5AkIp9NJH..aSBijCBhzELMAkG
+    A1UEBhMCR0IxEzARBgNVBAgTClNvbWUtU3RhdGUxFD..AoTC0Jlc3QgQ0Eg
+    THRkMTcwNQYDVQQLEy5DbGFzcyAxIFB1YmxpYyBQcm..ENlcnRpZmljYXRp
+    b24gQXV0aG9yaXR5MRQwEgYDVQQDEwtCZXN0IENBIE..DAMBgNVHRMEBTAD
+    AQH/MA0GCSqGSIb3DQEBBAUAA4IBAQC1uYBcsSncwA..DCsQer772C2ucpX
+    xQUE/C0pWWm6gDkwd5D0DSMDJRqV/weoZ4wC6B73f5..bLhGYHaXJeSD6Kr
+    XcoOwLdSaGmJYslLKZB3ZIDEp0wYTGhgteb6JFiTtn..sf2xdrYfPCiIB7g
+    BMAV7Gzdc4VspS6ljrAhbiiawdBiQlQmsBeFz9JkF4..b3l8BoGN+qMa56Y
+    It8una2gY4l2O//on88r5IWJlm1L0oA8e4fR2yrBHX..adsGeFKkyNrwGi/
+    7vQMfXdGsRrXNGRGnX+vWDZ3/zWI0joDtCkNnqEpVn..HoX
+    -----END CERTIFICATE-----
+kind: Secret
+metadata:
+  name: ca-certs
+  namespace: px-backup
+```
+
+2. Pass the secret name to chart using flag: `--set caCertsSecretName=<SECRET_NAME>`
 
 ## FAQ
 
