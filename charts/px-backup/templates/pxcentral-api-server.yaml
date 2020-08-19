@@ -134,7 +134,7 @@ spec:
             value: {{ .Release.Namespace }}
           {{- if .Values.caCertsSecretName }}
           - name: SSL_CERT_DIR
-            value: /tmp/certs/*.crt
+            value: /tmp/certs
           {{- end }}
         readinessProbe:
           httpGet:

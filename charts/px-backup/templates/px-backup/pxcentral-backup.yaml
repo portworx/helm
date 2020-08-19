@@ -116,7 +116,7 @@ spec:
           value: {{ .Values.pxbackup.orgName }}
         {{- if .Values.caCertsSecretName }}
         - name: SSL_CERT_DIR
-          value: /tmp/certs/*.crt
+          value: /tmp/certs
         {{- end }}
         image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupImage.registry .Values.images.pxBackupImage.repo .Values.images.pxBackupImage.imageName .Values.images.pxBackupImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}

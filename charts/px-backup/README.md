@@ -72,7 +72,7 @@ Parameter | Description | Default
 `persistentStorage.storageClassName` | Provide storage class name which exists | `""`
 `storkRequired` | Scheduler name as stork | `false`
 `pxcentralDBPassword` | PX-Central cluster store mysql database password | `Password1`
-`caCertsSecretName` | Secret name where the CA certs are stored | `""`
+`caCertsSecretName` | Name of the Kubernetes Secret, which contains the CA Certificates. | `""`
 `oidc` | Enable OIDC for PX-Central and PX-backup for RBAC | `""`
 `oidc.centralOIDC` | PX-Central OIDC | `""`
 `oidc.centralOIDC.enabled` | PX-Central OIDC | `true`
