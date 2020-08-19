@@ -462,6 +462,10 @@ spec:
               value: "dns.DNS_PING"
             - name: JGROUPS_DISCOVERY_PROPERTIES
               value: "dns_query=pxcentral-keycloak-headless"
+            {{- if .Values.caCertsSecretName }}
+            - name: X509_CA_BUNDLE
+              value: /tmp/certs/*.crt
+            {{- end }}
           volumeMounts:
             - name: sh
               mountPath: /scripts
@@ -474,6 +478,11 @@ spec:
               readOnly: true
             - name: theme
               mountPath: /opt/jboss/keycloak/themes/portworx
+            {{- if .Values.caCertsSecretName }}
+            - name: ssl-cert-dir
+              readOnly: true
+              mountPath: /tmp/certs
+            {{- end }}
           ports:
             - name: http
               containerPort: 8080
@@ -504,6 +513,12 @@ spec:
         - name: secrets
           secret:
             secretName: pxcentral-keycloak-http
+        {{- if .Values.caCertsSecretName }}
+        - name: ssl-cert-dir
+          secret:
+            defaultMode: 420
+            secretName: "{{ .Values.caCertsSecretName }}"
+        {{- end }}
         - name: startup
           configMap:
             name: pxcentral-keycloak-startup

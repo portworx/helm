@@ -132,6 +132,10 @@ spec:
         env:
           - name: PXC_NAMESPACE
             value: {{ .Release.Namespace }}
+          {{- if .Values.caCertsSecretName }}
+          - name: SSL_CERT_DIR
+            value: /tmp/certs
+          {{- end }}
         readinessProbe:
           httpGet:
             path: /v1/ping
@@ -144,9 +148,22 @@ spec:
             containerPort: 10005
           - name: pxcentral-rest
             containerPort: 10006
+        {{- if .Values.caCertsSecretName }}
+        volumeMounts:
+          - mountPath: /tmp/certs
+            readOnly: true
+            name: ssl-cert-dir
+        {{- end }}
         command:
         - /pxcentral-onprem
         - start
+      {{- if .Values.caCertsSecretName }}
+      volumes:
+        - name: ssl-cert-dir
+          secret:
+            defaultMode: 420
+            secretName: "{{ .Values.caCertsSecretName }}"
+      {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}

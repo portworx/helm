@@ -6,6 +6,8 @@ storkRequired: false
 
 pxcentralDBPassword: Password1
 
+caCertsSecretName: ""
+
 oidc:
   centralOIDC:
     enabled: true
