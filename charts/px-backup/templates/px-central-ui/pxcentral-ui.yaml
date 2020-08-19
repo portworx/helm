@@ -337,16 +337,40 @@ spec:
               value: dev
           livenessProbe:
             exec:
-              command: ["mysqladmin", "ping", "-u", "$MYSQL_ROOT_USER_NAME", "-p$MYSQL_ROOT_PASSWORD"]
+              command:
+                - sh
+                - -c
+                - |
+                  echo $MYSQL_ROOT_PASSWORD > /etc/mysql/secret
+                  export MYSQL_ROOT_PASSWORD_FILE=/etc/mysql/secret
+                  password_aux="${MYSQL_ROOT_PASSWORD:-}"
+                  if [ -f "${MYSQL_ROOT_PASSWORD_FILE:-}" ]; then
+                      password_aux=$(cat $MYSQL_ROOT_PASSWORD_FILE)
+                  fi
+                  mysqladmin status -uroot -p$password_aux
             initialDelaySeconds: 120
             periodSeconds: 10
             timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
           readinessProbe:
             exec:
-              command: ["mysqladmin", "ping", "-u", "$MYSQL_ROOT_USER_NAME", "-p$MYSQL_ROOT_PASSWORD"]
+              command:
+                - sh
+                - -c
+                - |
+                  echo $MYSQL_ROOT_PASSWORD > /etc/mysql/secret
+                  export MYSQL_ROOT_PASSWORD_FILE=/etc/mysql/secret
+                  password_aux="${MYSQL_ROOT_PASSWORD:-}"
+                  if [ -f "${MYSQL_ROOT_PASSWORD_FILE:-}" ]; then
+                      password_aux=$(cat $MYSQL_ROOT_PASSWORD_FILE)
+                  fi
+                  mysqladmin status -uroot -p$password_aux
             initialDelaySeconds: 120
             periodSeconds: 10
             timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
           volumeMounts:
             - mountPath: /var/lib/mysql
               name: pxcentral-mysql
