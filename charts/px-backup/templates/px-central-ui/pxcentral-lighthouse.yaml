@@ -70,7 +70,7 @@ spec:
           - name: PX_NAMESPACE
             value: {{ .Release.Namespace }}
           {{- if .Values.caCertsSecretName }}
-          - name: X509_CA_BUNDLE
+          - name: SSL_CERT_DIR
             value: /tmp/certs/*.crt
           {{- end }}
         ports:

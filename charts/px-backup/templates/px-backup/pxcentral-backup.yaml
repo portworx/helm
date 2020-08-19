@@ -115,7 +115,7 @@ spec:
         - name: PX_BACKUP_DEFAULT_ORG
           value: {{ .Values.pxbackup.orgName }}
         {{- if .Values.caCertsSecretName }}
-        - name: X509_CA_BUNDLE
+        - name: SSL_CERT_DIR
           value: /tmp/certs/*.crt
         {{- end }}
         image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupImage.registry .Values.images.pxBackupImage.repo .Values.images.pxBackupImage.imageName .Values.images.pxBackupImage.tag }}
