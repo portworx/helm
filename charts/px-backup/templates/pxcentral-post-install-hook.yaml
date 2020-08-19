@@ -36,6 +36,12 @@ spec:
             value: INFO
           - name: PXC_NAMESPACE
             value: {{ .Release.Namespace }}
+          - name: DEPLOYMENT_TYPE
+            {{- if eq .Release.IsInstall true }}
+            value: "install"
+            {{- else }}
+            value: "upgrade"
+            {{- end }}
         command: ["python",  "/pxcentral-post-install/pxc-post-setup.py"]
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
