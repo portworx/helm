@@ -10,6 +10,12 @@ metadata:
 {{- include "px-backup.labels" . | nindent 4 }}
 data:
   default.conf: |
+    proxy_send_timeout 300s;
+    proxy_read_timeout 300s;
+    fastcgi_send_timeout 300s;
+    fastcgi_read_timeout 300s;
+    client_max_body_size 8M;
+
     upstream backend {
       server pxcentral-backend:80;
     }
