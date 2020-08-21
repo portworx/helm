@@ -464,7 +464,7 @@ spec:
               value: "dns_query=pxcentral-keycloak-headless"
             {{- if .Values.caCertsSecretName }}
             - name: X509_CA_BUNDLE
-              value: /tmp/certs/*.crt
+              value: /tmp/certs/*
             {{- end }}
           volumeMounts:
             - name: sh
