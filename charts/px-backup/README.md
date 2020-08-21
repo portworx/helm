@@ -40,7 +40,7 @@ $ helm install --name px-backup portworx/px-backup --namespace px-backup
 ## Upgrade chart to latest version
 1. Need to delete all statefulset before helm upgrade:
 ```console
-kubectl delete sts --namespace px-backup pxc-backup-etcd pxcentral-keycloak pxcentral-keycloak-postgresql
+kubectl delete sts --namespace px-backup pxc-backup-etcd pxcentral-keycloak pxcentral-keycloak-postgresql pxcentral-mysql
 ```
 2. Run helm upgrade command:
 ```console
@@ -70,6 +70,10 @@ Parameter | Description | Default
 `persistentStorage` | Persistent storage for all px-central components | `""`
 `persistentStorage.enabled` | Enable persistent storage | `false`
 `persistentStorage.storageClassName` | Provide storage class name which exists | `""`
+`persistentStorage.mysqlVolumeSize` | MySQL volume size | `"100Gi"`
+`persistentStorage.etcdVolumeSize` | ETCD volume size | `"64Gi"`
+`persistentStorage.keycloakThemeVolumeSize` | Keycloak frontend theme volume size | `"5Gi"`
+`persistentStorage.keycloakBackendVolumeSize` | Keycloak backend volume size | `"10Gi"`
 `storkRequired` | Scheduler name as stork | `false`
 `pxcentralDBPassword` | PX-Central cluster store mysql database password | `Password1`
 `caCertsSecretName` | Name of the Kubernetes Secret, which contains the CA Certificates. | `""`

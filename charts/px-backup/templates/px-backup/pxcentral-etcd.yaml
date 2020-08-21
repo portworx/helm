@@ -346,7 +346,7 @@ spec:
           - "ReadWriteOnce"
         resources:
           requests:
-            storage: "64Gi"
+            storage: {{ .Values.persistentStorage.etcdVolumeSize }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
   {{- end }}
 {{- end -}}
