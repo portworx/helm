@@ -77,24 +77,6 @@ data:
       }
     }
 ---
-{{- if eq $externalPersistentStorageEnabled true }}
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pxcentral-mysql-pvc
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app.kubernetes.io/component: pxcentral-mysql
-{{- include "px-backup.labels" . | nindent 4 }}
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Gi
-  storageClassName: {{ .Values.persistentStorage.storageClassName }}
-{{- end }}
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -312,6 +294,12 @@ spec:
       {{- if eq .Values.storkRequired true }}
       schedulerName: stork
       {{- end }}
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
       containers:
         - name: mysql
           image: {{ printf "%s/%s/%s:%s" .Values.images.mysqlImage.registry .Values.images.mysqlImage.repo .Values.images.mysqlImage.imageName .Values.images.mysqlImage.tag }}
@@ -344,32 +332,61 @@ spec:
           livenessProbe:
             exec:
               command: ["mysqladmin", "ping", "-u", "$MYSQL_ROOT_USER_NAME", "-p$MYSQL_ROOT_PASSWORD"]
+              command:
+                - sh
+                - -c
+                - |
+                  echo $MYSQL_ROOT_PASSWORD > /etc/mysql/secret
+                  export MYSQL_ROOT_PASSWORD_FILE=/etc/mysql/secret
+                  password_aux="${MYSQL_ROOT_PASSWORD:-}"
+                  if [ -f "${MYSQL_ROOT_PASSWORD_FILE:-}" ]; then
+                      password_aux=$(cat $MYSQL_ROOT_PASSWORD_FILE)
+                  fi
+                  mysqladmin status -uroot -p$password_aux
             initialDelaySeconds: 120
             periodSeconds: 10
             timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
           readinessProbe:
             exec:
               command: ["mysqladmin", "ping", "-u", "$MYSQL_ROOT_USER_NAME", "-p$MYSQL_ROOT_PASSWORD"]
+              command:
+                - sh
+                - -c
+                - |
+                  echo $MYSQL_ROOT_PASSWORD > /etc/mysql/secret
+                  export MYSQL_ROOT_PASSWORD_FILE=/etc/mysql/secret
+                  password_aux="${MYSQL_ROOT_PASSWORD:-}"
+                  if [ -f "${MYSQL_ROOT_PASSWORD_FILE:-}" ]; then
+                      password_aux=$(cat $MYSQL_ROOT_PASSWORD_FILE)
+                  fi
+                  mysqladmin status -uroot -p$password_aux
             initialDelaySeconds: 120
             periodSeconds: 10
             timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
           volumeMounts:
             - mountPath: /var/lib/mysql
               name: pxcentral-mysql
+      {{- if eq $externalPersistentStorageEnabled false }}
       volumes:
         - name: pxcentral-mysql
-          {{- if eq $externalPersistentStorageEnabled true }}
-          persistentVolumeClaim:
-            claimName: pxcentral-mysql-pvc
-          {{- else }}
           emptyDir: {}
-          {{- end }}
-      {{- if .Values.images.pullSecrets }}
-      imagePullSecrets:
-        {{- range $sec := .Values.images.pullSecrets }}
-        - name: {{ $sec | quote }}
-        {{- end }}
       {{- end }}
+  {{- if eq $externalPersistentStorageEnabled true }}
+  volumeClaimTemplates:
+    - metadata:
+        name: pxcentral-mysql
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: {{ .Values.persistentStorage.mysqlVolumeSize }}
+        storageClassName: {{ .Values.persistentStorage.storageClassName }}
+  {{- end }}
 ---
 apiVersion: v1
 kind: Service
