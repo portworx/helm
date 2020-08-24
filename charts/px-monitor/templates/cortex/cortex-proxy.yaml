@@ -53,23 +53,6 @@ data:
       }
     }
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  name: pxcentral-cortex-nginx
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app: cortex-nginx
-    cortex: nginx
-{{- include "px-monitor.labels" . | nindent 4 }}
-spec:
-  type: NodePort
-  ports:
-  - name: http
-    port: 80
-  selector:
-    name: nginx
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:

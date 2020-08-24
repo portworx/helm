@@ -355,7 +355,6 @@ spec:
               value: dev
           livenessProbe:
             exec:
-              command: ["mysqladmin", "ping", "-u", "$MYSQL_ROOT_USER_NAME", "-p$MYSQL_ROOT_PASSWORD"]
               command:
                 - sh
                 - -c
@@ -374,7 +373,6 @@ spec:
             failureThreshold: 3
           readinessProbe:
             exec:
-              command: ["mysqladmin", "ping", "-u", "$MYSQL_ROOT_USER_NAME", "-p$MYSQL_ROOT_PASSWORD"]
               command:
                 - sh
                 - -c
