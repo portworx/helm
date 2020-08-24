@@ -69,11 +69,21 @@ spec:
         env:
           - name: PX_NAMESPACE
             value: {{ .Release.Namespace }}
+          {{- if .Values.caCertsSecretName }}
+          - name: SSL_CERT_DIR
+            value: /tmp/certs
+          {{- end }}
         ports:
           - name: http
             containerPort: 8091
           - name: https
             containerPort: 8092
+        {{- if .Values.caCertsSecretName }}
+        volumeMounts:
+          - mountPath: /tmp/certs
+            readOnly: true
+            name: ssl-cert-dir
+        {{- end }}
         readinessProbe:
           httpGet:
             path: /ping
@@ -88,6 +98,13 @@ spec:
           initialDelaySeconds: 15
           timeoutSeconds: 1
           periodSeconds: 60
+      {{- if .Values.caCertsSecretName }}
+      volumes:
+        - name: ssl-cert-dir
+          secret:
+            defaultMode: 420
+            secretName: "{{ .Values.caCertsSecretName }}"
+      {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}

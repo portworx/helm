@@ -9,6 +9,8 @@ metadata:
     helm.sh/hook: pre-delete
     helm.sh/hook-weight: "10"
     helm.sh/hook-delete-policy: before-hook-creation
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-monitor-pre-delete-hook
 {{- include "px-monitor.labels" . | nindent 4 }}
