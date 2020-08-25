@@ -36,9 +36,7 @@ Common labels
 */}}
 {{- define "px-monitor.labels" -}}
 app.kubernetes.io/name: {{ template "px-monitor.name" . }}
-helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 app.kubernetes.io/instance: {{.Release.Name | quote }}
-app.kubernetes.io/version: {{ .Chart.Version | quote }}
 app.kubernetes.io/managed-by: {{.Release.Service | quote }}
 {{- end }}
 
