@@ -38,6 +38,8 @@ Common labels
 app.kubernetes.io/name: {{ template "px-monitor.name" . }}
 app.kubernetes.io/instance: {{.Release.Name | quote }}
 app.kubernetes.io/managed-by: {{.Release.Service | quote }}
+helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
+app.kubernetes.io/version: {{ .Chart.Version | quote }}
 {{- end }}
 
 {{/*
