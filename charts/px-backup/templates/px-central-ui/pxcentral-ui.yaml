@@ -28,6 +28,14 @@ data:
       server pxcentral-keycloak-http:80;
     }
 
+    upstream grafana {
+      server pxcentral-grafana:3000;
+    }
+
+    upstream cortex {
+      server pxcentral-cortex-nginx:80;
+    }
+
     map $http_x_forwarded_proto $myscheme {
       default $http_x_forwarded_proto;
       ''  $scheme;
@@ -69,6 +77,22 @@ data:
         proxy_set_header X-Forwarded-Host  $http_host;
         proxy_set_header Port  $http_port;
         proxy_set_header X-Forwarded-Port  $http_port;
+      }
+      location /grafana/ {
+        proxy_pass http://grafana/;
+        proxy_cache_bypass  $http_upgrade;
+        proxy_set_header Upgrade           $http_upgrade;
+        proxy_set_header Connection        "upgrade";
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $proxy_protocol_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Host  $http_host;
+        proxy_set_header Port  $http_port;
+        proxy_set_header X-Forwarded-Port  $http_port;
+      }
+      location /cortex/ {
+        proxy_pass http://cortex/;
       }
       error_page 404 =200 /index.html;
       error_page   500 502 503 504  /50x.html;
@@ -331,7 +355,6 @@ spec:
               value: dev
           livenessProbe:
             exec:
-              command: ["mysqladmin", "ping", "-u", "$MYSQL_ROOT_USER_NAME", "-p$MYSQL_ROOT_PASSWORD"]
               command:
                 - sh
                 - -c
@@ -350,7 +373,6 @@ spec:
             failureThreshold: 3
           readinessProbe:
             exec:
-              command: ["mysqladmin", "ping", "-u", "$MYSQL_ROOT_USER_NAME", "-p$MYSQL_ROOT_PASSWORD"]
               command:
                 - sh
                 - -c
