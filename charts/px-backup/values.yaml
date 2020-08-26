@@ -32,6 +32,7 @@ oidc:
 pxbackup:
   enabled: true
   orgName: default
+  callHome: true
 
 operatorToChartUpgrade: false
 
