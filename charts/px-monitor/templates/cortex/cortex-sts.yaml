@@ -87,13 +87,17 @@ spec:
     matchLabels:
       app: pxcentral-memcached-index-read
       app.kubernetes.io/component: pxcentral-memcached-index-read
-{{- include "px-monitor.labels" . | nindent 6 }}
+      app.kubernetes.io/name: {{.Release.Name }}
+      app.kubernetes.io/instance: {{.Release.Name }}
+      app.kubernetes.io/managed-by: {{.Release.Service }}
   template:
     metadata:
       labels:
         app: pxcentral-memcached-index-read
         app.kubernetes.io/component: pxcentral-memcached-index-read
-{{- include "px-monitor.labels" . | nindent 8 }}
+        app.kubernetes.io/name: {{.Release.Name }}
+        app.kubernetes.io/instance: {{.Release.Name }}
+        app.kubernetes.io/managed-by: {{.Release.Service }}
     spec:
       affinity:
         nodeAffinity:
@@ -158,13 +162,17 @@ spec:
     matchLabels:
       app: pxcentral-memcached-index-write
       app.kubernetes.io/component: pxcentral-memcached-index-write
-{{- include "px-monitor.labels" . | nindent 6 }}
+      app.kubernetes.io/name: {{.Release.Name }}
+      app.kubernetes.io/instance: {{.Release.Name }}
+      app.kubernetes.io/managed-by: {{.Release.Service }}
   template:
     metadata:
       labels:
         app: pxcentral-memcached-index-write
         app.kubernetes.io/component: pxcentral-memcached-index-write
-{{- include "px-monitor.labels" . | nindent 8 }}
+        app.kubernetes.io/name: {{.Release.Name }}
+        app.kubernetes.io/instance: {{.Release.Name }}
+        app.kubernetes.io/managed-by: {{.Release.Service }}
     spec:
       affinity:
         nodeAffinity:
@@ -229,13 +237,17 @@ spec:
     matchLabels:
       app: pxcentral-memcached
       app.kubernetes.io/component: pxcentral-memcached
-{{- include "px-monitor.labels" . | nindent 6 }}
+      app.kubernetes.io/name: {{.Release.Name }}
+      app.kubernetes.io/instance: {{.Release.Name }}
+      app.kubernetes.io/managed-by: {{.Release.Service }}
   template:
     metadata:
       labels:
         app: pxcentral-memcached
         app.kubernetes.io/component: pxcentral-memcached
-{{- include "px-monitor.labels" . | nindent 8 }}
+        app.kubernetes.io/name: {{.Release.Name }}
+        app.kubernetes.io/instance: {{.Release.Name }}
+        app.kubernetes.io/managed-by: {{.Release.Service }}
     spec:
       affinity:
         nodeAffinity:
@@ -296,7 +308,9 @@ spec:
       app.kubernetes.io/component: pxcentral-cortex-consul
       cortex: consul
       app: cortex-consul
-{{- include "px-monitor.labels" . | nindent 6 }}
+      app.kubernetes.io/name: {{.Release.Name }}
+      app.kubernetes.io/instance: {{.Release.Name }}
+      app.kubernetes.io/managed-by: {{.Release.Service }}
   serviceName: pxcentral-cortex-consul
   replicas: 1
   podManagementPolicy: Parallel
@@ -308,7 +322,9 @@ spec:
         app.kubernetes.io/component: pxcentral-cortex-consul
         cortex: consul
         app: cortex-consul
-{{- include "px-monitor.labels" . | nindent 8 }}
+        app.kubernetes.io/name: {{.Release.Name }}
+        app.kubernetes.io/instance: {{.Release.Name }}
+        app.kubernetes.io/managed-by: {{.Release.Service }}
     spec:      
       affinity:
         nodeAffinity:

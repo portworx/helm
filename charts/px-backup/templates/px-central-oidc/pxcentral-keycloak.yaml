@@ -231,12 +231,20 @@ spec:
     matchLabels:
       app: postgresql
       role: master
+      app.kubernetes.io/component: keycloak
+      app.kubernetes.io/name: {{.Release.Name }}
+      app.kubernetes.io/instance: {{.Release.Name }}
+      app.kubernetes.io/managed-by: {{.Release.Service }}
   template:
     metadata:
       name: pxcentral-keycloak-postgresql
       labels:
         app: postgresql
         role: master
+        app.kubernetes.io/component: keycloak
+        app.kubernetes.io/name: {{.Release.Name }}
+        app.kubernetes.io/instance: {{.Release.Name }}
+        app.kubernetes.io/managed-by: {{.Release.Service }}
     spec:
       affinity:
         nodeAffinity:
@@ -360,7 +368,9 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/component: keycloak
-{{- include "px-backup.labels" . | nindent 6 }}
+      app.kubernetes.io/name: {{.Release.Name }}
+      app.kubernetes.io/instance: {{.Release.Name }}
+      app.kubernetes.io/managed-by: {{.Release.Service }}
   replicas: 1
   serviceName: pxcentral-keycloak-headless
   podManagementPolicy: Parallel
@@ -370,7 +380,9 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/component: keycloak
-{{- include "px-backup.labels" . | nindent 8 }}
+        app.kubernetes.io/name: {{.Release.Name }}
+        app.kubernetes.io/instance: {{.Release.Name }}
+        app.kubernetes.io/managed-by: {{.Release.Service }}
     spec:
       affinity:
         nodeAffinity:

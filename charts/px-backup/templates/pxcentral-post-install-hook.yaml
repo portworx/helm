@@ -5,6 +5,12 @@ kind: Job
 metadata:
   name: pxcentral-post-install-hook
   namespace: {{ .Release.Namespace }}
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "5"
+    helm.sh/hook-delete-policy: before-hook-creation
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
   labels:
     name: pxcentral-post-install-hook
     app.kubernetes.io/component: pxcentral-post-install-hook
@@ -51,4 +57,4 @@ spec:
       {{- end }}
       restartPolicy: Never
   backoffLimit: 5
-  activeDeadlineSeconds: 2400
+  activeDeadlineSeconds: 600

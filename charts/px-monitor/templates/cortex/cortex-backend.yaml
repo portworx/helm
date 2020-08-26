@@ -33,7 +33,9 @@ spec:
     matchLabels:
       app: pxcentral-cortex-cassandra
       app.kubernetes.io/component: pxcentral-cortex-cassandra
-{{- include "px-monitor.labels" . | nindent 6 }}
+      app.kubernetes.io/name: {{.Release.Name }}
+      app.kubernetes.io/instance: {{.Release.Name }}
+      app.kubernetes.io/managed-by: {{.Release.Service }}
   updateStrategy:
     type: RollingUpdate
   template:
@@ -41,7 +43,9 @@ spec:
       labels:
         app: pxcentral-cortex-cassandra
         app.kubernetes.io/component: pxcentral-cortex-cassandra
-{{- include "px-monitor.labels" . | nindent 8 }}
+        app.kubernetes.io/name: {{.Release.Name }}
+        app.kubernetes.io/instance: {{.Release.Name }}
+        app.kubernetes.io/managed-by: {{.Release.Service }}
     spec:
       affinity:
         nodeAffinity:
