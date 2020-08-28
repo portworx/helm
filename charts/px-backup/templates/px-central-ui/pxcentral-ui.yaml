@@ -282,6 +282,24 @@ stringData:
   DB_USERNAME: "root"
   DB_PASSWORD: {{ .Values.pxcentralDBPassword }}
 ---
+{{- if eq $externalPersistentStorageEnabled true }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pxcentral-mysql-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-mysql
+{{- include "px-backup.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistentStorage.mysqlVolumeSize }}
+  storageClassName: {{ .Values.persistentStorage.storageClassName }}
+{{- end }}
+---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -392,23 +410,14 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/mysql
               name: pxcentral-mysql
-      {{- if eq $externalPersistentStorageEnabled false }}
       volumes:
         - name: pxcentral-mysql
+          {{- if eq $externalPersistentStorageEnabled true }}
+          persistentVolumeClaim:
+            claimName: pxcentral-mysql-pvc
+          {{- else }}
           emptyDir: {}
-      {{- end }}
-  {{- if eq $externalPersistentStorageEnabled true }}
-  volumeClaimTemplates:
-    - metadata:
-        name: pxcentral-mysql
-      spec:
-        accessModes:
-          - "ReadWriteOnce"
-        resources:
-          requests:
-            storage: {{ .Values.persistentStorage.mysqlVolumeSize }}
-        storageClassName: {{ .Values.persistentStorage.storageClassName }}
-  {{- end }}
+          {{- end }}
 ---
 apiVersion: v1
 kind: Service
