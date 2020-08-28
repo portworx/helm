@@ -22,6 +22,21 @@ rules:
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["get", "create", "delete", "update"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get"]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: call-home
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: px-backup
+    app.kubernetes.io/component: px-backup
+{{- include "px-backup.labels" . | nindent 4 }}
+data:
+  enable: "{{ .Values.pxbackup.callHome }}"
 ---
 apiVersion: v1
 kind: Secret
