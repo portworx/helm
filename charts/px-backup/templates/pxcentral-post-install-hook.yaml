@@ -5,6 +5,9 @@ kind: Job
 metadata:
   name: pxcentral-post-install-hook
   namespace: {{ .Release.Namespace }}
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
   labels:
     name: pxcentral-post-install-hook
     app.kubernetes.io/component: pxcentral-post-install-hook
