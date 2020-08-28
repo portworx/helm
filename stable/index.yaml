@@ -41,7 +41,7 @@ entries:
     created: "2020-08-26T09:41:56.020264+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
-    digest: d43c1b4ffe80d7a56f8f884921055290d044c3028c514d8dcfae5f19311dfb58
+    digest: fd9316e9719a924eb8aa2d6d947d90e162f602ef4b77e28ef070099fd1dfb1cf
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     keywords:
