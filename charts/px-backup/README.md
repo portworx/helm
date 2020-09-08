@@ -38,13 +38,13 @@ $ helm install --name px-backup portworx/px-backup --namespace px-backup
 ```
 
 ## Upgrade chart to latest version
-1. Need to delete all statefulset before helm upgrade:
+1. To get current oidc client secret use command: `kubectl get cm --namespace <RELEASE_NAMESPACE>  pxcentral-ui-configmap -o jsonpath={.data.OIDC_CLIENT_SECRET} | base64`
+
+2. Edit the `pxc-backup-secret` secret and add : `OIDC_CLIENT_SECRET: <OIDC_CLIENT_SECRET>`
+
+3. Run helm upgrade command:
 ```console
-kubectl delete sts --namespace px-backup pxc-backup-etcd pxcentral-keycloak pxcentral-keycloak-postgresql pxcentral-mysql
-```
-2. Run helm upgrade command:
-```console
-helm upgrade px-backup portworx/px-backup --namespace px-backup
+helm upgrade px-backup portworx/px-backup --namespace px-backup --set persistentStorage.enabled=true,persistentStorage.storageClassName=<STORAGE_CLASS_NAME>,pxbackup.orgName=<PX_BACKUP_ORG_NAME>
 ```
 
 ## Uninstalling the Chart
@@ -86,7 +86,6 @@ Parameter | Description | Default
 `oidc.centralOIDC.keyCloakBackendUserName` | Keycloak backend store username | `keycloak`
 `oidc.centralOIDC.keyCloakBackendPassword` | Keycloak backend store password | `keycloak`
 `oidc.centralOIDC.clientId` | PX-Central OIDC client id | `pxcentral`
-`oidc.centralOIDC.clientSecret` | PX-Central OIDC client secret | `dummy`
 `oidc.externalOIDC` | Enable external OIDC provider | `""`
 `oidc.externalOIDC.enabled` | Enabled external OIDC provider | `false`
 `oidc.externalOIDC.clientID` | External OIDC client ID | `""`

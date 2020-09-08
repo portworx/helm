@@ -1,5 +1,5 @@
 persistentStorage:
-  enabled: false
+  enabled: true
   storageClassName:
   mysqlVolumeSize: "100Gi"
   etcdVolumeSize: "64Gi"
@@ -21,7 +21,6 @@ oidc:
     keyCloakBackendUserName: keycloak
     keyCloakBackendPassword: keycloak
     clientId: "pxcentral"
-    clientSecret: "dummy"
 
   externalOIDC:
     enabled: false
@@ -75,7 +74,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 1.1.0
+    tag: 1.1.1
   etcdImage:
     registry: docker.io
     repo: bitnami

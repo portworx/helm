@@ -12,8 +12,6 @@ data:
   DB_PORT: "3306"
   DB_DATABASE: pxcentral
   FRONTEND_ENABLED_MODULES: COMPANY,LH,USERS,PXBACKUP,SSO
-  OIDC_CLIENT_ID: "{{ .Values.oidc.centralOIDC.clientId }}"
-  OIDC_CLIENT_SECRET: "{{ .Values.oidc.centralOIDC.clientSecret }}"
   PX_BACKUP_ENDPOINT: "px-backup:10002"
   PX_BACKUP_ORGID: "{{ .Values.pxbackup.orgName }}"
   PX_STATUS_ENDPOINT: "http://pxcentral-apiserver:10006"
