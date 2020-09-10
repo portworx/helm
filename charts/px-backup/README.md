@@ -38,13 +38,11 @@ $ helm install --name px-backup portworx/px-backup --namespace px-backup
 ```
 
 ## Upgrade chart to latest version
-1. To get current oidc client secret use command: `kubectl get cm --namespace <RELEASE_NAMESPACE>  pxcentral-ui-configmap -o jsonpath={.data.OIDC_CLIENT_SECRET} | base64`
+1. Delete post install job: `kubectl delete job -npx-backup pxcentral-post-install-hook`
 
-2. Edit the `pxc-backup-secret` secret and add : `OIDC_CLIENT_SECRET: <OIDC_CLIENT_SECRET>`
-
-3. Run helm upgrade command:
+2. Run helm upgrade command:
 ```console
-helm upgrade px-backup portworx/px-backup --namespace px-backup --set persistentStorage.enabled=true,persistentStorage.storageClassName=<STORAGE_CLASS_NAME>,pxbackup.orgName=<PX_BACKUP_ORG_NAME>
+helm upgrade px-backup portworx/px-backup --namespace px-backup --set persistentStorage.storageClassName=<STORAGE_CLASS_NAME>,pxbackup.orgName=<PX_BACKUP_ORG_NAME>
 ```
 
 ## Uninstalling the Chart
