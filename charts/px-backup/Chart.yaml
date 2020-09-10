@@ -14,4 +14,4 @@ name: px-backup
 sources:
 - https://github.com/portworx/helm/tree/master/charts/px-backup
 version: 1.1.2
-appVersion: 1.1.0-rc2
+appVersion: 1.1.0-rc3
