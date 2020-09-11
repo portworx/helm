@@ -66,10 +66,10 @@ spec:
                 operator:  {{ template "px.affinityPxEnabledOperator" . }}
                 values:
                 - {{ template "px.affinityPxEnabledValue" . }}
-              {{- if (.Values.openshiftInstall) and (eq .Values.openshiftInstall true)}}
+              {{- if (and (.Values.openshiftInstall) (eq .Values.openshiftInstall true))}}
               - key: openshift-infra
                 operator: DoesNotExist
-              {{- else if (not .Values.deployOnMaster) or (eq .Values.deployOnMaster false)}}
+              {{- else if (or (not .Values.deployOnMaster) (eq .Values.deployOnMaster false))}}
               - key: node-role.kubernetes.io/master
                 operator: DoesNotExist
               {{- end }}

@@ -1,4 +1,4 @@
-{{- if (.Values.monitoring) and (eq .Values.monitoring true) -}}
+{{- if (and (.Values.monitoring) (eq .Values.monitoring true)) -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -37,6 +37,8 @@ rules:
       - prometheuses/finalizers
       - servicemonitors
       - prometheusrules
+      - podmonitors
+      - thanosrulers
     verbs: ["*"]
   - apiGroups:
       - apps
@@ -72,6 +74,12 @@ metadata:
   name: prometheus-operator
   namespace: kube-system
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: kube-system
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -93,7 +101,7 @@ spec:
         - args:
             - --kubelet-service=kube-system/kubelet
             - --config-reloader-image=quay.io/coreos/configmap-reload:v0.0.1
-          image: quay.io/coreos/prometheus-operator:v0.29.0
+          image: quay.io/coreos/prometheus-operator:v0.36.0
           name: prometheus-operator
           ports:
             - containerPort: 8080
@@ -137,7 +145,7 @@ metadata:
   labels:
     alertmanager: portworx
 spec:
-  replicas: 3
+  replicas: 3  
 ---
 apiVersion: v1
 kind: Service
@@ -145,7 +153,7 @@ metadata:
   name: alertmanager-portworx
   namespace: kube-system
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - name: web
       port: 9093
@@ -237,7 +245,7 @@ spec:
         severity: warning
     - alert: PortworxStorageNodeDown
       annotations:
-        description: Portworx Storage Node has been offline for more than 5 minutes.
+        description: Portworx Storage Node has been offline for more than 5 minutes
         summary: Portworx Storage Node is Offline.
       expr: max(px_cluster_status_nodes_storage_down) > 0
       for: 5m
@@ -264,12 +272,6 @@ spec:
       labels:
         issue: Portworx cluster member(s) is(are) down.
         severity: critical
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: prometheus
-  namespace: kube-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -321,19 +323,10 @@ spec:
   serviceMonitorSelector:
     matchLabels:
       name: portworx-prometheus-sm
-    namespaceSelector:
-      matchNames:
-        - kube-system
-    resources:
-      requests:
-        memory: 400Mi
   ruleSelector:
     matchLabels:
       role: prometheus-portworx-rulefiles
       prometheus: portworx
-    namespaceSelector:
-      matchNames:
-        - kube-system
 ---
 apiVersion: v1
 kind: Service
@@ -341,7 +334,7 @@ metadata:
   name: prometheus
   namespace: kube-system
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - name: web
       port: 9090
@@ -452,7 +445,7 @@ metadata:
   labels:
     app: grafana
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 3000
   selector:
@@ -466,17 +459,17 @@ metadata:
   labels:
     app: grafana
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: grafana
-  replicas: 1
   template:
     metadata:
       labels:
         app: grafana
     spec:
       containers:
-        - image: grafana/grafana:5.0.4
+        - image: grafana/grafana:7.1.3
           name: grafana
           imagePullPolicy: IfNotPresent
           resources:

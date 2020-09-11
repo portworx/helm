@@ -1,4 +1,4 @@
-{{- if (.Values.stork) and (eq .Values.stork true)}}
+{{- if (and (.Values.stork) (eq .Values.stork true))}}
 {{- $isCoreOS := .Values.isTargetOSCoreOS | default false }}
 {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
 {{- $registrySecret := .Values.registrySecret | default "none" }}
