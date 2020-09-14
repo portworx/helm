@@ -6,6 +6,7 @@ PX-Central is a unified, multi-user, multi-cluster management interface. Using P
 
 ### Prerequisites:
 - PX-Backup chart has to be deployed and all components should be in running state.
+- Edit `privileged` scc using command : `oc edit scc privileged` and add following into `users` section : `- system:serviceaccount:<PX_BACKUP_NAMESPACE>:px-monitor` change the PX_BACKUP_NAMESPACE.
 
 ## Installing the Chart
 
@@ -32,6 +33,15 @@ portworx/portworx               1.0.0                                   A Helm c
 portworx/px-monitor             1.0.0               1.0.0               A Helm chart for installing PX-Monitor with PX-C...
 ```
 
+Note:
+- To fetch `PX_BACKUP_INTERNAL_OIDC_CLIENT_SECRET` use command: `kubectl get cm --namespace <RELEASE_NAMESPACE>  pxcentral-ui-configmap -o jsonpath={.data.OIDC_CLIENT_SECRET}`
+OR
+- To fetch `PX_BACKUP_INTERNAL_OIDC_CLIENT_SECRET` use command: `kubectl get secret --namespace <RELEASE_NAMESPACE>  pxc-backup-secret -o jsonpath={.data.OIDC_CLIENT_SECRET} | base64 --decode`
+
+- To fetch `PX_BACKUP_UI_ENDPOINT`:
+   - External IP of `px-backup-ui` service 
+   - `px-backup-ui` ingress host or address
+
 Helm 3:
 ```console
 $ helm install px-monitor portworx/px-monitor --namespace px-backup --create-namespace --set installCRDs=true,pxmonitor.pxCentralEndpoint=<PX_BACKUP_UI_ENDPOINT>,pxmonitor.oidcClientSecret=<PX_BACKUP_INTERNAL_OIDC_CLIENT_SECRET>
@@ -41,13 +51,6 @@ Helm 2:
 ```console
 $ helm install --name px-monitor portworx/px-monitor--namespace px-backup --set installCRDs=true,pxmonitor.pxCentralEndpoint=<PX_BACKUP_UI_ENDPOINT>,pxmonitor.oidcClientSecret=<PX_BACKUP_INTERNAL_OIDC_CLIENT_SECRET>
 ```
-
-Note:
-1. To fetch `PX_BACKUP_INTERNAL_OIDC_CLIENT_SECRET` use command: `kubectl get cm --namespace <RELEASE_NAMESPACE>  pxcentral-ui-configmap -o jsonpath={.data.OIDC_CLIENT_SECRET}`
-
-2. To fetch `PX_BACKUP_UI_ENDPOINT`:
-   - External IP of `px-backup-ui` service 
-   - `px-backup-ui` ingress host or address
 
 ## Upgrading the Chart
 ```console
@@ -77,6 +80,8 @@ Parameter | Description | Default
 `installCRDs` | Install metrics stack required crds | `false`
 `storkRequired` | Scheduler name as stork | `false`
 `clusterDomain` | Cluster domain | `cluster.local`
+`cassandraUsername` | Cassandra cluster username | `cassandra`
+`cassandraPassword` | Cassandra cluster password | `cassandra`
 `persistentStorage` | Persistent storage for all px-central px-monitor components | `""`
 `persistentStorage.enabled` | Enable persistent storage | `false`
 `persistentStorage.storageClassName` | Provide storage class name which exists | `""`

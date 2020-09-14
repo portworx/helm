@@ -39,6 +39,7 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      serviceAccountName: px-monitor
       containers:
       - name: alertmanager
         image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
@@ -98,6 +99,7 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      serviceAccountName: px-monitor
       containers:
       - name: distributor
         image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
@@ -109,6 +111,9 @@ spec:
         - -consul.hostname=pxcentral-cortex-consul:8500
         - -distributor.replication-factor=3
         - -cassandra.addresses=pxcentral-cortex-cassandra:9042
+        - -cassandra.auth=true
+        - -cassandra.username={{ .Values.cassandraUsername }}
+        - -cassandra.password={{ .Values.cassandraPassword }}
         - -cassandra.keyspace=cortex
         ports:
         - containerPort: 80
@@ -160,6 +165,7 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      serviceAccountName: px-monitor
       containers:
       - name: ingester
         image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
@@ -170,6 +176,9 @@ spec:
         - -distributor.replication-factor=3
         - -consul.hostname=pxcentral-cortex-consul:8500
         - -cassandra.addresses=pxcentral-cortex-cassandra:9042
+        - -cassandra.auth=true
+        - -cassandra.username={{ .Values.cassandraUsername }}
+        - -cassandra.password={{ .Values.cassandraPassword }}
         - -cassandra.keyspace=cortex
         - -schema-config-file=/schema/schema.yaml
         - -store.index-cache-write.cache.enable-fifocache=true
@@ -240,6 +249,7 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      serviceAccountName: px-monitor
       containers:
       - name: querier
         image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
@@ -250,6 +260,9 @@ spec:
         - -querier.query-ingesters-within=0
         - -consul.hostname=pxcentral-cortex-consul:8500
         - -cassandra.addresses=pxcentral-cortex-cassandra:9042
+        - -cassandra.auth=true
+        - -cassandra.username={{ .Values.cassandraUsername }}
+        - -cassandra.password={{ .Values.cassandraPassword }}
         - -cassandra.keyspace=cortex
         - -store.index-cache-write.cache.enable-fifocache=true
         - -store.index-cache-write.memcached.hostname=pxcentral-memcached-index-write
@@ -314,6 +327,7 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      serviceAccountName: px-monitor
       containers:
       - name: query-frontend
         image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
@@ -324,6 +338,9 @@ spec:
         - -server.http-listen-port=80
         - -server.grpc-listen-port=9095
         - -cassandra.addresses=pxcentral-cortex-cassandra:9042
+        - -cassandra.auth=true
+        - -cassandra.username={{ .Values.cassandraUsername }}
+        - -cassandra.password={{ .Values.cassandraPassword }}
         - -cassandra.keyspace=cortex
         - -schema-config-file=/schema/schema.yaml
         ports:
@@ -378,6 +395,7 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      serviceAccountName: px-monitor
       containers:
       - name: ruler
         image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
@@ -391,6 +409,9 @@ spec:
         - -ruler.alertmanager-url=http://pxcentral-cortex-alertmanager/api/prom/alertmanager/
         - -ruler.ring.consul.hostname=pxcentral-cortex-consul:8500
         - -cassandra.addresses=pxcentral-cortex-cassandra:9042
+        - -cassandra.auth=true
+        - -cassandra.username={{ .Values.cassandraUsername }}
+        - -cassandra.password={{ .Values.cassandraPassword }}
         - -cassandra.keyspace=cortex
         - -schema-config-file=/schema/schema.yaml
         ports:
@@ -445,6 +466,7 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      serviceAccountName: px-monitor
       containers:
       - name: table-manager
         image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
@@ -453,6 +475,9 @@ spec:
         - -target=table-manager
         - -server.http-listen-port=80
         - -cassandra.addresses=pxcentral-cortex-cassandra:9042
+        - -cassandra.auth=true
+        - -cassandra.username={{ .Values.cassandraUsername }}
+        - -cassandra.password={{ .Values.cassandraPassword }}
         - -cassandra.keyspace=cortex
         - -schema-config-file=/schema/schema.yaml
         volumeMounts:

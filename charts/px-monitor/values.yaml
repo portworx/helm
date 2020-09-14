@@ -8,9 +8,11 @@ pxmonitor:
 installCRDs: false
 storkRequired: false
 clusterDomain: "cluster.local"
+cassandraUsername: cassandra
+cassandraPassword: cassandra
 
 persistentStorage:
-  enabled: false
+  enabled: true
   storageClassName:
   cassandra:
     storage: 50Gi
@@ -36,9 +38,9 @@ images:
     tag: v1.0.0
   cassandraImage:
     registry: docker.io
-    repo: library
+    repo: bitnami
     imageName: cassandra
-    tag: 3.11
+    tag: 3.11.6-debian-10-r153
   proxyConfigImage:
     registry: docker.io
     repo: library

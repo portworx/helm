@@ -93,6 +93,7 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      serviceAccountName: px-monitor
       containers:
       - name: nginx
         image: {{ printf "%s/%s/%s:%s" .Values.images.proxyConfigImage.registry .Values.images.proxyConfigImage.repo .Values.images.proxyConfigImage.imageName .Values.images.proxyConfigImage.tag }}
