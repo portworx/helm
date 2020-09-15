@@ -351,6 +351,8 @@ spec:
         resources:
           requests:
             storage: {{ .Values.persistentStorage.etcdVolumeSize }}
+        {{- if .Values.persistentStorage.storageClassName }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
+        {{- end }}
   {{- end }}
 {{- end -}}
