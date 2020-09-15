@@ -136,6 +136,31 @@ spec:
                 operator: NotIn
                 values:
                 - "false"
+      initContainers:
+        - name: init-mysql-db
+          image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralBackendImage.registry .Values.images.pxcentralBackendImage.repo .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          name: init-mysql-db
+          command:
+            - bash
+            - -c
+            - cd /var/www/html && ./install.sh
+          env:
+            - name: DB_INIT_TIMEOUT
+              value: "300"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: DB_PASSWORD
+                  name: pxcentral-mysql-secret
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: DB_USERNAME
+                  name: pxcentral-mysql-secret
+          envFrom:
+            - configMapRef:
+                name: pxcentral-ui-configmap
       containers:
         - name: pxcentral-backend
           image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralBackendImage.registry .Values.images.pxcentralBackendImage.repo .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
@@ -170,6 +195,16 @@ spec:
                 secretKeyRef:
                   name: pxcentral-mysql-secret
                   key: DB_USERNAME
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: pxc-backup-secret
+                  key: OIDC_CLIENT_ID
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pxc-backup-secret
+                  key: OIDC_CLIENT_SECRET
           resources: {}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -252,6 +287,16 @@ spec:
                 secretKeyRef:
                   name: pxcentral-mysql-secret
                   key: DB_USERNAME
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: pxc-backup-secret
+                  key: OIDC_CLIENT_ID
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pxc-backup-secret
+                  key: OIDC_CLIENT_SECRET
           volumeMounts:
             - name: frontend-nginx-configs
               mountPath: /etc/nginx/conf.d
@@ -297,7 +342,9 @@ spec:
   resources:
     requests:
       storage: {{ .Values.persistentStorage.mysqlVolumeSize }}
+  {{- if .Values.persistentStorage.storageClassName }}
   storageClassName: {{ .Values.persistentStorage.storageClassName }}
+  {{- end }}
 {{- end }}
 ---
 apiVersion: apps/v1

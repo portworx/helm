@@ -38,13 +38,11 @@ $ helm install --name px-backup portworx/px-backup --namespace px-backup
 ```
 
 ## Upgrade chart to latest version
-1. Need to delete all statefulset before helm upgrade:
-```console
-kubectl delete sts --namespace px-backup pxc-backup-etcd pxcentral-keycloak pxcentral-keycloak-postgresql pxcentral-mysql
-```
+1. Delete post install job: `kubectl delete job -npx-backup pxcentral-post-install-hook`
+
 2. Run helm upgrade command:
 ```console
-helm upgrade px-backup portworx/px-backup --namespace px-backup
+helm upgrade px-backup portworx/px-backup --namespace px-backup --set persistentStorage.storageClassName=<STORAGE_CLASS_NAME>,pxbackup.orgName=<PX_BACKUP_ORG_NAME>
 ```
 
 ## Uninstalling the Chart
@@ -86,7 +84,6 @@ Parameter | Description | Default
 `oidc.centralOIDC.keyCloakBackendUserName` | Keycloak backend store username | `keycloak`
 `oidc.centralOIDC.keyCloakBackendPassword` | Keycloak backend store password | `keycloak`
 `oidc.centralOIDC.clientId` | PX-Central OIDC client id | `pxcentral`
-`oidc.centralOIDC.clientSecret` | PX-Central OIDC client secret | `dummy`
 `oidc.externalOIDC` | Enable external OIDC provider | `""`
 `oidc.externalOIDC.enabled` | Enabled external OIDC provider | `false`
 `oidc.externalOIDC.clientID` | External OIDC client ID | `""`

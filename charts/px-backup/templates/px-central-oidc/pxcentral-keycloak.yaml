@@ -353,7 +353,9 @@ spec:
         resources:
           requests:
             storage: {{ .Values.persistentStorage.keycloakBackendVolumeSize }}
+        {{- if .Values.persistentStorage.storageClassName }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
+        {{- end }}
   {{- end }}
 ---
 apiVersion: apps/v1
@@ -549,6 +551,8 @@ spec:
         resources:
           requests:
             storage: {{ .Values.persistentStorage.keycloakThemeVolumeSize }}
+        {{- if .Values.persistentStorage.storageClassName }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
+        {{- end }}
   {{- end }}
 {{- end -}}
