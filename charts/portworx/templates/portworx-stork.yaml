@@ -1,4 +1,4 @@
-{{- if (.Values.stork) and (eq .Values.stork true)}}
+{{- if (and (.Values.stork) (eq .Values.stork true))}}
 {{- $isCoreOS := .Values.isTargetOSCoreOS | default false }}
 {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
 {{- $registrySecret := .Values.registrySecret | default "none" }}
@@ -41,7 +41,7 @@ data:
 {{- end}}
       "extenders": [
         {
-          "urlPrefix": "http://stork-service.kube-system.svc.cluster.local:8099",
+          "urlPrefix": "http://stork-service.kube-system:8099",
           "apiVersion": "v1beta1",
           "filterVerb": "filter",
           "prioritizeVerb": "prioritize",
@@ -63,54 +63,9 @@ apiVersion: {{ template "rbac.apiVersion" . }}
 metadata:
    name: stork-role
 rules:
-  - apiGroups: [""]
-    resources: ["pods", "pods/exec"]
-    verbs: ["get", "list", "delete", "create"]
-  - apiGroups: [""]
-    resources: ["persistentvolumes"]
-    verbs: ["get", "list", "watch", "create", "delete"]
-  - apiGroups: [""]
-    resources: ["persistentvolumeclaims"]
-    verbs: ["get", "list", "watch", "update"]
-  - apiGroups: ["storage.k8s.io"]
-    resources: ["storageclasses"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: [""]
-    resources: ["events"]
-    verbs: ["list", "watch", "create", "update", "patch"]
-  - apiGroups: ["stork.libopenstorage.org"]
-    resources: ["rules"]
-    verbs: ["get", "list"]
-  - apiGroups: ["stork.libopenstorage.org"]
-    resources: ["migrations", "clusterpairs", "groupvolumesnapshots"]
-    verbs: ["get", "list", "watch", "update", "patch"]
-  - apiGroups: ["apiextensions.k8s.io"]
-    resources: ["customresourcedefinitions"]
-    verbs: ["create", "get"]
-  - apiGroups: ["volumesnapshot.external-storage.k8s.io"]
-    resources: ["volumesnapshots"]
-    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-  - apiGroups: ["volumesnapshot.external-storage.k8s.io"]
-    resources: ["volumesnapshotdatas"]
-    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-  - apiGroups: [""]
-    resources: ["configmaps"]
-    verbs: ["get", "create", "update"]
-  - apiGroups: [""]
-    resources: ["services"]
-    verbs: ["get"]
-  - apiGroups: [""]
-    resources: ["nodes"]
-    verbs: ["get", "list", "watch"]
-  - apiGroups: ["*"]
-    resources: ["deployments", "deployments/extensions"]
-    verbs: ["list", "get", "watch", "patch", "update", "initialize"]
-  - apiGroups: ["*"]
-    resources: ["statefulsets", "statefulsets/extensions"]
-    verbs: ["list", "get", "watch", "patch", "update", "initialize"]
   - apiGroups: ["*"]
     resources: ["*"]
-    verbs: ["list", "get"]
+    verbs: ["*"]
 ---
 kind: ClusterRoleBinding
 apiVersion: {{ template "rbac.apiVersion" . }}
@@ -138,7 +93,7 @@ spec:
       port: 8099
       targetPort: 8099
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
@@ -148,12 +103,15 @@ metadata:
   name: stork
   namespace: kube-system
 spec:
+  selector:
+    matchLabels:
+      name: stork
   strategy:
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 1
     type: RollingUpdate
-  replicas: 3
+  replicas: {{ .Values.replicas }}
   template:
     metadata:
       annotations:
@@ -179,7 +137,19 @@ spec:
             cpu: '0.1'
         name: stork
       hostPID: false
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
       affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: px/enabled
+                operator: {{ template "px.affinityPxEnabledOperator" . }}
+                values:
+                - {{ template "px.affinityPxEnabledValue" . }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
@@ -190,6 +160,17 @@ spec:
                     - stork
               topologyKey: "kubernetes.io/hostname"
       serviceAccountName: stork-account
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: stork-pdb
+  namespace: kube-system
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      name: stork
 ---
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
@@ -210,16 +191,13 @@ metadata:
 rules:
   - apiGroups: [""]
     resources: ["endpoints"]
-    verbs: ["get", "update"]
+    verbs: ["get", "create", "update"]
   - apiGroups: [""]
     resources: ["configmaps"]
-    verbs: ["get"]
-  - apiGroups: [""]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["", "events.k8s.io"]
     resources: ["events"]
     verbs: ["create", "patch", "update"]
-  - apiGroups: [""]
-    resources: ["endpoints"]
-    verbs: ["create"]
   - apiGroups: [""]
     resourceNames: ["kube-scheduler"]
     resources: ["endpoints"]
@@ -252,8 +230,11 @@ rules:
     resources: ["persistentvolumeclaims", "persistentvolumes"]
     verbs: ["get", "list", "watch"]
   - apiGroups: ["storage.k8s.io"]
-    resources: ["storageclasses"]
+    resources: ["storageclasses", "csinodes"]
     verbs: ["get", "list", "watch"]
+  - apiGroups: ["coordination.k8s.io"]
+    resources: ["leases"]
+    verbs: ["create", "update", "get", "list", "watch"]
 ---
 kind: ClusterRoleBinding
 apiVersion: {{ template "rbac.apiVersion" . }}
@@ -268,21 +249,26 @@ roleRef:
   name: stork-scheduler-role
   apiGroup: rbac.authorization.k8s.io
 ---
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
     component: scheduler
     tier: control-plane
+    name: stork-scheduler
   name: stork-scheduler
   namespace: kube-system
 spec:
-  replicas: 3
+  selector:
+    matchLabels:
+      name: stork-scheduler
+  replicas: {{ .Values.replicas }}
   template:
     metadata:
       labels:
         component: scheduler
         tier: control-plane
+        name: stork-scheduler
       name: stork-scheduler
     spec:
       containers:
@@ -308,7 +294,19 @@ spec:
         resources:
           requests:
             cpu: '0.1'
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
       affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: px/enabled
+                operator: {{ template "px.affinityPxEnabledOperator" . }}
+                values:
+                - {{ template "px.affinityPxEnabledValue" . }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
@@ -320,4 +318,15 @@ spec:
               topologyKey: "kubernetes.io/hostname"
       hostPID: false
       serviceAccountName: stork-scheduler-account
+---
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: stork-scheduler-pdb
+  namespace: kube-system
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      name: stork-scheduler
 {{- end }}

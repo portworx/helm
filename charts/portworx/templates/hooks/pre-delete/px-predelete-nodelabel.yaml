@@ -14,7 +14,7 @@ metadata:
     app.kubernetes.io/instance: {{.Release.Name | quote }}
   annotations:
     "helm.sh/hook": pre-delete
-    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-weight": "10"
     "helm.sh/hook-delete-policy": before-hook-creation
 spec:
 {{ if semverCompare ">= 1.8" .Capabilities.KubeVersion.GitVersion }}
@@ -33,8 +33,8 @@ spec:
       containers:
       - name: pre-delete-job
         {{- if eq $customRegistryURL "none" }}
-        image: "lachlanevenson/k8s-kubectl:{{ template "px.kubernetesVersion" . }}"
+        image: "bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
         {{- else}}
-        image: "{{ $customRegistryURL }}/lachlanevenson/k8s-kubectl:{{ template "px.kubernetesVersion" . }}"
+        image: "{{ $customRegistryURL }}/bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
         {{- end}}
         args: ['label','nodes','--all','px/enabled=remove','--overwrite']

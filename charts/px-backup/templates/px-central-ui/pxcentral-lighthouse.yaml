@@ -1,0 +1,114 @@
+{{/* Setting defaults if they are omitted. */}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-lh-middleware
+  namespace: {{ .Release.Namespace }}
+  labels:
+    run: pxcentral-lh-middleware
+    app.kubernetes.io/component: pxcentral-lh-middleware
+{{- include "px-backup.labels" . | nindent 4 }}
+spec:
+  selector:
+    run: pxcentral-lh-middleware
+  ports:
+    - name: http
+      port: 8091
+      targetPort: 8091
+      protocol: TCP
+    - name: https
+      port: 8092
+      targetPort: 8092
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pxcentral-lh-middleware
+  namespace: {{ .Release.Namespace }}
+  labels:
+    run: pxcentral-lh-middleware
+    app.kubernetes.io/component: pxcentral-lh-middleware
+{{- include "px-backup.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      run: pxcentral-lh-middleware
+      app.kubernetes.io/component: pxcentral-lh-middleware
+  replicas: 1
+  minReadySeconds: 0
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        run: pxcentral-lh-middleware
+        app.kubernetes.io/component: pxcentral-lh-middleware
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+      containers:
+      - name: pxcentral-lh-middleware
+        image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralMiddlewareImage.registry .Values.images.pxcentralMiddlewareImage.repo .Values.images.pxcentralMiddlewareImage.imageName .Values.images.pxcentralMiddlewareImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        env:
+          - name: PX_NAMESPACE
+            value: {{ .Release.Namespace }}
+          {{- if .Values.caCertsSecretName }}
+          - name: SSL_CERT_DIR
+            value: /tmp/certs
+          {{- end }}
+        ports:
+          - name: http
+            containerPort: 8091
+          - name: https
+            containerPort: 8092
+        {{- if .Values.caCertsSecretName }}
+        volumeMounts:
+          - mountPath: /tmp/certs
+            readOnly: true
+            name: ssl-cert-dir
+        {{- end }}
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 8091
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+          periodSeconds: 60
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 8091
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+          periodSeconds: 60
+      {{- if .Values.caCertsSecretName }}
+      volumes:
+        - name: ssl-cert-dir
+          secret:
+            defaultMode: 420
+            secretName: "{{ .Values.caCertsSecretName }}"
+      {{- end }}
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      restartPolicy: Always

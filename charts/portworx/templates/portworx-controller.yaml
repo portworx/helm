@@ -1,4 +1,5 @@
-{{- if or ((.Values.openshiftInstall) and (eq .Values.openshiftInstall true)) ((.Values.AKSorEKSInstall) and (eq .Values.AKSorEKSInstall true)) ((.Capabilities.KubeVersion.GitVersion | regexMatch "gke")) }}
+{{- $AKSorEKSInstall := or .Values.AKSInstall  .Values.EKSInstall  }}
+{{- if or (and (.Values.openshiftInstall) (eq .Values.openshiftInstall true)) ($AKSorEKSInstall) ((.Capabilities.KubeVersion.GitVersion | regexMatch "gke")) }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -30,24 +31,24 @@ rules:
   verbs: ["get", "list", "watch"]
 - apiGroups: [""]
   resources: ["endpoints", "services"]
-  verbs: ["create", "delete", "get"]
+  verbs: ["create", "delete", "get", "update"]
 - apiGroups: [""]
   resources: ["secrets"]
   verbs: ["get", "list"]
 - apiGroups: [""]
   resources: ["nodes"]
-  verbs: ["get", "list"]
+  verbs: ["get", "list", "watch"]
 - apiGroups: [""]
   resources: ["events"]
-  verbs: ["watch"]
-- apiGroups: [""]
-  resources: ["events"]
-  verbs: ["create", "patch", "update"]
+  verbs: ["watch", "create", "patch", "update"]
 - apiGroups: [""]
   resources: ["serviceaccounts"]
   verbs: ["get", "create"]
 - apiGroups: [""]
   resources: ["configmaps"]
+  verbs: ["get", "create", "update", "watch", "list"]
+- apiGroups: [""]
+  resources: ["serviceaccounts/token"]
   verbs: ["get", "create", "update"]
 ---
 kind: ClusterRoleBinding
@@ -63,7 +64,7 @@ roleRef:
   name: portworx-pvc-controller-role
   apiGroup: rbac.authorization.k8s.io
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   annotations:
@@ -73,7 +74,10 @@ metadata:
   name: portworx-pvc-controller
   namespace: kube-system
 spec:
-  replicas: 3
+  selector:
+    matchLabels:
+      name: portworx-pvc-controller
+  replicas: {{ .Values.replicas }}
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -91,10 +95,10 @@ spec:
       imagePullSecrets:
         - name: {{ required "A registry secret is required for openshift installation" .Values.registrySecret }}
      {{- else }}
-      {{- if not empty .Values.registrySecret }}
+      {{- if not (empty .Values.registrySecret) }}
       imagePullSecrets:
         - name: {{ .Values.registrySecret }}
-      {{- end }}    
+      {{- end }}
      {{- end }}
       containers:
       - command:
@@ -119,7 +123,19 @@ spec:
           requests:
             cpu: 200m
       hostNetwork: true
+    {{ with .Values.tolerations }}
+      tolerations:
+        {{ toYaml . | nindent 8 }}
+    {{- end }}
       affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: px/enabled
+                operator: {{ template "px.affinityPxEnabledOperator" . }}
+                values:
+                - {{ template "px.affinityPxEnabledValue" . }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:

@@ -32,39 +32,45 @@ helm install --debug --name my-release --set etcdEndPoint=etcd:http://192.168.70
 
 The following tables lists the configurable parameters of the Portworx chart and their default values.
 
-|             Parameter       |            Description             |                    Default                |
-|-----------------------------|------------------------------------|-------------------------------------------|
-| `deploymentType`            | The deployment type. Can be either docker/oci   | `oci`                 |
-| `imageVersion`              | The image tag to pull              | `2.0.3.4`                                  |
-| `openshiftInstall`               | Installing on Openshift? | `false`                               |
-| `pksInstall`               | Installing on Pivotal Container service? | `false`                               |
-| `AKSorEKSInstall`               | Installing on AKS(Azure Kubernetes service) or EKS (Amazon Elastic Container service) | `false`                               |
-| `etcdEndPoint`          | (REQUIRED) ETCD endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>". Multiple Urls should be semi-colon seperated example: etcd:http://<your-etcd-endpoint1>;etcd:http://<your-etcd-endpoint2>  | `etcd:http://<your-etcd-endpoint>`                    |
-| `clusterName`           | Portworx Cluster Name  | `mycluster`                                     |
-| `usefileSystemDrive`      | Should Portworx use an unmounted drive even with a filesystem ? | `false`                |
-| `usedrivesAndPartitions`  | Should Portworx use the drives as well as partitions on the disk ? | `false`             |
-| `secretType`      | Secrets store to be used can be AWS KMS/KVDB/Vault/K8s/IBM Key Protect          | `none`                                    |
-| `drives` | Semi-colon seperated list of drives to be used for storage (example: "/dev/sda;/dev/sdb")           | `none`                                   |
-| `dataInterface`   | Name of the interface <ethX>             | `none`                                   |
-| `managementInterface`   | Name of the interface <ethX>             | `none`                                   |
-| `envVars`  | semi-colon-separated list of environment variables that will be exported to portworx. (example: API_SERVER=http://lighthouse-new.portworx.com;MYENV1=val1;MYENV2=val2) | `none`                                    |
-| `stork`    | [Storage Orchestration for Hyperconvergence](https://github.com/libopenstorage/stork).     | `true`       |
-| `storkVersion`    | The version of stork     | `2.1.1`       |
-| `lighthouse`    | Whether to install Lighthouse (Portworx GUI)    | `true`       |
-| `customRegistryURL`    | Custom Docker registry     | `none`       |
-| `registrySecret`   | Registry secret  | `none` |
-| `journalDevice`    | Journal device for Portworx metadata     | `none`       |
-| `csi`              | Enable CSI (Tech Preview only)           | `false`      |
-| `internalKVDB`              | Internal KVDB store           | `false`      |
-| `etcd.credentials`  | Username and password for ETCD authentication in the form user:password | `none:none`                                    |
-| `etcd.certPath`  | Base path where the certificates are placed. (example: if the certificates ca,.crt and the .key are in /etc/pwx/etcdcerts the value should be provided as /etc/pwx/etcdcerts Refer: https://docs.portworx.com/scheduler/kubernetes/etcd-certs-using-secrets.html) | `none`                                    |
-| `etcd.ca`  | Location of CA file for ETCD authentication. Should be /path/to/server.ca | `none`                                    |
-| `etcd.cert`  | Location of certificate for ETCD authentication. Should be /path/to/server.crt | `none`                                    |
-| `etcd.key`  | Location of certificate key for ETCD authentication Should be /path/to/servery.key | `none`                                    |
-| `consul.acl`  | ACL token value used for Consul authentication. (example: 398073a8-5091-4d9c-871a-bbbeb030d1f6) | `none`                                    |
-
+| Parameter | Description |
+|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `deploymentType` | The deployment type. Can be either docker/oci |
+| `imageVersion` | The image tag to pull |
+| `openshiftInstall` | Installing on Openshift? |
+| `pksInstall` | Installing on Pivotal Container service? |
+| `EKSInstall` | Installing EKS (Amazon Elastic Container service) |
+| `AKSInstall` | Installing on AKS (Azure Kubernetes service) |
+| `etcdEndPoint` | (REQUIRED) ETCD endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>". Multiple Urls should be semi-colon seperated example: etcd:http://<your-etcd-endpoint1>;etcd:http://<your-etcd-endpoint2> |
+| `clusterName` | Portworx Cluster Name |
+| `usefileSystemDrive` | Should Portworx use an unmounted drive even with a filesystem ? |
+| `usedrivesAndPartitions` | Should Portworx use the drives as well as partitions on the disk ? |
+| `secretType` | Secrets store to be used can be AWS KMS/KVDB/Vault/K8s/IBM Key Protect |
+| `drives` | Semi-colon seperated list of drives to be used for storage (example: "/dev/sda;/dev/sdb") |
+| `dataInterface` | Name of the interface <ethX> |
+| `managementInterface` | Name of the interface <ethX> |
+| `envVars` | semi-colon-separated list of environment variables that will be exported to portworx. (example: API_SERVER=http://lighthouse-new.portworx.com;MYENV1=val1;MYENV2=val2) |
+| `stork` | [Storage Orchestration for Hyperconvergence](https://github.com/libopenstorage/stork). |
+| `storkVersion` | The version of stork |
+| `lighthouse` | Whether to install Lighthouse (Portworx GUI) |
+| `customRegistryURL` | Custom Docker registry |
+| `registrySecret` | Registry secret |
+| `journalDevice` | Journal device for Portworx metadata |
+| `csi` | Enable CSI (Tech Preview only) |
+| `internalKVDB` | Internal KVDB store |
+| `etcd.credentials` | Username and password for ETCD authentication in the form user:password |
+| `etcd.certPath` | Base path where the certificates are placed. (example: if the certificates ca,.crt and the .key are in /etc/pwx/etcdcerts the value should be provided as /etc/pwx/etcdcerts Refer: https://docs.portworx.com/scheduler/kubernetes/etcd-certs-using-secrets.html) |
+| `etcd.ca` | Location of CA file for ETCD authentication. Should be /path/to/server.ca |
+| `etcd.cert` | Location of certificate for ETCD authentication. Should be /path/to/server.crt |
+| `etcd.key` | Location of certificate key for ETCD authentication Should be /path/to/servery.key |
+| `consul.acl` | ACL token value used for Consul authentication. (example: 398073a8-5091-4d9c-871a-bbbeb030d1f6) |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
+
+## Cloud installs
+
+#### Installing on AKS 
+
+Details are [here](https://docs.portworx.com/portworx-install-with-kubernetes/cloud/azure/aks/2-deploy-px/).
 
 > **Tip**: In this case the chart is located at `./helm/charts/portworx`, do change it as per your setup.
 ```
@@ -76,6 +82,32 @@ Alternatively, a YAML file that specifies the values for the parameters can be p
 helm install --name my-release -f ./helm/charts/portworx/values.yaml ./helm/charts/portworx
 ```
 > **Tip**: You can use the default [values.yaml](values.yaml) and make changes as per your requirement
+
+#### Installing on IKS [ IBM Cloud ] 
+
+Refer the IBM charts [here](https://github.com/IBM/charts/tree/master/community/portworx)
+
+> **Tip**: You will need to add the IBM charts repo with the repo path set to rawgithub
+```
+helm repo add ibm-porx https://raw.githubusercontent.com/IBM/charts/master/repo/community
+```
+
+## Upgrading Portworx Install
+
+You can update the `imageVersion` value in the YAML file that specifies the values for the parameters used while installing the chart.
+```
+helm upgrade my-release -f ./helm/charts/portworx/values.yaml ./helm/charts/portworx
+```
+
+Alternatively, you can also use the `--set` directive to do the same. For example,
+```
+helm upgrade my-release --set imageVersion=<px-version>,etcdEndPoint=<list-of-etcd-endpoints>,clusterName=<cluster-name> -f ./helm/charts/portworx/values.yaml  ./helm/charts/portworx 
+```
+
+> **Tip**: You can check the upgrade with the new values took effect using. Check the reference for upgrade [here](https://v2.helm.sh/docs/using_helm/#helm-upgrade-and-helm-rollback-upgrading-a-release-and-recovering-on-failure)
+```
+helm get values my-release
+```
 
 ## Uninstalling the Chart
 
@@ -111,65 +143,5 @@ You can verify the tiller logs
 [tiller] 2018/02/07 06:00:13 failed install prepare step: no available release name found
 ```
 
-#### Helm install errors with  `Job failed: BackoffLimitExceeded`
 
-```
-helm install --debug --set dataInterface=eth1,managementInterface=eth1,etcdEndPoint=etcd:http://192.168.70.179:2379,clusterName=$(uuidgen) ./helm/charts/portworx/
-[debug] Created tunnel using local port: '36389'
 
-[debug] SERVER: "127.0.0.1:36389"
-
-[debug] Original chart version: ""
-[debug] CHART PATH: /root/helm/charts/portworx
-
-Error: Job failed: BackoffLimitExceeded
-```
-This most likely indicates that the pre-install hook for the helm chart has failed due to a misconfigured or inaccessible ETCD url.
-Follow the below steps to check the reason for failure.
-
-```
-kubectl get pods -nkube-system -a | grep preinstall
-px-etcd-preinstall-hook-hxvmb   0/1       Error     0          57s
-
-kubectl logs po/px-etcd-preinstall-hook-hxvmb -nkube-system
-Initializing...
-Verifying if the provided etcd url is accessible: http://192.168.70.179:2379
-Response Code: 000
-Incorrect ETCD URL provided. It is either not reachable or is incorrect...
-
-```
-Ensure the correct etcd URL is set as a parameter to the `helm install` command.
-```
-
-```
-
-#### Helm install errors with `Job failed: Deadline exceeded`
-
-```
-helm install --debug --set dataInterface=eth1,managementInterface=eth1,etcdEndPoint=etcd:http://192.168.20.290:2379,clusterName=$(uuidgen) ./charts/portworx/
-[debug] Created tunnel using local port: '39771'
-
-[debug] SERVER: "127.0.0.1:39771"
-
-[debug] Original chart version: ""
-[debug] CHART PATH: /root/helm/charts/portworx
-
-Error: Job failed: DeadlineExceeded
-```
-This error indicates that the pre-install hook for the helm chart has failed to run to completion correctly. Verify that the etcd URL is accessible. This error occurs on kubernetes cluster(s) with version below 1.8
-Follow the below steps to check the reason for failure.
-
-```
-kubectl get pods -nkube-system -a | grep preinstall
-px-hook-etcd-preinstall-dzmkl    0/1       Error     0          6m
-px-hook-etcd-preinstall-nlqwl    0/1       Error     0          6m
-px-hook-etcd-preinstall-nsjrj    0/1       Error     0          5m
-px-hook-etcd-preinstall-r9gmz    0/1       Error     0          6m
-
-kubectl logs po/px-hook-etcd-preinstall-dzmkl -nkube-system
-Initializing...
-Verifying if the provided etcd url is accessible: http://192.168.20.290:2379
-Response Code: 000
-Incorrect ETCD URL provided. It is either not reachable or is incorrect...
-```
-Ensure the correct etcd URL is set as a parameter to the `helm install` command.

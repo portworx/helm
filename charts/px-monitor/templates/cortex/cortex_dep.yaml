@@ -1,0 +1,468 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pxcentral-cortex-alertmanager
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cortex: alertmanager
+    app.kubernetes.io/component: pxcentral-cortex-alertmanager
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cortex-alertmanager
+{{- include "px-monitor.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: cortex-alertmanager
+        cortex: alertmanager
+{{- include "px-monitor.labels" . | nindent 8 }}
+      annotations:
+        prometheus.io/port: "80"
+        prometheus.io/scrape: "true"
+        sidecar.istio.io/inject: "false"
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: alertmanager
+        image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        args:
+        - -target=alertmanager
+        - -alertmanager.configs.url=http://pxcentral-cortex-configs:80
+        - -alertmanager.web.external-url=/api/prom/alertmanager
+        - -log.level=debug
+        - -server.http-listen-port=80
+        - -server.register-instrumentation=true
+        ports:
+        - containerPort: 80
+          name: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pxcentral-cortex-distributor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cortex: distributor
+    app.kubernetes.io/component: pxcentral-cortex-distributor
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: cortex-distributor
+{{- include "px-monitor.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: cortex-distributor
+        cortex: distributor
+{{- include "px-monitor.labels" . | nindent 8 }}
+      annotations:
+        prometheus.io/port: "80"
+        prometheus.io/scrape: "true"
+        sidecar.istio.io/inject: "false"
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: distributor
+        image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        args:
+        - -target=distributor
+        - -log.level=debug
+        - -server.http-listen-port=80
+        - -consul.hostname=pxcentral-cortex-consul:8500
+        - -distributor.replication-factor=3
+        - -cassandra.addresses=pxcentral-cortex-cassandra:9042
+        - -cassandra.keyspace=cortex
+        ports:
+        - containerPort: 80
+          name: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pxcentral-cortex-ingester
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cortex: ingester
+    app.kubernetes.io/component: pxcentral-cortex-ingester
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  replicas: 3
+  minReadySeconds: 60
+  strategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: cortex-ingester
+{{- include "px-monitor.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: cortex-ingester
+        cortex: ingester
+{{- include "px-monitor.labels" . | nindent 8 }}
+      annotations:
+        prometheus.io/port: "80"
+        prometheus.io/scrape: "true"
+        sidecar.istio.io/inject: "false"
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: ingester
+        image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        args:
+        - -target=ingester
+        - -ingester.join-after=30s
+        - -distributor.replication-factor=3
+        - -consul.hostname=pxcentral-cortex-consul:8500
+        - -cassandra.addresses=pxcentral-cortex-cassandra:9042
+        - -cassandra.keyspace=cortex
+        - -schema-config-file=/schema/schema.yaml
+        - -store.index-cache-write.cache.enable-fifocache=true
+        - -store.index-cache-write.memcached.hostname=pxcentral-memcached-index-write
+        - -store.index-cache-write.memcached.service=memcache # Service port name
+        - -store.index-cache-write.memcached.timeout=500ms
+        - -store.index-cache-read.memcached.hostname=pxcentral-memcached-index-read
+        - -store.index-cache-read.memcached.service=memcache # Service port name
+        - -store.index-cache-read.memcached.timeout=500ms
+        ports:
+        - containerPort: 80
+          name: http
+        volumeMounts:
+          - name: config-volume
+            mountPath: /schema
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 80
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+      volumes:
+        - name: config-volume
+          configMap:
+            name: pxcentral-cortex-schema
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pxcentral-cortex-querier
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cortex: querier
+    app.kubernetes.io/component: pxcentral-cortex-querier
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: cortex-querier
+{{- include "px-monitor.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: cortex-querier
+        cortex: querier
+{{- include "px-monitor.labels" . | nindent 8 }}
+      annotations:
+        prometheus.io/port: "80"
+        prometheus.io/scrape: "true"
+        sidecar.istio.io/inject: "false"
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: querier
+        image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        args:
+        - -target=querier
+        - -server.http-listen-port=80
+        - -querier.query-ingesters-within=0
+        - -consul.hostname=pxcentral-cortex-consul:8500
+        - -cassandra.addresses=pxcentral-cortex-cassandra:9042
+        - -cassandra.keyspace=cortex
+        - -store.index-cache-write.cache.enable-fifocache=true
+        - -store.index-cache-write.memcached.hostname=pxcentral-memcached-index-write
+        - -store.index-cache-write.memcached.service=memcache
+        - -store.index-cache-write.memcached.timeout=500ms
+        - -store.index-cache-read.memcached.hostname=pxcentral-memcached-index-read
+        - -store.index-cache-read.memcached.service=memcache
+        - -store.index-cache-read.memcached.timeout=500ms
+        - -querier.batch-iterators
+        - -querier.ingester-streaming
+        - -querier.max-concurrent=50
+        - -schema-config-file=/schema/schema.yaml
+        ports:
+        - containerPort: 80
+          name: http
+        volumeMounts:
+          - name: config-volume
+            mountPath: /schema
+      volumes:
+        - name: config-volume
+          configMap:
+            name: pxcentral-cortex-schema
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pxcentral-cortex-query-frontend
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cortex: query-frontend
+    app.kubernetes.io/component: pxcentral-cortex-query-frontend
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cortex-query-frontend
+{{- include "px-monitor.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: cortex-query-frontend
+        cortex: query-frontend
+{{- include "px-monitor.labels" . | nindent 8 }}
+      annotations:
+        prometheus.io/port: "80"
+        prometheus.io/scrape: "true"
+        sidecar.istio.io/inject: "false"
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: query-frontend
+        image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        args:
+        - -target=query-frontend
+        - -log.level=debug
+        - -server.http-listen-port=80
+        - -server.grpc-listen-port=9095
+        - -cassandra.addresses=pxcentral-cortex-cassandra:9042
+        - -cassandra.keyspace=cortex
+        - -schema-config-file=/schema/schema.yaml
+        ports:
+        - containerPort: 9095
+          name: grpc
+        - containerPort: 80
+          name: http
+        volumeMounts:
+          - name: config-volume
+            mountPath: /schema
+      volumes:
+        - name: config-volume
+          configMap:
+            name: pxcentral-cortex-schema
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pxcentral-cortex-ruler
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cortex: ruler
+    app.kubernetes.io/component: pxcentral-cortex-ruler
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cortex-ruler
+{{- include "px-monitor.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: cortex-ruler
+        cortex: ruler
+{{- include "px-monitor.labels" . | nindent 8 }}
+      annotations:
+        sidecar.istio.io/inject: "false"
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: ruler
+        image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        args:
+        - -target=ruler
+        - -log.level=debug
+        - -server.http-listen-port=80
+        - -ruler.num-workers=4
+        - -ruler.configs.url=http://pxcentral-cortex-configs:80
+        - -ruler.alertmanager-url=http://pxcentral-cortex-alertmanager/api/prom/alertmanager/
+        - -ruler.ring.consul.hostname=pxcentral-cortex-consul:8500
+        - -cassandra.addresses=pxcentral-cortex-cassandra:9042
+        - -cassandra.keyspace=cortex
+        - -schema-config-file=/schema/schema.yaml
+        ports:
+        - containerPort: 80
+          name: http
+        volumeMounts:
+          - name: config-volume
+            mountPath: /schema
+      volumes:
+        - name: config-volume
+          configMap:
+            name: pxcentral-cortex-schema
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pxcentral-cortex-table-manager
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cortex: table-manager
+    app.kubernetes.io/component: pxcentral-cortex-table-manager
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cortex-table-manager
+{{- include "px-monitor.labels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        app: cortex-table-manager
+        cortex: table-manager
+{{- include "px-monitor.labels" . | nindent 8 }}
+      annotations:
+        prometheus.io/port: "80"
+        prometheus.io/scrape: "true"
+        sidecar.istio.io/inject: "false"
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: table-manager
+        image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        args:
+        - -target=table-manager
+        - -server.http-listen-port=80
+        - -cassandra.addresses=pxcentral-cortex-cassandra:9042
+        - -cassandra.keyspace=cortex
+        - -schema-config-file=/schema/schema.yaml
+        volumeMounts:
+          - name: config-volume
+            mountPath: /schema
+        ports:
+        - containerPort: 80
+          name: http
+      volumes:
+        - name: config-volume
+          configMap:
+            name: pxcentral-cortex-schema
+---

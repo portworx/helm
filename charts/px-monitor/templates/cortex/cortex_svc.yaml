@@ -1,0 +1,155 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: pxcentral-cortex-schema
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: cortex-schema
+    cortex: schema
+{{- include "px-monitor.labels" . | nindent 4 }}
+data:
+  schema.yaml: |-
+    configs:
+      - from: "2020-01-01"
+        schema: v9
+        index:
+          period: 1w 
+          prefix: cortex_index_
+        chunks:
+          period: 1w 
+          prefix: cortex_chunks
+        store: cassandra
+        object_store: cassandra
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-cortex-alertmanager
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cortex: alertmanager
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: 80
+      name: http
+      targetPort: http
+  selector:
+    app: cortex-alertmanager
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-cortex-consul
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cortex: consul
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  ports:
+  - name: http
+    port: 8500
+  selector:
+    app: cortex-consul
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-cortex-distributor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cortex: distributor
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: 80
+      name: http
+      targetPort: http
+  selector:
+    app: cortex-distributor
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-cortex-ingester
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cortex: ingester
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: 80
+      name: http
+      targetPort: http
+  selector:
+    app: cortex-ingester
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-cortex-querier
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cortex: querier
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: 80
+      name: http
+      targetPort: http
+  selector:
+    app: cortex-querier
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-cortex-query-frontend
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: cortex-query-frontend
+    cortex: query-frontend
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  ports:
+    - port: 9095
+      name: grpc
+      targetPort: grpc
+    - port: 80
+      name: http
+      targetPort: http
+  selector:
+    app: cortex-query-frontend
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-cortex-ruler
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cortex: ruler
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: 80
+      name: http
+      targetPort: http
+  selector:
+    app: cortex-ruler
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-cortex-table-manager
+  namespace: {{ .Release.Namespace }}
+  labels:
+    cortex: table-manager
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  ports:
+    - port: 80
+      name: http
+      targetPort: http
+  selector:
+    app: cortex-table-manager
+---

@@ -13,11 +13,14 @@ metadata:
    name: node-get-put-list-role
 rules:
 - apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
   resources: ["nodes"]
   verbs: ["watch", "get", "update", "list"]
 - apiGroups: [""]
   resources: ["pods"]
-  verbs: ["delete", "get", "list"]
+  verbs: ["delete", "get", "list", "watch", "update"]
 - apiGroups: [""]
   resources: ["persistentvolumeclaims", "persistentvolumes"]
   verbs: ["get", "list"]
@@ -28,6 +31,15 @@ rules:
   resources: ["podsecuritypolicies"]
   resourceNames: ["privileged"]
   verbs: ["use"]
+- apiGroups: ["portworx.io"]
+  resources: ["volumeplacementstrategies"]
+  verbs: ["get", "list"]
+- apiGroups: ["stork.libopenstorage.org"]
+  resources: ["backuplocations"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["create"]
 ---
 
 kind: ClusterRoleBinding

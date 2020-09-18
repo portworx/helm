@@ -1,5 +1,5 @@
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
   name: portworx-db-sc
 provisioner: kubernetes.io/portworx-volume
@@ -8,7 +8,7 @@ parameters:
   io_profile: "db"
 ---
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
   name: portworx-db2-sc
 provisioner: kubernetes.io/portworx-volume
@@ -18,7 +18,7 @@ parameters:
    io_profile: "db"
 ---
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
   name: portworx-shared-sc
 provisioner: kubernetes.io/portworx-volume
@@ -33,7 +33,7 @@ parameters:
 # Please refer to : https://docs.portworx.com/scheduler/kubernetes/dynamic-provisioning.html
 #
 kind: StorageClass
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 metadata:
   name: portworx-null-sc
   annotations:

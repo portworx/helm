@@ -1,4 +1,4 @@
-{{- if (.Values.lighthouse) and (eq .Values.lighthouse true) -}}
+{{- if (and (.Values.lighthouse) (eq .Values.lighthouse true)) -}}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -12,17 +12,36 @@ metadata:
   namespace: kube-system
 rules:
   - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["list", "get"]
+  - apiGroups:
+        - extensions
+        - apps
+    resources:
+        - deployments
+    verbs: ["get", "list"]
+  - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["get", "create", "update"]
   - apiGroups: [""]
     resources: ["configmaps"]
     verbs: ["get", "create", "update"]
   - apiGroups: [""]
-    resources: ["nodes", "services"]
+    resources: ["nodes"]
     verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["create", "get", "list", "watch"]
   - apiGroups: ["stork.libopenstorage.org"]
     resources: ["clusterpairs","migrations","groupvolumesnapshots"]
     verbs: ["get", "list", "create", "update", "delete"]
+  - apiGroups: ["monitoring.coreos.com"]
+    resources:
+      - alertmanagers
+      - prometheuses
+      - prometheuses/finalizers
+      - servicemonitors
+    verbs: ["*"]
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -55,7 +74,7 @@ spec:
   selector:
     tier: px-web-console
 ---
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: px-lighthouse
@@ -63,14 +82,14 @@ metadata:
   labels:
     tier: px-web-console
 spec:
+  selector:
+    matchLabels:
+      tier: px-web-console
   strategy:
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 1
     type: RollingUpdate
-  selector:
-    matchLabels:
-      tier: px-web-console
   replicas: 1
   template:
     metadata:
@@ -112,4 +131,17 @@ spec:
       volumes:
       - name: config
         emptyDir: {}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: px/enabled
+                operator: {{ template "px.affinityPxEnabledOperator" . }}
+                values:
+                - {{ template "px.affinityPxEnabledValue" . }}
 {{- end -}}

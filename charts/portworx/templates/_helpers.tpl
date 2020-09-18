@@ -25,6 +25,12 @@ release: {{ .Release.Name | quote }}
 {{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+"}}{{$version}}
 {{- end -}}
 
+{{- define "px.kubectlImageTag" -}}
+{{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+" | trimPrefix "v" | split "."}}
+{{- $major := index $version "_0" -}}
+{{- $minor := index $version "_1" -}}
+{{printf "%s.%s" $major $minor }}
+{{- end -}}
 
 {{- define "px.getImage" -}}
 {{- if (.Values.customRegistryURL) -}}
@@ -63,14 +69,36 @@ release: {{ .Release.Name | quote }}
 {{- end -}}
 
 {{- define "px.getk8sImages" -}}
+{{- $version := .Capabilities.KubeVersion.GitVersion -}}
 {{- if (.Values.customRegistryURL) -}}
     {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
         {{ trim .Values.customRegistryURL }}
     {{- else -}}
-        {{cat (trim .Values.customRegistryURL) "/gcr.io/google_containers" | replace " " ""}}
+        {{- if or (or (semverCompare ">= 1.16.14 <=1.17.0"  $version ) (semverCompare ">= 1.17.10 <=1.18.0" $version )) (semverCompare ">=1.18.7" $version) -}}
+           {{cat (trim .Values.customRegistryURL) "/k8s.gcr.io" | replace " " ""}}
+        {{- else -}}
+           {{cat (trim .Values.customRegistryURL) "/gcr.io/google_containers" | replace " " ""}}
+        {{- end -}}
     {{- end -}}
 {{- else -}}
+    {{- if or (or (semverCompare ">= 1.16.14 <=1.17.0"  $version ) (semverCompare ">= 1.17.10 <=1.18.0" $version )) (semverCompare ">=1.18.7" $version) -}}
+        {{ "k8s.gcr.io" }}
+     {{- else -}}
         {{ "gcr.io/google_containers" }}
+    {{- end -}}
+{{- end -}}
+{{- end -}}
+
+
+{{- define "px.getPauseImage" -}}
+{{- if (.Values.customRegistryURL) -}}
+    {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
+        {{ trim .Values.customRegistryURL }}
+    {{- else -}}
+        {{cat (trim .Values.customRegistryURL) "/k8s.gcr.io" | replace " " ""}}
+    {{- end -}}
+{{- else -}}
+        {{ "k8s.gcr.io" }}
 {{- end -}}
 {{- end -}}
 
@@ -136,5 +164,54 @@ Create the name of the cluster role binding to use for hooks
     {{- printf "%s-hook" .Chart.Name | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
     {{ default "default" .Values.serviceAccount.hook.name }}
+{{- end -}}
+{{- end -}}
+
+
+{{/*
+Create the name of the role to use for hooks
+*/}}
+{{- define "px.hookRole" -}}
+{{- if .Values.serviceAccount.hook.create -}}
+    {{- printf "%s-hook" .Chart.Name | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.hook.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the role binding to use for hooks
+*/}}
+{{- define "px.hookRoleBinding" -}}
+{{- if .Values.serviceAccount.hook.create -}}
+    {{- printf "%s-hook" .Chart.Name | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+    {{ default "default" .Values.serviceAccount.hook.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Generate a random token for storage provisioning
+*/}}
+
+{{- define "portworx-cluster-key" -}}
+{{- randAlphaNum 16 | nospace | b64enc -}}
+{{- end -}}
+
+
+{{- define "px.affinityPxEnabledOperator" -}}
+{{- if .Values.requirePxEnabledTag -}}
+    {{- "In" }}
+{{- else -}}
+    {{ "NotIn" }}
+{{- end -}}
+{{- end -}}
+
+
+{{- define "px.affinityPxEnabledValue" -}}
+{{- if .Values.requirePxEnabledTag -}}
+    {{- "true"  | quote }}
+{{- else -}}
+    {{ "false" | quote }}
 {{- end -}}
 {{- end -}}

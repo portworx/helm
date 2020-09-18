@@ -1,4 +1,4 @@
-{{- if (.Values.csi) and (eq .Values.csi true)}}
+{{- if (and (.Values.csi) (eq .Values.csi true))}}
 {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
 apiVersion: v1
 kind: ServiceAccount
@@ -49,11 +49,14 @@ spec:
   clusterIP: None
 ---
 kind: StatefulSet
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 metadata:
   name: px-csi-ext
   namespace: kube-system
 spec:
+  selector:
+    matchLabels:
+      app: px-csi-driver
   serviceName: "px-csi-service"
   replicas: 1
   template:
@@ -65,7 +68,7 @@ spec:
       containers:
         - name: csi-external-provisioner
           imagePullPolicy: Always
-          image: "{{ template "px.getcsiProvisioner" . }}/csi-provisioner:v0.2.0"
+          image: "{{ template "px.getcsiImages" . }}/csi-provisioner:v0.2.0"
           args:
             - "--v=5"
             - "--provisioner=com.openstorage.pxd"
@@ -93,4 +96,17 @@ spec:
           hostPath:
             path: /var/lib/kubelet/plugins/com.openstorage.pxd
             type: DirectoryOrCreate
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: px/enabled
+                operator: {{ template "px.affinityPxEnabledOperator" . }}
+                values:
+                - {{ template "px.affinityPxEnabledValue" . }}
 {{- end }}
