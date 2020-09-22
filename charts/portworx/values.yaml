@@ -25,6 +25,7 @@ storkVersion: 2.4.0
 
 customRegistryURL:
 registrySecret:
+licenseSecret:
 
 lighthouse: true
 lighthouseVersion: 2.0.7

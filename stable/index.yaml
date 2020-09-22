@@ -2,7 +2,19 @@ apiVersion: v1
 entries:
   portworx:
   - apiVersion: v1
-    created: "2020-09-28T14:09:29.566703+05:30"
+    created: "2020-10-08T11:04:27.352293+02:00"
+    description: A Helm chart for installing Portworx on Kubernetes.
+    digest: fc746f648f39b5fc36687cb9a22a59b485638a369cd8c3510ee94115b1fc0979
+    home: https://portworx.com/
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
+    name: portworx
+    sources:
+    - https://github.com/portworx/helm
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/master/stable/portworx-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v1
+    created: "2020-10-08T11:04:27.350655+02:00"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: ac01a7ae62587285d9a29e2d36c386727eb96694810a563ecf723b21f7582dec
     home: https://portworx.com/
@@ -16,7 +28,7 @@ entries:
   px-backup:
   - apiVersion: v1
     appVersion: 1.1.0
-    created: "2020-09-28T14:09:29.591313+05:30"
+    created: "2020-10-08T11:04:27.364+02:00"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 4115cfbf2e4e8158331bcec3d4404054c9648fb227f6947747f0122ad4f2418a
@@ -38,7 +50,7 @@ entries:
     version: 1.1.4
   - apiVersion: v1
     appVersion: 1.1.0-rc4
-    created: "2020-09-28T14:09:29.588857+05:30"
+    created: "2020-10-08T11:04:27.361968+02:00"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 0121036cb537c93fff9281f05cf935345b5f769017b131b5e903cc4b8354c8ac
@@ -60,7 +72,7 @@ entries:
     version: 1.1.3
   - apiVersion: v1
     appVersion: 1.1.0-rc2
-    created: "2020-09-28T14:09:29.585043+05:30"
+    created: "2020-10-08T11:04:27.360707+02:00"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 96f785bc9ad2c477068d39f351d5c078f080264104ccd6e7630eabae6d0a514c
@@ -82,7 +94,7 @@ entries:
     version: 1.1.2
   - apiVersion: v1
     appVersion: 1.1.0-rc2
-    created: "2020-09-28T14:09:29.581287+05:30"
+    created: "2020-10-08T11:04:27.358894+02:00"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 7167db17211627d3d111441d01c8d71c57a1980c27145dc7c08ebb3ff9f7d548
@@ -104,7 +116,7 @@ entries:
     version: 1.1.1
   - apiVersion: v1
     appVersion: 1.1.0-rc1
-    created: "2020-09-28T14:09:29.578752+05:30"
+    created: "2020-10-08T11:04:27.357943+02:00"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 1a2c71389dc08d58f51f66e3ebe44e63fe7410691ec92d642c0dcfaa57c17605
@@ -126,7 +138,7 @@ entries:
     version: 1.1.0
   - apiVersion: v1
     appVersion: 1.0.2
-    created: "2020-09-28T14:09:29.576706+05:30"
+    created: "2020-10-08T11:04:27.356821+02:00"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: fd9316e9719a924eb8aa2d6d947d90e162f602ef4b77e28ef070099fd1dfb1cf
@@ -148,7 +160,7 @@ entries:
     version: 1.0.2
   - apiVersion: v1
     appVersion: 1.0.2
-    created: "2020-09-28T14:09:29.57449+05:30"
+    created: "2020-10-08T11:04:27.355095+02:00"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 0e96c406605816b9a70a0440710d4a82743d373c2b9da20696e6f3a1b1ef2698
@@ -170,7 +182,7 @@ entries:
     version: 1.0.1
   - apiVersion: v1
     appVersion: 1.0.2
-    created: "2020-09-28T14:09:29.571764+05:30"
+    created: "2020-10-08T11:04:27.3542+02:00"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 2bb9b69ade7b648d46ca618f2f798ba0af346022b42ce540d3988b2c8a387226
@@ -193,7 +205,7 @@ entries:
   px-license-server:
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2020-09-28T14:09:29.595594+05:30"
+    created: "2020-10-08T11:04:27.365497+02:00"
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 55f496792430763626acecb5082eaff7c5276879a0f527ae993635ad8ac90640
@@ -210,7 +222,7 @@ entries:
     version: 1.1.0
   - apiVersion: v1
     appVersion: 1.0.1
-    created: "2020-09-28T14:09:29.594063+05:30"
+    created: "2020-10-08T11:04:27.365018+02:00"
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 6673a056155f5329ef7c8cf2c4436668af4b023d234d004448e1db8a2696e1f1
@@ -227,7 +239,7 @@ entries:
     version: 1.0.1
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2020-09-28T14:09:29.592668+05:30"
+    created: "2020-10-08T11:04:27.364526+02:00"
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: bb595272c93ef8071e8bc606a3cf8bdb5d7099646d4f8066748f9bd57ac76af1
@@ -245,7 +257,7 @@ entries:
   px-monitor:
   - apiVersion: v1
     appVersion: 1.1.0
-    created: "2020-09-28T14:09:29.602666+05:30"
+    created: "2020-10-08T11:04:27.369723+02:00"
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: 079c699ed5fcba8f9214bde2b9f7b641883bac7cb57d3075a796583a10a2f9ed
@@ -263,4 +275,4 @@ entries:
     urls:
     - https://raw.githubusercontent.com/portworx/helm/master/stable/px-monitor-1.1.0.tgz
     version: 1.1.0
-generated: "2020-09-28T14:09:29.562501+05:30"
+generated: "2020-10-08T11:04:27.348872+02:00"
