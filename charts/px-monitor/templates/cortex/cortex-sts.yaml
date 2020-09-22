@@ -436,7 +436,9 @@ spec:
         name: pxcentral-consul-data
       spec:
         accessModes: ["ReadWriteOnce"]
+        {{- if .Values.persistentStorage.storageClassName }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
+        {{- end }}
         resources:
           requests:
             storage: {{ .Values.persistentStorage.consul.storage }}

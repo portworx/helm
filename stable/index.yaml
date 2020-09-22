@@ -226,7 +226,7 @@ entries:
     created: "2020-09-18T10:47:08.886601+05:30"
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
-    digest: 649683c02e5244ce8661fbd6c67ebec0be100fe6b4fccdc3eadf149a27b0e414
+    digest: 489eaf49914f0b312ea268ecfd09c444b775e8c1edb96a4a66151e9daa8d0241
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     keywords:
