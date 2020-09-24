@@ -274,3 +274,23 @@ metadata:
    ```console
    $ kubectl logs -f --namespace {{ .Release.Namespace }} -ljob-name=pxcentral-post-install-hook
    ```
+
+2. If one or many pods of the etcd replica goes into `CrashLoopBackOff` state during install or upgrade and error looks like following:
+```
+pxc-backup-etcd-1                          0/1     CrashLoopBackOff   6          10m
+[root@ip-node1 helm]# kubectl logs pxc-backup-etcd-1 -n px-backup
+==> Bash debug is off
+==> Detected data from previous deployments...
+==> Adding new member to existing cluster...
+```
+
+then, to resolve this issue scale down etcd cluster to 0 and scale it back to 3.
+- To scale down etcd cluster to 0:
+```console
+$ kubectl scale sts --namespace px-backup pxc-backup-etcd --replicas=0`
+```
+
+- To scale up etcd cluster to 3:
+```console
+$ kubectl scale sts --namespace px-backup pxc-backup-etcd --replicas=3`
+```
