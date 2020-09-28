@@ -158,6 +158,16 @@ spec:
                 secretKeyRef:
                   key: DB_USERNAME
                   name: pxcentral-mysql-secret
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: pxc-backup-secret
+                  key: OIDC_CLIENT_ID
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pxc-backup-secret
+                  key: OIDC_CLIENT_SECRET
           envFrom:
             - configMapRef:
                 name: pxcentral-ui-configmap
