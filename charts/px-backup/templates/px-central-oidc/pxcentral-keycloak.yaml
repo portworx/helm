@@ -352,7 +352,7 @@ spec:
           - "ReadWriteOnce"
         resources:
           requests:
-            storage: {{ .Values.persistentStorage.keycloakBackendVolumeSize }}
+            storage: "10Gi"
         {{- if .Values.persistentStorage.storageClassName }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         {{- end }}
@@ -550,7 +550,7 @@ spec:
           - "ReadWriteOnce"
         resources:
           requests:
-            storage: {{ .Values.persistentStorage.keycloakThemeVolumeSize }}
+            storage: "5Gi"
         {{- if .Values.persistentStorage.storageClassName }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         {{- end }}

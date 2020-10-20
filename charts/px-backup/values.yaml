@@ -1,10 +1,6 @@
 persistentStorage:
   enabled: true
   storageClassName:
-  mysqlVolumeSize: "100Gi"
-  etcdVolumeSize: "64Gi"
-  keycloakThemeVolumeSize: "5Gi"
-  keycloakBackendVolumeSize: "10Gi"
 
 storkRequired: false
 
