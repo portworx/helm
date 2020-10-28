@@ -84,6 +84,7 @@ Parameter | Description | Default
 `oidc.centralOIDC.keyCloakBackendUserName` | Keycloak backend store username | `keycloak`
 `oidc.centralOIDC.keyCloakBackendPassword` | Keycloak backend store password | `keycloak`
 `oidc.centralOIDC.clientId` | PX-Central OIDC client id | `pxcentral`
+`oidc.centralOIDC.updateAdminProfile` | Enable/Disable admin profile update action | `true`
 `oidc.externalOIDC` | Enable external OIDC provider | `""`
 `oidc.externalOIDC.enabled` | Enabled external OIDC provider | `false`
 `oidc.externalOIDC.clientID` | External OIDC client ID | `""`
