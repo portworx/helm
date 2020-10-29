@@ -17,6 +17,7 @@
 
 {{- $pksInstall := .Values.pksInstall | default false }}
 {{- $internalKVDB := .Values.internalKVDB | default false }}
+{{- $kvdbDevice := .Values.kvdbDevice | default "none" }}
 {{- $csi := .Values.csi | default false }}
 
 {{- $etcdCredentials := .Values.etcd.credentials | default "none:none" }}
@@ -109,6 +110,9 @@ spec:
 
               {{- if eq $internalKVDB true }}
               "-b",
+                {{- if ne $kvdbDevice "none" }}
+                "-kvdb_dev", "{{ $kvdbDevice }}",
+                {{- end -}}
               {{- end -}}
 
               {{- if ne $journalDevice "none" }}
