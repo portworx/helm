@@ -89,7 +89,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-monitor-post-install-setup
-    tag: 1.2.0-dev
+    tag: 1.2.0
   memcachedMetricsImage:
     registry: quay.io
     repo: prometheus
