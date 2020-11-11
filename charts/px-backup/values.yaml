@@ -3,13 +3,14 @@ persistentStorage:
   storageClassName:
   mysqlVolumeSize: "100Gi"
   etcdVolumeSize: "64Gi"
+  etcdSnapshotSize: "10Gi"
   keycloakThemeVolumeSize: "5Gi"
   keycloakBackendVolumeSize: "10Gi"
 
 storkRequired: false
 
 pxcentralDBPassword: Password1
-
+clusterDomain: cluster.local
 caCertsSecretName: ""
 
 oidc:
@@ -80,7 +81,7 @@ images:
     registry: docker.io
     repo: bitnami
     imageName: etcd
-    tag: 3.4.7-debian-10-r14
+    tag: 3.4.13-debian-10-r22
   keycloakBackendImage:
     registry: docker.io
     repo: bitnami
