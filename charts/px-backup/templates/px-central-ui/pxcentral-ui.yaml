@@ -86,13 +86,23 @@ data:
         proxy_set_header Host              $host;
         proxy_set_header X-Real-IP         $proxy_protocol_addr;
         proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-Proto $myscheme;
         proxy_set_header X-Forwarded-Host  $http_host;
         proxy_set_header Port  $http_port;
         proxy_set_header X-Forwarded-Port  $http_port;
       }
       location /cortex/ {
         proxy_pass http://cortex/;
+        proxy_cache_bypass  $http_upgrade;
+        proxy_set_header Upgrade           $http_upgrade;
+        proxy_set_header Connection        "upgrade";
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $proxy_protocol_addr;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $myscheme;
+        proxy_set_header X-Forwarded-Host  $http_host;
+        proxy_set_header Port  $http_port;
+        proxy_set_header X-Forwarded-Port  $http_port;
       }
       error_page 404 =200 /index.html;
       error_page   500 502 503 504  /50x.html;

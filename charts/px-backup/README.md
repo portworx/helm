@@ -84,6 +84,7 @@ Parameter | Description | Default
 `oidc.centralOIDC.keyCloakBackendUserName` | Keycloak backend store username | `keycloak`
 `oidc.centralOIDC.keyCloakBackendPassword` | Keycloak backend store password | `keycloak`
 `oidc.centralOIDC.clientId` | PX-Central OIDC client id | `pxcentral`
+`oidc.centralOIDC.updateAdminProfile` | Enable/Disable admin profile update action | `true`
 `oidc.externalOIDC` | Enable external OIDC provider | `""`
 `oidc.externalOIDC.enabled` | Enabled external OIDC provider | `false`
 `oidc.externalOIDC.clientID` | External OIDC client ID | `""`
@@ -266,6 +267,11 @@ metadata:
 ```
 
 2. Pass the secret name to chart using flag: `--set caCertsSecretName=<SECRET_NAME>`
+
+### Expose PX-Backup UI on openshift routes and access using http and https:
+1. Create single route with hostname and path: `/` and point it to `px-backup-ui` service. 
+2. Access PX-Backup UI using route endpoint.
+Note: Keycloak auth and Grafana UI will be accessible on same endpoint on different paths: `/auth` and `/grafana`.
 
 ## FAQ
 
