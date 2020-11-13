@@ -51,27 +51,27 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 1.1.4
+    tag: 1.1.5
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 1.1.4
+    tag: 1.1.5
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 1.1.4
+    tag: 1.1.5
   pxBackupImage:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 1.1.1
+    tag: 1.1.2
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 1.1.2
+    tag: 1.1.3
   etcdImage:
     registry: docker.io
     repo: bitnami
