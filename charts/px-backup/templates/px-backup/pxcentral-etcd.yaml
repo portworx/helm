@@ -259,7 +259,7 @@ spec:
     - ReadWriteMany
   resources:
     requests:
-      storage: "{{ .Values.persistentStorage.etcdSnapshotSize }}"
+      storage: "10Gi"
   storageClassName: {{ .Values.persistentStorage.storageClassName }}
 {{- end }}
 ---
