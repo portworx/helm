@@ -268,6 +268,11 @@ metadata:
 
 2. Pass the secret name to chart using flag: `--set caCertsSecretName=<SECRET_NAME>`
 
+### Expose PX-Backup UI on openshift routes and access using http and https:
+1. Create single route with hostname and path: `/` and point it to `px-backup-ui` service. 
+2. Access PX-Backup UI using route endpoint.
+Note: Keycloak auth and Grafana UI will be accessible on same endpoint on different paths: `/auth` and `/grafana`.
+
 ## FAQ
 
 1. How to check install logs:
