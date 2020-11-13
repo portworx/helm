@@ -361,7 +361,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: {{ .Values.persistentStorage.mysqlVolumeSize }}
+      storage: "100Gi"
   {{- if .Values.persistentStorage.storageClassName }}
   storageClassName: {{ .Values.persistentStorage.storageClassName }}
   {{- end }}
