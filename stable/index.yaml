@@ -334,6 +334,17 @@ entries:
     urls:
     - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-backup-1.0.0.tgz
     version: 1.0.0
+  px-central:
+  - apiVersion: v2
+    appVersion: 1.3.0
+    created: "2021-02-09T09:56:23.89219+05:30"
+    description: A Helm chart for Kubernetes
+    digest: 9a6a8b689253a1af635259e821be5a676273e7c35bf1c3b69e7380e55486b11c
+    name: px-central
+    type: application
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-central-1.3.0.tgz
+    version: 1.3.0
   px-license-server:
   - apiVersion: v1
     appVersion: 1.0.0

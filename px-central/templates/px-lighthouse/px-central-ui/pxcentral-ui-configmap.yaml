@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pxcentral-ui-configmap
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-frontend
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  APP_KEY: base64:J1RH3W4+CILq3/eac9zqYbAMzeptqCJgR9KcWRdhtHw=
+  BASE_ROOT_PATH: /
+  DB_PORT: "3306"
+  DB_DATABASE: pxcentral
+  FRONTEND_ENABLED_MODULES: COMPANY,LH,USERS,SSO
+  PX_BACKUP_ENDPOINT: "px-backup:10002"
+  PX_BACKUP_ORGID: "{{ .Values.pxbackup.orgName }}"
+  PX_STATUS_ENDPOINT: "http://pxcentral-apiserver:10006"
+  OIDC_AUTHSERVERURL: http://pxcentral-keycloak-http:80/auth/realms/master

@@ -1,0 +1,42 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
+{{- if eq $pxMonitorEnabled true }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-monitor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-monitor
+{{- include "px-central.labels" . | nindent 4 }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: px-monitor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-monitor
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: px-monitor
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-monitor
+{{- include "px-central.labels" . | nindent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: px-monitor
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: px-monitor
+  apiGroup: rbac.authorization.k8s.io
+{{- end -}}

@@ -1,0 +1,20 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $lsEnabled := .Values.pxlicenseserver.enabled | default false -}}
+{{- if eq $lsEnabled true }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-license
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-license-server
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/component: pxcentral-license-server
+  ports:
+    - name: pxcentral-license-server
+      protocol: TCP
+      port: 7070
+      targetPort: 7070
+{{- end -}}
