@@ -1,0 +1,446 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
+{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
+{{- $storkRequired := .Values.storkRequired | default false -}}
+{{- $sslEnabled := .Values.pxmonitor.sslEnabled | default false -}}
+{{- if eq $pxMonitorEnabled true }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-memcached-index-read
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: pxcentral-memcached-index-read
+    app.kubernetes.io/component: pxcentral-memcached-index-read
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  ports:
+  - name: memcache
+    port: 11211
+    targetPort: memcache
+  - name: metrics
+    port: 9150
+    targetPort: metrics
+  selector:
+    app: pxcentral-memcached-index-read
+    app.kubernetes.io/component: pxcentral-memcached-index-read
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-memcached-index-write
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: pxcentral-memcached-index-write
+    app.kubernetes.io/component: pxcentral-memcached-index-write
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  ports:
+  - name: memcache
+    port: 11211
+    targetPort: memcache
+  - name: metrics
+    port: 9150
+    targetPort: metrics
+  selector:
+    app: pxcentral-memcached-index-write
+    app.kubernetes.io/component: pxcentral-memcached-index-write
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-memcached
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: pxcentral-memcached
+    app.kubernetes.io/component: pxcentral-memcached
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  ports:
+  - name: memcache
+    port: 11211
+    targetPort: memcache
+  - name: metrics
+    port: 9150
+    targetPort: metrics
+  selector:
+    app: pxcentral-memcached
+    app.kubernetes.io/component: pxcentral-memcached
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pxcentral-memcached-index-read
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: pxcentral-memcached-index-read
+    app.kubernetes.io/component: pxcentral-memcached-index-read
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  serviceName: pxcentral-memcached-index-read
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pxcentral-memcached-index-read
+      app.kubernetes.io/component: pxcentral-memcached-index-read
+      app.kubernetes.io/name: {{.Release.Name }}
+      app.kubernetes.io/instance: {{.Release.Name }}
+      app.kubernetes.io/managed-by: {{.Release.Service }}
+  template:
+    metadata:
+      labels:
+        app: pxcentral-memcached-index-read
+        app.kubernetes.io/component: pxcentral-memcached-index-read
+        app.kubernetes.io/name: {{.Release.Name }}
+        app.kubernetes.io/instance: {{.Release.Name }}
+        app.kubernetes.io/managed-by: {{.Release.Service }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: pxcentral-memcached-index-read
+        image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedIndexImage.registry .Values.images.memcachedIndexImage.repo .Values.images.memcachedIndexImage.imageName .Values.images.memcachedIndexImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        command:
+        - memcached
+        - -m 3840
+        - -o
+        - modern
+        - -v
+        - -I 32m
+        - -t 32
+        ports:
+        - name: memcache
+          containerPort: 11211
+        livenessProbe:
+          tcpSocket:
+            port: memcache
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: memcache
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+      - name: metrics
+        image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedMetricsImage.registry .Values.images.memcachedMetricsImage.repo .Values.images.memcachedMetricsImage.imageName .Values.images.memcachedMetricsImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        ports:
+        - name: metrics
+          containerPort: 9150
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pxcentral-memcached-index-write
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: pxcentral-memcached-index-write
+    app.kubernetes.io/component: pxcentral-memcached-index-write
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  serviceName: pxcentral-memcached-index-write
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pxcentral-memcached-index-write
+      app.kubernetes.io/component: pxcentral-memcached-index-write
+      app.kubernetes.io/name: {{.Release.Name }}
+      app.kubernetes.io/instance: {{.Release.Name }}
+      app.kubernetes.io/managed-by: {{.Release.Service }}
+  template:
+    metadata:
+      labels:
+        app: pxcentral-memcached-index-write
+        app.kubernetes.io/component: pxcentral-memcached-index-write
+        app.kubernetes.io/name: {{.Release.Name }}
+        app.kubernetes.io/instance: {{.Release.Name }}
+        app.kubernetes.io/managed-by: {{.Release.Service }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: pxcentral-memcached-index-write
+        image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedIndexImage.registry .Values.images.memcachedIndexImage.repo .Values.images.memcachedIndexImage.imageName .Values.images.memcachedIndexImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        command:
+        - memcached
+        - -m 3840
+        - -o
+        - modern
+        - -v
+        - -I 32m
+        - -t 32
+        ports:
+        - name: memcache
+          containerPort: 11211
+        livenessProbe:
+          tcpSocket:
+            port: memcache
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: memcache
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+      - name: metrics
+        image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedMetricsImage.registry .Values.images.memcachedMetricsImage.repo .Values.images.memcachedMetricsImage.imageName .Values.images.memcachedMetricsImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        ports:
+        - name: metrics
+          containerPort: 9150
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pxcentral-memcached
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: pxcentral-memcached
+    app.kubernetes.io/component: pxcentral-memcached
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  serviceName: pxcentral-memcached
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pxcentral-memcached
+      app.kubernetes.io/component: pxcentral-memcached
+      app.kubernetes.io/name: {{.Release.Name }}
+      app.kubernetes.io/instance: {{.Release.Name }}
+      app.kubernetes.io/managed-by: {{.Release.Service }}
+  template:
+    metadata:
+      labels:
+        app: pxcentral-memcached
+        app.kubernetes.io/component: pxcentral-memcached
+        app.kubernetes.io/name: {{.Release.Name }}
+        app.kubernetes.io/instance: {{.Release.Name }}
+        app.kubernetes.io/managed-by: {{.Release.Service }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      containers:
+      - name: pxcentral-memcached
+        image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedImage.registry .Values.images.memcachedImage.repo .Values.images.memcachedImage.imageName .Values.images.memcachedImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        command:
+        - memcached
+        - -m 3840
+        - -o
+        - modern
+        - -v
+        - -t 32
+        ports:
+        - name: memcache
+          containerPort: 11211
+        livenessProbe:
+          tcpSocket:
+            port: memcache
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: memcache
+          initialDelaySeconds: 5
+          timeoutSeconds: 1
+      - name: metrics
+        image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedMetricsImage.registry .Values.images.memcachedMetricsImage.repo .Values.images.memcachedMetricsImage.imageName .Values.images.memcachedMetricsImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        ports:
+        - name: metrics
+          containerPort: 9150
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pxcentral-cortex-consul
+  labels:
+    cortex: consul
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: pxcentral-cortex-consul
+      cortex: consul
+      app: cortex-consul
+      app.kubernetes.io/name: {{.Release.Name }}
+      app.kubernetes.io/instance: {{.Release.Name }}
+      app.kubernetes.io/managed-by: {{.Release.Service }}
+  serviceName: pxcentral-cortex-consul
+  replicas: 1
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: pxcentral-cortex-consul
+        cortex: consul
+        app: cortex-consul
+        app.kubernetes.io/name: {{.Release.Name }}
+        app.kubernetes.io/instance: {{.Release.Name }}
+        app.kubernetes.io/managed-by: {{.Release.Service }}
+    spec:      
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      {{- if eq $storkRequired true }}
+      schedulerName: stork
+      {{- end }}
+      {{- if $isOpenshiftCluster }}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+        - name: consul
+          image: {{ printf "%s/%s/%s:%s" .Values.images.consulImage.registry .Values.images.consulImage.repo .Values.images.consulImage.imageName .Values.images.consulImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8500
+            - name: rpc
+              containerPort: 8400
+            - name: serflan-tcp
+              protocol: "TCP"
+              containerPort: 8301
+            - name: serflan-udp
+              protocol: "UDP"
+              containerPort: 8301
+            - name: server
+              containerPort: 8300
+            - name: consuldns-tcp
+              containerPort: 8600
+            - name: consuldns-udp
+              protocol: "UDP"
+              containerPort: 8600
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: CONSUL_NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: CONSUL_RETRY_JOIN
+              value: "pxcentral-cortex-consul-0"
+            - name: CONSUL_DISABLE_KEYRING_FILE
+              value: "true"
+            - name: CONSUL_BOOTSTRAP_EXPECT
+              value: "1"
+            - name: CONSUL_RAFT_MULTIPLIER
+              value: "1"
+            - name: CONSUL_DOMAIN
+              value: "consul"
+            - name: CONSUL_DATACENTER
+              value: "dc1"
+            - name: CONSUL_UI
+              value: "true"
+            - name: CONSUL_HTTP_PORT_NUMBER
+              value: "8500"
+            - name: CONSUL_DNS_PORT_NUMBER
+              value: "8600"
+            - name: CONSUL_RPC_PORT_NUMBER
+              value: "8300"
+            - name: CONSUL_SERF_LAN_PORT_NUMBER
+              value: "8301"
+          livenessProbe:
+            exec:
+              command:
+                - consul
+                - operator
+                - raft
+                - list-peers
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+                - consul
+                - members
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          volumeMounts:
+            - name: pxcentral-consul-data
+              mountPath: /bitnami/consul
+      {{- if eq $externalPersistentStorageEnabled false }}
+      volumes:        
+        - name: pxcentral-consul-data
+          emptyDir: {}
+      {{- end }}
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+  {{- if eq $externalPersistentStorageEnabled true }}
+  volumeClaimTemplates:
+    - metadata:
+        name: pxcentral-consul-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        {{- if .Values.persistentStorage.storageClassName }}
+        storageClassName: {{ .Values.persistentStorage.storageClassName }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistentStorage.consul.storage }}
+  {{- end }}
+{{- end -}}

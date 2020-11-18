@@ -1,0 +1,181 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- if eq $pxBackupEnabled true }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-backup-account
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-backup.labels" . | nindent 4 }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: px-backup-role
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-backup.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "create", "delete", "update"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get"]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: call-home
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: px-backup
+    app.kubernetes.io/component: px-backup
+{{- include "px-backup.labels" . | nindent 4 }}
+data:
+  enable: "{{ .Values.pxbackup.callHome }}"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pxc-backup-secret
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-backup.labels" . | nindent 4 }}
+type: Opaque
+stringData:
+  OIDC_CLIENT_ID: "{{ .Values.oidc.centralOIDC.clientId }}"
+  OIDC_ENDPOINT: "http://pxcentral-keycloak-http:80/auth/realms/master"
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: px-backup-role-binding
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-backup.labels" . | nindent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: px-backup-account
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: px-backup-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: px-backup
+    app.kubernetes.io/component: px-backup
+{{- include "px-backup.labels" . | nindent 4 }}
+  name: px-backup
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+  - protocol: TCP
+    port: 10002
+    targetPort: 10002
+    name: grpc
+  - protocol: TCP
+    port: 10001
+    targetPort: 10001
+    name: rest-api
+  selector:
+    app: px-backup
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-backup.labels" . | nindent 4 }}
+  name: px-backup
+  namespace: {{ .Release.Namespace }}
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  replicas: 1
+  selector:
+    matchLabels:
+     app: px-backup
+  template:
+    metadata:
+      labels:
+        app: px-backup
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+      containers:
+      - env:
+        - name: PX_BACKUP_NAMESPACE
+          value: {{ .Release.Namespace }}
+        - name: PX_BACKUP_DEFAULT_ORG
+          value: {{ .Values.pxbackup.orgName }}
+        {{- if .Values.caCertsSecretName }}
+        - name: SSL_CERT_DIR
+          value: /tmp/certs
+        {{- end }}
+        image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupImage.registry .Values.images.pxBackupImage.repo .Values.images.pxBackupImage.imageName .Values.images.pxBackupImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        name: px-backup
+        ports:
+        - containerPort: 10002
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /v1/health
+            port: 10001
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+          periodSeconds: 60
+        livenessProbe:
+          httpGet:
+            path: /v1/health
+            port: 10001
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+          periodSeconds: 60
+        {{- if .Values.caCertsSecretName }}  
+        volumeMounts:
+          - mountPath: /tmp/certs
+            readOnly: true
+            name: ssl-cert-dir
+        {{- end }}
+        command:
+        - /px-backup
+        - start
+        - --datastoreEndpoints=etcd:http://pxc-backup-etcd-0.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-1.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-2.pxc-backup-etcd-headless:2379
+      {{- if .Values.caCertsSecretName }}
+      volumes:
+        - name: ssl-cert-dir
+          secret:
+            defaultMode: 420
+            secretName: "{{ .Values.caCertsSecretName }}"
+      {{- end }}
+      serviceAccountName: px-backup-account
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+---
+{{- end -}}

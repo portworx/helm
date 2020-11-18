@@ -1,0 +1,260 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
+{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
+{{- $storkRequired := .Values.storkRequired | default false -}}
+{{- $sslEnabled := .Values.pxmonitor.sslEnabled | default false -}}
+{{- if eq $pxMonitorEnabled true }}
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: pxcentral-grafana-dashboards
+  namespace: {{ .Release.Namespace }}
+  labels:
+    role: grafana-dashboardfiles
+    grafana: portworx
+    app.kubernetes.io/component: pxcentral-grafana
+{{- include "px-monitor.labels" . | nindent 4 }}
+data:
+    {{- (.Files.Glob "files/portworx-cluster-dashboard.json").AsConfig | nindent 2 }}
+    {{- (.Files.Glob "files/portworx-node-dashboard.json").AsConfig | nindent 2 }}
+    {{- (.Files.Glob "files/portworx-volume-dashboard.json").AsConfig | nindent 2 }}
+    {{- (.Files.Glob "files/portworx-etcd-dashboard.json").AsConfig | nindent 2 }}
+    {{- (.Files.Glob "files/portworx-backup-dashboard.json").AsConfig | nindent 2 }}
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: pxcentral-grafana-dashboard-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    role: grafana-dashboard-configfiles
+    grafana: portworx
+    app.kubernetes.io/component: pxcentral-grafana
+{{- include "px-monitor.labels" . | nindent 4 }}
+data:
+  dashboards.yml: |-
+    apiVersion: 1
+    providers:
+    - name: 'default'
+      orgId: 1
+      folder: ''
+      type: file
+      disableDeletion: false
+      editable: true
+      options:
+        path: /var/lib/grafana/dashboards
+---
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: pxcentral-grafana-source-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    role: grafana-source-configfiles
+    grafana: portworx
+    app.kubernetes.io/component: pxcentral-grafana
+{{- include "px-monitor.labels" . | nindent 4 }}
+data:
+  datasource.yml: |-
+    # config file version
+    apiVersion: 1
+    # list of datasources that should be deleted from the database
+    deleteDatasources:
+      - name: prometheus
+        orgId: 1
+    # list of datasources to insert/update depending
+    # whats available in the database
+    datasources:
+      # <string, required> name of the datasource. Required
+    - name: prometheus
+      # <string, required> datasource type. Required
+      type: prometheus
+      # <string, required> access mode. direct or proxy. Required
+      access: proxy
+      # <int> org id. will default to orgId 1 if not specified
+      orgId: 1
+      # <string> url 
+      url: http://pxcentral-cortex-nginx:80/api/prom
+      # <string> database password, if used
+      password:
+      # <string> database user, if used
+      user:
+      # <string> database name, if used
+      database:
+      # <bool> enable/disable basic auth
+      basicAuth: true
+      # <string> basic auth username
+      basicAuthUser: admin
+      # <string> basic auth password
+      basicAuthPassword: foobar
+      # <bool> enable/disable with credentials headers
+      withCredentials:
+      # <bool> mark as default datasource. Max one per org
+      isDefault:
+      # <map> fields that will be converted to json and stored in json_data
+      jsonData:
+        graphiteVersion: "1.1"
+        tlsAuth: false
+        tlsAuthWithCACert: false
+      # <string> json object of data that will be encrypted.
+      secureJsonData:
+        tlsCACert: "..."
+        tlsClientCert: "..."
+        tlsClientKey: "..."
+      version: 1
+      # <bool> allow users to edit datasources from the UI.
+      editable: true
+---
+{{- if eq $externalPersistentStorageEnabled true }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pxcentral-grafana-dashboards
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-grafana
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistentStorage.grafana.storage }}
+  storageClassName: {{ .Values.persistentStorage.storageClassName }}
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: pxcentral-grafana-datasource
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-grafana
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistentStorage.grafana.storage }}
+  storageClassName: {{ .Values.persistentStorage.storageClassName }}
+{{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pxcentral-grafana
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: pxcentral-grafana
+    app.kubernetes.io/component: pxcentral-grafana
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  minReadySeconds: 0
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: pxcentral-grafana
+  template:
+    metadata:
+      labels:
+        app: pxcentral-grafana
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      {{- if eq $storkRequired  true }}
+      schedulerName: stork
+      {{- end }}
+      containers:
+        - name: pxcentral-grafana
+          image: {{ printf "%s/%s/%s:%s" .Values.images.grafanaImage.registry .Values.images.grafanaImage.repo .Values.images.grafanaImage.imageName .Values.images.grafanaImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          ports:
+          - containerPort: 3000
+            name: web
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/health
+              port: web
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /api/health
+              port: web
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          volumeMounts:
+            - name: grafana-dashboard
+              mountPath: /var/lib/grafana
+            - name: grafana-datasource
+              mountPath: /etc/grafana/provisioning
+            - name: grafana-dash-config
+              mountPath: /etc/grafana/provisioning/dashboards
+            - name: dashboard-templates
+              mountPath: /var/lib/grafana/dashboards
+            - name: grafana-source-config
+              mountPath: /etc/grafana/provisioning/datasources
+            - name: grafana-config
+              mountPath: "/etc/grafana/grafana.ini"
+              subPath: grafana.ini      
+      volumes:
+        - name: grafana-dashboard
+          {{- if eq $externalPersistentStorageEnabled true }}
+          persistentVolumeClaim:
+            claimName: pxcentral-grafana-dashboards
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: grafana-datasource
+          {{- if eq $externalPersistentStorageEnabled true }}
+          persistentVolumeClaim:
+            claimName: pxcentral-grafana-datasource
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+        - name: grafana-source-config
+          configMap:
+            name: pxcentral-grafana-source-config
+        - name: grafana-dash-config
+          configMap:
+            name: pxcentral-grafana-dashboard-config
+        - name: dashboard-templates
+          configMap:
+            name: pxcentral-grafana-dashboards
+        - name: grafana-config
+          configMap:
+            name: pxcentral-grafana-ini-config
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+---
+{{- end -}}

@@ -1,0 +1,146 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $UATLSType := .Values.pxlicenseserver.internal.lsTypeUAT -}}
+{{- $AirgappedLSType := .Values.pxlicenseserver.internal.lsTypeAirgapped -}}
+{{- $lsEnabled := .Values.pxlicenseserver.enabled | default false -}}
+{{- if eq $lsEnabled true }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pxcentral-license-server
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-license-server
+{{- include "px-license-server.labels" . | nindent 4 }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pxcentral-license-server
+  labels:
+    app.kubernetes.io/component: pxcentral-license-server
+{{- include "px-license-server.labels" . | nindent 4 }}
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "update", "create", "patch"]
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["pods", "services"]
+  verbs: ["delete", "get", "list", "watch", "update"]
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resources: ["pods/status"]
+  verbs: ["patch", "update"]
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims", "persistentvolumes"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "update", "create", "patch"]
+- apiGroups: ["extensions"]
+  resources: ["ingresses", "ingresses/status", "networkpolicies"]
+  verbs: ["get", "list", "watch", "update", "create", "patch"]
+- apiGroups: ["extensions", "apps"]
+  resources: ["deployments", "statefulsets", "deployments/status", "statefulsets/status"]
+  verbs: ["get", "list", "watch", "update", "create", "patch"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses", "ingresses/status", "networkpolicies"]
+  verbs: ["get", "list", "watch"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pxcentral-license-server
+  labels:
+    app.kubernetes.io/component: pxcentral-license-server
+{{- include "px-license-server.labels" . | nindent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: pxcentral-license-server
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: pxcentral-license-server
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name | quote }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-license-server
+{{- include "px-license-server.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Name | quote }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-license-server
+{{- include "px-license-server.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: pxcentral-license-server
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ .Release.Name | quote }}
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pxcentral-license-ha-setup
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-license-ha-setup
+{{- include "px-license-server.labels" . | nindent 4 }}
+spec:
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: px/ls
+                operator: NotIn
+                values:
+                - "false"
+      serviceAccountName: pxcentral-license-server
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: pxcentral-license-ha-setup
+        image: {{ printf "%s/%s/%s:%s" .Values.images.pxLicenseHAConfigContainerImage.registry .Values.images.pxLicenseHAConfigContainerImage.repo .Values.images.pxLicenseHAConfigContainerImage.imageName .Values.images.pxLicenseHAConfigContainerImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        env:
+          - name: LOG_LEVEL
+            value: INFO
+          - name: PXC_NAMESPACE
+            value: {{ .Release.Namespace }}
+        command: ["python",  "/pxcentral-license-server/pxc-ls-ha-setup.py"]
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      restartPolicy: Never
+  backoffLimit: 5
+  activeDeadlineSeconds: 2400
+{{- end -}}

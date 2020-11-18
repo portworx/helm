@@ -1,0 +1,113 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- if eq $pxMonitorEnabled true }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pxcentral-monitor-post-install-setup
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-monitor-post-install-setup
+{{- include "px-monitor.labels" . | nindent 4 }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pxcentral-monitor-post-install-setup
+  labels:
+    app.kubernetes.io/component: pxcentral-monitor-post-install-setup
+{{- include "px-monitor.labels" . | nindent 4 }}
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "update", "create", "patch"]
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["pods", "services"]
+  verbs: ["delete", "get", "list", "watch", "update"]
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resources: ["pods/status"]
+  verbs: ["patch", "update"]
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims", "persistentvolumes"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "update", "create", "patch"]
+- apiGroups: ["extensions"]
+  resources: ["ingresses", "ingresses/status", "networkpolicies"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["extensions", "apps"]
+  resources: ["deployments", "statefulsets", "deployments/status", "statefulsets/status"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["networking.k8s.io"]
+  resources: ["ingresses", "ingresses/status", "networkpolicies"]
+  verbs: ["get", "list", "watch"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pxcentral-monitor-post-install-setup
+  labels:
+    app.kubernetes.io/component: pxcentral-monitor-post-install-setup
+{{- include "px-monitor.labels" . | nindent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: pxcentral-monitor-post-install-setup
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: pxcentral-monitor-post-install-setup
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pxcentral-monitor-post-install-setup
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-monitor-post-install-setup
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      serviceAccountName: pxcentral-monitor-post-install-setup
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: pxcentral-monitor-post-install-setup
+        image: {{ printf "%s/%s/%s:%s" .Values.images.pxMonitorPostInstallSetup.registry .Values.images.pxMonitorPostInstallSetup.repo .Values.images.pxMonitorPostInstallSetup.imageName .Values.images.pxMonitorPostInstallSetup.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        env:
+          - name: LOG_LEVEL
+            value: INFO
+          - name: PXC_NAMESPACE
+            value: {{ .Release.Namespace }}
+        command: ["python",  "/pxcentral-monitor/monitor-post-install-setup.py"]
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      restartPolicy: Never
+  backoffLimit: 5
+  activeDeadlineSeconds: 2400
+{{- end -}}

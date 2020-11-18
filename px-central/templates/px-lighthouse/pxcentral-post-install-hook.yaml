@@ -1,0 +1,59 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pxcentral-post-install-hook
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+  labels:
+    name: pxcentral-post-install-hook
+    app.kubernetes.io/component: pxcentral-post-install-hook
+{{- include "px-backup.labels" . | nindent 4 }}
+spec:
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+      serviceAccountName: pxcentral-apiserver
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: pxcentral-post-setup
+        image: {{ printf "%s/%s/%s:%s" .Values.images.postInstallSetupImage.registry .Values.images.postInstallSetupImage.repo .Values.images.postInstallSetupImage.imageName .Values.images.postInstallSetupImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        env:
+          - name: LOG_LEVEL
+            value: INFO
+          - name: UPDATE_ADMIN_USER_PROFILE
+            value: "{{ .Values.oidc.centralOIDC.updateAdminProfile }}"
+          - name: PXC_NAMESPACE
+            value: {{ .Release.Namespace }}
+          - name: DEPLOYMENT_TYPE
+            {{- if eq .Release.IsInstall true }}
+            value: "install"
+            {{- else }}
+            value: "upgrade"
+            {{- end }}
+        command: ["python",  "/pxcentral-post-install/pxc-post-setup.py"]
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      restartPolicy: Never
+  backoffLimit: 5
+  activeDeadlineSeconds: 2400

@@ -1,0 +1,96 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $UATLSType := .Values.pxlicenseserver.internal.lsTypeUAT -}}
+{{- $AirgappedLSType := .Values.pxlicenseserver.internal.lsTypeAirgapped -}}
+{{- $lsEnabled := .Values.pxlicenseserver.enabled | default false -}}
+{{- if eq $lsEnabled true }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pxcentral-license-server
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-license-server
+{{- include "px-license-server.labels" . | nindent 4 }}
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: pxcentral-license-server
+{{- include "px-license-server.labels" . | nindent 6 }}
+  minReadySeconds: 30
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: pxcentral-license-server
+{{- include "px-license-server.labels" . | nindent 8 }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: px/ls
+                operator: In
+                values:
+                - "true"
+      hostNetwork: true
+      hostPID: false
+      serviceAccountName: pxcentral-license-server
+      containers:
+        - name: pxcentral-license-server
+          image: {{ printf "%s/%s/%s:%s" .Values.images.licenseServerImage.registry .Values.images.licenseServerImage.repo .Values.images.licenseServerImage.imageName .Values.images.licenseServerImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          {{- if eq $UATLSType true }}
+          args: [ "--UAT" ]
+          {{- else if eq $AirgappedLSType true }}
+          args: [ "--air-gapped" ]
+          {{- end }}
+          securityContext:
+            privileged: true
+          ports:
+            - containerPort: 7070
+          livenessProbe:
+            periodSeconds: 120
+            initialDelaySeconds: 150
+            httpGet:
+              host: 127.0.0.1
+              path: /api/1.0/instances/~/health
+              port: 7069
+          readinessProbe:
+            periodSeconds: 120
+            initialDelaySeconds: 150
+            httpGet:
+              host: 127.0.0.1
+              path: /api/1.0/instances/~/health
+              port: 7069
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: exportbin
+              mountPath: /export_bin
+            - name: procmount
+              mountPath: /hostproc 
+      volumes:
+        - name: data
+          hostPath:
+            path: /var/lib/pwx-ls
+        - name: exportbin
+          hostPath:
+            path: /opt/pwx-ls/bin
+        - name: procmount
+          hostPath:
+            path: /proc
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      restartPolicy: Always
+---
+{{- end -}}

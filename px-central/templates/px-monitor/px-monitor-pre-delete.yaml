@@ -1,0 +1,55 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- if eq $pxMonitorEnabled true }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pxcentral-monitor-pre-delete-hook
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    helm.sh/hook: pre-delete
+    helm.sh/hook-weight: "10"
+    helm.sh/hook-delete-policy: before-hook-creation
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-monitor-pre-delete-hook
+{{- include "px-monitor.labels" . | nindent 4 }}
+spec:
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+      serviceAccountName: pxcentral-monitor-post-install-setup
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - name: pxcentral-monitor-pre-delete
+        image: {{ printf "%s/%s/%s:%s" .Values.images.pxMonitorPostInstallSetup.registry .Values.images.pxMonitorPostInstallSetup.repo .Values.images.pxMonitorPostInstallSetup.imageName .Values.images.pxMonitorPostInstallSetup.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        env:
+          - name: LOG_LEVEL
+            value: INFO
+          - name: PXC_NAMESPACE
+            value: {{ .Release.Namespace }}
+        command: ["python",  "/pxcentral-monitor/px-monitor-cleanup.py"]
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      restartPolicy: Never
+  backoffLimit: 5
+  activeDeadlineSeconds: 2400
+{{- end -}}
