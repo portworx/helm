@@ -46,7 +46,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 1.2.0-rc1
+    tag: 1.2.0
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
