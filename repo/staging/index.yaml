@@ -1,0 +1,65 @@
+apiVersion: v1
+entries:
+  px-backup:
+  - apiVersion: v1
+    appVersion: 1.2.0-rc1
+    created: "2020-11-25T11:00:56.516048+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
+      and Openshift
+    digest: 5d4cc78a30bd7e9777a26caabd4bae6bd16b61b9ad7ca070906ae56f77e52751
+    home: https://portworx.com/
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
+    keywords:
+    - px-backup
+    - storage
+    - persistent disk
+    - pvc
+    - portworx
+    - px-central
+    - lighthouse
+    name: px-backup
+    sources:
+    - https://github.com/portworx/helm/tree/master/charts/px-backup
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/master/repo/staging/px-backup-1.2.0.tgz
+    version: 1.2.0
+  px-license-server:
+  - apiVersion: v1
+    appVersion: 1.0.0
+    created: "2020-11-25T11:00:56.518627+05:30"
+    description: A Helm chart for install and configure PX-License-Server on Kubernetes
+      and Openshift
+    digest: 03ac98eabeb6fafad45101b02f4860ac9ce5d1140722a9d669f8b82737675800
+    home: https://portworx.com/
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
+    keywords:
+    - px-central
+    - px-license-server
+    name: px-license-server
+    sources:
+    - https://github.com/portworx/helm/tree/master/charts/px-license-server
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/master/repo/staging/px-license-server-1.1.0.tgz
+    version: 1.1.0
+  px-monitor:
+  - apiVersion: v1
+    appVersion: 1.1.1
+    created: "2020-11-25T11:00:56.530051+05:30"
+    description: A Helm chart for install and configure PX-Monitor on Kubernetes and
+      Openshift
+    digest: b3a51eb511f2236faac6fd03ce6cab922bef41ac37804d7aacd61e0af19b8c95
+    home: https://portworx.com/
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
+    keywords:
+    - px-central
+    - px-monitoring
+    - prometheus
+    - grafana
+    - cortex
+    name: px-monitor
+    sources:
+    - https://github.com/portworx/helm/tree/master/charts/px-monitor
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/master/repo/staging/px-monitor-1.1.1.tgz
+    version: 1.1.1
+generated: "2020-11-25T11:00:56.47902+05:30"
