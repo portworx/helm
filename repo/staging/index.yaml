@@ -3,7 +3,29 @@ entries:
   px-backup:
   - apiVersion: v1
     appVersion: 1.2.0-rc1
-    created: "2020-11-25T17:28:03.733904+05:30"
+    created: "2020-11-26T11:09:30.79911+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
+      and Openshift
+    digest: 4f94b405cab271965ecd893ae1409b2618583c1bb24fa56f9316de987820dbbf
+    home: https://portworx.com/
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
+    keywords:
+    - px-backup
+    - storage
+    - persistent disk
+    - pvc
+    - portworx
+    - px-central
+    - lighthouse
+    name: px-backup
+    sources:
+    - https://github.com/portworx/helm/tree/master/charts/px-backup
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/master/repo/staging/px-backup-1.2.1.tgz
+    version: 1.2.1
+  - apiVersion: v1
+    appVersion: 1.2.0-rc1
+    created: "2020-11-26T11:09:30.793362+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 0ca0abe57e6d3c93c0297b495786372b17c481af7743bcfff3fbdba2265d1a84
@@ -26,7 +48,24 @@ entries:
   px-license-server:
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2020-11-25T17:28:03.736102+05:30"
+    created: "2020-11-26T11:09:30.809821+05:30"
+    description: A Helm chart for install and configure PX-License-Server on Kubernetes
+      and Openshift
+    digest: d48483e2a79be3f1cc3e8306abb118db0fd9da5bf2b28bae4b2864d50fc0b14d
+    home: https://portworx.com/
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
+    keywords:
+    - px-central
+    - px-license-server
+    name: px-license-server
+    sources:
+    - https://github.com/portworx/helm/tree/master/charts/px-license-server
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/master/repo/staging/px-license-server-1.1.1.tgz
+    version: 1.1.1
+  - apiVersion: v1
+    appVersion: 1.0.0
+    created: "2020-11-26T11:09:30.807698+05:30"
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 03ac98eabeb6fafad45101b02f4860ac9ce5d1140722a9d669f8b82737675800
@@ -44,7 +83,27 @@ entries:
   px-monitor:
   - apiVersion: v1
     appVersion: 1.1.1
-    created: "2020-11-25T17:28:03.743601+05:30"
+    created: "2020-11-26T11:09:30.829108+05:30"
+    description: A Helm chart for install and configure PX-Monitor on Kubernetes and
+      Openshift
+    digest: f84da236c3ae70ea883d1a23e1a266b649d3eaeb39ba5850432f0baff4f12701
+    home: https://portworx.com/
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
+    keywords:
+    - px-central
+    - px-monitoring
+    - prometheus
+    - grafana
+    - cortex
+    name: px-monitor
+    sources:
+    - https://github.com/portworx/helm/tree/master/charts/px-monitor
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/master/repo/staging/px-monitor-1.1.2.tgz
+    version: 1.1.2
+  - apiVersion: v1
+    appVersion: 1.1.1
+    created: "2020-11-26T11:09:30.823626+05:30"
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: b3a51eb511f2236faac6fd03ce6cab922bef41ac37804d7aacd61e0af19b8c95
@@ -62,4 +121,4 @@ entries:
     urls:
     - https://raw.githubusercontent.com/portworx/helm/master/repo/staging/px-monitor-1.1.1.tgz
     version: 1.1.1
-generated: "2020-11-25T17:28:03.730906+05:30"
+generated: "2020-11-26T11:09:30.769509+05:30"
