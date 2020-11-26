@@ -11,5 +11,5 @@ keywords:
 name: px-monitor
 sources:
 - https://github.com/portworx/helm/tree/master/charts/px-monitor
-version: 1.1.1
+version: 1.1.2
 appVersion: 1.1.1
