@@ -377,6 +377,7 @@ metadata:
 {{- include "px-monitor.labels" . | nindent 4 }}
 spec:
   replicas: 1
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: cortex-configs
@@ -457,6 +458,7 @@ metadata:
 {{- include "px-monitor.labels" . | nindent 4 }}
 spec:
   replicas: 2
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: cortex-distributor
@@ -540,6 +542,7 @@ metadata:
 {{- include "px-monitor.labels" . | nindent 4 }}
 spec:
   replicas: 2
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: cortex-nginx
@@ -620,6 +623,7 @@ metadata:
 {{- include "px-monitor.labels" . | nindent 4 }}
 spec:
   replicas: 2
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: cortex-querier
@@ -704,6 +708,7 @@ metadata:
 {{- include "px-monitor.labels" . | nindent 4 }}
 spec:
   replicas: 2
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: cortex-query-frontend
@@ -783,6 +788,7 @@ metadata:
 {{- include "px-monitor.labels" . | nindent 4 }}
 spec:
   replicas: 1
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: cortex-ruler
@@ -868,6 +874,7 @@ metadata:
 {{- include "px-monitor.labels" . | nindent 4 }}
 spec:
   replicas: 1
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: cortex-table-manager

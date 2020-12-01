@@ -126,6 +126,7 @@ spec:
       run: pxcentral-backend
       app.kubernetes.io/component: pxcentral-backend
   replicas: 1
+  revisionHistoryLimit: 0
   strategy:
     rollingUpdate:
       maxSurge: 1
@@ -250,6 +251,7 @@ spec:
       run: pxcentral-frontend
       app.kubernetes.io/component: pxcentral-frontend
   replicas: 1
+  revisionHistoryLimit: 0
   strategy:
     rollingUpdate:
       maxSurge: 2

@@ -75,6 +75,7 @@ spec:
       app: pxcentral-apiserver
       app.kubernetes.io/component: pxcentral-apiserver
   replicas: 1
+  revisionHistoryLimit: 0
   minReadySeconds: 0
   strategy:
     rollingUpdate:

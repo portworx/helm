@@ -36,6 +36,7 @@ spec:
       run: pxcentral-lh-middleware
       app.kubernetes.io/component: pxcentral-lh-middleware
   replicas: 1
+  revisionHistoryLimit: 0
   minReadySeconds: 0
   strategy:
     rollingUpdate:
