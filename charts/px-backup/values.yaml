@@ -1,11 +1,15 @@
 persistentStorage:
   enabled: true
   storageClassName:
+  mysqlVolumeSize: "100Gi"
+  etcdVolumeSize: "64Gi"
+  keycloakThemeVolumeSize: "5Gi"
+  keycloakBackendVolumeSize: "10Gi"
 
 storkRequired: false
 
 pxcentralDBPassword: Password1
-clusterDomain: cluster.local
+
 caCertsSecretName: ""
 
 oidc:
@@ -46,37 +50,37 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 1.2.0
+    tag: 1.1.0
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 1.2.0-rc2
+    tag: 1.1.4
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 1.2.0-rc2
+    tag: 1.1.4
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 1.2.0-rc2
+    tag: 1.1.4
   pxBackupImage:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 1.2.0-rc1
+    tag: 1.1.1
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 1.1.3
+    tag: 1.1.2
   etcdImage:
     registry: docker.io
     repo: bitnami
     imageName: etcd
-    tag: 3.4.13-debian-10-r22
+    tag: 3.4.7-debian-10-r14
   keycloakBackendImage:
     registry: docker.io
     repo: bitnami
@@ -91,7 +95,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: keycloak-login-theme
-    tag: 1.0.4
+    tag: 1.0.2
   keycloakInitContainerImage:
     registry: docker.io
     repo: library
