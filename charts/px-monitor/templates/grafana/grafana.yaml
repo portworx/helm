@@ -151,6 +151,7 @@ metadata:
 {{- include "px-monitor.labels" . | nindent 4 }}
 spec:
   replicas: 1
+  revisionHistoryLimit: 0
   minReadySeconds: 0
   strategy:
     rollingUpdate:
