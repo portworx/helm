@@ -7,7 +7,7 @@ persistentStorage:
   keycloakBackendVolumeSize: "10Gi"
 
 storkRequired: false
-
+clusterDomain: "cluster.local"
 pxcentralDBPassword: Password1
 
 caCertsSecretName: ""
