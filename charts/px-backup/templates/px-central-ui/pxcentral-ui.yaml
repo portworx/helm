@@ -1,6 +1,19 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 apiVersion: v1
+kind: Secret
+metadata:
+  name: pxc-backup-secret
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-backup.labels" . | nindent 4 }}
+type: Opaque
+stringData:
+  OIDC_CLIENT_ID: "{{ .Values.oidc.centralOIDC.clientId }}"
+  OIDC_ENDPOINT: "http://pxcentral-keycloak-http:80/auth/realms/master"
+---
+apiVersion: v1
 kind: ConfigMap
 metadata:
   name: pxcentral-frontend-nginx-config
