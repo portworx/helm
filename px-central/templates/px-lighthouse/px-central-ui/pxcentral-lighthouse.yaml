@@ -7,7 +7,7 @@ metadata:
   labels:
     run: pxcentral-lh-middleware
     app.kubernetes.io/component: pxcentral-lh-middleware
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   selector:
     run: pxcentral-lh-middleware
@@ -29,7 +29,7 @@ metadata:
   labels:
     run: pxcentral-lh-middleware
     app.kubernetes.io/component: pxcentral-lh-middleware
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:

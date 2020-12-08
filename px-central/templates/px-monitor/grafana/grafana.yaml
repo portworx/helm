@@ -14,7 +14,7 @@ metadata:
     role: grafana-dashboardfiles
     grafana: portworx
     app.kubernetes.io/component: pxcentral-grafana
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 data:
     {{- (.Files.Glob "files/portworx-cluster-dashboard.json").AsConfig | nindent 2 }}
     {{- (.Files.Glob "files/portworx-node-dashboard.json").AsConfig | nindent 2 }}
@@ -31,7 +31,7 @@ metadata:
     role: grafana-dashboard-configfiles
     grafana: portworx
     app.kubernetes.io/component: pxcentral-grafana
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 data:
   dashboards.yml: |-
     apiVersion: 1
@@ -54,7 +54,7 @@ metadata:
     role: grafana-source-configfiles
     grafana: portworx
     app.kubernetes.io/component: pxcentral-grafana
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 data:
   datasource.yml: |-
     # config file version
@@ -114,7 +114,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-grafana
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce
@@ -130,7 +130,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-grafana
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce
@@ -148,7 +148,7 @@ metadata:
   labels:
     app: pxcentral-grafana
     app.kubernetes.io/component: pxcentral-grafana
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   replicas: 1
   minReadySeconds: 0

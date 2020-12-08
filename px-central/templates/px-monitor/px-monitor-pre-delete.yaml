@@ -15,7 +15,7 @@ metadata:
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-monitor-pre-delete-hook
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   template:
     spec:

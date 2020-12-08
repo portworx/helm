@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-frontend
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 data:
   DEFAULT_USER_NAME: "{{ .Values.oidc.centralOIDC.defaultUsername }}"
   DEFAULT_USER_PASSWORD: "{{ .Values.oidc.centralOIDC.defaultPassword }}"
@@ -24,7 +24,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-backend
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 data:
   ENABLED_LIGHTHOUSE: "true"
   ENABLED_BACKUP: "{{ .Values.pxbackup.enabled }}"

@@ -8,7 +8,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 ---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
@@ -17,7 +17,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
@@ -34,7 +34,7 @@ metadata:
   labels:
     app: px-backup
     app.kubernetes.io/component: px-backup
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 data:
   enable: "{{ .Values.pxbackup.callHome }}"
 ---
@@ -45,7 +45,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 subjects:
 - kind: ServiceAccount
   name: px-backup-account
@@ -61,7 +61,7 @@ metadata:
   labels:
     app: px-backup
     app.kubernetes.io/component: px-backup
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
   name: px-backup
   namespace: {{ .Release.Namespace }}
 spec:
@@ -83,7 +83,7 @@ kind: Deployment
 metadata:
   labels:
     app.kubernetes.io/component: px-backup
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
   name: px-backup
   namespace: {{ .Release.Namespace }}
 spec:

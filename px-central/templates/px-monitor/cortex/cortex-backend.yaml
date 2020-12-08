@@ -13,7 +13,7 @@ metadata:
   labels:
     app: cassandra
     release: pxcentral-cortex-cassandra
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 type: Opaque
 stringData:
   CASSANDRA_USER: {{ .Values.cassandraUsername }}
@@ -27,7 +27,7 @@ metadata:
   labels:
     app: cassandra
     release: pxcentral-cortex-cassandra
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   clusterIP: None
   publishNotReadyAddresses: true
@@ -59,7 +59,7 @@ metadata:
   labels:
     app: cassandra
     release: pxcentral-cortex-cassandra
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:

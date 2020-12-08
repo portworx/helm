@@ -11,7 +11,7 @@ metadata:
   labels:
     name: pxcentral-post-install-hook
     app.kubernetes.io/component: pxcentral-post-install-hook
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   template:
     spec:

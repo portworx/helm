@@ -6,7 +6,7 @@ metadata:
   labels:
     app: pxcentral-grafana
     app.kubernetes.io/component: pxcentral-grafana
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: NodePort
   ports:
@@ -23,7 +23,7 @@ metadata:
     app.kubernetes.io/component: pxcentral-cortex
     app: cortex-nginx
     cortex: nginx
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: NodePort
   ports:

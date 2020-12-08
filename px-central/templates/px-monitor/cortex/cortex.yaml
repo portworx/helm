@@ -24,7 +24,7 @@ metadata:
   labels:
     app: cortex-nginx
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 data:
   nginx.conf: |-
     worker_processes  5;  ## Default: 1
@@ -113,7 +113,7 @@ metadata:
   labels:
     app: cortex
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 rules:
 - apiGroups:      ['extensions']
   resources:      ['podsecuritypolicies']
@@ -128,7 +128,7 @@ metadata:
   labels:
     app: cortex
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -145,7 +145,7 @@ metadata:
   labels:
     app: cortex-alertmanager
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   clusterIP: None
@@ -169,7 +169,7 @@ metadata:
   labels:
     app: cortex-alertmanager
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:
@@ -189,7 +189,7 @@ metadata:
   labels:
     app: cortex-configs
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:
@@ -209,7 +209,7 @@ metadata:
   labels:
     app: cortex-distributor
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:
@@ -229,7 +229,7 @@ metadata:
   labels:
     app: cortex-ingester
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:
@@ -249,7 +249,7 @@ metadata:
   labels:
     app: cortex-querier
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:
@@ -269,7 +269,7 @@ metadata:
   labels:
     app: cortex-query-frontend
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   clusterIP: None
@@ -294,7 +294,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     cortex: consul
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   ports:
   - name: http
@@ -310,7 +310,7 @@ metadata:
   labels:
     app: cortex-query-frontend
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:
@@ -334,7 +334,7 @@ metadata:
   labels:
     app: cortex-ruler
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:
@@ -354,7 +354,7 @@ metadata:
   labels:
     app: cortex-table-manager
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:
@@ -374,7 +374,7 @@ metadata:
   labels:
     app: cortex-configs
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
@@ -454,7 +454,7 @@ metadata:
   labels:
     app: cortex-distributor
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   replicas: 2
   selector:
@@ -537,7 +537,7 @@ metadata:
     app: cortex-nginx
     cortex: nginx
     app.kubernetes.io/component: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   replicas: 2
   selector:
@@ -617,7 +617,7 @@ metadata:
   labels:
     app: cortex-querier
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   replicas: 2
   selector:
@@ -701,7 +701,7 @@ metadata:
   labels:
     app: cortex-query-frontend
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   replicas: 2
   selector:
@@ -780,7 +780,7 @@ metadata:
   labels:
     app: cortex-ruler
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
@@ -865,7 +865,7 @@ metadata:
   labels:
     app: cortex-table-manager
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
@@ -946,7 +946,7 @@ metadata:
   labels:
     app: cortex-alertmanager
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
@@ -1049,7 +1049,7 @@ metadata:
   labels:
     app: cortex-ingester
     release: pxcentral-cortex
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   replicas: 3
   selector:

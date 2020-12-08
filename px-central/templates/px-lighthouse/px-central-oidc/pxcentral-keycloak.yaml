@@ -10,7 +10,7 @@ metadata:
   name: px-keycloak-account
   labels:
     app.kubernetes.io/component: keycloak
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
   namespace: {{ .Release.Namespace }}
 ---
 kind: Role
@@ -20,7 +20,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: keycloak
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
@@ -31,7 +31,7 @@ kind: Secret
 metadata:
   labels:
     app.kubernetes.io/component: keycloak
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
   name: pxcentral-keycloak-postgresql
   namespace: {{ .Release.Namespace }}
 type: Opaque
@@ -44,7 +44,7 @@ kind: Secret
 metadata:
   labels:
     app.kubernetes.io/component: keycloak
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
   name: pxcentral-keycloak-http
   namespace: {{ .Release.Namespace }}
 type: Opaque
@@ -58,7 +58,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: keycloak
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 subjects:
 - kind: ServiceAccount
   name: px-keycloak-account
@@ -75,7 +75,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: keycloak
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 data:
   keycloak.sh: |
     #!/usr/bin/env bash
@@ -92,7 +92,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: keycloak
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 data:
   keycloak.cli: |
     embed-server --std-out=echo
@@ -136,7 +136,7 @@ metadata:
   labels:
     app.kubernetes.io/component: keycloak
     app: postgresql
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   clusterIP: None
@@ -155,7 +155,7 @@ metadata:
   labels:
     app: postgresql
     app.kubernetes.io/component: keycloak
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:
@@ -174,7 +174,7 @@ metadata:
   labels:
     app.kubernetes.io/component: keycloak
     service: headless
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   clusterIP: None
@@ -198,7 +198,7 @@ metadata:
   labels:
     app.kubernetes.io/component: keycloak
     service: http
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   ports:
     - name: http
@@ -221,7 +221,7 @@ metadata:
     app: postgresql
     role: master
     app.kubernetes.io/component: keycloak
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   serviceName: pxcentral-keycloak-postgresql-headless
   replicas: 1
@@ -365,7 +365,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: keycloak
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:

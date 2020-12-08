@@ -10,7 +10,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxc-backup-etcd
-  {{- include "px-backup.labels" . | nindent 4 }}
+  {{- include "px-central.labels" . | nindent 4 }}
 data:
   setup.sh: |-
     #!/bin/bash
@@ -253,7 +253,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxc-backup-etcd
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteMany
@@ -270,7 +270,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxc-backup-etcd
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
   annotations:
     service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
 spec:
@@ -295,7 +295,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxc-backup-etcd
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: ClusterIP
   ports:
@@ -319,7 +319,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxc-backup-etcd
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
@@ -490,7 +490,7 @@ metadata:
   name: pxc-backup-etcd-snapshotter
   labels:
     app.kubernetes.io/component: snapshotter
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   concurrencyPolicy: Forbid
   schedule: "*/30 * * * *"

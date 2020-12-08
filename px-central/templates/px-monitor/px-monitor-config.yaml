@@ -8,7 +8,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-monitor
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 data:
   INTERNAL_PX_MONITOR: "{{ .Values.pxmonitor.enabled }}"
   METRICS_STORE_ENDPOINT: "{{ .Values.pxmonitor.pxCentralEndpoint }}"

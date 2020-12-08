@@ -10,7 +10,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-license-server
-{{- include "px-license-server.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 data:
   PX_CENTRAL_LICENSE_SERVER: "{{ .Values.pxlicenseserver.internal.enabled }}"
   EXTERNAL_LICENSE_SERVER: "{{ .Values.pxlicenseserver.external.enabled }}"

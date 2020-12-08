@@ -15,7 +15,7 @@ metadata:
     helm.sh/hook-delete-policy: before-hook-creation
   labels:
     app.kubernetes.io/component: pxcentral-ls-cleanup
-{{- include "px-license-server.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   template:
     spec:

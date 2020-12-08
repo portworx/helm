@@ -35,45 +35,13 @@ Common labels
 */}}
 {{- define "px-central.labels" -}}
 helm.sh/chart: {{ include "px-central.chart" . }}
-{{ include "px-central.selectorLabels" . }}
-{{- if .Chart.AppVersion }}
-app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
-{{- end }}
-app.kubernetes.io/managed-by: {{ .Release.Service }}
-{{- end }}
-
-{{/*
-Common labels
-*/}}
-{{- define "px-backup.labels" -}}
-app.kubernetes.io/name: {{ template "px-backup.name" . }}
-app.kubernetes.io/instance: {{.Release.Name | quote }}
-app.kubernetes.io/managed-by: {{.Release.Service | quote }}
-helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
-app.kubernetes.io/version: {{ .Chart.Version | quote }}
-{{- end -}}
-
-{{/*
-Common labels
-*/}}
-{{- define "px-license-server.labels" -}}
-app.kubernetes.io/name: {{ template "px-license-server.name" . }}
+app.kubernetes.io/name: {{ template "px-central.name" . }}
 app.kubernetes.io/instance: {{.Release.Name | quote }}
 app.kubernetes.io/managed-by: {{.Release.Service | quote }}
 helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 app.kubernetes.io/version: {{ .Chart.Version | quote }}
 {{- end }}
 
-{{/*
-Common labels
-*/}}
-{{- define "px-monitor.labels" -}}
-app.kubernetes.io/name: {{ template "px-monitor.name" . }}
-app.kubernetes.io/instance: {{.Release.Name | quote }}
-app.kubernetes.io/managed-by: {{.Release.Service | quote }}
-helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
-app.kubernetes.io/version: {{ .Chart.Version | quote }}
-{{- end }}
 
 {{/*
 Selector labels

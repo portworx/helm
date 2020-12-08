@@ -10,13 +10,13 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-license-server
-{{- include "px-license-server.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   replicas: 2
   selector:
     matchLabels:
       app.kubernetes.io/component: pxcentral-license-server
-{{- include "px-license-server.labels" . | nindent 6 }}
+{{- include "px-central.labels" . | nindent 6 }}
   minReadySeconds: 30
   strategy:
     rollingUpdate:
@@ -27,7 +27,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/component: pxcentral-license-server
-{{- include "px-license-server.labels" . | nindent 8 }}
+{{- include "px-central.labels" . | nindent 8 }}
     spec:
       affinity:
         nodeAffinity:

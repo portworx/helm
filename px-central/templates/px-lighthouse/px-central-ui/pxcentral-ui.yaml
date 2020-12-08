@@ -7,7 +7,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-frontend
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 data:
   default.conf: |
     proxy_send_timeout 300s;
@@ -119,7 +119,7 @@ metadata:
   labels:
     run: pxcentral-backend
     app.kubernetes.io/component: pxcentral-backend
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
@@ -243,7 +243,7 @@ metadata:
   labels:
     run: pxcentral-frontend
     app.kubernetes.io/component: pxcentral-frontend
-{{- include "px-backup.labels" . | nindent 4 }} 
+{{- include "px-central.labels" . | nindent 4 }} 
 spec:
   selector:
     matchLabels:
@@ -339,7 +339,7 @@ kind: Secret
 metadata:
   labels:
     app.kubernetes.io/component: pxcentral-mysql
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
   name: pxcentral-mysql-secret
   namespace: {{ .Release.Namespace }}
 type: Opaque
@@ -355,7 +355,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-mysql
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce
@@ -373,7 +373,7 @@ metadata:
   labels:
     run: pxcentral-mysql
     app.kubernetes.io/component: pxcentral-mysql
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
   name: pxcentral-mysql
   namespace: {{ .Release.Namespace }}
 spec:
@@ -493,7 +493,7 @@ metadata:
     name: pxcentral-mysql
     run: pxcentral-mysql
     app.kubernetes.io/component: pxcentral-mysql
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
   name: pxcentral-mysql
   namespace: {{ .Release.Namespace }}
 spec:
@@ -512,7 +512,7 @@ metadata:
   labels:
     run: pxcentral-frontend
     app.kubernetes.io/component: pxcentral-frontend
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   selector:
     run: pxcentral-frontend
@@ -530,7 +530,7 @@ metadata:
   labels:
     run: pxcentral-backend
     app.kubernetes.io/component: pxcentral-backend
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   selector:
     run: pxcentral-backend
@@ -548,7 +548,7 @@ metadata:
   labels:
     run: pxcentral-frontend
     app.kubernetes.io/component: pxcentral-frontend
-{{- include "px-backup.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   type: LoadBalancer
   selector:

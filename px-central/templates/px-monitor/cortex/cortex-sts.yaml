@@ -13,7 +13,7 @@ metadata:
   labels:
     app: pxcentral-memcached-index-read
     app.kubernetes.io/component: pxcentral-memcached-index-read
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   clusterIP: None
   ports:
@@ -35,7 +35,7 @@ metadata:
   labels:
     app: pxcentral-memcached-index-write
     app.kubernetes.io/component: pxcentral-memcached-index-write
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   clusterIP: None
   ports:
@@ -57,7 +57,7 @@ metadata:
   labels:
     app: pxcentral-memcached
     app.kubernetes.io/component: pxcentral-memcached
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   clusterIP: None
   ports:
@@ -79,7 +79,7 @@ metadata:
   labels:
     app: pxcentral-memcached-index-read
     app.kubernetes.io/component: pxcentral-memcached-index-read
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   serviceName: pxcentral-memcached-index-read
   replicas: 1
@@ -154,7 +154,7 @@ metadata:
   labels:
     app: pxcentral-memcached-index-write
     app.kubernetes.io/component: pxcentral-memcached-index-write
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   serviceName: pxcentral-memcached-index-write
   replicas: 1
@@ -229,7 +229,7 @@ metadata:
   labels:
     app: pxcentral-memcached
     app.kubernetes.io/component: pxcentral-memcached
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   serviceName: pxcentral-memcached
   replicas: 1
@@ -301,7 +301,7 @@ metadata:
   name: pxcentral-cortex-consul
   labels:
     cortex: consul
-{{- include "px-monitor.labels" . | nindent 4 }}
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
