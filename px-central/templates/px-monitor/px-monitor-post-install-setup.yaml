@@ -1,4 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
+{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- if eq $pxMonitorEnabled true }}
 apiVersion: v1
