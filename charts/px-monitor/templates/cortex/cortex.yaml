@@ -1151,9 +1151,4 @@ spec:
             periodSeconds: 30
             successThreshold: 1
             timeoutSeconds: 1
-          readinessProbe:
-            httpGet:
-              path: /ready
-              port: http-metrics
-            initialDelaySeconds: 60
 {{- end -}}

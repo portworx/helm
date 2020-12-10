@@ -3,7 +3,7 @@ entries:
   px-backup:
   - apiVersion: v1
     appVersion: 1.2.0-rc1
-    created: "2020-12-03T13:53:52.316716+05:30"
+    created: "2020-12-10T14:10:31.153672+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 4f94b405cab271965ecd893ae1409b2618583c1bb24fa56f9316de987820dbbf
@@ -21,11 +21,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/repo/staging/px-backup-1.2.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.2.1/repo/staging/px-backup-1.2.1.tgz
     version: 1.2.1
   - apiVersion: v1
     appVersion: 1.2.0
-    created: "2020-12-03T13:53:52.308147+05:30"
+    created: "2020-12-10T14:10:31.139756+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 7cf3ceb7e6693611c9fcc0b9e7d28da1eb98a5c53b8ef4431a011b27adafb2f0
@@ -43,11 +43,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/repo/staging/px-backup-1.2.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.2.1/repo/staging/px-backup-1.2.0.tgz
     version: 1.2.0
   - apiVersion: v1
     appVersion: 1.1.1
-    created: "2020-12-03T13:53:52.30304+05:30"
+    created: "2020-12-10T14:10:31.135719+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 73215fe714e1a3af6bdf958eb06791b90f878b363c85b3adf4c8cfe664a08202
@@ -65,12 +65,12 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/repo/staging/px-backup-1.1.6.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.2.1/repo/staging/px-backup-1.1.6.tgz
     version: 1.1.6
   px-license-server:
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2020-12-03T13:53:52.321677+05:30"
+    created: "2020-12-10T14:10:31.164223+05:30"
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: c92fd6035274b3837218ffc228f323eb5c22d233def1f2773ca0c68147f45b57
@@ -83,11 +83,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/repo/staging/px-license-server-1.2.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.2.1/repo/staging/px-license-server-1.2.0.tgz
     version: 1.2.0
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2020-12-03T13:53:52.319389+05:30"
+    created: "2020-12-10T14:10:31.161454+05:30"
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: d48483e2a79be3f1cc3e8306abb118db0fd9da5bf2b28bae4b2864d50fc0b14d
@@ -100,11 +100,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/repo/staging/px-license-server-1.1.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.2.1/repo/staging/px-license-server-1.1.1.tgz
     version: 1.1.1
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2020-12-03T13:53:52.318089+05:30"
+    created: "2020-12-10T14:10:31.160024+05:30"
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 76a226032c34459cb01ad74e66f90c863d7686c89e85828f5346b13395b7222b
@@ -117,15 +117,15 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/repo/staging/px-license-server-1.1.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.2.1/repo/staging/px-license-server-1.1.0.tgz
     version: 1.1.0
   px-monitor:
   - apiVersion: v1
     appVersion: 1.2.0
-    created: "2020-12-03T13:53:52.661726+05:30"
+    created: "2020-12-10T14:10:31.193993+05:30"
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
-    digest: 39e3d712de0b834f800cbebe25660260b1409caa5eba7fdf018bb4b61d9870d1
+    digest: 253f81e0b01fbb6c4ee25e6d3033a682ce05b89c1db0808f4fff0cbad062636e
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     keywords:
@@ -138,11 +138,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/repo/staging/px-monitor-1.2.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.2.1/repo/staging/px-monitor-1.2.0.tgz
     version: 1.2.0
   - apiVersion: v1
     appVersion: 1.1.1
-    created: "2020-12-03T13:53:52.64615+05:30"
+    created: "2020-12-10T14:10:31.187844+05:30"
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: f84da236c3ae70ea883d1a23e1a266b649d3eaeb39ba5850432f0baff4f12701
@@ -158,11 +158,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/repo/staging/px-monitor-1.1.2.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.2.1/repo/staging/px-monitor-1.1.2.tgz
     version: 1.1.2
   - apiVersion: v1
     appVersion: 1.1.1
-    created: "2020-12-03T13:53:52.33247+05:30"
+    created: "2020-12-10T14:10:31.175394+05:30"
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: 05f3c71e54ea1c0df623762ab86b9c2eb90853e250d33cb385f66d7fc7b433a9
@@ -178,6 +178,6 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/repo/staging/px-monitor-1.1.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.2.1/repo/staging/px-monitor-1.1.1.tgz
     version: 1.1.1
-generated: "2020-12-03T13:53:52.300674+05:30"
+generated: "2020-12-10T14:10:31.133023+05:30"
