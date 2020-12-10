@@ -4,10 +4,14 @@ entries:
   - apiVersion: v1
     appVersion: 1.2.0-rc1
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2020-12-10T14:10:31.153672+05:30"
 =======
     created: "2020-12-09T09:09:06.475924+05:30"
 >>>>>>> Added the helm package.
+=======
+    created: "2020-12-10T23:12:26.52711+05:30"
+>>>>>>> Rebased with 1.2.1 and repo indexed with 1.2.1 branch.
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 4f94b405cab271965ecd893ae1409b2618583c1bb24fa56f9316de987820dbbf
@@ -30,13 +34,17 @@ entries:
   - apiVersion: v1
     appVersion: 1.2.0
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2020-12-10T14:10:31.139756+05:30"
 =======
     created: "2020-12-09T09:09:06.473133+05:30"
 >>>>>>> Added the helm package.
+=======
+    created: "2020-12-10T23:12:26.518741+05:30"
+>>>>>>> Rebased with 1.2.1 and repo indexed with 1.2.1 branch.
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
-    digest: 43b7659cd2364789754149ddc940e323e94fb5f6d63f22a0a14a7cf072f3247c
+    digest: b0dbcfba7a5ecaa9e0d60b583d9f8c2fea01f51974c7a96afb2b2b1d2847874d
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     keywords:
@@ -56,10 +64,14 @@ entries:
   - apiVersion: v1
     appVersion: 1.1.1
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2020-12-10T14:10:31.135719+05:30"
 =======
     created: "2020-12-09T09:09:06.471547+05:30"
 >>>>>>> Added the helm package.
+=======
+    created: "2020-12-10T23:12:26.51511+05:30"
+>>>>>>> Rebased with 1.2.1 and repo indexed with 1.2.1 branch.
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 73215fe714e1a3af6bdf958eb06791b90f878b363c85b3adf4c8cfe664a08202
@@ -83,13 +95,17 @@ entries:
   - apiVersion: v1
     appVersion: 1.0.0
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2020-12-10T14:10:31.164223+05:30"
 =======
     created: "2020-12-09T09:09:06.480125+05:30"
 >>>>>>> Added the helm package.
+=======
+    created: "2020-12-10T23:12:26.533269+05:30"
+>>>>>>> Rebased with 1.2.1 and repo indexed with 1.2.1 branch.
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
-    digest: d636f67a783d4bc3e56db5f7157de13008d84199d5cdac1efd7fe032349afa8d
+    digest: c63712f147f8e1246c2b4da24a05341e03ddf76e876b2f595e0495074a2cb5c9
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     keywords:
@@ -104,10 +120,14 @@ entries:
   - apiVersion: v1
     appVersion: 1.0.0
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2020-12-10T14:10:31.161454+05:30"
 =======
     created: "2020-12-09T09:09:06.479232+05:30"
 >>>>>>> Added the helm package.
+=======
+    created: "2020-12-10T23:12:26.531047+05:30"
+>>>>>>> Rebased with 1.2.1 and repo indexed with 1.2.1 branch.
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: d48483e2a79be3f1cc3e8306abb118db0fd9da5bf2b28bae4b2864d50fc0b14d
@@ -125,10 +145,14 @@ entries:
   - apiVersion: v1
     appVersion: 1.0.0
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2020-12-10T14:10:31.160024+05:30"
 =======
     created: "2020-12-09T09:09:06.477799+05:30"
 >>>>>>> Added the helm package.
+=======
+    created: "2020-12-10T23:12:26.529085+05:30"
+>>>>>>> Rebased with 1.2.1 and repo indexed with 1.2.1 branch.
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 76a226032c34459cb01ad74e66f90c863d7686c89e85828f5346b13395b7222b
@@ -147,6 +171,7 @@ entries:
   - apiVersion: v1
     appVersion: 1.2.0
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2020-12-10T14:10:31.193993+05:30"
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
@@ -157,6 +182,12 @@ entries:
       Openshift
     digest: 3cd13e0fe958db201a6ed361aaa498d26538134704bf02e51dc1a8c750e9c919
 >>>>>>> Added the helm package.
+=======
+    created: "2020-12-10T23:12:26.575929+05:30"
+    description: A Helm chart for install and configure PX-Monitor on Kubernetes and
+      Openshift
+    digest: cdba0f2ecd2beb949d37d5df1f5fb82a12031b92710bce3b26b947feecae3a4b
+>>>>>>> Rebased with 1.2.1 and repo indexed with 1.2.1 branch.
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     keywords:
@@ -174,10 +205,14 @@ entries:
   - apiVersion: v1
     appVersion: 1.1.1
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2020-12-10T14:10:31.187844+05:30"
 =======
     created: "2020-12-09T09:09:06.494154+05:30"
 >>>>>>> Added the helm package.
+=======
+    created: "2020-12-10T23:12:26.569948+05:30"
+>>>>>>> Rebased with 1.2.1 and repo indexed with 1.2.1 branch.
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: f84da236c3ae70ea883d1a23e1a266b649d3eaeb39ba5850432f0baff4f12701
@@ -198,10 +233,14 @@ entries:
   - apiVersion: v1
     appVersion: 1.1.1
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2020-12-10T14:10:31.175394+05:30"
 =======
     created: "2020-12-09T09:09:06.487278+05:30"
 >>>>>>> Added the helm package.
+=======
+    created: "2020-12-10T23:12:26.557737+05:30"
+>>>>>>> Rebased with 1.2.1 and repo indexed with 1.2.1 branch.
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: 05f3c71e54ea1c0df623762ab86b9c2eb90853e250d33cb385f66d7fc7b433a9
@@ -220,7 +259,11 @@ entries:
     - https://raw.githubusercontent.com/portworx/helm/1.2.1/repo/staging/px-monitor-1.1.1.tgz
     version: 1.1.1
 <<<<<<< HEAD
+<<<<<<< HEAD
 generated: "2020-12-10T14:10:31.133023+05:30"
 =======
 generated: "2020-12-09T09:09:06.467923+05:30"
 >>>>>>> Added the helm package.
+=======
+generated: "2020-12-10T23:12:26.484725+05:30"
+>>>>>>> Rebased with 1.2.1 and repo indexed with 1.2.1 branch.
