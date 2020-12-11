@@ -69,7 +69,9 @@ spec:
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
           - name: PX_NAMESPACE
-            value: {{ .Release.Namespace }}
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
           {{- if .Values.caCertsSecretName }}
           - name: SSL_CERT_DIR
             value: /tmp/certs
