@@ -155,6 +155,10 @@ spec:
               value: rack1
             - name: CASSANDRA_ENABLE_RPC
               value: "true"
+            - name: MAX_HEAP_SIZE
+              value: {{ .Values.cassandra.jvm.maxHeapSize}}
+            - name: HEAP_NEWSIZE
+              value: {{ .Values.cassandra.jvm.newHeapSize}}
           livenessProbe:
             exec:
               command: ["/bin/sh", "-c", "nodetool status"]

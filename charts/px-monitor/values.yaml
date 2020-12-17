@@ -30,6 +30,11 @@ securityContext:
   fsGroup: 1000
   runAsNonRoot: true
 
+cassandra:
+  jvm:
+    maxHeapSize:
+    newHeapSize:
+
 images:
   pullSecrets:
     - docregistry-secret
