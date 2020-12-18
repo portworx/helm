@@ -30,6 +30,24 @@ securityContext:
   fsGroup: 1000
   runAsNonRoot: true
 
+## Memory settings: These are calculated automatically unless specified otherwise
+## To run on environments with little resources (<= 8GB), tune your heap settings:
+## maxHeapSize:
+## - calculate 1/2 ram and cap to 1024MB
+## - calculate 1/4 ram and cap to 8192MB
+## - pick the max
+## newHeapSize:
+## A good guideline is 100 MB per CPU core.
+## - min(100 * num_cores, 1/4 * heap size)
+##
+# maxHeapSize: 4G
+# newHeapSize: 800M
+
+cassandra:
+  jvm:
+    maxHeapSize:
+    newHeapSize:
+
 images:
   pullSecrets:
     - docregistry-secret
