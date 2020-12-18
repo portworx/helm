@@ -30,6 +30,22 @@ securityContext:
   fsGroup: 1000
   runAsNonRoot: true
 
+## Referred from https://github.com/bitnami/charts/blob/master/bitnami/cassandra/values-production.yaml#L183
+## JVM Settings
+## Memory settings: These are calculated automatically unless specified otherwise
+## To run on environments with little resources (<= 8GB), tune your heap settings:
+## maxHeapSize:
+## - calculate 1/2 ram and cap to 1024MB
+## - calculate 1/4 ram and cap to 8192MB
+## - pick the max
+## newHeapSize:
+## A good guideline is 100 MB per CPU core.
+## - min(100 * num_cores, 1/4 * heap size)
+## ref: https://docs.datastax.com/en/archived/cassandra/2.0/cassandra/operations/ops_tune_jvm_c.html
+##
+# maxHeapSize: 4G
+# newHeapSize: 800M
+
 cassandra:
   jvm:
     maxHeapSize:
