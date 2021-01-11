@@ -492,7 +492,7 @@ spec:
               readOnly: true
             - name: theme
               mountPath: /opt/jboss/keycloak/themes/portworx
-            - name: keycloakDir
+            - name: keycloakdir
               mountPath: /.keycloak
             {{- if .Values.caCertsSecretName }}
             - name: ssl-cert-dir
@@ -544,7 +544,7 @@ spec:
           emptyDir: {}
         {{- end }}
         - emptyDir: {}
-          name: keycloakDir
+          name: keycloakdir
   {{- if eq $externalPersistentStorageEnabled true }}
   volumeClaimTemplates:
     - metadata:
