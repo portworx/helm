@@ -297,6 +297,8 @@ spec:
               value: "periodic"
             - name: ETCD_QUOTA_BACKEND_BYTES
               value: "8589934592"
+            - name: ETCD_SNAPSHOT_COUNT
+              value: "10000"
           ports:
             - name: client
               containerPort: 2379
