@@ -37,12 +37,27 @@ Helm 2:
 $ helm install --name px-backup portworx/px-backup --namespace px-backup
 ```
 
-## Upgrade chart to latest version
-1. Delete post install job: `kubectl delete job -npx-backup pxcentral-post-install-hook`
+## Enabling/Disabling px-backup
+From Chart version 1.2.2 onwards, px-backup can be disabled while installing px-central.
+To disable px-backup set the following param to false.
+  --set pxbackup.enabled=false
 
-2. Run helm upgrade command:
+To enable px-backup later, do an upgrade following the upgrade steps mentioned below.
+In step 4 below, with the helm upgrade command, set pxbackup.enabled=true like
+  --set pxbackup.enabled=true
+
+By default px-backup will be enabled as mentioned in values.yaml.
+
+## Upgrade chart to latest version
+1. helm repo update
+
+2. helm get values --namespace px-backup px-backup -o yaml > values.yaml
+
+3. Delete post install job: `kubectl delete job -npx-backup pxcentral-post-install-hook`
+
+4. Run helm upgrade command:
 ```console
-helm upgrade px-backup portworx/px-backup --namespace px-backup --set persistentStorage.storageClassName=<STORAGE_CLASS_NAME>,pxbackup.orgName=<PX_BACKUP_ORG_NAME>
+helm upgrade px-backup portworx/px-backup --namespace px-backup  -f values.yaml
 ```
 
 ## Uninstalling the Chart
@@ -91,7 +106,6 @@ Parameter | Description | Default
 `oidc.externalOIDC.clientSecret` | External OIDC client secret | `""`
 `oidc.externalOIDC.endpoint` | External OIDC endpoint | `""`
 `images` | PX-Backup deployment images | `""`
-`pxbackup` | Enable PX-Backup | `""`
 `pxbackup.enabled` | Enabled PX-Backup | `true`
 `pxbackup.orgName` | PX-Backup organization name | `default`
 `securityContext` | Security context for the pod | `{runAsUser: 1000, fsGroup: 1000, runAsNonRoot: true}`
@@ -100,31 +114,31 @@ Parameter | Description | Default
 `images.pxcentralApiServerImage.registry` | API server image registry | `docker.io`
 `images.pxcentralApiServerImage.repo` | API server image repo | `portworx`
 `images.pxcentralApiServerImage.imageName` | API server image name | `pxcentral-onprem-api`
-`images.pxcentralApiServerImage.tag` | API server image tag | `1.0.4`
+`images.pxcentralApiServerImage.tag` | API server image tag | `1.2.1`
 `images.pxcentralFrontendImage.registry` | PX-Central frontend image registry | `docker.io`
 `images.pxcentralFrontendImage.repo` | PX-Central frontend image repo | `portworx`
 `images.pxcentralFrontendImage.imageName` | PX-Central frontend image name | `pxcentral-onprem-ui-frontend`
-`images.pxcentralFrontendImage.tag` | PX-Central frontend image tag | `1.1.2`
+`images.pxcentralFrontendImage.tag` | PX-Central frontend image tag | `1.2.2`
 `images.pxcentralBackendImage.registry` | PX-Central backend image registry | `docker.io`
 `images.pxcentralBackendImage.repo` | PX-Central backend image repo | `portworx`
 `images.pxcentralBackendImage.imageName` | PX-Central backend image name | `pxcentral-onprem-ui-backend`
-`images.pxcentralBackendImage.tag` | PX-Central backend image tag | `1.1.2`
+`images.pxcentralBackendImage.tag` | PX-Central backend image tag | `1.2.2`
 `images.pxcentralMiddlewareImage.registry` | PX-Central middleware image registry | `docker.io`
 `images.pxcentralMiddlewareImage.repo` | PX-Central middleware image repo | `portworx`
 `images.pxcentralMiddlewareImage.imageName` | PX-Central middleware image name | `pxcentral-onprem-ui-lhbackend`
-`images.pxcentralMiddlewareImage.tag`| PX-Central middleware image tag | `1.1.2`
+`images.pxcentralMiddlewareImage.tag`| PX-Central middleware image tag | `1.2.2`
 `images.pxBackupImage.registry` | PX-Backup image registry | `docker.io`
 `images.pxBackupImage.repo` | PX-Backup image repo | `portworx`
 `images.pxBackupImage.imageName` | PX-Backup image name | `px-backup`
-`images.pxBackupImage.tag` | PX-Backup image tag | `1.0.2`
+`images.pxBackupImage.tag` | PX-Backup image tag | `1.2.2`
 `images.postInstallSetupImage.registry` | PX-Backup post install setup image registry | `docker.io`
 `images.postInstallSetupImage.repo` | PX-Backup post install setup image repo | `portworx`
 `images.postInstallSetupImage.imageName` | PX-Backup post install setup image name | `pxcentral-onprem-post-setup`
-`images.postInstallSetupImage.tag` | PX-Backup post install setup image tag | `1.0.4`
+`images.postInstallSetupImage.tag` | PX-Backup post install setup image tag | `1.2.2`
 `images.etcdImage.registry` | PX-Backup etcd image registry | `docker.io`
 `images.etcdImage.repo` | PX-Backup etcd image repo | `bitnami`
 `images.etcdImage.imageName` | PX-Backup etcd image name | `etcd`
-`images.etcdImage.tag` | PX-Backup etcd image tag | `3.4.7-debian-10-r14`
+`images.etcdImage.tag` | PX-Backup etcd image tag | `3.4.13-debian-10-r22`
 `images.keycloakBackendImage.registry` | PX-Backup keycloak backend image registry | `docker.io`
 `images.keycloakBackendImage.repo` | PX-Backup keycloak backend image repo | `bitnami`
 `images.keycloakBackendImage.imageName` | PX-Backup keycloak backend image name | `postgresql`
@@ -136,7 +150,7 @@ Parameter | Description | Default
 `images.keycloakLoginThemeImage.registry` | PX-Backup keycloak login theme image registry | `docker.io`
 `images.keycloakLoginThemeImage.repo` | PX-Backup keycloak login theme image repo | `portworx`
 `images.keycloakLoginThemeImage.imageName` | PX-Backup keycloak login theme image name | `keycloak-login-theme`
-`images.keycloakLoginThemeImage.tag` | PX-Backup keycloak login theme image tag | `1.0.2`
+`images.keycloakLoginThemeImage.tag` | PX-Backup keycloak login theme image tag | `1.0.4`
 `images.keycloakInitContainerImage.registry` | PX-Backup keycloak init container image registry | `docker.io`
 `images.keycloakInitContainerImage.repo` | PX-Backup keycloak init container image repo | `library`
 `images.keycloakInitContainerImage.imageName` | PX-Backup keycloak init container image name | `busybox`
