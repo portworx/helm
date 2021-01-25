@@ -38,15 +38,10 @@ $ helm install --name px-backup portworx/px-backup --namespace px-backup
 ```
 
 ## Enabling/Disabling px-backup
-From Chart version 1.2.2 onwards, px-backup can be disabled while installing px-central.
-To disable px-backup set the following param to false.
-  --set pxbackup.enabled=false
+PX-backup can now be disabled while installing px-central using helm chart version 1.2.2 onwards . It will be enabled by default. To disable PX-backup add the following to your helm install command
+--set pxbackup.enabled=false .
 
-To enable px-backup later, do an upgrade following the upgrade steps mentioned below.
-In step 4 below, with the helm upgrade command, set pxbackup.enabled=true like
-  --set pxbackup.enabled=true
-
-By default px-backup will be enabled as mentioned in values.yaml.
+To enable px-backup after installing px-central, Follow the upgrade steps mentioned below, but either change pxbackup.enabled parameter in the values.yaml to "true" or pass --set pxbackup.enabled=true to the helm upgrade command in Step 4 .
 
 ## Upgrade chart to latest version
 1. helm repo update
