@@ -181,7 +181,6 @@ spec:
     matchLabels:
       k8s-app: pxcentral-prometheus-operator
       app.kubernetes.io/component: pxcentral-prometheus
-{{- include "px-monitor.labels" . | nindent 6 }}
   template:
     metadata:
       labels:
