@@ -2,7 +2,7 @@ apiVersion: v1
 entries:
   portworx:
   - apiVersion: v1
-    created: "2021-01-27T13:25:34.854307+05:30"
+    created: "2021-02-09T15:00:15.682902+05:30"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: c312df602c509a2c5d60d6197ec137bf8484ecffb3444f1ded6be19964bc3c9f
     home: https://portworx.com/
@@ -11,10 +11,10 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/portworx-1.0.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/portworx-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v1
-    created: "2021-01-27T13:25:34.846859+05:30"
+    created: "2021-02-09T15:00:15.672342+05:30"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: ac01a7ae62587285d9a29e2d36c386727eb96694810a563ecf723b21f7582dec
     home: https://portworx.com/
@@ -23,12 +23,34 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/portworx-1.0.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/portworx-1.0.0.tgz
     version: 1.0.0
   px-backup:
   - apiVersion: v1
     appVersion: 1.2.2
-    created: "2021-01-27T13:25:34.899859+05:30"
+    created: "2021-02-09T15:00:15.785894+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
+      and Openshift
+    digest: 4fc5cacc63710d1144c61ba53fcf6f0b8937ce6ade2ab33ffcf0a072417f4b9c
+    home: https://portworx.com/
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
+    keywords:
+    - px-backup
+    - storage
+    - persistent disk
+    - pvc
+    - portworx
+    - px-central
+    - lighthouse
+    name: px-backup
+    sources:
+    - https://github.com/portworx/helm/tree/master/charts/px-backup
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-backup-1.3.0.tgz
+    version: 1.3.0
+  - apiVersion: v1
+    appVersion: 1.2.2
+    created: "2021-02-09T15:00:15.78411+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 5536c872859c726b4dd1cff1bcd21ef4f56903d58fcbbe5b4859b5bd242873cf
@@ -46,11 +68,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.2.2.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-backup-1.2.2.tgz
     version: 1.2.2
   - apiVersion: v1
     appVersion: 1.2.1
-    created: "2021-01-27T13:25:34.897516+05:30"
+    created: "2021-02-09T15:00:15.775948+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: a9b0290cb08d6d3c39adf27ab07be9a17424493980c720223e3a656fa77917ba
@@ -68,11 +90,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.2.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-backup-1.2.1.tgz
     version: 1.2.1
   - apiVersion: v1
     appVersion: 1.2.0
-    created: "2021-01-27T13:25:34.894603+05:30"
+    created: "2021-02-09T15:00:15.773206+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 7f42744f732e8d80793d06189b14f5ed8f7439706db99dd272d96d43a1fd65ab
@@ -90,11 +112,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.2.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-backup-1.2.0.tgz
     version: 1.2.0
   - apiVersion: v1
     appVersion: 1.1.1
-    created: "2021-01-27T13:25:34.891892+05:30"
+    created: "2021-02-09T15:00:15.765181+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 73215fe714e1a3af6bdf958eb06791b90f878b363c85b3adf4c8cfe664a08202
@@ -112,11 +134,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.1.6.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-backup-1.1.6.tgz
     version: 1.1.6
   - apiVersion: v1
     appVersion: 1.1.0
-    created: "2021-01-27T13:25:34.887168+05:30"
+    created: "2021-02-09T15:00:15.761317+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 6cc1c8df6ddd7e7e49f69db6791f1bdd6b39dc0943f60282fd9212872071103c
@@ -134,11 +156,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.1.5.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-backup-1.1.5.tgz
     version: 1.1.5
   - apiVersion: v1
     appVersion: 1.1.0
-    created: "2021-01-27T13:25:34.884221+05:30"
+    created: "2021-02-09T15:00:15.758595+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 4115cfbf2e4e8158331bcec3d4404054c9648fb227f6947747f0122ad4f2418a
@@ -156,11 +178,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.1.4.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-backup-1.1.4.tgz
     version: 1.1.4
   - apiVersion: v1
     appVersion: 1.1.0-rc4
-    created: "2021-01-27T13:25:34.881824+05:30"
+    created: "2021-02-09T15:00:15.751592+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 0121036cb537c93fff9281f05cf935345b5f769017b131b5e903cc4b8354c8ac
@@ -178,11 +200,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.1.3.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-backup-1.1.3.tgz
     version: 1.1.3
   - apiVersion: v1
     appVersion: 1.1.0-rc2
-    created: "2021-01-27T13:25:34.879508+05:30"
+    created: "2021-02-09T15:00:15.748656+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 96f785bc9ad2c477068d39f351d5c078f080264104ccd6e7630eabae6d0a514c
@@ -200,11 +222,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.1.2.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-backup-1.1.2.tgz
     version: 1.1.2
   - apiVersion: v1
     appVersion: 1.1.0-rc2
-    created: "2021-01-27T13:25:34.877202+05:30"
+    created: "2021-02-09T15:00:15.741116+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 7167db17211627d3d111441d01c8d71c57a1980c27145dc7c08ebb3ff9f7d548
@@ -222,11 +244,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.1.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-backup-1.1.1.tgz
     version: 1.1.1
   - apiVersion: v1
     appVersion: 1.1.0-rc1
-    created: "2021-01-27T13:25:34.871699+05:30"
+    created: "2021-02-09T15:00:15.727568+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 1a2c71389dc08d58f51f66e3ebe44e63fe7410691ec92d642c0dcfaa57c17605
@@ -244,11 +266,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.1.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-backup-1.1.0.tgz
     version: 1.1.0
   - apiVersion: v1
     appVersion: 1.0.2
-    created: "2021-01-27T13:25:34.863234+05:30"
+    created: "2021-02-09T15:00:15.717652+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: fd9316e9719a924eb8aa2d6d947d90e162f602ef4b77e28ef070099fd1dfb1cf
@@ -266,11 +288,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.0.2.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-backup-1.0.2.tgz
     version: 1.0.2
   - apiVersion: v1
     appVersion: 1.0.2
-    created: "2021-01-27T13:25:34.861165+05:30"
+    created: "2021-02-09T15:00:15.706112+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 0e96c406605816b9a70a0440710d4a82743d373c2b9da20696e6f3a1b1ef2698
@@ -288,11 +310,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.0.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-backup-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v1
     appVersion: 1.0.2
-    created: "2021-01-27T13:25:34.856041+05:30"
+    created: "2021-02-09T15:00:15.690681+05:30"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 2bb9b69ade7b648d46ca618f2f798ba0af346022b42ce540d3988b2c8a387226
@@ -310,12 +332,12 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-backup-1.0.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-backup-1.0.0.tgz
     version: 1.0.0
   px-license-server:
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2021-01-27T13:25:34.906623+05:30"
+    created: "2021-02-09T15:00:15.793796+05:30"
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 70a52d0e5a59dfcbdabba7dda742d748d42937aecb4cdd8f603738cbbfb2c8a4
@@ -328,11 +350,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-license-server-1.2.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-license-server-1.2.1.tgz
     version: 1.2.1
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2021-01-27T13:25:34.905408+05:30"
+    created: "2021-02-09T15:00:15.79208+05:30"
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 5ee27e632cc313ab281a50c2deebbd8713657d19e0b394ea97ae4fdee76f4f09
@@ -345,11 +367,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-license-server-1.2.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-license-server-1.2.0.tgz
     version: 1.2.0
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2021-01-27T13:25:34.904401+05:30"
+    created: "2021-02-09T15:00:15.790397+05:30"
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 55f496792430763626acecb5082eaff7c5276879a0f527ae993635ad8ac90640
@@ -362,11 +384,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-license-server-1.1.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-license-server-1.1.0.tgz
     version: 1.1.0
   - apiVersion: v1
     appVersion: 1.0.1
-    created: "2021-01-27T13:25:34.90309+05:30"
+    created: "2021-02-09T15:00:15.788841+05:30"
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 6673a056155f5329ef7c8cf2c4436668af4b023d234d004448e1db8a2696e1f1
@@ -379,11 +401,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-license-server-1.0.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-license-server-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2021-01-27T13:25:34.901566+05:30"
+    created: "2021-02-09T15:00:15.787696+05:30"
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: bb595272c93ef8071e8bc606a3cf8bdb5d7099646d4f8066748f9bd57ac76af1
@@ -396,12 +418,12 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-license-server-1.0.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-license-server-1.0.0.tgz
     version: 1.0.0
   px-monitor:
   - apiVersion: v1
     appVersion: 1.2.1
-    created: "2021-01-27T13:25:34.93558+05:30"
+    created: "2021-02-09T15:00:15.843452+05:30"
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: 9a8f9134f2c9f7e4035e07ffc3fbc8bc708add4a92e86eed15c2785cf902dd10
@@ -417,11 +439,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-monitor-1.2.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-monitor-1.2.1.tgz
     version: 1.2.1
   - apiVersion: v1
     appVersion: 1.2.0
-    created: "2021-01-27T13:25:34.927171+05:30"
+    created: "2021-02-09T15:00:15.832832+05:30"
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: ed29de40a6aedebd2df7cce93084cf008b565d72cc36bcaf92c33048a920fade
@@ -437,11 +459,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-monitor-1.2.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-monitor-1.2.0.tgz
     version: 1.2.0
   - apiVersion: v1
     appVersion: 1.1.1
-    created: "2021-01-27T13:25:34.92104+05:30"
+    created: "2021-02-09T15:00:15.81526+05:30"
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: 66e6d465883dc5be2b6413cb09809aa48cc898400c5e149cf8ead44ed84ec504
@@ -457,11 +479,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-monitor-1.1.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-monitor-1.1.1.tgz
     version: 1.1.1
   - apiVersion: v1
     appVersion: 1.1.0
-    created: "2021-01-27T13:25:34.916667+05:30"
+    created: "2021-02-09T15:00:15.800934+05:30"
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: 079c699ed5fcba8f9214bde2b9f7b641883bac7cb57d3075a796583a10a2f9ed
@@ -477,6 +499,6 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-monitor-1.1.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/1.3.0/stable/px-monitor-1.1.0.tgz
     version: 1.1.0
-generated: "2021-01-27T13:25:34.836379+05:30"
+generated: "2021-02-09T15:00:15.655114+05:30"
