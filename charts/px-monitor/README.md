@@ -77,6 +77,7 @@ Parameter | Description | Default
 `pxmonitor.sslEnabled` | PX-Central UI is accessibe on https | `false`
 `pxmonitor.oidcClientID` | PX-Central internal oidc client ID | `pxcentral`
 `pxmonitor.oidcClientSecret` | PX-Central internal oidc client secret | ``
+`pxmonitor.nodeAffinityLabel` | Label for node affinity for monitor component| `""`
 `installCRDs` | Install metrics stack required crds | `false`
 `storkRequired` | Scheduler name as stork | `false`
 `clusterDomain` | Cluster domain | `cluster.local`

@@ -403,10 +403,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxmonitor.nodeAffinityLabel }}
+              - key: {{ .Values.pxmonitor.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxmonitor/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       serviceAccountName: px-monitor
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -484,10 +489,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxmonitor.nodeAffinityLabel }}
+              - key: {{ .Values.pxmonitor.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxmonitor/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       serviceAccountName: px-monitor
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -567,10 +577,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxmonitor.nodeAffinityLabel }}
+              - key: {{ .Values.pxmonitor.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxmonitor/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       serviceAccountName: px-monitor
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -649,10 +664,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxmonitor.nodeAffinityLabel }}
+              - key: {{ .Values.pxmonitor.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxmonitor/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       serviceAccountName: px-monitor
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -734,10 +754,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxmonitor.nodeAffinityLabel }}
+              - key: {{ .Values.pxmonitor.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxmonitor/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       serviceAccountName: px-monitor
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -814,10 +839,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxmonitor.nodeAffinityLabel }}
+              - key: {{ .Values.pxmonitor.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxmonitor/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       serviceAccountName: px-monitor
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -900,10 +930,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxmonitor.nodeAffinityLabel }}
+              - key: {{ .Values.pxmonitor.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxmonitor/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       serviceAccountName: px-monitor
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -993,10 +1028,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxmonitor.nodeAffinityLabel }}
+              - key: {{ .Values.pxmonitor.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxmonitor/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       {{- if eq $storkRequired true }}
       schedulerName: stork
       {{- end }}
@@ -1096,10 +1136,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxmonitor.nodeAffinityLabel }}
+              - key: {{ .Values.pxmonitor.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxmonitor/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       {{- if eq $storkRequired true }}
       schedulerName: stork
       {{- end }}

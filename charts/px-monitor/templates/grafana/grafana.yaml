@@ -171,10 +171,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxmonitor.nodeAffinityLabel }}
+              - key: {{ .Values.pxmonitor.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxmonitor/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       {{- if $isOpenshiftCluster}}
       {{- else }}
       securityContext:
