@@ -103,6 +103,7 @@ Parameter | Description | Default
 `images` | PX-Backup deployment images | `""`
 `pxbackup.enabled` | Enabled PX-Backup | `true`
 `pxbackup.orgName` | PX-Backup organization name | `default`
+`pxbackup.nodeAffinityLabel` | Label for node affinity for px-central components| `""`
 `securityContext` | Security context for the pod | `{runAsUser: 1000, fsGroup: 1000, runAsNonRoot: true}`
 `images.pullSecrets` | Image pull secrets | `docregistry-secret`
 `images.pullPolicy` | Image pull policy | `Always`

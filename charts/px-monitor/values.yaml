@@ -4,6 +4,7 @@ pxmonitor:
   sslEnabled: false
   oidcClientID: pxcentral
   oidcClientSecret: ""
+  nodeAffinityLabel:
 
 installCRDs: false
 storkRequired: false
