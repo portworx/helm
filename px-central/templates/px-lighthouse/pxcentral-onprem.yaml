@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pxcentral-admin-user
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-frontend
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  DEFAULT_USER_NAME: "{{ .Values.oidc.centralOIDC.defaultUsername }}"
+  DEFAULT_USER_PASSWORD: "{{ .Values.oidc.centralOIDC.defaultPassword }}"
+  DEFAULT_EMAIL: "{{ .Values.oidc.centralOIDC.defaultEmail }}"
+  CENTRAL_OIDC_ENABLED: "{{ .Values.oidc.centralOIDC.enabled }}"
+  CENTRAL_OIDC_CLIENT_ID: "{{ .Values.oidc.centralOIDC.clientId }}"
+  EXTERNAL_OIDC_ENABLED: "{{ .Values.oidc.externalOIDC.enabled }}"
+  EXTERNAL_OIDC_ENDPOINT: "{{ .Values.oidc.externalOIDC.endpoint }}"
+  EXTERNAL_OIDC_CLIENT_ID: "{{ .Values.oidc.externalOIDC.clientID }}"
+  EXTERNAL_OIDC_CLIENT_SECRET: "{{ .Values.oidc.externalOIDC.clientSecret }}"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pxcentral-modules
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-backend
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  ENABLED_LIGHTHOUSE: "true"
+  ENABLED_BACKUP: "{{ .Values.pxbackup.enabled }}"
+  ENABLED_LICENSE_SERVER: "{{ .Values.pxlicenseserver.enabled }}"
+  ENABLED_FORWARDING_PROXY: "false"
+  ENABLED_METRICS: "{{ .Values.pxmonitor.enabled }}"
+  MINI_K8S: "false"
+  ENABLED_SSO: "{{ .Values.oidc.centralOIDC.enabled }}"
+  ENABLEDE_CENTRAL_OIDC: "{{ .Values.oidc.centralOIDC.enabled }}"
+  ENABLED_EXTERNAL_OIDC: "{{ .Values.oidc.externalOIDC.enabled }}"
+---

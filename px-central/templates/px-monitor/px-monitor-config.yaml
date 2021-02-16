@@ -1,0 +1,17 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
+{{- if eq $pxMonitorEnabled true }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pxcentral-monitor-configmap
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-monitor
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  INTERNAL_PX_MONITOR: "{{ .Values.pxmonitor.enabled }}"
+  METRICS_STORE_ENDPOINT: "{{ .Values.pxmonitor.pxCentralEndpoint }}"
+  GRAFANA_ENDPOINT: "{{ .Values.pxmonitor.pxCentralEndpoint }}"
+  SSL_ENABLED: "{{ .Values.pxmonitor.sslEnabled }}"
+{{- end -}}
