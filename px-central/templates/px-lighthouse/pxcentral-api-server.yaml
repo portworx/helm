@@ -128,10 +128,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxbackup.nodeAffinityLabel }}
+              - key: {{ .Values.pxbackup.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxbackup/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       containers:
       - name: pxcentral-apiserver
         image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralApiServerImage.registry .Values.images.pxcentralApiServerImage.repo .Values.images.pxcentralApiServerImage.imageName .Values.images.pxcentralApiServerImage.tag }}

@@ -103,6 +103,7 @@ Parameter | Description | Default
 `images` | PX-Backup deployment images | `""`
 `pxbackup.enabled` | Enabled PX-Backup | `true`
 `pxbackup.orgName` | PX-Backup organization name | `default`
+`pxbackup.nodeAffinityLabel` | Label for node affinity for px-central components| `""`
 `securityContext` | Security context for the pod | `{runAsUser: 1000, fsGroup: 1000, runAsNonRoot: true}`
 `images.pullSecrets` | Image pull secrets | `docregistry-secret`
 `images.pullPolicy` | Image pull policy | `Always`
@@ -390,6 +391,7 @@ Parameter | Description | Default
 `pxmonitor.sslEnabled` | PX-Central UI is accessibe on https | `false`
 `pxmonitor.oidcClientID` | PX-Central internal oidc client ID | `pxcentral`
 `pxmonitor.oidcClientSecret` | PX-Central internal oidc client secret | ``
+`pxmonitor.nodeAffinityLabel` | Label for node affinity for monitor component| `""`
 `installCRDs` | Install metrics stack required crds | `false`
 `storkRequired` | Scheduler name as stork | `false`
 `clusterDomain` | Cluster domain | `cluster.local`

@@ -20,10 +20,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxbackup.nodeAffinityLabel }}
+              - key: {{ .Values.pxbackup.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxbackup/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       serviceAccountName: pxcentral-apiserver
       {{- if $isOpenshiftCluster}}
       {{- else }}

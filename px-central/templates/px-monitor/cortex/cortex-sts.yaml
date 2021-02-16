@@ -104,10 +104,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxmonitor.nodeAffinityLabel }}
+              - key: {{ .Values.pxmonitor.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxmonitor/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}
@@ -179,10 +184,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxmonitor.nodeAffinityLabel }}
+              - key: {{ .Values.pxmonitor.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxmonitor/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}
@@ -254,10 +264,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxmonitor.nodeAffinityLabel }}
+              - key: {{ .Values.pxmonitor.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxmonitor/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}
@@ -331,10 +346,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxmonitor.nodeAffinityLabel }}
+              - key: {{ .Values.pxmonitor.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxmonitor/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       {{- if eq $storkRequired true }}
       schedulerName: stork
       {{- end }}

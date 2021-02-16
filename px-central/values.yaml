@@ -42,6 +42,7 @@ pxbackup:
   enabled: false
   orgName: default
   callHome: true
+  nodeAffinityLabel:
 
 pxlicenseserver:
   enabled: false
@@ -62,6 +63,7 @@ pxmonitor:
   sslEnabled: false
   oidcClientID: pxcentral
   oidcClientSecret: ""
+  nodeAffinityLabel:
 
 ## Memory settings: These are calculated automatically unless specified otherwise
 ## To run on environments with little resources (<= 8GB), tune your heap settings:

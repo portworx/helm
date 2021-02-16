@@ -251,10 +251,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxbackup.nodeAffinityLabel }}
+              - key: {{ .Values.pxbackup.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxbackup/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       serviceAccountName: px-keycloak-account
       {{- if eq .Values.storkRequired true }}
       schedulerName: stork
@@ -352,7 +357,7 @@ spec:
           - "ReadWriteOnce"
         resources:
           requests:
-            storage: "10Gi"
+            storage: {{ .Values.persistentStorage.keycloakBackendVolumeSize }}
         {{- if .Values.persistentStorage.storageClassName }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         {{- end }}
@@ -391,10 +396,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxbackup.nodeAffinityLabel }}
+              - key: {{ .Values.pxbackup.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxbackup/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       restartPolicy: Always
       serviceAccountName: px-keycloak-account
       {{- if eq .Values.storkRequired true }}
@@ -550,7 +560,7 @@ spec:
           - "ReadWriteOnce"
         resources:
           requests:
-            storage: "5Gi"
+            storage: {{ .Values.persistentStorage.keycloakThemeVolumeSize }}
         {{- if .Values.persistentStorage.storageClassName }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         {{- end }}

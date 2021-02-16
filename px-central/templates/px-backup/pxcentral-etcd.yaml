@@ -230,10 +230,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxbackup.nodeAffinityLabel }}
+              - key: {{ .Values.pxbackup.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxbackup/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       {{- if eq .Values.storkRequired true }}
       schedulerName: stork
       {{- end }}
