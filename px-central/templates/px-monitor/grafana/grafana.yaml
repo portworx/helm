@@ -192,6 +192,11 @@ spec:
         - name: pxcentral-grafana
           image: {{ printf "%s/%s/%s:%s" .Values.images.grafanaImage.registry .Values.images.grafanaImage.repo .Values.images.grafanaImage.imageName .Values.images.grafanaImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
+          {{- if .Values.caCertsSecretName }}
+          env:
+            - name: SSL_CERT_DIR
+              value: /tmp/certs
+          {{- end }}
           ports:
           - containerPort: 3000
             name: web
@@ -228,7 +233,12 @@ spec:
               mountPath: /etc/grafana/provisioning/datasources
             - name: grafana-config
               mountPath: "/etc/grafana/grafana.ini"
-              subPath: grafana.ini      
+              subPath: grafana.ini
+            {{- if .Values.caCertsSecretName }}
+            - name: ssl-cert-dir
+              mountPath: /tmp/certs
+              readOnly: true
+            {{- end }}
       volumes:
         - name: grafana-dashboard
           {{- if eq $externalPersistentStorageEnabled true }}
@@ -256,6 +266,12 @@ spec:
         - name: grafana-config
           configMap:
             name: pxcentral-grafana-ini-config
+        {{- if .Values.caCertsSecretName }}
+        - name: ssl-cert-dir
+          secret:
+              defaultMode: 420
+              secretName: "{{ .Values.caCertsSecretName }}"
+        {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}
