@@ -134,7 +134,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 1.2.2
+    tag: 1.3.0-dev
   etcdImage:
     registry: docker.io
     repo: bitnami

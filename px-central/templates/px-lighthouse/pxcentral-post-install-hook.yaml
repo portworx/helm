@@ -54,7 +54,7 @@ spec:
             {{- else }}
             value: "upgrade"
             {{- end }}
-        command: ["python",  "/pxcentral-post-install/pxc-post-setup.py"]
+        command: ["python",  "-u", "/pxcentral-post-install/pxc-post-setup.py"]
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}
