@@ -65,6 +65,11 @@ pxmonitor:
   oidcClientSecret: ""
   nodeAffinityLabel:
 
+service:
+  pxBackupUIServiceType: "LoadBalancer"
+  grafanaServiceType: "NodePort"
+  cortexNginxServiceType: "NodePort"
+
 ## Memory settings: These are calculated automatically unless specified otherwise
 ## To run on environments with little resources (<= 8GB), tune your heap settings:
 ## maxHeapSize:
