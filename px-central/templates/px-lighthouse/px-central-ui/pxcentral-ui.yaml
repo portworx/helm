@@ -567,7 +567,7 @@ metadata:
     app.kubernetes.io/component: pxcentral-frontend
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
-  type: LoadBalancer
+  type: {{ .Values.service.pxBackupUIServiceType }}
   selector:
     run: pxcentral-frontend
   ports:
