@@ -1,4 +1,4 @@
-# Upgrading to Single Chart in 1.3.0
+# Upgrading to Single Chart from 1.2.x to 1.3.0
 
 PX-Central with 1.2.x has 3 different charts.
    - px-backup
@@ -30,6 +30,11 @@ $ helm repo update
 
 ```console
 $ helm search repo portworx
+```
+
+- Get the namespace in which px-central components have been installed
+```console
+$ helm ls -A | grep "px-backup-[0-9].[0-9].[0-9]" | awk '{print $2}'
 ```
 
 - Run migration.sh to upgrade to 1.3.0
