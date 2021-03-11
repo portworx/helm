@@ -24,6 +24,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: pxcentral-prometheus
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-prometheus
 {{- include "px-monitor.labels" . | nindent 4 }}
@@ -46,6 +47,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: pxcentral-prometheus
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-prometheus
 {{- include "px-monitor.labels" . | nindent 4 }}
@@ -97,6 +99,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: pxcentral-prometheus-operator
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-prometheus
 {{- include "px-monitor.labels" . | nindent 4 }}
@@ -153,6 +156,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: pxcentral-prometheus-operator
+  namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-prometheus
 {{- include "px-monitor.labels" . | nindent 4 }}
