@@ -299,6 +299,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: pxcentral-cortex-consul
+  namespace: {{ .Release.Namespace }}
   labels:
     cortex: consul
 {{- include "px-monitor.labels" . | nindent 4 }}
