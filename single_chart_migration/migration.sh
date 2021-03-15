@@ -278,7 +278,16 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
-echo "Successfully upgraded to single chart with 1.3.0 version"
+echo "Upgraded to single chart with 1.3.0 version"
 $helm_cmd list --namespace $namespace
+
+echo -e "
+#######################################################################################################
+###                                                                                                 ###
+### From 1.3.0 version, 'px-backup-ui' service has been renamed to 'px-central-ui'.                 ###
+### Please modify all ingress or routes which have been configured using the service px-backup-ui.  ###
+###                                                                                                 ###  
+#######################################################################################################
+"
 exit 0
 
