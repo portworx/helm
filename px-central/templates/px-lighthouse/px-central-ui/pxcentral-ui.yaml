@@ -560,14 +560,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: px-backup-ui
+  name: px-central-ui
   namespace: {{ .Release.Namespace }}
   labels:
     run: pxcentral-frontend
     app.kubernetes.io/component: pxcentral-frontend
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.pxBackupUIServiceType }}
+  type: {{ .Values.service.pxCentralUIServiceType }}
   selector:
     run: pxcentral-frontend
   ports:
