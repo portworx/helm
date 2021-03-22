@@ -17,8 +17,12 @@ data:
     auto_assign_org_role = Admin
 
     [server]
-    domain = {{ .Values.pxmonitor.pxCentralEndpoint }} 
-    root_url = "%(protocol)s://%(domain)s/grafana"
+    domain = {{ .Values.pxmonitor.pxCentralEndpoint }}
+    {{- if eq $sslEnabled true }}
+    root_url = {{ printf "https://%s/grafana" .Values.pxmonitor.pxCentralEndpoint}}
+    {{- else }}
+    root_url = {{ printf "http://%s/grafana" .Values.pxmonitor.pxCentralEndpoint}}
+    {{- end }}
     enforce_domain = false
 
     [auth.basic]
@@ -29,7 +33,7 @@ data:
     enabled= true
     client_id= {{ .Values.pxmonitor.oidcClientID }}
     name = "OIDC"
-    client_secret = {{ .Values.pxmonitor.oidcClientSecret }}
+    client_secret = 
     {{- if eq $sslEnabled true }}
     auth_url = {{ printf "https://%s/auth/realms/master/protocol/openid-connect/auth" .Values.pxmonitor.pxCentralEndpoint }} 
     token_url = {{ printf "https://%s/auth/realms/master/protocol/openid-connect/token" .Values.pxmonitor.pxCentralEndpoint }} 

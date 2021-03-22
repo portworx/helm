@@ -62,7 +62,6 @@ pxmonitor:
   pxCentralEndpoint: 
   sslEnabled: false
   oidcClientID: pxcentral
-  oidcClientSecret: ""
   nodeAffinityLabel:
 
 service:
