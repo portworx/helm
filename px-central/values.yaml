@@ -43,6 +43,7 @@ pxbackup:
   orgName: default
   callHome: true
   nodeAffinityLabel:
+  datastore: etcd
 
 pxlicenseserver:
   enabled: false
@@ -139,6 +140,11 @@ images:
     repo: bitnami
     imageName: etcd
     tag: 3.4.13-debian-10-r22
+  mongodbImage:
+    registry: docker.io
+    repo: bitnami
+    imageName: mongodb
+    tag: 4.4.4-debian-10-r30
   keycloakBackendImage:
     registry: docker.io
     repo: bitnami
