@@ -29,7 +29,7 @@ data:
     enabled= true
     client_id= {{ .Values.pxmonitor.oidcClientID }}
     name = "OIDC"
-    client_secret = {{ .Values.pxmonitor.oidcClientSecret }}
+    client_secret = ""
     {{- if eq $sslEnabled true }}
     auth_url = {{ printf "https://%s/auth/realms/master/protocol/openid-connect/auth" .Values.pxmonitor.pxCentralEndpoint }} 
     token_url = {{ printf "https://%s/auth/realms/master/protocol/openid-connect/token" .Values.pxmonitor.pxCentralEndpoint }} 
