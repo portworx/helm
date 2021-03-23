@@ -133,14 +133,14 @@ find_releases() {
     namespace=$1
     if [ "$pxbackup_enabled" == true ]; then
         # Finding px-backup release name from frontend deployment as px-backup may not be installed
-        pxbackup_release=`$kubectl_cmd --namespace $namespace get deployment $frontend_deployment  -o yaml | grep -w "release-name" | tail -1 | awk -F ":" '{print $2}' | awk '{$1=$1}1'`
+        pxbackup_release=`$kubectl_cmd --namespace $namespace get deployment $frontend_deployment  -o yaml | grep "^[ ]*meta.helm.sh/release-name:" | tail -1 | awk -F ":" '{print $2}' | awk '{$1=$1}1'`
         if [ "$pxbackup_release" == "" ]; then
             echo "px-backup is enabled but could not find the px-backup release"
             exit 1
         fi
     fi
     if [ "$pxmonitor_enabled" == true ]; then
-        pxmonitor_release=`$kubectl_cmd --namespace $namespace get deployment $cortex_nginx_deployment  -o yaml | grep -w "release-name" | tail -1 | awk -F ":" '{print $2}' | awk '{$1=$1}1'`
+        pxmonitor_release=`$kubectl_cmd --namespace $namespace get deployment $cortex_nginx_deployment  -o yaml | grep "^[ ]*meta.helm.sh/release-name:" | tail -1 | awk -F ":" '{print $2}' | awk '{$1=$1}1'`
         if [ "$pxmonitor_release" == "" ]; then
             echo "px-monitor is enabled but could not find the px-monitor release"
             exit 1
@@ -150,7 +150,7 @@ find_releases() {
     # Checking configmap instead of deployment for licenseserver as part of upgrade we have to delete ls deployment 
     # And in case the script has to run again, then it will not get license-server release name.
     if [ "$pxls_enabled" == true ]; then
-        pxls_release=`$kubectl_cmd --namespace $namespace get configmap $ls_configmap  -o yaml | grep -w "release-name" | tail -1 | awk -F ":" '{print $2}' | awk '{$1=$1}1'`
+        pxls_release=`$kubectl_cmd --namespace $namespace get configmap $ls_configmap  -o yaml | grep "^[ ]*meta.helm.sh/release-name:" | tail -1 | awk -F ":" '{print $2}' | awk '{$1=$1}1'`
         if [ "$pxls_release" == "" ]; then
             echo "px-license-server is enabled but could not find the px-license-server release"
             exit 1
