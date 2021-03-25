@@ -278,6 +278,14 @@ if [ $? != 0 ]; then
     exit 1
 fi
 
+echo "Deleting old stale jobs"
+if [ "$pxmonitor_enabled" == true ]; then
+    $kubectl_cmd --namespace $namespace delete job pxcentral-monitor-post-install-setup
+fi
+if [ "$pxls_enabled" == true ]; then
+    $kubectl_cmd --namespace $namespace delete job pxcentral-license-ha-setup
+fi
+
 echo "Upgraded to single chart with 1.3.0 version"
 $helm_cmd list --namespace $namespace
 
