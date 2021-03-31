@@ -48,8 +48,8 @@ metadata:
     app.kubernetes.io/component: pxcentral-apiserver
 {{- include "px-central.labels" . | nindent 4 }}
 rules:
-  - apiGroups: [""]
-    resources: ["nodes"]
+  - apiGroups: ["", "apps"]
+    resources: ["nodes", "deployments"]
     verbs: ["get", "list", "watch"]
 ---
 kind: ClusterRoleBinding
