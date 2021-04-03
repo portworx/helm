@@ -271,6 +271,9 @@ if [ "$pxls_enabled" == true ]; then
     upgrade_cmd="$upgrade_cmd --set pxlicenseserver.enabled=true"
 fi
 
+# TODO: for now adding it default. Need to add based on the version check.
+upgrade_cmd="$upgrade_cmd --set pxbackup.datastore=mongodb"
+
 echo "upgrade command: $upgrade_cmd"
 $upgrade_cmd
 if [ $? != 0 ]; then

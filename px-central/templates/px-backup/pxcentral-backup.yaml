@@ -25,7 +25,7 @@ rules:
     verbs: ["get", "create", "delete", "update"]
   - apiGroups: [""]
     resources: ["configmaps"]
-    verbs: ["get"]
+    verbs: ["get", "update"]
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -38,6 +38,18 @@ metadata:
 {{- include "px-central.labels" . | nindent 4 }}
 data:
   enable: "{{ .Values.pxbackup.callHome }}"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongo-migration-status
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: px-backup
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  status: "{{ .Values.pxbackup.mongomigration}}"
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
