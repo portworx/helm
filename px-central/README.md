@@ -1,12 +1,17 @@
-# PX-Backup
+# PX-Central
+PX-Central is a unified, multi-user, multi-cluster management interface.
+This chart also supports following features but by default those are disabled.
+  1. PX-Backup
+  2. PX-Monitor
+  3. PX-License-Server
 
-PX-Central is a unified, multi-user, multi-cluster management interface. Using PX-Backup, users can backup/restore Kubernetes clusters with PX-Backup.
+To enable each feature, follow the respective sections for detailed steps.
 
 ## Installing the Chart
 
-To install the chart with the release name `px-backup`:
+To install the chart with the release name `px-central`:
 
-Add portworx/px-backup helm repository using command:
+Add portworx/px-central helm repository using command:
 ```console
 $ helm repo add portworx http://charts.portworx.io/
 ```
@@ -22,143 +27,65 @@ $ helm search repo portworx
 ```
 Output:
 ```console
-NAME                    CHART VERSION   APP VERSION         DESCRIPTION                                       
-portworx/portworx       1.0.0                               A Helm chart for installing Portworx on Kuberne...
-portworx/px-backup      1.0.0           1.0.2               A Helm chart for installing PX-Backup with PX-C...
+NAME                    CHART VERSION   APP VERSION         DESCRIPTION
+portworx/px-central     1.3.0        	  1.3.0      	    A Helm chart for installing PX-Central        
 ```
 
 Helm 3:
 ```console
-$ helm install px-backup portworx/px-backup --namespace px-backup --create-namespace
+$ helm install px-central portworx/px-central --namespace central --create-namespace
 ```
 
 Helm 2:
 ```console
-$ helm install --name px-backup portworx/px-backup --namespace px-backup
-```
-
-## Enabling/Disabling px-backup
-PX-backup can now be disabled while installing px-central using helm chart version 1.2.2 onwards . It will be enabled by default. To disable PX-backup add the following to your helm install command
---set pxbackup.enabled=false .
-
-To enable px-backup after installing px-central, Follow the upgrade steps mentioned below, but either change pxbackup.enabled parameter in the values.yaml to "true" or pass --set pxbackup.enabled=true to the helm upgrade command in Step 4 .
-
-## Upgrade chart to latest version
-1. helm repo update
-
-2. helm get values --namespace px-backup px-backup -o yaml > values.yaml
-
-3. Delete post install job: `kubectl delete job -npx-backup pxcentral-post-install-hook`
-
-4. Run helm upgrade command:
-```console
-helm upgrade px-backup portworx/px-backup --namespace px-backup  -f values.yaml
+$ helm install --name px-central portworx/px-central --namespace central
 ```
 
 ## Uninstalling the Chart
 
-1. To uninstall/delete the `px-backup` chart:
+1. To uninstall/delete the `px-central` chart:
 
 ```console
-$ helm delete px-backup --namespace px-backup
+$ helm delete px-central --namespace central
 ```
 
-2. To cleanup secrets and pvc created by px-backup:
+2. To cleanup secrets and pvc:
 
 ```console
-$ kubectl delete ns px-backup
+$ kubectl delete ns central
 ```
 
-## Configuration
+## Upgrading the Chart
 
-The following table lists the configurable parameters of the PX-Backup chart and their default values.
+  ### To Upgrade from >= 1.3.0 versions:
+  To upgrade px-central:
 
-Parameter | Description | Default
---- | --- | ---
-`persistentStorage` | Persistent storage for all px-central components | `""`
-`persistentStorage.enabled` | Enable persistent storage | `false`
-`persistentStorage.storageClassName` | Provide storage class name which exists | `""`
-`persistentStorage.mysqlVolumeSize` | MySQL volume size | `"100Gi"`
-`persistentStorage.etcdVolumeSize` | ETCD volume size | `"64Gi"`
-`persistentStorage.keycloakThemeVolumeSize` | Keycloak frontend theme volume size | `"5Gi"`
-`persistentStorage.keycloakBackendVolumeSize` | Keycloak backend volume size | `"10Gi"`
-`storkRequired` | Scheduler name as stork | `false`
-`pxcentralDBPassword` | PX-Central cluster store mysql database password | `Password1`
-`caCertsSecretName` | Name of the Kubernetes Secret, which contains the CA Certificates. | `""`
-`oidc` | Enable OIDC for PX-Central and PX-backup for RBAC | `""`
-`oidc.centralOIDC` | PX-Central OIDC | `""`
-`oidc.centralOIDC.enabled` | PX-Central OIDC | `true`
-`oidc.centralOIDC.defaultUsername` | PX-Central OIDC username | `admin`
-`oidc.centralOIDC.defaultPassword` | PX-Central OIDC admin user password | `admin`
-`oidc.centralOIDC.defaultEmail` | PX-Central OIDC admin user email | `admin@portworx.com`
-`oidc.centralOIDC.keyCloakBackendUserName` | Keycloak backend store username | `keycloak`
-`oidc.centralOIDC.keyCloakBackendPassword` | Keycloak backend store password | `keycloak`
-`oidc.centralOIDC.clientId` | PX-Central OIDC client id | `pxcentral`
-`oidc.centralOIDC.updateAdminProfile` | Enable/Disable admin profile update action | `true`
-`oidc.externalOIDC` | Enable external OIDC provider | `""`
-`oidc.externalOIDC.enabled` | Enabled external OIDC provider | `false`
-`oidc.externalOIDC.clientID` | External OIDC client ID | `""`
-`oidc.externalOIDC.clientSecret` | External OIDC client secret | `""`
-`oidc.externalOIDC.endpoint` | External OIDC endpoint | `""`
-`images` | PX-Backup deployment images | `""`
-`pxbackup.enabled` | Enabled PX-Backup | `true`
-`pxbackup.orgName` | PX-Backup organization name | `default`
-`pxbackup.nodeAffinityLabel` | Label for node affinity for px-central components| `""`
-`securityContext` | Security context for the pod | `{runAsUser: 1000, fsGroup: 1000, runAsNonRoot: true}`
-`images.pullSecrets` | Image pull secrets | `docregistry-secret`
-`images.pullPolicy` | Image pull policy | `Always`
-`images.pxcentralApiServerImage.registry` | API server image registry | `docker.io`
-`images.pxcentralApiServerImage.repo` | API server image repo | `portworx`
-`images.pxcentralApiServerImage.imageName` | API server image name | `pxcentral-onprem-api`
-`images.pxcentralApiServerImage.tag` | API server image tag | `1.2.1`
-`images.pxcentralFrontendImage.registry` | PX-Central frontend image registry | `docker.io`
-`images.pxcentralFrontendImage.repo` | PX-Central frontend image repo | `portworx`
-`images.pxcentralFrontendImage.imageName` | PX-Central frontend image name | `pxcentral-onprem-ui-frontend`
-`images.pxcentralFrontendImage.tag` | PX-Central frontend image tag | `1.2.2`
-`images.pxcentralBackendImage.registry` | PX-Central backend image registry | `docker.io`
-`images.pxcentralBackendImage.repo` | PX-Central backend image repo | `portworx`
-`images.pxcentralBackendImage.imageName` | PX-Central backend image name | `pxcentral-onprem-ui-backend`
-`images.pxcentralBackendImage.tag` | PX-Central backend image tag | `1.2.2`
-`images.pxcentralMiddlewareImage.registry` | PX-Central middleware image registry | `docker.io`
-`images.pxcentralMiddlewareImage.repo` | PX-Central middleware image repo | `portworx`
-`images.pxcentralMiddlewareImage.imageName` | PX-Central middleware image name | `pxcentral-onprem-ui-lhbackend`
-`images.pxcentralMiddlewareImage.tag`| PX-Central middleware image tag | `1.2.2`
-`images.pxBackupImage.registry` | PX-Backup image registry | `docker.io`
-`images.pxBackupImage.repo` | PX-Backup image repo | `portworx`
-`images.pxBackupImage.imageName` | PX-Backup image name | `px-backup`
-`images.pxBackupImage.tag` | PX-Backup image tag | `1.2.2`
-`images.postInstallSetupImage.registry` | PX-Backup post install setup image registry | `docker.io`
-`images.postInstallSetupImage.repo` | PX-Backup post install setup image repo | `portworx`
-`images.postInstallSetupImage.imageName` | PX-Backup post install setup image name | `pxcentral-onprem-post-setup`
-`images.postInstallSetupImage.tag` | PX-Backup post install setup image tag | `1.2.2`
-`images.etcdImage.registry` | PX-Backup etcd image registry | `docker.io`
-`images.etcdImage.repo` | PX-Backup etcd image repo | `bitnami`
-`images.etcdImage.imageName` | PX-Backup etcd image name | `etcd`
-`images.etcdImage.tag` | PX-Backup etcd image tag | `3.4.13-debian-10-r22`
-`images.keycloakBackendImage.registry` | PX-Backup keycloak backend image registry | `docker.io`
-`images.keycloakBackendImage.repo` | PX-Backup keycloak backend image repo | `bitnami`
-`images.keycloakBackendImage.imageName` | PX-Backup keycloak backend image name | `postgresql`
-`images.keycloakBackendImage.tag` | PX-Backup keycloak backend image tag | `11.7.0-debian-10-r9`
-`images.keycloakFrontendImage.registry` | PX-Backup keycloak frontend image registry | `docker.io`
-`images.keycloakFrontendImage.repo` | PX-Backup keycloak frontend image repo | `jboss`
-`images.keycloakFrontendImage.imageName` | PX-Backup keycloak frontend image name | `keycloak`
-`images.keycloakFrontendImage.tag` | PX-Backup keycloak frontend image tag | `9.0.2`
-`images.keycloakLoginThemeImage.registry` | PX-Backup keycloak login theme image registry | `docker.io`
-`images.keycloakLoginThemeImage.repo` | PX-Backup keycloak login theme image repo | `portworx`
-`images.keycloakLoginThemeImage.imageName` | PX-Backup keycloak login theme image name | `keycloak-login-theme`
-`images.keycloakLoginThemeImage.tag` | PX-Backup keycloak login theme image tag | `1.0.4`
-`images.keycloakInitContainerImage.registry` | PX-Backup keycloak init container image registry | `docker.io`
-`images.keycloakInitContainerImage.repo` | PX-Backup keycloak init container image repo | `library`
-`images.keycloakInitContainerImage.imageName` | PX-Backup keycloak init container image name | `busybox`
-`images.keycloakInitContainerImage.tag` | PX-Backup keycloak init container image tag | `1.31`
-`images.mysqlImage.registry` | PX-Central cluster store mysql image registry | `docker.io`
-`images.mysqlImage.repo` | PX-Central cluster store mysql image repo | `library`
-`images.mysqlImage.imageName` | PX-Central cluster store mysql image name | `mysql`
-`images.mysqlImage.tag` | PX-Central cluster store mysql image tag | `5.7.22`
+  1. helm repo update
+  
+  2. helm get values --namespace central px-central -o yaml > values.yaml
+
+  3. Delete post install job: `kubectl delete job -n central pxcentral-post-install-hook`
+
+  4. Run following helm upgrade command to upgrade px-central chart
+
+  Helm 3:
+  ```console
+  $ helm upgrade px-central portworx/px-central --namespace central -f values.yaml
+  ```
+
+  Helm 2:
+  ```console
+  $ helm upgrade --name px-central portworx/px-central --namespace central -f values.yaml
+  ```
+
+  ### To Upgrade from 1.2.X versions:
+  In 1.2.x and previous versions , there are three charts (px-backup, px-monitor, px-license-server) which got merged into one chart(px-central)
+
+  To upgrade from 1.2.x versions, please follow the steps mentioned [here](https://github.com/portworx/helm/blob/master/single_chart_migration/README.md)
 
 ## Advanced Configuration
 
-### Expose PX-Backup UI on ingress and access using https:
+### Expose PX-Central UI on ingress and access using https:
 
 1. Create the following spec:
 ```
@@ -170,15 +97,15 @@ metadata:
     ingress.bluemix.net/redirect-to-https: "True"
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/x-forwarded-port: "443"
-  name: px-backup-ui-ingress
-  namespace: px-backup
+  name: px-central-ui-ingress
+  namespace: central
 spec:
   rules:
-  - host: px-backup-ui.test-1.us-east.containers.appdomain.cloud
+  - host: px-central-ui.test-1.us-east.containers.appdomain.cloud
     http:
       paths:
       - backend:
-          serviceName: px-backup-ui
+          serviceName: px-central-ui
           servicePort: 80
         path: /
       - backend:
@@ -187,9 +114,9 @@ spec:
         path: /auth
   tls:
   - hosts:
-    - px-backup-ui.test-1.us-east.containers.appdomain.cloud
+    - px-central-ui.test-1.us-east.containers.appdomain.cloud
     secretName: test
-' > /tmp/px-backup-ui-ingress.yaml
+' > /tmp/px-central-ui-ingress.yaml
 ```
 
 Note: Change the secret and hosts based on your configuration. Also, `secretName` -> `kubernetes TLS certificates secret` is required only when you want to terminate TLS on the host/domain.
@@ -199,42 +126,101 @@ Note: Change the secret and hosts based on your configuration. Also, `secretName
 
 2. Apply the spec:
 ```console
-$ kubectl apply -f /tmp/px-backup-ui-ingress.yaml
+$ kubectl apply -f /tmp/px-central-ui-ingress.yaml
 ```
 
 3. Retrieve the `INGRESS_ENDPOINT` using command:
 ```console
-$ kubectl get ingress px-backup-ui-ingress --namespace px-backup -o jsonpath="{.status.loadBalancer.ingress[0].hostname}"
+$ kubectl get ingress px-central-ui-ingress --namespace central -o jsonpath="{.status.loadBalancer.ingress[0].hostname}"
 ```
 
-4. Access PX-Backup UI : `https://INGRESS_ENDPOINT` use default credentials (admin/admin) to login.
+4. Access PX-Central UI : `https://INGRESS_ENDPOINT` use default credentials (admin/admin) to login.
 
 5. Access Keycloak UI: `https://INGRESS_ENDPOINT/auth`
 
-### Access PX-Backup UI and Keycloak using node IP:
+### Access PX-Central UI and Keycloak using node IP:
 1. Get any node public/external IP (NODE_IP) of current k8s cluster.
 
-2. Get the node port (NODE_PORT) of service: `px-backup-ui`.
+2. Get the node port (NODE_PORT) of service: `px-central-ui`.
 
-3. PX-Backup UI is available at: `http://NODE_IP:NODE_PORT`
+3. PX-Central UI is available at: `http://NODE_IP:NODE_PORT`
 
 4. Keycloak UI is available at: `http://NODE_IP:NODE_PORT/auth`
 
-
-### Access PX-Backup UI using Loadbalancer Endpoint:
+### Access PX-Central UI using Loadbalancer Endpoint:
 1. Get the loadbalancer endpoint (LB_ENDPOINT) using following commands:
    - HOST: 
    ```console
-   $ kubectl get ingress --namespace {{ .Release.Namespace }} px-backup-ui -o jsonpath="{.status.loadBalancer.ingress[0].hostname}"`
+   $ kubectl get ingress --namespace {{ .Release.Namespace }} px-central-ui -o jsonpath="{.status.loadBalancer.ingress[0].hostname}"`
    ```
    - IP:
    ```console
-   $ kubectl get ingress --namespace {{ .Release.Namespace }} px-backup-ui -o jsonpath="{.status.loadBalancer.ingress[0].ip}"`
+   $ kubectl get ingress --namespace {{ .Release.Namespace }} px-central-ui -o jsonpath="{.status.loadBalancer.ingress[0].ip}"`
    ```
   
-2. PX-Backup UI endpoint: `http://LB_ENDPOINT`
+2. PX-Central UI endpoint: `http://LB_ENDPOINT`
 
 3. Keycloak UI endpoint: `http://LB_ENDPOINT/auth`
+
+
+# PX-Backup
+
+Using PX-Backup, users can backup/restore Kubernetes clusters.
+By default px-backup remains disabled with px-central installation.
+
+## Enabling PX-Backup
+
+  ### To enable PX-Backup along with px-central installation:
+
+  Helm 3:
+  ```console
+  $ helm install px-central portworx/px-central --namespace central --create-namespace --set pxbackup.enabled=true
+  ```
+
+  Helm 2:
+  ```console
+  $ helm install --name px-central portworx/px-central --namespace central --set pxbackup.enabled=true
+  ```
+
+  ### To enable PX-Backup on already deployed px-central:
+
+  1. helm get values --namespace central px-central -o yaml > values.yaml
+
+  2. Delete post install job: `kubectl delete job -n central pxcentral-post-install-hook`
+
+  3. Run following helm upgrade command to enable px-backup for same px-central chart
+
+  Helm 3:
+  ```console
+  $ helm upgrade px-central portworx/px-central --namespace central --set pxbackup.enabled=true
+  ```
+
+  Helm 2:
+  ```console
+  $ helm upgrade --name px-central portworx/px-central --namespace central --set pxbackup.enabled=true
+  ```
+
+## Disabling PX-Backup
+
+1. helm get values --namespace central px-central -o yaml > values.yaml
+
+2. Delete post install job: `kubectl delete job -n central pxcentral-post-install-hook`
+
+3. Run following helm upgrade command to disable px-backup for same px-central chart
+
+To disable PX-Backup:
+
+Helm 3:
+```console
+$ helm upgrade px-central portworx/px-central --namespace central --set pxbackup.enabled=false
+```
+
+Helm 2:
+```console
+$ helm upgrade --name px-central portworx/px-central --namespace central --set pxbackup.enabled=false
+```
+
+## Advanced Configuration
 
 ### Configure custom ca certificate:
 1. Create secret with ca certificates into release namespace.
@@ -273,14 +259,14 @@ stringData:
 kind: Secret
 metadata:
   name: ca-certs
-  namespace: px-backup
+  namespace: central
 ```
 
 2. Pass the secret name to chart using flag: `--set caCertsSecretName=<SECRET_NAME>`
 
-### Expose PX-Backup UI on openshift routes and access using http and https:
-1. Create single route with hostname and path: `/` and point it to `px-backup-ui` service. 
-2. Access PX-Backup UI using route endpoint.
+### Expose PX-Central UI on openshift routes and access using http and https:
+1. Create single route with hostname and path: `/` and point it to `px-central-ui` service. 
+2. Access PX-Central UI using route endpoint.
 Note: Keycloak auth and Grafana UI will be accessible on same endpoint on different paths: `/auth` and `/grafana`.
 
 ## FAQ
@@ -303,117 +289,74 @@ pxc-backup-etcd-1                          0/1     CrashLoopBackOff   6         
 then, to resolve this issue scale down etcd cluster to 0 and scale it back to 3.
 - To scale down etcd cluster to 0:
 ```console
-$ kubectl scale sts --namespace px-backup pxc-backup-etcd --replicas=0`
+$ kubectl scale sts --namespace central pxc-backup-etcd --replicas=0`
 ```
 
 - To scale up etcd cluster to 3:
 ```console
-$ kubectl scale sts --namespace px-backup pxc-backup-etcd --replicas=3`
+$ kubectl scale sts --namespace central pxc-backup-etcd --replicas=3`
 ```
-
 
 # PX-Monitor
 
-PX-Central is a unified, multi-user, multi-cluster management interface. Using PX-Monitor, you can manage and monitor portworx cluster metrics.
-
-### NOTE: `px-monitor` chart has an dependency of `px-backup` chart. For `px-monitor` chart install, give the same namespace where `px-backup` chart is running.
+Using PX-Monitor, you can manage and monitor portworx cluster metrics.
+By default PX-Monitor remains disabled with px-central installation.
 
 ### Prerequisites:
-- PX-Backup chart has to be deployed and all components should be in running state.
+- PX-Central chart has to be deployed and all components should be in running state.
 - Edit `privileged` scc using command : `oc edit scc privileged` and add following into `users` section : `- system:serviceaccount:<PX_BACKUP_NAMESPACE>:px-monitor` change the PX_BACKUP_NAMESPACE.
 
-## Installing the Chart
-
-To install the chart with the release name `px-monitor`:
-
-Add portworx/px-monitor helm repository using command:
-```console
-$ helm repo add portworx http://charts.portworx.io/
-```
-
-Update helm repository:
-```console
-$ helm repo update
-```
-
-Search for portworx repo:
-```console
-$ helm search repo portworx
-```
-Output:
-```console
-NAME                            CHART VERSION       APP VERSION         DESCRIPTION                                       
-portworx/portworx               1.0.0                                   A Helm chart for installing Portworx on Kuberne...
-portworx/px-monitor             1.0.0               1.0.0               A Helm chart for installing PX-Monitor with PX-C...
-```
-
 Note:
-- To fetch `PX_BACKUP_INTERNAL_OIDC_CLIENT_SECRET` use command: `kubectl get cm --namespace <RELEASE_NAMESPACE>  pxcentral-ui-configmap -o jsonpath={.data.OIDC_CLIENT_SECRET}`
-OR
-- To fetch `PX_BACKUP_INTERNAL_OIDC_CLIENT_SECRET` use command: `kubectl get secret --namespace <RELEASE_NAMESPACE>  pxc-backup-secret -o jsonpath={.data.OIDC_CLIENT_SECRET} | base64 --decode`
 
-- To fetch `PX_BACKUP_UI_ENDPOINT`:
-   - External IP of `px-backup-ui` service 
-   - `px-backup-ui` ingress host or address
+- To fetch `PX_CENTRAL_UI_ENDPOINT`:
+   - External IP of `px-central-ui` service 
+   - `px-central-ui` ingress host or address
+
+## Enabling PX-Monitor
+
+To enable PX-Monitor :
+
+1. helm get values --namespace central px-central -o yaml > values.yaml
+
+2. Delete post install job: `kubectl delete job -n central pxcentral-post-install-hook`
+
+3. Run following helm upgrade command to enable px-monitor for same px-central chart
 
 Helm 3:
 ```console
-$ helm install px-monitor portworx/px-monitor --namespace px-backup --create-namespace --set installCRDs=true,pxmonitor.pxCentralEndpoint=<PX_BACKUP_UI_ENDPOINT>,pxmonitor.oidcClientSecret=<PX_BACKUP_INTERNAL_OIDC_CLIENT_SECRET>
+$ helm upgrade px-central portworx/px-central --namespace central --create-namespace --set pxmonitor.enabled=true,installCRDs=true,pxmonitor.pxCentralEndpoint=<PX_BACKUP_UI_ENDPOINT>
 ```
 
 Helm 2:
 ```console
-$ helm install --name px-monitor portworx/px-monitor--namespace px-backup --set installCRDs=true,pxmonitor.pxCentralEndpoint=<PX_BACKUP_UI_ENDPOINT>,pxmonitor.oidcClientSecret=<PX_BACKUP_INTERNAL_OIDC_CLIENT_SECRET>
+$ helm install --name px-central portworx/px-central --namespace central --set pxmonitor.enabled=true,installCRDs=true,pxmonitor.pxCentralEndpoint=<PX_BACKUP_UI_ENDPOINT>
 ```
 
-## Upgrading the Chart
+## Disabling PX-Monitor
+
+To disable PX-Monitor:
+
+1. helm get values --namespace central px-central -o yaml > values.yaml
+
+2. Delete post install job: `kubectl delete job -n central pxcentral-post-install-hook`
+
+3. Run following helm upgrade command to disable px-monitor for same px-central chart
+
+Helm 3:
 ```console
-$ helm upgrade px-monitor portworx/px-monitor --namespace px-backup
+$ helm upgrade px-central portworx/px-central --namespace central --create-namespace --set pxmonitor.enabled=false
 ```
 
-## Uninstalling the Chart
-
-- To uninstall/delete the `px-monitor` chart:
-
+Helm 2:
 ```console
-$ helm delete px-monitor --namespace px-backup
+$ helm upgrade --name px-central portworx/px-central --namespace central --set pxmonitor.enabled=false
 ```
-
-## Configuration
-
-The following table lists the configurable parameters of the PX-Monitor chart and their default values.
-
-Parameter | Description | Default
---- | --- | ---
-`pxmonitor` | PX Monitor deployment | ``
-`pxmonitor.enabled` | PX-Central cluster enabled monitor component | `true`
-`pxmonitor.pxCentralEndpoint` | PX-Central endpoint (LB endpoint of px-backup-ui service, ingress host) | ``
-`pxmonitor.sslEnabled` | PX-Central UI is accessibe on https | `false`
-`pxmonitor.oidcClientID` | PX-Central internal oidc client ID | `pxcentral`
-`pxmonitor.oidcClientSecret` | PX-Central internal oidc client secret | ``
-`pxmonitor.nodeAffinityLabel` | Label for node affinity for monitor component| `""`
-`installCRDs` | Install metrics stack required crds | `false`
-`storkRequired` | Scheduler name as stork | `false`
-`clusterDomain` | Cluster domain | `cluster.local`
-`cassandraUsername` | Cassandra cluster username | `cassandra`
-`cassandraPassword` | Cassandra cluster password | `cassandra`
-`persistentStorage` | Persistent storage for all px-central px-monitor components | `""`
-`persistentStorage.enabled` | Enable persistent storage | `false`
-`persistentStorage.storageClassName` | Provide storage class name which exists | `""`
-`persistentStorage.cassandra.storage` | Cassandra volumes size | `50Gi`
-`persistentStorage.grafana.storage` | Grafana volumes size | `20Gi`
-`persistentStorage.consul.storage` | Consul volumes size | `8Gi`
-`securityContext` | Security context for the pod | `{runAsUser: 1000, fsGroup: 1000, runAsNonRoot: true}`
-`images` | PX monitor stack images | ``
-`images.pullSecrets` | Image pull secret | `docregistry-secret`
-`images.pullPolicy` | Image pull policy | `Always`
-
 
 ## Advanced Configuration
 
-### Expose PX-Backup UI with metrics frontend(Grafana) on ingress:
+### Expose PX-Central UI with metrics frontend(Grafana) on ingress:
 
-- Edit the current px-backup-ui ingress and add grafana and cortex endpoints, complete ingress spec are as follows:
+- Edit the current px-central-ui ingress and add grafana and cortex endpoints, complete ingress spec are as follows:
 
 - Example - 1:
 ```
@@ -422,14 +365,14 @@ kind: Ingress
 metadata:
   annotations:
     kubernetes.io/ingress.class: nginx
-  name: px-backup-ui-ingress
-  namespace: px-backup
+  name: px-central-ui-ingress
+  namespace: central
 spec:
   rules:
   - http:
       paths:
       - backend:
-          serviceName: px-backup-ui
+          serviceName: px-central-ui
           servicePort: 80
         path: /
       - backend:
@@ -456,15 +399,15 @@ metadata:
     ingress.bluemix.net/redirect-to-https: "True"
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/x-forwarded-port: "443"
-  name: px-backup-ui-ingress
-  namespace: px-backup
+  name: px-central-ui-ingress
+  namespace: central
 spec:
   rules:
-  - host: px-backup-ui.test-1.us-east.containers.appdomain.cloud
+  - host: px-central-ui.test-1.us-east.containers.appdomain.cloud
     http:
       paths:
       - backend:
-          serviceName: px-backup-ui
+          serviceName: px-central-ui
           servicePort: 80
         path: /
       - backend:
@@ -481,7 +424,7 @@ spec:
         path: /cortex(/|$)(.*)
   tls:
   - hosts:
-    - px-backup-ui.test-1.us-east.containers.appdomain.cloud
+    - px-central-ui.test-1.us-east.containers.appdomain.cloud
     secretName: test
 ```
 Note: Change the secret and hosts based on your configuration. Also, `secretName` -> `kubernetes TLS certificates secret` is required only when you want to terminate TLS on the host/domain.
@@ -490,15 +433,12 @@ Note: Change the secret and hosts based on your configuration. Also, `secretName
   - EKS: https://aws.amazon.com/blogs/opensource/network-load-balancer-nginx-ingress-controller-eks/
 
 
+# PX-License-Server
 
-  # PX-License-Server
-
-PX-Central is a unified, multi-user, multi-cluster management interface. Using PX-License-Server, you can manage license for all your portworx clusters.
-
-### NOTE: `px-license-server` chart has an dependency of `px-backup` chart. For `px-license-server` chart install, give the same namespace where `px-backup` chart is running.
+Using PX-License-Server, you can manage license for all your portworx clusters.
+By default PX-License-Server remains disabled with px-central installation.
 
 ### Prerequisites:
-- PX-Backup chart has to be deployed and all components should be in running state.
 - Set `px/ls=true` label to any of two worker nodes.
 ```console
 $ kubectl label node <NODE_NAME> px/ls=true
@@ -509,61 +449,185 @@ $ kubectl label node <NODE_NAME> px/ls=true
    - `-A INPUT -p tcp -m state --state NEW -m tcp --dport 7070 -j ACCEPT` in `/etc/sysconfig/iptables` file
    - Restart iptables service: `systemctl restart iptables.service`
 
-## Installing the Chart
+## Enabling PX-License-Server
 
-To install the chart with the release name `px-license-server`:
+  ### To enable PX-License-Server along with px-central install:
 
-Add portworx/px-license-server helm repository using command:
-```console
-$ helm repo add portworx http://charts.portworx.io/
-```
+    Helm 3:
+    ```console
+    $ helm install px-central portworx/px-central --namespace central --create-namespace --set pxlicenseserver.enabled=true
+    ```
 
-Update helm repository:
-```console
-$ helm repo update
-```
+    Helm 2:
+    ```console
+    $ helm install --name px-central portworx/px-central --namespace central --set pxlicenseserver.enabled=true
+    ```
+  
+  ### To enable PX-License-Server on already deployed px-central
 
-Search for portworx repo:
-```console
-$ helm search repo portworx
-```
-Output:
-```console
-NAME                            CHART VERSION       APP VERSION         DESCRIPTION                                       
-portworx/portworx               1.0.0                                   A Helm chart for installing Portworx on Kuberne...
-portworx/px-license-server      1.0.0               1.0.0               A Helm chart for installing PX-License-Server with PX-C...
-```
+  1. helm get values --namespace central px-central -o yaml > values.yaml
+
+  2. Delete post install job: `kubectl delete job -n central pxcentral-post-install-hook`
+
+  3. Run following helm upgrade command to enable px-license-server for same px-central chart
+
+  Helm 3:
+  ```console
+  $ helm upgrade px-central portworx/px-central --namespace central --create-namespace --set pxlicenseserver.enabled=true
+  ```
+
+  Helm 2:
+  ```console
+  $ helm upgrade --name px-central portworx/px-central --namespace central --set pxlicenseserver.enabled=true
+  ```
+
+## Disabling PX-License-Server
+
+To disable PX-License-Server along with px-central:
 
 Helm 3:
 ```console
-$ helm install px-license-server portworx/px-license-server --namespace px-backup --create-namespace
+$ helm upgrade px-central portworx/px-central --namespace central --create-namespace --set pxlicenseserver.enabled=false
 ```
 
 Helm 2:
 ```console
-$ helm install --name px-license-server portworx/px-license-server --namespace px-backup
+$ helm upgrade --name px-central portworx/px-central --namespace central --set pxlicenseserver.enabled=false
 ```
 
-## Upgrading the Chart
-```console
-$ helm upgrade px-license-server portworx/px-license-server --namespace px-backup
-```
+## Parameters
 
-## Uninstalling the Chart
+The following tables lists the configurable parameters of the PX-Backup chart and their default values.
 
-- To uninstall/delete the `px-license-server` chart:
+### PX-Central parameters
 
-```console
-$ helm delete px-license-server --namespace px-backup
-```
+Parameter | Description | Default
+--- | --- | ---
+`persistentStorage` | Persistent storage for all px-central components | `""`
+`persistentStorage.enabled` | Enable persistent storage | `false`
+`persistentStorage.storageClassName` | Provide storage class name which exists | `""`
+`persistentStorage.mysqlVolumeSize` | MySQL volume size | `"100Gi"`
+`persistentStorage.etcdVolumeSize` | ETCD volume size | `"64Gi"`
+`persistentStorage.keycloakThemeVolumeSize` | Keycloak frontend theme volume size | `"5Gi"`
+`persistentStorage.keycloakBackendVolumeSize` | Keycloak backend volume size | `"10Gi"`
+`storkRequired` | Scheduler name as stork | `false`
+`pxcentralDBPassword` | PX-Central cluster store mysql database password | `Password1`
+`caCertsSecretName` | Name of the Kubernetes Secret, which contains the CA Certificates. | `""`
+`oidc` | Enable OIDC for PX-Central and PX-backup for RBAC | `""`
+`oidc.centralOIDC` | PX-Central OIDC | `""`
+`oidc.centralOIDC.enabled` | PX-Central OIDC | `true`
+`oidc.centralOIDC.defaultUsername` | PX-Central OIDC username | `admin`
+`oidc.centralOIDC.defaultPassword` | PX-Central OIDC admin user password | `admin`
+`oidc.centralOIDC.defaultEmail` | PX-Central OIDC admin user email | `admin@portworx.com`
+`oidc.centralOIDC.keyCloakBackendUserName` | Keycloak backend store username | `keycloak`
+`oidc.centralOIDC.keyCloakBackendPassword` | Keycloak backend store password | `keycloak`
+`oidc.centralOIDC.clientId` | PX-Central OIDC client id | `pxcentral`
+`oidc.centralOIDC.updateAdminProfile` | Enable/Disable admin profile update action | `true`
+`oidc.externalOIDC` | Enable external OIDC provider | `""`
+`oidc.externalOIDC.enabled` | Enabled external OIDC provider | `false`
+`oidc.externalOIDC.clientID` | External OIDC client ID | `""`
+`oidc.externalOIDC.clientSecret` | External OIDC client secret | `""`
+`oidc.externalOIDC.endpoint` | External OIDC endpoint | `""`
+`securityContext` | Security context for the pod | `{runAsUser: 1000, fsGroup: 1000, runAsNonRoot: true}`
+`images.pullSecrets` | Image pull secrets | `docregistry-secret`
+`images.pullPolicy` | Image pull policy | `Always`
+`images.pxcentralApiServerImage.registry` | API server image registry | `docker.io`
+`images.pxcentralApiServerImage.repo` | API server image repo | `portworx`
+`images.pxcentralApiServerImage.imageName` | API server image name | `pxcentral-onprem-api`
+`images.pxcentralApiServerImage.tag` | API server image tag | `1.2.1`
+`images.pxcentralFrontendImage.registry` | PX-Central frontend image registry | `docker.io`
+`images.pxcentralFrontendImage.repo` | PX-Central frontend image repo | `portworx`
+`images.pxcentralFrontendImage.imageName` | PX-Central frontend image name | `pxcentral-onprem-ui-frontend`
+`images.pxcentralFrontendImage.tag` | PX-Central frontend image tag | `1.2.2`
+`images.pxcentralBackendImage.registry` | PX-Central backend image registry | `docker.io`
+`images.pxcentralBackendImage.repo` | PX-Central backend image repo | `portworx`
+`images.pxcentralBackendImage.imageName` | PX-Central backend image name | `pxcentral-onprem-ui-backend`
+`images.pxcentralBackendImage.tag` | PX-Central backend image tag | `1.2.2`
+`images.pxcentralMiddlewareImage.registry` | PX-Central middleware image registry | `docker.io`
+`images.pxcentralMiddlewareImage.repo` | PX-Central middleware image repo | `portworx`
+`images.pxcentralMiddlewareImage.imageName` | PX-Central middleware image name | `pxcentral-onprem-ui-lhbackend`
+`images.pxcentralMiddlewareImage.tag`| PX-Central middleware image tag | `1.2.2`
+`images.postInstallSetupImage.registry` | PX-Backup post install setup image registry | `docker.io`
+`images.postInstallSetupImage.repo` | PX-Backup post install setup image repo | `portworx`
+`images.postInstallSetupImage.imageName` | PX-Backup post install setup image name | `pxcentral-onprem-post-setup`
+`images.postInstallSetupImage.tag` | PX-Backup post install setup image tag | `1.2.2`
+`images.keycloakBackendImage.registry` | PX-Backup keycloak backend image registry | `docker.io`
+`images.keycloakBackendImage.repo` | PX-Backup keycloak backend image repo | `bitnami`
+`images.keycloakBackendImage.imageName` | PX-Backup keycloak backend image name | `postgresql`
+`images.keycloakBackendImage.tag` | PX-Backup keycloak backend image tag | `11.7.0-debian-10-r9`
+`images.keycloakFrontendImage.registry` | PX-Backup keycloak frontend image registry | `docker.io`
+`images.keycloakFrontendImage.repo` | PX-Backup keycloak frontend image repo | `jboss`
+`images.keycloakFrontendImage.imageName` | PX-Backup keycloak frontend image name | `keycloak`
+`images.keycloakFrontendImage.tag` | PX-Backup keycloak frontend image tag | `9.0.2`
+`images.keycloakLoginThemeImage.registry` | PX-Backup keycloak login theme image registry | `docker.io`
+`images.keycloakLoginThemeImage.repo` | PX-Backup keycloak login theme image repo | `portworx`
+`images.keycloakLoginThemeImage.imageName` | PX-Backup keycloak login theme image name | `keycloak-login-theme`
+`images.keycloakLoginThemeImage.tag` | PX-Backup keycloak login theme image tag | `1.0.4`
+`images.keycloakInitContainerImage.registry` | PX-Backup keycloak init container image registry | `docker.io`
+`images.keycloakInitContainerImage.repo` | PX-Backup keycloak init container image repo | `library`
+`images.keycloakInitContainerImage.imageName` | PX-Backup keycloak init container image name | `busybox`
+`images.keycloakInitContainerImage.tag` | PX-Backup keycloak init container image tag | `1.31`
+`images.mysqlImage.registry` | PX-Central cluster store mysql image registry | `docker.io`
+`images.mysqlImage.repo` | PX-Central cluster store mysql image repo | `library`
+`images.mysqlImage.imageName` | PX-Central cluster store mysql image name | `mysql`
+`images.mysqlImage.tag` | PX-Central cluster store mysql image tag | `5.7.22`
 
-## Configuration
+### PX-Backup parameters
+
+Parameter | Description | Default
+--- | --- | ---
+`images` | PX-Backup deployment images | `""`
+`pxbackup.enabled` | Enabled PX-Backup | `false`
+`pxbackup.orgName` | PX-Backup organization name | `default`
+`pxbackup.nodeAffinityLabel` | Label for node affinity for px-central components| `""`
+`images.pxBackupImage.registry` | PX-Backup image registry | `docker.io`
+`images.pxBackupImage.repo` | PX-Backup image repo | `portworx`
+`images.pxBackupImage.imageName` | PX-Backup image name | `px-backup`
+`images.pxBackupImage.tag` | PX-Backup image tag | `1.2.2`
+`images.etcdImage.registry` | PX-Backup etcd image registry | `docker.io`
+`images.etcdImage.repo` | PX-Backup etcd image repo | `bitnami`
+`images.etcdImage.imageName` | PX-Backup etcd image name | `etcd`
+`images.etcdImage.tag` | PX-Backup etcd image tag | `3.4.13-debian-10-r22`
+`images.mongodbImage.registry` | PX-Backup etcd image registry | `docker.io`
+`images.mongodbImage.repo` | PX-Backup etcd image repo | `bitnami`
+`images.mongodbImage.imageName` | PX-Backup etcd image name | `mongodb`
+`images.mongodbImage.tag` | PX-Backup etcd image tag | `4.4.4-debian-10-r30`
+
+### PX-Monitor parameters
+
+Parameter | Description | Default
+--- | --- | ---
+`pxmonitor` | PX Monitor deployment | ``
+`pxmonitor.enabled` | PX-Central cluster enabled monitor component | `false`
+`pxmonitor.pxCentralEndpoint` | PX-Central endpoint (LB endpoint of px-central-ui service, ingress host) | ``
+`pxmonitor.sslEnabled` | PX-Central UI is accessibe on https | `false`
+`pxmonitor.oidcClientID` | PX-Central internal oidc client ID | `pxcentral`
+`pxmonitor.oidcClientSecret` | PX-Central internal oidc client secret | ``
+`pxmonitor.nodeAffinityLabel` | Label for node affinity for monitor component| `""`
+`installCRDs` | Install metrics stack required crds | `false`
+`storkRequired` | Scheduler name as stork | `false`
+`clusterDomain` | Cluster domain | `cluster.local`
+`cassandraUsername` | Cassandra cluster username | `cassandra`
+`cassandraPassword` | Cassandra cluster password | `cassandra`
+`persistentStorage` | Persistent storage for all px-central px-monitor components | `""`
+`persistentStorage.enabled` | Enable persistent storage | `false`
+`persistentStorage.storageClassName` | Provide storage class name which exists | `""`
+`persistentStorage.cassandra.storage` | Cassandra volumes size | `50Gi`
+`persistentStorage.grafana.storage` | Grafana volumes size | `20Gi`
+`persistentStorage.consul.storage` | Consul volumes size | `8Gi`
+`securityContext` | Security context for the pod | `{runAsUser: 1000, fsGroup: 1000, runAsNonRoot: true}`
+`images` | PX monitor stack images | ``
+`images.pullSecrets` | Image pull secret | `docregistry-secret`
+`images.pullPolicy` | Image pull policy | `Always`
+
+### PX-License-Server parameters
 
 The following table lists the configurable parameters of the PX-License-Server chart and their default values.
 
 Parameter | Description | Default
 --- | --- | ---
 `pxlicenseserver` | PX license server deployment | ``
+`pxlicenseserver.enabled` | PX-Central cluster enabled license server component | `false`
 `pxlicenseserver.internal` | PX-Central cluster license server | ``
 `pxlicenseserver.internal.enabled` | PX-Central cluster license server enabled | `true`
 `pxlicenseserver.internal.lsTypeUAT` | PX license server deployment type [UAT] | `false`
