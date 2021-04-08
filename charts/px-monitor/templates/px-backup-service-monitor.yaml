@@ -6,6 +6,7 @@ metadata:
   labels:
     app: px-backup
     prometheus: px-backup
+    app.kubernetes.io/managed-by: {{.Release.Service }}
 spec:
   jobLabel: app
   selector:

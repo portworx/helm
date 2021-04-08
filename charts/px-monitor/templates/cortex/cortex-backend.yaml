@@ -81,6 +81,7 @@ metadata:
   labels:
     app: cassandra
     release: pxcentral-cortex-cassandra
+    app.kubernetes.io/managed-by: {{.Release.Service }}
 spec:
   selector:
     matchLabels:
