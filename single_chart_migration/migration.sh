@@ -271,10 +271,9 @@ if [ "$pxls_enabled" == true ]; then
     upgrade_cmd="$upgrade_cmd --set pxlicenseserver.enabled=true"
 fi
 
-# TODO: for now adding it default. Need to add based on the version check.
-upgrade_cmd="$upgrade_cmd --set pxbackup.datastore=mongodb"
 # mongomigration will be set to incomplete by default, since this script will be called for upgrade only
-upgrade_cmd="$upgrade_cmd --set pxbackup.mongomigration=incomplete"
+# Also etcd statefulset needs to be retained.
+upgrade_cmd="$upgrade_cmd --set pxbackup.mongoMigration=incomplete,pxbackup.datastore=mongodb,pxbackup.retainEtcd=true"
 
 echo "upgrade command: $upgrade_cmd"
 $upgrade_cmd

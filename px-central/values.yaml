@@ -43,8 +43,9 @@ pxbackup:
   orgName: default
   callHome: true
   nodeAffinityLabel:
-  datastore: etcd
-  mongomigration: complete
+  datastore: mongodb
+  mongoMigration: complete
+  retainEtcd: false
 
 pxlicenseserver:
   enabled: false
@@ -129,8 +130,8 @@ images:
   pxBackupImage:
     registry: docker.io
     repo: portworx
-    imageName: px-backup
-    tag: 1.2.2
+    imageName: px-backup-base
+    tag: master
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
