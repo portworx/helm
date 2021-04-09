@@ -162,10 +162,10 @@ spec:
         - start
         {{- if eq $mongodbEnabled true }}
         - --datastoreEndpoints=mongodb://pxbackup:Password1@pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017/?authSource=px-backup&replicaSet=rs0
+        - --mongo-migration={{.Values.pxbackup.mongoMigration}}
         {{- else }}
         - --datastoreEndpoints=etcd:http://pxc-backup-etcd-0.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-1.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-2.pxc-backup-etcd-headless:2379
         {{- end }}
-        - --mongoMigration={{.Values.pxbackup.mongomigration}}
       {{- if .Values.caCertsSecretName }}
       volumes:
         - name: ssl-cert-dir
