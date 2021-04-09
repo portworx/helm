@@ -263,6 +263,9 @@ upgrade_cmd="$helm_cmd --namespace $namespace upgrade $pxbackup_release $helmrep
 
 if [ "$pxbackup_enabled" == true ]; then
     upgrade_cmd="$upgrade_cmd --set pxbackup.enabled=true"
+    # mongomigration will be set to incomplete by default, since this script will be called for upgrade only
+    # Also etcd statefulset needs to be retained.
+    upgrade_cmd="$upgrade_cmd --set pxbackup.mongoMigration=incomplete,pxbackup.datastore=mongodb,pxbackup.retainEtcd=true"
 fi
 if [ "$pxmonitor_enabled" == true ]; then
     upgrade_cmd="$upgrade_cmd --set pxmonitor.enabled=true"
@@ -270,10 +273,6 @@ fi
 if [ "$pxls_enabled" == true ]; then
     upgrade_cmd="$upgrade_cmd --set pxlicenseserver.enabled=true"
 fi
-
-# mongomigration will be set to incomplete by default, since this script will be called for upgrade only
-# Also etcd statefulset needs to be retained.
-upgrade_cmd="$upgrade_cmd --set pxbackup.mongoMigration=incomplete,pxbackup.datastore=mongodb,pxbackup.retainEtcd=true"
 
 echo "upgrade command: $upgrade_cmd"
 $upgrade_cmd
