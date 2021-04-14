@@ -636,7 +636,7 @@ Parameter | Description | Default
 `pxlicenseserver.mainNodeIP` | External license server main node endpoints | ``
 `pxlicenseserver.backupNodeIP` | External license server backup node endpoints | ``
 `pxlicenseserver.adminUserName` | PX license server admin user name | `admin`
-`pxlicenseserver.adminUserPassword` | PX license server admin user password | `Password@1`
+`pxlicenseserver.adminUserPassword` | PX license server admin user password | `Adm1n!Ur`
 `securityContext` | Security context for the pod | `{runAsUser: 1000, fsGroup: 1000, runAsNonRoot: true}`
 `images` | PX license server images | ``
 `images.pullSecrets` | Image pull secret | `km`

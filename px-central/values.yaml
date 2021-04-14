@@ -58,7 +58,7 @@ pxlicenseserver:
   mainNodeIP: ""
   backupNodeIP: ""
   adminUserName: admin
-  adminUserPassword: Password@1
+  adminUserPassword: Adm1n!Ur
 
 pxmonitor:
   enabled: false
