@@ -50,11 +50,12 @@ post_install_job="pxcentral-post-install-hook"
 usage()
 {
    echo ""
-   echo "Usage: $0 --namespace <namespace> --helmrepo <helm repo name> --kubeconfig <kubeconfig file name> "
+   echo "Usage: $0 --namespace <namespace> --helmrepo <helm repo name> --kubeconfig <kubeconfig file name> --rollback"
    echo -e "\t--namespace <namespace> namespace in which px-central charts are installed"
    echo -e "\t--helmrepo <helm repo name for px-central components> helm repo name , can get with helm repo list command"
    echo -e "\n\t Optional parameters"
    echo -e "\t\t--kubeconfig <kubeconfig file path> kubeconfig file to set the context"
+   echo -e "\t\t--rollback, rollback will take the deployment to given version. This option will be used when the customer was blocked with any unknown mongo migration failures."
 
    exit 1 # Exit script after printing help
 }
@@ -158,7 +159,11 @@ find_releases() {
     fi
 }
 
-
+# By default rollback will not be set to any version.
+# rollback need to set, when the mongo migration failed and 
+# decision is made to rollback to any older version to unblock the customer and 
+# allow to continue with kvdb as datastore.
+rollback=""
 for i in $@
 do
     case $i in
@@ -177,6 +182,12 @@ do
         --kubeconfig)
             echo "kubeconfig file = $2"
             kubeconfig=$2
+            shift
+            shift
+            ;;
+        --rollback)
+            echo "rollback = $2"
+            rollback=$2
             shift
             shift
             ;;
@@ -261,12 +272,24 @@ echo -e "\nStep-6 : Starting upgrade now"
 # Version as global
 upgrade_cmd="$helm_cmd --namespace $namespace upgrade $pxbackup_release $helmrepo/px-central --version $px_central_version -f helm_values.yaml"
 
-if [ "$pxbackup_enabled" == true ]; then
+if [ "$pxbackup_enabled" == true ] && [ -z "$rollback" ]; then
     upgrade_cmd="$upgrade_cmd --set pxbackup.enabled=true"
     # mongomigration will be set to incomplete by default, since this script will be called for upgrade only
     # Also etcd statefulset needs to be retained.
     upgrade_cmd="$upgrade_cmd --set pxbackup.mongoMigration=incomplete,pxbackup.datastore=mongodb,pxbackup.retainEtcd=true"
+elif [ "$pxbackup_enabled" == true ] && [ ! -z "$rollback" ]; then
+    echo "rollback case $rollback"
+    # if rollback is set, set the datastore back to kvdb and
+    # reset the images to rollback image version provided by user.
+    # Reset image in px-backup deploy.
+    $kubectl_cmd  patch  deploy px-backup -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"command\":[\"/px-backup\",\"start\",\"--datastoreEndpoints=etcd:http://pxc-backup-etcd-0.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-1.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-2.pxc-backup-etcd-headless:2379\"],\"name\":\"px-backup\",\"image\":\"docker.io/portworx/px-backup:$rollback\",\"env\":[{\"name\":\"PX_BACKUP_DEFAULT_DATASTORE\",\"value\":\"kvdb\"}]}]}}}}"
+	$kubectl_cmd  patch  deploy pxcentral-backend -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"pxcentral-backend\",\"image\":\"docker.io/portworx/pxcentral-onprem-ui-backend:$rollback\"}]}}}}"
+	$kubectl_cmd  patch  deploy pxcentral-frontend -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"pxcentral-frontend\",\"image\":\"docker.io/portworx/pxcentral-onprem-ui-frontend:$rollback\"}]}}}}"
+	$kubectl_cmd  patch  deploy pxcentral-lh-middleware -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"pxcentral-lh-middleware\",\"image\":\"docker.io/portworx/pxcentral-onprem-ui-lhbackend:$rollback\"}]}}}}"
+	$kubectl_cmd delete sts pxc-backup-mongodb -n $namespace
+	exit 0
 fi
+
 if [ "$pxmonitor_enabled" == true ]; then
     upgrade_cmd="$upgrade_cmd --set pxmonitor.enabled=true"
 fi
