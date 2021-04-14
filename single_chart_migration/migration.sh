@@ -159,11 +159,63 @@ find_releases() {
     fi
 }
 
+mongo_trial_migration() {
+
+    namespace=$1
+    mongodeployed=false
+    echo "mongotrialmigration case"
+    # Check for the presence of required files.
+    if [ ! -f "mongo.yaml" ]; then
+        echo "mongo.yaml is missing. Please download it. (curl https://raw.githubusercontent.com/portworx/helm/master/single_chart_migration/mongo.yaml -o mongo.yaml)"
+    fi
+    if [ ! -f "migrationctl" ]; then
+        echo "migrationctl is missing. Please download it. (curl https://raw.githubusercontent.com/portworx/helm/master/single_chart_migration/migrationctl -o migrationctl)"
+    fi
+    # Get the storage class from the etcd PVC and use it for mongo PVC.
+    sc=`$kubectl_cmd get pvc pxc-etcd-data-pxc-backup-etcd-0 -n $namespace -o yaml | grep storageClassName | awk '{print $2}'`
+    echo "using storage class for mongo $sc"
+    # update the storageclass in mongo.yaml
+    sed -i 's|'storageClassName:.*'|'"storageClassName: $sc"'|g' mongo.yaml
+    # Install mongoDB
+    $kubectl_cmd apply -f ./mongo.yaml -n $namespace
+    echo "Waiting for mongoDB to be in running state"
+    for i in $(seq 1 100) ; do
+        replicas=`$kubectl_cmd get statefulset -n $namespace pxc-backup-mongodb-trial -o json | grep -i "readyReplicas" | awk '{print $2}'`
+        if [ "$replicas" == "3," ]; then
+            mongodeployed=true
+            break
+        else
+            echo "mongodb datastore is not ready yet"
+            sleep 10
+        fi
+    done
+    if [ "$mongodeployed" == true ]; then
+        $kubectl_cmd scale --replicas=0 deploy/px-backup -n $namespace
+        sleep 10
+        $kubectl_cmd cp ./migrationctl -n $namespace pxc-backup-mongodb-trial-0:/tmp
+        $kubectl_cmd exec -it pxc-backup-mongodb-trial-0 -n $namespace -- /tmp/migrationctl
+    else
+        echo "Mongo deployment for trial run failed."
+    fi
+    # Delete all the resources of the trial mongoDB deployment.
+    $kubectl_cmd delete sts pxc-backup-mongodb-trial -n $namespace
+    $kubectl_cmd delete serviceaccount pxc-backup-mongodb-trial -n $namespace
+    $kubectl_cmd delete secret pxc-backup-mongodb-trial -n $namespace
+    $kubectl_cmd delete configmap pxc-backup-mongodb-trial-scripts -n $namespace
+    $kubectl_cmd delete service pxc-backup-mongodb-trial-headless -n $namespace
+    $kubectl_cmd delete pvc pxc-mongodb-data-pxc-backup-mongodb-trial-0 pxc-mongodb-data-pxc-backup-mongodb-trial-1 pxc-mongodb-data-pxc-backup-mongodb-trial-2 -n $namespace
+    # scale up the px-backup deploy again
+    $kubectl_cmd scale --replicas=1 deploy/px-backup -n $namespace
+    sleep 10
+    exit 0
+}
+
 # By default rollback will not be set to any version.
 # rollback need to set, when the mongo migration failed and 
 # decision is made to rollback to any older version to unblock the customer and 
 # allow to continue with kvdb as datastore.
 rollback=""
+mongotrialmigration=false
 for i in $@
 do
     case $i in
@@ -191,6 +243,13 @@ do
             shift
             shift
             ;;
+        --mongo-trial-migration)
+            echo "mongotrialmigration set true"
+            mongotrialmigration=true
+            shift
+            shift
+            ;;
+
     esac
 done
 
@@ -211,6 +270,10 @@ if [ "$kubeconfig" != "" ]; then
     helm_cmd="helm --kubeconfig $kubeconfig"
 fi
 
+#invoke mongo trial migration, if mongotrainmigration option is set.
+if [ "$mongotrialmigration" == true ]; then
+    mongo_trial_migration $namespace
+fi
 echo -e "\nStep-1 : Looking for enabled features"
 set_enabled_modules $namespace
 echo "pxbackup: $pxbackup_enabled, pxmonitor: $pxmonitor_enabled, pxlicenseserver: $pxls_enabled"
