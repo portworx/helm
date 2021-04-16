@@ -245,7 +245,7 @@ spec:
           - "ReadWriteOnce"
         resources:
           requests:
-            storage: {{ .Values.persistentStorage.etcdVolumeSize }}
+            storage: {{ .Values.persistentStorage.mongodbVolumeSize }}
         {{- if .Values.persistentStorage.storageClassName }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         {{- end }}
