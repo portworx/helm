@@ -13,6 +13,7 @@ persistentStorage:
     storage: 2Gi
   mysqlVolumeSize: "100Gi"
   etcdVolumeSize: "64Gi"
+  mongodbVolumeSize: "64Gi"
   keycloakThemeVolumeSize: "5Gi"
   keycloakBackendVolumeSize: "10Gi"
 
@@ -115,38 +116,23 @@ images:
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-frontend
-    tag: 1.2.2
+    imageName: pxcentral-onprem-ui-frontend-private
+    tag: master
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-backend
-    tag: 1.2.2
+    imageName: pxcentral-onprem-ui-backend-private
+    tag: master
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-lhbackend
-    tag: 1.2.2
-  pxBackupImage:
-    registry: docker.io
-    repo: portworx
-    imageName: px-backup-base
+    imageName: pxcentral-onprem-ui-lhbackend-private
     tag: master
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
     tag: 1.3.0-dev
-  etcdImage:
-    registry: docker.io
-    repo: bitnami
-    imageName: etcd
-    tag: 3.4.13-debian-10-r22
-  mongodbImage:
-    registry: docker.io
-    repo: bitnami
-    imageName: mongodb
-    tag: 4.4.4-debian-10-r30
   keycloakBackendImage:
     registry: docker.io
     repo: bitnami
@@ -173,17 +159,31 @@ images:
     imageName: mysql
     tag: 5.7.22
 
+  ## Images required for enabling px-backup
+  pxBackupImage:
+    registry: docker.io
+    repo: portworx
+    imageName: px-backup-base
+    tag: master
+  etcdImage:
+    registry: docker.io
+    repo: bitnami
+    imageName: etcd
+    tag: 3.4.13-debian-10-r22
+  mongodbImage:
+    registry: docker.io
+    repo: bitnami
+    imageName: mongodb
+    tag: 4.4.4-debian-10-r30
+
+  ## Images required for enabling px-license-server
   licenseServerImage:
     registry: docker.io
     repo: portworx
     imageName: px-els
-    tag: 1.0.0
-  pxLicenseHAConfigContainerImage:
-    registry: docker.io
-    repo: portworx
-    imageName: pxcentral-onprem-els-ha-setup
-    tag: 1.1.1
+    tag: 1.1.0-rc0
 
+  ## Images required for enabling px-monitor
   cortexImage:
     registry: quay.io
     repo: cortexproject
@@ -234,11 +234,6 @@ images:
     repo: coreos
     imageName: prometheus-operator
     tag: v0.34.0
-  pxMonitorPostInstallSetup:
-    registry: docker.io
-    repo: portworx
-    imageName: pxcentral-monitor-post-install-setup
-    tag: 1.2.1
   memcachedMetricsImage:
     registry: quay.io
     repo: prometheus
