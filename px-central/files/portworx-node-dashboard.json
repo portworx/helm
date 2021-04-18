@@ -14,25 +14,25 @@
           "type": "grafana",
           "id": "grafana",
           "name": "Grafana",
-          "version": "5.0.0-beta1"
+          "version": "5.0.4"
         },
         {
           "type": "panel",
           "id": "graph",
           "name": "Graph",
-          "version": ""
+          "version": "5.0.0"
         },
         {
           "type": "datasource",
           "id": "prometheus",
           "name": "Prometheus",
-          "version": "1.0.0"
+          "version": "5.0.0"
         },
         {
           "type": "panel",
           "id": "singlestat",
           "name": "Singlestat",
-          "version": ""
+          "version": "5.0.0"
         }
       ],
       "annotations": {
@@ -52,7 +52,7 @@
       "gnetId": null,
       "graphTooltip": 0,
       "id": null,
-      "iteration": 1541099248953,
+      "iteration": 1567113320630,
       "links": [],
       "panels": [
         {
@@ -87,8 +87,8 @@
             "thresholdMarkers": true
           },
           "gridPos": {
-            "h": 4,
-            "w": 5,
+            "h": 6,
+            "w": 3,
             "x": 0,
             "y": 1
           },
@@ -177,9 +177,9 @@
             "thresholdMarkers": true
           },
           "gridPos": {
-            "h": 4,
-            "w": 5,
-            "x": 5,
+            "h": 6,
+            "w": 3,
+            "x": 3,
             "y": 1
           },
           "id": 83,
@@ -246,9 +246,9 @@
           "datasource": "prometheus",
           "fill": 1,
           "gridPos": {
-            "h": 4,
+            "h": 6,
             "w": 14,
-            "x": 10,
+            "x": 6,
             "y": 1
           },
           "id": 53,
@@ -430,7 +430,7 @@
             "h": 1,
             "w": 24,
             "x": 0,
-            "y": 5
+            "y": 7
           },
           "id": 65,
           "panels": [],
@@ -449,7 +449,7 @@
             "h": 7,
             "w": 8,
             "x": 0,
-            "y": 6
+            "y": 8
           },
           "id": 1,
           "legend": {
@@ -584,7 +584,7 @@
             "h": 7,
             "w": 8,
             "x": 8,
-            "y": 6
+            "y": 8
           },
           "id": 2,
           "legend": {
@@ -723,7 +723,7 @@
             "h": 7,
             "w": 8,
             "x": 16,
-            "y": 6
+            "y": 8
           },
           "id": 85,
           "legend": {
@@ -899,10 +899,10 @@
           "datasource": "prometheus",
           "fill": 1,
           "gridPos": {
-            "h": 6,
+            "h": 7,
             "w": 8,
             "x": 0,
-            "y": 13
+            "y": 15
           },
           "id": 6,
           "legend": {
@@ -1083,7 +1083,7 @@
             "h": 7,
             "w": 8,
             "x": 8,
-            "y": 13
+            "y": 15
           },
           "id": 86,
           "legend": {
@@ -1113,7 +1113,7 @@
             {
               "alias": "Cluster Disk Total",
               "dsType": "influxdb",
-              "expr": "irate(px_disk_stats_read_bytes{cluster=~\"[[Cluster]]\",instance=~\"[[Instances]]\"}[5m])",
+              "expr": "irate(px_disk_stats_disk_read_bytes{cluster=~\"[[Cluster]]\",instance=~\"[[Instances]]\"}[5m])",
               "format": "time_series",
               "groupBy": [
                 {
@@ -1135,7 +1135,7 @@
                   "type": "fill"
                 }
               ],
-              "hide": false,
+              "hide": true,
               "intervalFactor": 1,
               "legendFormat": "{{cluster}}{{instance}}",
               "measurement": "px_cluster_disk_total_bytes",
@@ -1168,7 +1168,7 @@
             {
               "alias": "Cluster Disk Used",
               "dsType": "influxdb",
-              "expr": "irate(px_disk_stats_write_bytes{cluster=~\"[[Cluster]]\",instance=~\"[[Instances]]\"}[5m])",
+              "expr": "irate(px_disk_stats_write_bytes_seconds{cluster=~\"[[Cluster]]\",instance=~\"[[Instances]]\"}[5m])",
               "format": "time_series",
               "groupBy": [
                 {
@@ -1269,7 +1269,7 @@
             "h": 7,
             "w": 8,
             "x": 16,
-            "y": 13
+            "y": 15
           },
           "id": 87,
           "legend": {
@@ -1445,7 +1445,7 @@
           ]
         }
       ],
-      "refresh": "30s",
+      "refresh": false,
       "schemaVersion": 16,
       "style": "dark",
       "tags": [],
@@ -1525,5 +1525,5 @@
       "timezone": "",
       "title": "Portworx Node Dashboard",
       "uid": "pxNodeDashboard",
-      "version": 3
-    }
+      "version": 4
+}
