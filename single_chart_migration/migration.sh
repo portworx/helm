@@ -172,7 +172,7 @@ mongo_trial_migration() {
         echo "migrationctl is missing. Please download it. (curl https://raw.githubusercontent.com/portworx/helm/master/single_chart_migration/migrationctl -o migrationctl)"
     fi
     # Get the storage class from the etcd PVC and use it for mongo PVC.
-    sc=`$kubectl_cmd get pvc pxc-etcd-data-pxc-backup-etcd-0 -n $namespace -o yaml | grep storageClassName | awk '{print $2}'`
+    sc=`$kubectl_cmd get pvc pxc-etcd-data-pxc-backup-etcd-0 -n $namespace -o yaml | grep -i "^[ ]*storageClassName" | tail -1 | awk -F ":" '{print $2}' | awk '{$1=$1}1'`
     echo "using storage class for mongo $sc"
     # update the storageclass in mongo.yaml
     sed -i 's|'storageClassName:.*'|'"storageClassName: $sc"'|g' mongo.yaml
@@ -180,8 +180,8 @@ mongo_trial_migration() {
     $kubectl_cmd apply -f ./mongo.yaml -n $namespace
     echo "Waiting for mongoDB to be in running state"
     for i in $(seq 1 100) ; do
-        replicas=`$kubectl_cmd get statefulset -n $namespace pxc-backup-mongodb-trial -o json | grep -i "readyReplicas" | awk '{print $2}'`
-        if [ "$replicas" == "3," ]; then
+        replicas=`$kubectl_cmd get statefulset  pxc-backup-mongodb-trial -n $namespace -o yaml | grep -i "^[ ]*readyReplicas" | tail -1 | awk -F ":" '{print $2}' | awk '{$1=$1}1'`
+        if [ "$replicas" == "3" ]; then
             mongodeployed=true
             break
         else
