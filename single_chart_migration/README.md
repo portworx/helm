@@ -42,3 +42,5 @@ $ helm ls -A | grep "px-backup-[0-9].[0-9].[0-9]" | awk '{print $2}'
 ```console
 $ ./migration.sh --namespace <namespace> --helmrepo <helm repo name>
 ```
+
+**px-backup-ui service has been kept for backward compatibility but will soon be deprecated. Please modify the ingress or routes which have been using px-backup-ui service to use px-central-ui service instead.**

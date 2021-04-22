@@ -381,8 +381,9 @@ $helm_cmd list --namespace $namespace
 echo -e "
 #######################################################################################################
 ###                                                                                                 ###
-### From 1.3.0 version, 'px-backup-ui' service has been renamed to 'px-central-ui'.                 ###
-### Please modify all ingress or routes which have been configured using the service px-backup-ui.  ###
+### px-backup-ui service has been kept for backward compatibility but will soon be deprecated.      ###
+### Please modify the ingress or routes which have been using px-backup-ui service                  ###
+### to use px-central-ui service instead.                                                           ###
 ###                                                                                                 ###  
 #######################################################################################################
 "
