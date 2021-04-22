@@ -504,7 +504,7 @@ The following tables lists the configurable parameters of the PX-Backup chart an
 Parameter | Description | Default
 --- | --- | ---
 `persistentStorage` | Persistent storage for all px-central components | `""`
-`persistentStorage.enabled` | Enable persistent storage | `false`
+`persistentStorage.enabled` | Enable persistent storage | `true`
 `persistentStorage.storageClassName` | Provide storage class name which exists | `""`
 `persistentStorage.mysqlVolumeSize` | MySQL volume size | `"100Gi"`
 `persistentStorage.etcdVolumeSize` | ETCD volume size | `"64Gi"`

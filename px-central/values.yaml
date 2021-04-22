@@ -70,6 +70,7 @@ pxmonitor:
 
 service:
   pxCentralUIServiceType: "LoadBalancer"
+  pxBackupUIServiceType: "LoadBalancer"
   grafanaServiceType: "NodePort"
   cortexNginxServiceType: "NodePort"
 
