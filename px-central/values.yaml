@@ -18,6 +18,7 @@ persistentStorage:
   keycloakBackendVolumeSize: "10Gi"
 
 storkRequired: false
+nodeAffinityLabel:
 
 pxcentralDBPassword: Password1
 caCertsSecretName: ""
@@ -66,7 +67,6 @@ pxmonitor:
   pxCentralEndpoint: 
   sslEnabled: false
   oidcClientID: pxcentral
-  nodeAffinityLabel:
 
 service:
   pxCentralUIServiceType: "LoadBalancer"
@@ -113,7 +113,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 1.2.1
+    tag: 1.3.0-dev
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx

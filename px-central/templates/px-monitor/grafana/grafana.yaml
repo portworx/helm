@@ -171,8 +171,8 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              {{- if .Values.pxmonitor.nodeAffinityLabel }}
-              - key: {{ .Values.pxmonitor.nodeAffinityLabel }}
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
                 operator: Exists
               {{- else }}
               - key: pxmonitor/enabled
