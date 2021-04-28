@@ -50,12 +50,14 @@ post_install_job="pxcentral-post-install-hook"
 usage()
 {
    echo ""
-   echo "Usage: $0 --namespace <namespace> --helmrepo <helm repo name> --kubeconfig <kubeconfig file name> --rollback"
+   echo "Usage: $0 --namespace <namespace> --helmrepo <helm repo name> --kubeconfig <kubeconfig file name>"
    echo -e "\t--namespace <namespace> namespace in which px-central charts are installed"
    echo -e "\t--helmrepo <helm repo name for px-central components> helm repo name , can get with helm repo list command"
    echo -e "\n\t Optional parameters"
    echo -e "\t\t--kubeconfig <kubeconfig file path> kubeconfig file to set the context"
-   echo -e "\t\t--rollback, rollback will take the deployment to given version. This option will be used when the customer was blocked with any unknown mongo migration failures."
+   echo -e "\t\t--mongo-trial-migration if specified will do a trial migration from etcd to mongodb datastore"
+   echo -e "\t\t--rollback-version, rollback will take the deployment to given version. This option should be used to get unblocked after mongodb migration failures."
+   echo -e "\t\t\t\t"
 
    exit 1 # Exit script after printing help
 }
@@ -113,18 +115,18 @@ delete_resource() {
 
 set_enabled_modules() {
     namespace=$1
-    backup_match=`$kubectl_cmd --namespace $namespace describe cm pxcentral-ui-configmap | grep -A 2 FRONTEND_ENABLED_MODULES | tail -1 | grep -c PXBACKUP`
-    if [ $backup_match -gt 0 ] ; then
+    backup_match=`$kubectl_cmd --namespace $namespace get deployment px-backup`
+    if [ $? -eq 0 ] ; then
         pxbackup_enabled=true
     fi
 
-    monitor_match=`$kubectl_cmd --namespace $namespace describe cm pxcentral-ui-configmap | grep -A 2 FRONTEND_ENABLED_MODULES | tail -1 | grep -c PXMETRICS`
-    if [ $monitor_match -gt 0 ] ; then
+    monitor_match=`$kubectl_cmd --namespace $namespace get deployment pxcentral-cortex-distributor`
+    if [ $? -eq 0 ] ; then
         pxmonitor_enabled=true
     fi
 
-    ls_match=`$kubectl_cmd --namespace $namespace describe cm pxcentral-ui-configmap | grep -A 2 FRONTEND_ENABLED_MODULES | tail -1 | grep -c PXLICENSE`
-    if [ $ls_match -gt 0 ] ; then
+    ls_match=`$kubectl_cmd --namespace $namespace get deployment pxcentral-license-server`
+    if [ $? -eq 0 ] ; then
         pxls_enabled=true
     fi
 
@@ -210,6 +212,107 @@ mongo_trial_migration() {
     exit 0
 }
 
+do_rollback() {
+    namespace=$1
+    version=$2
+
+    imagetag="1.3.0-dev"
+    jobspec='
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pxcentral-post-install-hook
+  namespace:
+spec:
+  activeDeadlineSeconds: 2400
+  backoffLimit: 5
+  completions: 1
+  parallelism: 1
+  template:
+    metadata:
+      labels:
+        job-name: pxcentral-post-install-hook
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+      containers:
+      - command:
+        - python
+        - -u
+        - /pxcentral-post-install/pxc-post-setup.py
+        env:
+        - name: LOG_LEVEL
+          value: INFO
+        - name: UPDATE_ADMIN_USER_PROFILE
+          value: "true"
+        - name: PXC_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: DEPLOYMENT_TYPE
+          value: upgrade
+        image: docker.io/portworx/pxcentral-onprem-post-setup:'$imagetag'
+        imagePullPolicy: Always
+        name: pxcentral-post-setup
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      imagePullSecrets:
+      - name: docregistry-secret
+      restartPolicy: Never
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 1000
+      serviceAccount: pxcentral-apiserver
+      serviceAccountName: pxcentral-apiserver
+      terminationGracePeriodSeconds: 30
+'
+    # if rollback is set, set the datastore back to kvdb and
+    # reset the images to rollback image version provided by user.
+    # Reset image in px-backup deploy.
+    $kubectl_cmd  patch  deploy px-backup -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"command\":[\"/px-backup\",\"start\",\"--datastoreEndpoints=etcd:http://pxc-backup-etcd-0.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-1.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-2.pxc-backup-etcd-headless:2379\"],\"name\":\"px-backup\",\"image\":\"docker.io/portworx/px-backup:$version\",\"env\":[{\"name\":\"PX_BACKUP_DEFAULT_DATASTORE\",\"value\":\"kvdb\"}]}]}}}}"
+	$kubectl_cmd  patch  deploy pxcentral-backend -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"pxcentral-backend\",\"image\":\"docker.io/portworx/pxcentral-onprem-ui-backend:$version\"}]}}}}"
+	$kubectl_cmd  patch  deploy pxcentral-frontend -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"pxcentral-frontend\",\"image\":\"docker.io/portworx/pxcentral-onprem-ui-frontend:$version\"}]}}}}"
+	$kubectl_cmd  patch  deploy pxcentral-lh-middleware -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"pxcentral-lh-middleware\",\"image\":\"docker.io/portworx/pxcentral-onprem-ui-lhbackend:$version\"}]}}}}"
+	$kubectl_cmd delete sa pxc-backup-mongodb -n $namespace
+    $kubectl_cmd delete secret pxc-backup-mongodb -n $namespace
+    $kubectl_cmd delete svc pxc-backup-mongodb-headless -n $namespace
+    $kubectl_cmd delete cm pxc-backup-mongodb-scripts -n $namespace
+    $kubectl_cmd delete sts pxc-backup-mongodb -n $namespace
+    $kubectl_cmd delete pvc pxc-mongodb-data-pxc-backup-mongodb-0 pxc-mongodb-data-pxc-backup-mongodb-1 pxc-mongodb-data-pxc-backup-mongodb-2 -n $namespace
+
+    # Rerunning of post install job
+    # If post install job is present and jq is present, rerun the exising post install job
+    # Else rerun the job with yaml spec.
+    $kubectl_cmd get job pxcentral-post-install-hook -n $namespace
+    job_exists=$?
+    type jq
+    jq_exists=$?
+    if [ $job_exists -eq 0 ] && [ $jq_exists -eq 0 ]; then
+        $kubectl_cmd get job pxcentral-post-install-hook -n $namespace -o json | jq 'del(.spec.selector)' | jq 'del(.spec.template.metadata.labels)' | $kubectl_cmd -n $namespace replace --force -f -
+    else
+        echo "Rerunning the post install job again by applying the job yaml"
+        $kubectl_cmd delete job pxcentral-post-install-hook -n $namespace
+        echo -e "$jobspec" | $kubectl_cmd -n $namespace apply -f -
+    fi
+    echo -e "
+    Wait for job 'pxcentral-post-install-hook' status to be in 'Completed' state.
+        kubectl get po --namespace $namespace -ljob-name=pxcentral-post-install-hook  -o wide
+    "
+    exit 0
+}
+
 # By default rollback will not be set to any version.
 # rollback need to set, when the mongo migration failed and 
 # decision is made to rollback to any older version to unblock the customer and 
@@ -237,9 +340,9 @@ do
             shift
             shift
             ;;
-        --rollback)
-            echo "rollback = $2"
-            rollback=$2
+        --rollback-version)
+            echo "rollback version = $2"
+            rollbackversion=$2
             shift
             shift
             ;;
@@ -274,6 +377,17 @@ fi
 if [ "$mongotrialmigration" == true ]; then
     mongo_trial_migration $namespace
 fi
+
+# If rollbackversion is set do the rollback
+if [ ! -z "$rollbackversion" ]; then
+    echo "Input rollback version:  $rollbackversion"
+    if [ $rollbackversion != "1.2.2" ] && [ $rollbackversion != "1.2.3" ]; then
+        echo "rollback version is $rollbackversion but rollback is supported only to 1.2.3 or 1.2.2"
+        exit 1
+    fi
+    do_rollback $namespace $rollbackversion
+fi
+
 echo -e "\nStep-1 : Looking for enabled features"
 set_enabled_modules $namespace
 echo "pxbackup: $pxbackup_enabled, pxmonitor: $pxmonitor_enabled, pxlicenseserver: $pxls_enabled"
@@ -335,22 +449,11 @@ echo -e "\nStep-6 : Starting upgrade now"
 # Version as global
 upgrade_cmd="$helm_cmd --namespace $namespace upgrade $pxbackup_release $helmrepo/px-central --version $px_central_version -f helm_values.yaml"
 
-if [ "$pxbackup_enabled" == true ] && [ -z "$rollback" ]; then
+if [ "$pxbackup_enabled" == true ] && [ -z "$rollbackversion" ]; then
     upgrade_cmd="$upgrade_cmd --set pxbackup.enabled=true"
     # mongomigration will be set to incomplete by default, since this script will be called for upgrade only
     # Also etcd statefulset needs to be retained.
     upgrade_cmd="$upgrade_cmd --set pxbackup.mongoMigration=incomplete,pxbackup.datastore=mongodb,pxbackup.retainEtcd=true"
-elif [ "$pxbackup_enabled" == true ] && [ ! -z "$rollback" ]; then
-    echo "rollback case $rollback"
-    # if rollback is set, set the datastore back to kvdb and
-    # reset the images to rollback image version provided by user.
-    # Reset image in px-backup deploy.
-    $kubectl_cmd  patch  deploy px-backup -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"command\":[\"/px-backup\",\"start\",\"--datastoreEndpoints=etcd:http://pxc-backup-etcd-0.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-1.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-2.pxc-backup-etcd-headless:2379\"],\"name\":\"px-backup\",\"image\":\"docker.io/portworx/px-backup:$rollback\",\"env\":[{\"name\":\"PX_BACKUP_DEFAULT_DATASTORE\",\"value\":\"kvdb\"}]}]}}}}"
-	$kubectl_cmd  patch  deploy pxcentral-backend -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"pxcentral-backend\",\"image\":\"docker.io/portworx/pxcentral-onprem-ui-backend:$rollback\"}]}}}}"
-	$kubectl_cmd  patch  deploy pxcentral-frontend -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"pxcentral-frontend\",\"image\":\"docker.io/portworx/pxcentral-onprem-ui-frontend:$rollback\"}]}}}}"
-	$kubectl_cmd  patch  deploy pxcentral-lh-middleware -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"pxcentral-lh-middleware\",\"image\":\"docker.io/portworx/pxcentral-onprem-ui-lhbackend:$rollback\"}]}}}}"
-	$kubectl_cmd delete sts pxc-backup-mongodb -n $namespace
-	exit 0
 fi
 
 if [ "$pxmonitor_enabled" == true ]; then
@@ -362,8 +465,8 @@ fi
 
 echo "upgrade command: $upgrade_cmd"
 $upgrade_cmd
-if [ $? != 0 ]; then
-    echo "Upgrade to single chart with 1.3.0 failed"
+if [ $? -ne 0 ]; then
+    echo "Upgrade to single chart with $px_central_version failed"
     exit 1
 fi
 
@@ -375,7 +478,7 @@ if [ "$pxls_enabled" == true ]; then
     $kubectl_cmd --namespace $namespace delete job pxcentral-license-ha-setup
 fi
 
-echo "Upgraded to single chart with 1.3.0 version"
+echo "Upgraded to single chart with $px_central_version version"
 $helm_cmd list --namespace $namespace
 
 echo -e "
