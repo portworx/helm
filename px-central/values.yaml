@@ -18,7 +18,7 @@ persistentStorage:
   keycloakBackendVolumeSize: "10Gi"
 
 storkRequired: false
-nodeAffinityLabel:
+nodeAffinityLabel: ""
 
 pxcentralDBPassword: Password1
 caCertsSecretName: ""
