@@ -511,6 +511,7 @@ Parameter | Description | Default
 `persistentStorage.keycloakThemeVolumeSize` | Keycloak frontend theme volume size | `"5Gi"`
 `persistentStorage.keycloakBackendVolumeSize` | Keycloak backend volume size | `"10Gi"`
 `storkRequired` | Scheduler name as stork | `false`
+`nodeAffinityLabel` | Label for node affinity for px-central components| `""`
 `pxcentralDBPassword` | PX-Central cluster store mysql database password | `Password1`
 `caCertsSecretName` | Name of the Kubernetes Secret, which contains the CA Certificates. | `""`
 `oidc` | Enable OIDC for PX-Central and PX-backup for RBAC | `""`
@@ -579,7 +580,6 @@ Parameter | Description | Default
 `images` | PX-Backup deployment images | `""`
 `pxbackup.enabled` | Enabled PX-Backup | `false`
 `pxbackup.orgName` | PX-Backup organization name | `default`
-`pxbackup.nodeAffinityLabel` | Label for node affinity for px-central components| `""`
 `images.pxBackupImage.registry` | PX-Backup image registry | `docker.io`
 `images.pxBackupImage.repo` | PX-Backup image repo | `portworx`
 `images.pxBackupImage.imageName` | PX-Backup image name | `px-backup`
@@ -603,7 +603,6 @@ Parameter | Description | Default
 `pxmonitor.sslEnabled` | PX-Central UI is accessibe on https | `false`
 `pxmonitor.oidcClientID` | PX-Central internal oidc client ID | `pxcentral`
 `pxmonitor.oidcClientSecret` | PX-Central internal oidc client secret | ``
-`pxmonitor.nodeAffinityLabel` | Label for node affinity for monitor component| `""`
 `installCRDs` | Install metrics stack required crds | `false`
 `storkRequired` | Scheduler name as stork | `false`
 `clusterDomain` | Cluster domain | `cluster.local`

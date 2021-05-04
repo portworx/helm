@@ -99,6 +99,20 @@ spec:
       {{- if eq .Values.storkRequired true }}
       schedulerName: stork
       {{- end }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
+              - key: pxmonitor/enabled
+                operator: NotIn
+                values:
+                - "false"
+              {{- end }}
       {{- if $isOpenshiftCluster}}
       {{- else }}
       securityContext:

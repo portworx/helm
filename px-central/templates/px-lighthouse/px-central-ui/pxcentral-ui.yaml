@@ -143,8 +143,8 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              {{- if .Values.pxbackup.nodeAffinityLabel }}
-              - key: {{ .Values.pxbackup.nodeAffinityLabel }}
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
                 operator: Exists
               {{- else }}
               - key: pxbackup/enabled
@@ -273,8 +273,8 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              {{- if .Values.pxbackup.nodeAffinityLabel }}
-              - key: {{ .Values.pxbackup.nodeAffinityLabel }}
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
                 operator: Exists
               {{- else }}
               - key: pxbackup/enabled
@@ -408,8 +408,8 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              {{- if .Values.pxbackup.nodeAffinityLabel }}
-              - key: {{ .Values.pxbackup.nodeAffinityLabel }}
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
                 operator: Exists
               {{- else }}
               - key: pxbackup/enabled
