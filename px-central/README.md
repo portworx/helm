@@ -603,6 +603,8 @@ Parameter | Description | Default
 `pxmonitor.sslEnabled` | PX-Central UI is accessibe on https | `false`
 `pxmonitor.oidcClientID` | PX-Central internal oidc client ID | `pxcentral`
 `pxmonitor.oidcClientSecret` | PX-Central internal oidc client secret | ``
+`pxmonitor.consulBindInterface` | Exclusive bind interface for consul (ex: eth0) | `""`
+`pxmonitor.cortex.alertmanager.advertiseAddress` | Advertise address for alert manager (supported values - "pod_ip") | `""`
 `installCRDs` | Install metrics stack required crds | `false`
 `storkRequired` | Scheduler name as stork | `false`
 `clusterDomain` | Cluster domain | `cluster.local`
