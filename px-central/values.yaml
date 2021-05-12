@@ -67,6 +67,10 @@ pxmonitor:
   pxCentralEndpoint: 
   sslEnabled: false
   oidcClientID: pxcentral
+  consulBindInterface: ""
+  cortex:
+    alertmanager:
+        advertiseAddress: ""
 
 service:
   pxCentralUIServiceType: "LoadBalancer"
@@ -204,7 +208,7 @@ images:
     registry: docker.io
     repo: bitnami
     imageName: consul
-    tag: 1.8.0-debian-10-r24
+    tag: 1.9.5-debian-10-r18
   dnsmasqImage:
     registry: docker.io
     repo: pwxbuild

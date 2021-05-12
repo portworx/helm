@@ -415,6 +415,10 @@ spec:
               value: "8300"
             - name: CONSUL_SERF_LAN_PORT_NUMBER
               value: "8301"
+            {{- if .Values.pxmonitor.consulBindInterface }}
+            - name: CONSUL_BIND_INTERFACE
+              value: {{ .Values.pxmonitor.consulBindInterface }}
+            {{- end }}
           livenessProbe:
             exec:
               command:
