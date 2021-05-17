@@ -16,6 +16,8 @@ data:
   setup.sh: |-
     #!/bin/bash
 
+    . /opt/bitnami/scripts/mongodb-env.sh
+
     echo "Advertised Hostname: $MONGODB_ADVERTISED_HOSTNAME"
 
     if [[ "$MY_POD_NAME" = "pxc-backup-mongodb-0" ]]; then
