@@ -2,9 +2,9 @@
 
 # Script usage examples
 # 
-# Ex: ./migration.sh --namespace px-backup --helmrepo portworx
+# Ex: ./migration.sh --namespace px-backup --helmrepo portworx --admin-password password
 # When using the portworx/helm git repo directly for airgapped environments 
-# Ex: ./migration.sh --namespace px-backup --helmrepo /root/portworx/helm
+# Ex: ./migration.sh --namespace px-backup --helmrepo /root/portworx/helm --admin-password password
 
 saListMonitor="px-monitor pxcentral-prometheus pxcentral-prometheus-operator"
 secretListMonitor="pxcentral-cortex pxcentral-cortex-cassandra"
@@ -53,10 +53,11 @@ usage()
    echo "Usage: $0 --namespace <namespace> --helmrepo <helm repo name> --kubeconfig <kubeconfig file name>"
    echo -e "\t--namespace <namespace> namespace in which px-central charts are installed"
    echo -e "\t--helmrepo <helm repo name for px-central components> helm repo name , can get with helm repo list command"
+   echo -e "\t--admin-password <current admin user password needed to update keycloak for RBAC settings> admin user current password"
    echo -e "\n\t Optional parameters"
-   echo -e "\t\t--kubeconfig <kubeconfig file path> kubeconfig file to set the context"
-   echo -e "\t\t--mongo-trial-migration if specified will do a trial migration from etcd to mongodb datastore"
-   echo -e "\t\t--rollback-version, rollback will take the deployment to given version. This option should be used to get unblocked after mongodb migration failures."
+   echo -e "\t--kubeconfig <kubeconfig file path> kubeconfig file to set the context"
+   echo -e "\t--mongo-trial-migration if specified will do a trial migration from etcd to mongodb datastore"
+   echo -e "\t--rollback-version, rollback will take the deployment to given version. This option should be used to get unblocked after mongodb migration failures."
    echo -e "\t\t\t\t"
 
    exit 1 # Exit script after printing help
@@ -334,6 +335,12 @@ do
             shift
             shift
             ;;
+        --admin-password)
+            echo "admin user password = $2"
+            password=$2
+            shift
+            shift
+            ;;
         --kubeconfig)
             echo "kubeconfig file = $2"
             kubeconfig=$2
@@ -366,6 +373,14 @@ if [ "$helmrepo" == "" ]; then
     echo "--helmrepo is empty"
     usage
     exit 1
+fi
+
+if [ "$mongotrialmigration" != true ] && [ -z "$rollbackversion" ]; then
+    if [ "$password" == "" ]; then
+        echo "--admin-password is empty"
+        usage
+        exit 1
+    fi
 fi
 
 if [ "$kubeconfig" != "" ]; then
@@ -448,6 +463,10 @@ $delete_job_cmd
 echo -e "\nStep-6 : Starting upgrade now"
 # Version as global
 upgrade_cmd="$helm_cmd --namespace $namespace upgrade $pxbackup_release $helmrepo/px-central --version $px_central_version -f helm_values.yaml"
+
+if [ "$password" != "" ]; then
+    upgrade_cmd="$upgrade_cmd --set oidc.centralOIDC.defaultPassword=$password"
+fi
 
 if [ "$pxbackup_enabled" == true ] && [ -z "$rollbackversion" ]; then
     upgrade_cmd="$upgrade_cmd --set pxbackup.enabled=true"
