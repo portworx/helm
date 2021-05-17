@@ -47,17 +47,35 @@ cortex_nginx_deployment="pxcentral-cortex-nginx"
 ls_configmap="pxcentral-ls-configmap"
 post_install_job="pxcentral-post-install-hook"
 
+job_registry="docker.io"
+job_repo="portworx"
+job_image="pxcentral-onprem-post-setup"
+job_imagetag="1.3.0-dev"
+job_pull_secret="docregistry-secret"
+
+mongo_registry="docker.io"
+mongo_repo="bitnami"
+mongo_image="mongodb"
+mongo_imagetag="4.4.4-debian-10-r30"
+mongo_pull_secret="docregistry-secret"
+
 usage()
 {
    echo ""
-   echo "Usage: $0 --namespace <namespace> --helmrepo <helm repo name> --kubeconfig <kubeconfig file name>"
+   echo "Usage: $0 --namespace <namespace> --helmrepo <helm repo name> --admin-password <current password of admin> --kubeconfig <kubeconfig file name>"
    echo -e "\t--namespace <namespace> namespace in which px-central charts are installed"
    echo -e "\t--helmrepo <helm repo name for px-central components> helm repo name , can get with helm repo list command"
    echo -e "\t--admin-password <current admin user password needed to update keycloak for RBAC settings> admin user current password"
    echo -e "\n\t Optional parameters"
    echo -e "\t--kubeconfig <kubeconfig file path> kubeconfig file to set the context"
+   echo -e "\t--air-gapped, this needs to be specified when the cluster is in airgapped environment."
+   echo -e "\t--helm-values-file, file path of values.yaml which needs to be provided for airgapped clusters or if the last installation/upgrade has been done using the values.yaml"
    echo -e "\t--mongo-trial-migration if specified will do a trial migration from etcd to mongodb datastore"
    echo -e "\t--rollback-version, rollback will take the deployment to given version. This option should be used to get unblocked after mongodb migration failures."
+   echo -e "\t--image-registry, image registry is required if images need to be pulled from custom registry when either mongo-trial-migration is set or rollback is required."
+   echo -e "\t--image-repo, image repo is required if images need to be pulled from custom registry when either mongo-trial-migration is set or rollback is required."
+   echo -e "\t--image-pull-secret image-pull-secret is required for for pulling the images from custom registry."
+
    echo -e "\t\t\t\t"
 
    exit 1 # Exit script after printing help
@@ -166,19 +184,16 @@ mongo_trial_migration() {
 
     namespace=$1
     mongodeployed=false
+    image="$mongo_registry/$mongo_repo/$mongo_image:$mongo_imagetag"
+
     echo "mongotrialmigration case"
-    # Check for the presence of required files.
-    if [ ! -f "mongo.yaml" ]; then
-        echo "mongo.yaml is missing. Please download it. (curl https://raw.githubusercontent.com/portworx/helm/master/single_chart_migration/mongo.yaml -o mongo.yaml)"
-    fi
-    if [ ! -f "migrationctl" ]; then
-        echo "migrationctl is missing. Please download it. (curl https://raw.githubusercontent.com/portworx/helm/master/single_chart_migration/migrationctl -o migrationctl)"
-    fi
     # Get the storage class from the etcd PVC and use it for mongo PVC.
     sc=`$kubectl_cmd get pvc pxc-etcd-data-pxc-backup-etcd-0 -n $namespace -o yaml | grep -i "^[ ]*storageClassName" | tail -1 | awk -F ":" '{print $2}' | awk '{$1=$1}1'`
     echo "using storage class for mongo $sc"
     # update the storageclass in mongo.yaml
     sed -i 's|'storageClassName:.*'|'"storageClassName: $sc"'|g' mongo.yaml
+    sed -i 's|'image:.*'|'"image: $image"'|g' mongo.yaml
+    sed -i '/imagePullSecrets/{n;s/- name:.*/'"- name: $mongo_pull_secret"'/g}' mongo.yaml
     # Install mongoDB
     $kubectl_cmd apply -f ./mongo.yaml -n $namespace
     echo "Waiting for mongoDB to be in running state"
@@ -217,7 +232,11 @@ do_rollback() {
     namespace=$1
     version=$2
 
-    imagetag="1.3.0-dev"
+    image="$job_registry/$job_repo/$job_image:$job_imagetag"
+    backup_image="$job_registry/$job_repo/px-backup:$version"
+    uibackend_image="$job_registry/$job_repo/pxcentral-onprem-ui-backend:$version"
+    frontend_image="$job_registry/$job_repo/pxcentral-onprem-ui-frontend:$version"
+    lhbackend_image="$job_registry/$job_repo/pxcentral-onprem-ui-lhbackend:$version"
     jobspec='
 apiVersion: batch/v1
 kind: Job
@@ -260,7 +279,7 @@ spec:
               fieldPath: metadata.namespace
         - name: DEPLOYMENT_TYPE
           value: upgrade
-        image: docker.io/portworx/pxcentral-onprem-post-setup:'$imagetag'
+        image: '$image'
         imagePullPolicy: Always
         name: pxcentral-post-setup
         resources: {}
@@ -268,7 +287,7 @@ spec:
         terminationMessagePolicy: File
       dnsPolicy: ClusterFirst
       imagePullSecrets:
-      - name: docregistry-secret
+      - name: '$job_pull_secret'
       restartPolicy: Never
       schedulerName: default-scheduler
       securityContext:
@@ -282,10 +301,10 @@ spec:
     # if rollback is set, set the datastore back to kvdb and
     # reset the images to rollback image version provided by user.
     # Reset image in px-backup deploy.
-    $kubectl_cmd  patch  deploy px-backup -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"command\":[\"/px-backup\",\"start\",\"--datastoreEndpoints=etcd:http://pxc-backup-etcd-0.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-1.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-2.pxc-backup-etcd-headless:2379\"],\"name\":\"px-backup\",\"image\":\"docker.io/portworx/px-backup:$version\",\"env\":[{\"name\":\"PX_BACKUP_DEFAULT_DATASTORE\",\"value\":\"kvdb\"}]}]}}}}"
-	$kubectl_cmd  patch  deploy pxcentral-backend -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"pxcentral-backend\",\"image\":\"docker.io/portworx/pxcentral-onprem-ui-backend:$version\"}]}}}}"
-	$kubectl_cmd  patch  deploy pxcentral-frontend -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"pxcentral-frontend\",\"image\":\"docker.io/portworx/pxcentral-onprem-ui-frontend:$version\"}]}}}}"
-	$kubectl_cmd  patch  deploy pxcentral-lh-middleware -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"pxcentral-lh-middleware\",\"image\":\"docker.io/portworx/pxcentral-onprem-ui-lhbackend:$version\"}]}}}}"
+    $kubectl_cmd  patch  deploy px-backup -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"command\":[\"/px-backup\",\"start\",\"--datastoreEndpoints=etcd:http://pxc-backup-etcd-0.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-1.pxc-backup-etcd-headless:2379,etcd:http://pxc-backup-etcd-2.pxc-backup-etcd-headless:2379\"],\"name\":\"px-backup\",\"image\":\"$backup_image\",\"env\":[{\"name\":\"PX_BACKUP_DEFAULT_DATASTORE\",\"value\":\"kvdb\"}]}]}}}}"
+	$kubectl_cmd  patch  deploy pxcentral-backend -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"pxcentral-backend\",\"image\":\"$uibackend_image\"}]}}}}"
+	$kubectl_cmd  patch  deploy pxcentral-frontend -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"pxcentral-frontend\",\"image\":\"$frontend_image\"}]}}}}"
+	$kubectl_cmd  patch  deploy pxcentral-lh-middleware -n $namespace -p "{\"spec\":{\"template\":{\"spec\":{\"containers\":[{\"name\":\"pxcentral-lh-middleware\",\"image\":\"$lhbackend_image\"}]}}}}"
 	$kubectl_cmd delete sa pxc-backup-mongodb -n $namespace
     $kubectl_cmd delete secret pxc-backup-mongodb -n $namespace
     $kubectl_cmd delete svc pxc-backup-mongodb-headless -n $namespace
@@ -354,12 +373,39 @@ do
             shift
             ;;
         --mongo-trial-migration)
-            echo "mongotrialmigration set true"
+            echo "mongotrialmigration is set"
             mongotrialmigration=true
+            shift
+            ;;
+        --air-gapped)
+            echo "airgapped is set"
+            airgapped=true
+            shift
+            ;;
+        --helm-values-file)
+            echo "helm values file = $2"
+            helmvaluesfile=$2
             shift
             shift
             ;;
-
+        --image-registry)
+            echo "custom registry = $2"
+            image_registry=$2
+            shift
+            shift
+            ;;
+        --image-repo)
+            echo "custom repo = $2"
+            image_repo=$2
+            shift
+            shift
+            ;;
+        --image-pull-secret)
+            echo "custom repo pull secret = $2"
+            image_pull_secret=$2
+            shift
+            shift
+            ;;
     esac
 done
 
@@ -388,8 +434,40 @@ if [ "$kubeconfig" != "" ]; then
     helm_cmd="helm --kubeconfig $kubeconfig"
 fi
 
+# if airgapped option is set, then updates values.yaml is needed for upgrading.
+if [ "$airgapped" == true ]; then
+    if [ "$helmvaluesfile" == "" ]; then
+        echo "--helm-values-file <values.yaml> file is required for upgrading in airgapped environments"
+        usage
+        exit 1
+    fi
+fi
+
+if [ "$helmvaluesfile" != "" ]; then
+    if [ ! -f $helmvaluesfile ]; then
+        echo "Provided file $helmvaluesfile does not exist."
+        usage
+        exit 1
+    fi
+fi
+
 #invoke mongo trial migration, if mongotrainmigration option is set.
 if [ "$mongotrialmigration" == true ]; then
+    if [ ! -f "mongo.yaml" ] || [ ! -f "migrationctl" ]; then
+        echo "Error: Please download mongo.yaml and migrationctl files to the current directory."
+        echo "curl https://raw.githubusercontent.com/portworx/helm/master/single_chart_migration/mongo.yaml -o mongo.yaml"
+        echo "curl https://raw.githubusercontent.com/portworx/helm/master/single_chart_migration/migrationctl -o migrationctl"
+        exit 1
+    fi
+    if [ "$image_registry" != "" ]; then
+        mongo_registry=$image_registry
+    fi
+    if [ "$image_repo" != "" ]; then
+        mongo_repo=$image_repo
+    fi
+    if [ "$image_pull_secret" != "" ]; then
+        mongo_pull_secret=$image_pull_secret
+    fi
     mongo_trial_migration $namespace
 fi
 
@@ -400,6 +478,16 @@ if [ ! -z "$rollbackversion" ]; then
         echo "rollback version is $rollbackversion but rollback is supported only to 1.2.3 or 1.2.2"
         exit 1
     fi
+    if [ "$image_registry" != "" ]; then
+        job_registry=$image_registry
+    fi
+    if [ "$image_repo" != "" ]; then
+        job_repo=$image_repo
+    fi
+    if [ "$image_pull_secret" != "" ]; then
+        job_pull_secret=$image_pull_secret
+    fi
+
     do_rollback $namespace $rollbackversion
 fi
 
@@ -462,7 +550,14 @@ $delete_job_cmd
 # Do the upgrade
 echo -e "\nStep-6 : Starting upgrade now"
 # Version as global
-upgrade_cmd="$helm_cmd --namespace $namespace upgrade $pxbackup_release $helmrepo/px-central --version $px_central_version -f helm_values.yaml"
+upgrade_cmd="$helm_cmd --namespace $namespace upgrade $pxbackup_release $helmrepo/px-central --version $px_central_version"
+
+if [ "$helmvaluesfile" == "" ]; then
+    upgrade_cmd="$upgrade_cmd -f helm_values.yaml"
+else
+    upgrade_cmd="$upgrade_cmd -f $helmvaluesfile"
+fi
+
 
 if [ "$password" != "" ]; then
     upgrade_cmd="$upgrade_cmd --set oidc.centralOIDC.defaultPassword=$password"
