@@ -1,4 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
+{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 apiVersion: v1
 kind: ConfigMap
@@ -28,6 +29,7 @@ data:
       server pxcentral-keycloak-http:80;
     }
 
+    {{- if eq $pxMonitorEnabled true }}
     upstream grafana {
       server pxcentral-grafana:3000;
     }
@@ -35,6 +37,7 @@ data:
     upstream cortex {
       server pxcentral-cortex-nginx:80;
     }
+    {{- end }}
 
     map $http_x_forwarded_proto $myscheme {
       default $http_x_forwarded_proto;
@@ -78,6 +81,7 @@ data:
         proxy_set_header Port  $http_port;
         proxy_set_header X-Forwarded-Port  $http_port;
       }
+      {{- if eq $pxMonitorEnabled true }}
       location /grafana/ {
         proxy_pass http://grafana/;
         proxy_cache_bypass  $http_upgrade;
@@ -104,6 +108,7 @@ data:
         proxy_set_header Port  $http_port;
         proxy_set_header X-Forwarded-Port  $http_port;
       }
+      {{- end }}
       error_page 404 =200 /index.html;
       error_page   500 502 503 504  /50x.html;
       location = /50x.html {
