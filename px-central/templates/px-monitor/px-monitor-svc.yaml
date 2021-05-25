@@ -1,3 +1,6 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
+{{- if eq $pxMonitorEnabled true }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -32,3 +35,4 @@ spec:
   selector:
     name: nginx
 ---
+{{- end -}}
