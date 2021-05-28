@@ -91,7 +91,7 @@ spec:
       app.kubernetes.io/instance: px-backup
       app.kubernetes.io/component: pxc-backup-mongodb-trial
   serviceName: pxc-backup-mongodb-trial-headless
-  podManagementPolicy: OrderedReady
+  podManagementPolicy: Parallel
   replicas: 3
   updateStrategy:
     type: RollingUpdate
