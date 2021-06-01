@@ -2,7 +2,7 @@ persistentStorage:
   enabled: true
   storageClassName:
   cassandra:
-    storage: 50Gi
+    storage: 8Gi
   grafana:
     storage: 20Gi
   consul:

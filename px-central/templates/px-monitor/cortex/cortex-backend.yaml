@@ -232,6 +232,6 @@ spec:
         {{- end }}
         resources:
           requests:
-            storage: {{ .Values.persistentStorage.consul.storage }}
+            storage: {{ .Values.persistentStorage.cassandra.storage }}
   {{- end }}
 {{- end -}}
