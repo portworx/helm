@@ -613,7 +613,7 @@ Parameter | Description | Default
 `persistentStorage` | Persistent storage for all px-central px-monitor components | `""`
 `persistentStorage.enabled` | Enable persistent storage | `false`
 `persistentStorage.storageClassName` | Provide storage class name which exists | `""`
-`persistentStorage.cassandra.storage` | Cassandra volumes size | `50Gi`
+`persistentStorage.cassandra.storage` | Cassandra volumes size | `8Gi`
 `persistentStorage.grafana.storage` | Grafana volumes size | `20Gi`
 `persistentStorage.consul.storage` | Consul volumes size | `8Gi`
 `securityContext` | Security context for the pod | `{runAsUser: 1000, fsGroup: 1000, runAsNonRoot: true}`
