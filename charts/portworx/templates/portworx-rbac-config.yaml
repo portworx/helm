@@ -9,6 +9,8 @@ metadata:
 
 kind: ClusterRole
 apiVersion: {{ template "rbac.apiVersion" . }}
+metadata:
+   name: node-get-put-list-role
 rules:
   - apiGroups: [""]
     resources: ["secrets"]
