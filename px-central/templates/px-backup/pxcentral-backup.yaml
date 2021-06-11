@@ -120,7 +120,9 @@ spec:
       containers:
       - env:
         - name: PX_BACKUP_NAMESPACE
-          value: {{ .Release.Namespace }}
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         - name: PX_BACKUP_DEFAULT_ORG
           value: {{ .Values.pxbackup.orgName }}
         {{- if eq $mongodbEnabled true }}
