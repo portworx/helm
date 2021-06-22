@@ -28,6 +28,8 @@
 {{- $consulToken := .Values.consul.token | default "none" }}
 {{- $etcdEndPoints := .Values.etcdEndPoint }}
 {{- $misc := .Values.misc | default "" | split " " }}
+{{- $varImages := .Values.images | default dict }}
+{{- $pullPolicy := $varImages.pullPolicy | default "Always" }}
 
 apiVersion: apps/v1
 kind: DaemonSet
@@ -76,7 +78,7 @@ spec:
                 operator: DoesNotExist
               {{- end }}
       hostNetwork: true
-      hostPID: true
+      hostPID: false
       {{- if not (eq $registrySecret "none") }}
       imagePullSecrets:
         - name: {{ $registrySecret }}
@@ -86,7 +88,7 @@ spec:
         - name: portworx
           image: {{ template "px.getImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.imageVersion }}
           terminationMessagePath: "/tmp/px-termination-log"
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $pullPolicy }}
           args:
           {{- with .Values }}
             [
@@ -200,7 +202,7 @@ spec:
                   key: AZURE_TENANT_ID
           {{ end }}
             - name: "PX_TEMPLATE_VERSION"
-              value: "v2"
+              value: "v4"
               {{ if not (eq $envVars "none") }}
               {{- $vars := $envVars | split ";" }}
               {{- range $key, $val := $vars }}
@@ -229,7 +231,7 @@ spec:
 
             {{- if eq $csi true }}
             - name: CSI_ENDPOINT
-              value: unix:///var/lib/kubelet/plugins/com.openstorage.pxd/csi.sock
+              value: unix:///var/lib/kubelet/plugins/pxd.portworx.com/csi.sock
             {{- end }}
 
           livenessProbe:
@@ -257,17 +259,23 @@ spec:
             - mountPath: /etc/pwx/etcdcerts
               name: etcdcerts
           {{- end }}
+            - name: diagsdump
+              mountPath: /var/cores
             - name: dockersock
               mountPath: /var/run/docker.sock
             - name: containerdsock
               mountPath: /run/containerd
+            - name: criosock
+              mountPath: /var/run/crio
             - name: etcpwx
               mountPath: /etc/pwx
-            - name: cores
-              mountPath: /var/cores
+            - name: dev
+              mountPath: /dev
           {{- if eq (.Values.deploymentType | upper | lower) "oci" }}
             - name: optpwx
               mountPath: /opt/pwx
+            - name: procmount
+              mountPath: /host_proc
             - name: sysdmount
               mountPath: /etc/systemd/system
             - name: journalmount1
@@ -278,11 +286,7 @@ spec:
               readOnly: true
             - name: dbusmount
               mountPath: /var/run/dbus
-            - name: hostproc
-              mountPath: /host_proc
           {{- else if eq (.Values.deploymentType | upper | lower) "docker" }}
-            - name: dev
-              mountPath: /dev
             - name: optpwx
               mountPath: /export_bin
             - name: dockerplugins
@@ -326,16 +330,17 @@ spec:
           {{- end }}
 
           {{- if eq $csi true }}
-        - name: csi-driver-registrar
-          imagePullPolicy: Always
+        - name: csi-node-driver-registrar
+          imagePullPolicy: {{ $pullPolicy }}
           {{- if eq $customRegistryURL "none" }}
-          image: "quay.io/k8scsi/driver-registrar:v0.2.0"
+          image: "k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.1.0"
           {{- else }}
-          image: "{{ $customRegistryURL }}/quay.io/k8scsi/driver-registrar:v0.2.0"
+          image: "{{ $customRegistryURL }}/k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.1.0"
           {{- end}}
           args:
             - "--v=5"
             - "--csi-address=$(ADDRESS)"
+            - "--kubelet-registration-path=/var/lib/kubelet/plugins/pxd.portworx.com/csi.sock"
           env:
             - name: ADDRESS
               value: /csi/csi.sock
@@ -343,9 +348,13 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
+          securityContext:
+            privileged: true
           volumeMounts:
             - name: csi-driver-path
               mountPath: /csi
+            - name: registration-dir
+              mountPath: /registration
            {{- end }}
 
       restartPolicy: Always
@@ -367,28 +376,41 @@ spec:
               path: client-key.key
             {{- end -}}
           {{- end}}
+        - name: diagsdump
+          hostPath:
+            path: {{if eq $pksInstall true }}/var/vcap/store/cores{{else}}/var/cores{{end}}
         - name: dockersock
           hostPath:
             path: {{if eq $pksInstall true}}/var/vcap/sys/run/docker/docker.sock{{else}}/var/run/docker.sock{{end}}
         - name: containerdsock
           hostPath:
             path: {{if eq $pksInstall true}}/var/vcap/sys/run/containerd{{else}}/run/containerd{{end}}
-          {{- if eq $csi true}}
-        - name: csi-driver-path
+        - name: criosock
           hostPath:
-            path: /var/lib/kubelet/plugins/com.openstorage.pxd
-            type: DirectoryOrCreate
-          {{- end}}
+            path: {{if eq $pksInstall true}}/var/vcap/sys/run/crio{{else}}/var/run/crio{{end}}
         - name: etcpwx
           hostPath:
             path: /etc/pwx
-        - name: cores
+        - name: dev
           hostPath:
-            path: {{if eq $pksInstall true }}/var/vcap/store/cores{{else}}/var/cores{{end}}
+            path: /dev
+        {{- if eq $csi true }}
+        - name: registration-dir
+          hostPath:
+            path: /var/lib/kubelet/plugins_registry
+            type: DirectoryOrCreate
+        - name: csi-driver-path
+          hostPath:
+            path: /var/lib/kubelet/plugins/pxd.portworx.com
+            type: DirectoryOrCreate
+        {{- end }}
         {{- if eq (.Values.deploymentType | upper | lower) "oci" }}
         - name: optpwx
           hostPath:
             path: {{if eq $pksInstall true }}/var/vcap/store/opt/pwx{{else}}/opt/pwx{{end}}
+        - name: procmount
+          hostPath:
+            path: /proc
         - name: sysdmount
           hostPath:
             path: /etc/systemd/system
@@ -401,9 +423,6 @@ spec:
         - name: dbusmount
           hostPath:
             path: /var/run/dbus
-        - name: hostproc
-          hostPath:
-            path: /proc
         {{- else if eq (.Values.deploymentType | upper | lower) "docker" }}
         - name: libosd
           hostPath:
@@ -477,7 +496,7 @@ spec:
       containers:
         - name: portworx-api
           image: "{{ template "px.getPauseImage" . }}/pause:3.1"
-          imagePullPolicy: Always
+          imagePullPolicy: {{ $pullPolicy }}
           readinessProbe:
             periodSeconds: 10
             httpGet:
@@ -486,3 +505,16 @@ spec:
               port: 9001
       restartPolicy: Always
       serviceAccountName: px-account
+{{- if eq $csi true }}
+---
+apiVersion: storage.k8s.io/v1beta1
+kind: CSIDriver
+metadata:
+  name: "pxd.portworx.com"
+spec:
+  attachRequired: false
+  podInfoOnMount: true
+  volumeLifecycleModes:
+  - Persistent
+  - Ephemeral
+{{- end}}
