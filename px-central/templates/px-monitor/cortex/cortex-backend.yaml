@@ -16,8 +16,8 @@ metadata:
 {{- include "px-central.labels" . | nindent 4 }}
 type: Opaque
 stringData:
-  CASSANDRA_USER: {{ .Values.cassandraUsername }}
-  CASSANDRA_PASSWORD: {{ .Values.cassandraPassword }}
+  CASSANDRA_USER: {{ .Values.cassandraUsername | quote}}
+  CASSANDRA_PASSWORD: {{ .Values.cassandraPassword | quote}}
 ---
 apiVersion: v1
 kind: Service

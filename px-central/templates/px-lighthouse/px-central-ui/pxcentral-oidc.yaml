@@ -8,5 +8,5 @@ metadata:
 {{- include "px-central.labels" . | nindent 4 }}
 type: Opaque
 stringData:
-  OIDC_CLIENT_ID: "{{ .Values.oidc.centralOIDC.clientId }}"
+  OIDC_CLIENT_ID: {{ .Values.oidc.centralOIDC.clientId | quote}}
   OIDC_ENDPOINT: "http://pxcentral-keycloak-http:80/auth/realms/master"

@@ -362,7 +362,7 @@ metadata:
 type: Opaque
 stringData:
   DB_USERNAME: "root"
-  DB_PASSWORD: {{ .Values.pxcentralDBPassword }}
+  DB_PASSWORD: {{ .Values.pxcentralDBPassword | quote}}
 ---
 {{- if eq $externalPersistentStorageEnabled true }}
 apiVersion: v1
