@@ -36,8 +36,8 @@ metadata:
   namespace: {{ .Release.Namespace }}
 type: Opaque
 stringData:
-  postgresql-username: {{ .Values.oidc.centralOIDC.keyCloakBackendUserName }}
-  postgresql-password: {{ .Values.oidc.centralOIDC.keyCloakBackendPassword }}
+  postgresql-username: {{ .Values.oidc.centralOIDC.keyCloakBackendUserName | quote}}
+  postgresql-password: {{ .Values.oidc.centralOIDC.keyCloakBackendPassword | quote}}
 ---
 apiVersion: v1
 kind: Secret
@@ -49,7 +49,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 type: Opaque
 stringData:
-  password: {{ .Values.oidc.centralOIDC.defaultPassword }}
+  password: {{ .Values.oidc.centralOIDC.defaultPassword | quote}}
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
