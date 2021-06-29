@@ -48,14 +48,14 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `drives` | Semi-colon seperated list of drives to be used for storage (example: "/dev/sda;/dev/sdb") |
 | `dataInterface` | Name of the interface <ethX> |
 | `managementInterface` | Name of the interface <ethX> |
-| `envVars` | semi-colon-separated list of environment variables that will be exported to portworx. (example: API_SERVER=http://lighthouse-new.portworx.com;MYENV1=val1;MYENV2=val2) |
+| `envVars` | semi-colon-separated list of environment variables that will be exported to portworx. (example: MYENV1=val1;MYENV2=val2) |
 | `stork` | [Storage Orchestration for Hyperconvergence](https://github.com/libopenstorage/stork). |
 | `storkVersion` | The version of stork |
-| `lighthouse` | Whether to install Lighthouse (Portworx GUI) |
 | `customRegistryURL` | Custom Docker registry |
 | `registrySecret` | Registry secret |
 | `journalDevice` | Journal device for Portworx metadata |
-| `csi` | Enable CSI (Tech Preview only) |
+| `aut` | Enable AutoPilot (Tech Preview) |
+| `csi` | Enable CSI (Tech Preview) |
 | `internalKVDB` | Internal KVDB store |
 | `etcd.credentials` | Username and password for ETCD authentication in the form user:password |
 | `etcd.certPath` | Base path where the certificates are placed. (example: if the certificates ca,.crt and the .key are in /etc/pwx/etcdcerts the value should be provided as /etc/pwx/etcdcerts Refer: https://docs.portworx.com/scheduler/kubernetes/etcd-certs-using-secrets.html) |

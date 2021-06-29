@@ -1,5 +1,7 @@
 {{- if (and (.Values.csi) (eq .Values.csi true))}}
 {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
+{{- $varImages := .Values.images | default dict }}
+{{- $pullPolicy := $varImages.pullPolicy | default "Always" }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -11,21 +13,70 @@ apiVersion: {{ template "rbac.apiVersion" . }}
 metadata:
    name: px-csi-role
 rules:
+- apiGroups: ["extensions"]
+  resources: ["podsecuritypolicies"]
+  resourceNames: ["privileged"]
+  verbs: ["use"]
+- apiGroups: ["apiextensions.k8s.io"]
+  resources: ["customresourcedefinitions"]
+  verbs: ["*"]
 - apiGroups: [""]
   resources: ["nodes"]
   verbs: ["get", "list", "watch"]
 - apiGroups: [""]
   resources: ["persistentvolumes"]
-  verbs: ["get", "list", "watch", "create", "delete", "update"]
+  verbs: ["get", "list", "watch", "create", "delete", "update", "patch"]
 - apiGroups: [""]
   resources: ["persistentvolumeclaims"]
   verbs: ["get", "list", "watch", "update"]
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims/status"]
+  verbs: ["update", "patch"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch"]
 - apiGroups: ["storage.k8s.io"]
   resources: ["storageclasses"]
   verbs: ["get", "list", "watch"]
 - apiGroups: ["storage.k8s.io"]
   resources: ["volumeattachments"]
+  verbs: ["get", "list", "watch", "update", "patch"]
+- apiGroups: ["storage.k8s.io"]
+  resources: ["csistoragecapacities"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: ["apps"]
+  resources: ["replicasets"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["list", "watch", "create", "update", "patch"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list"]
+- apiGroups: ["snapshot.storage.k8s.io"]
+  resources: ["volumesnapshots", "volumesnapshotcontents", "volumesnapshotclasses", "volumesnapshots/status", "volumesnapshotcontents/status"]
+  verbs: ["create", "get", "list", "watch", "update", "delete"]
+- apiGroups: ["csi.storage.k8s.io"]
+  resources: ["csinodeinfos"]
   verbs: ["get", "list", "watch", "update"]
+- apiGroups: ["storage.k8s.io"]
+  resources: ["csinodes"]
+  verbs: ["get", "list", "watch", "update"]
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["csi.storage.k8s.io"]
+  resources: ["csidrivers"]
+  verbs: ["create", "delete"]
+- apiGroups: [""]
+  resources: ["endpoints"]
+  verbs: ["get", "watch", "list", "delete", "update", "create"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "watch", "list", "delete", "update", "create"]
+- apiGroups: ["coordination.k8s.io"]
+  resources: ["leases"]
+  verbs: ["*"]
 ---
 kind: ClusterRoleBinding
 apiVersion: {{ template "rbac.apiVersion" . }}
@@ -48,7 +99,7 @@ metadata:
 spec:
   clusterIP: None
 ---
-kind: StatefulSet
+kind: Deployment
 apiVersion: apps/v1
 metadata:
   name: px-csi-ext
@@ -57,8 +108,7 @@ spec:
   selector:
     matchLabels:
       app: px-csi-driver
-  serviceName: "px-csi-service"
-  replicas: 1
+  replicas: 3
   template:
     metadata:
       labels:
@@ -67,34 +117,70 @@ spec:
       serviceAccount: px-csi-account
       containers:
         - name: csi-external-provisioner
-          imagePullPolicy: Always
-          image: "{{ template "px.getcsiImages" . }}/csi-provisioner:v0.2.0"
+          imagePullPolicy: {{ $pullPolicy }}
+          image: "docker.io/openstorage/csi-provisioner:v1.6.1-1"
           args:
-            - "--v=5"
-            - "--provisioner=com.openstorage.pxd"
+            - "--v=3"
+            - "--provisioner=pxd.portworx.com"
             - "--csi-address=$(ADDRESS)"
+            - "--enable-leader-election"
+            - "--leader-election-type=leases"
           env:
             - name: ADDRESS
               value: /csi/csi.sock
+          securityContext:
+            privileged: true
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
-        - name: csi-attacher
-          imagePullPolicy: Always
-          image: "{{ template "px.getcsiImages" . }}/csi-attacher:v0.2.0"
+        - name: csi-snapshotter
+          imagePullPolicy: {{ $pullPolicy }}
+          image: k8s.gcr.io/sig-storage/csi-snapshotter:v4.0.0
           args:
-            - "--v=5"
+            - "--v=3"
             - "--csi-address=$(ADDRESS)"
+            - "--leader-election=true"
           env:
             - name: ADDRESS
               value: /csi/csi.sock
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+        - name: csi-snapshot-controller
+          imagePullPolicy: {{ $pullPolicy }}
+          image: k8s.gcr.io/sig-storage/snapshot-controller:v4.0.0
+          args:
+            - "--v=3"
+            - "--leader-election=true"
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - name: socket-dir
+              mountPath: /csi
+        - name: csi-resizer
+          imagePullPolicy: {{ $pullPolicy }}
+          image: k8s.gcr.io/sig-storage/csi-resizer:v1.1.0
+          args:
+            - "--v=3"
+            - "--csi-address=$(ADDRESS)"
+            - "--leader-election=true"
+          env:
+            - name: ADDRESS
+              value: /csi/csi.sock
+          securityContext:
+            privileged: true
           volumeMounts:
             - name: socket-dir
               mountPath: /csi
       volumes:
         - name: socket-dir
           hostPath:
-            path: /var/lib/kubelet/plugins/com.openstorage.pxd
+            path: /var/lib/kubelet/plugins/pxd.portworx.com
             type: DirectoryOrCreate
     {{- with .Values.tolerations }}
       tolerations:
@@ -109,4 +195,8 @@ spec:
                 operator: {{ template "px.affinityPxEnabledOperator" . }}
                 values:
                 - {{ template "px.affinityPxEnabledValue" . }}
+              {{- if (or (not .Values.deployOnMaster) (eq .Values.deployOnMaster false))}}
+              - key: node-role.kubernetes.io/master
+                operator: DoesNotExist
+              {{- end }}
 {{- end }}

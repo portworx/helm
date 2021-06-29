@@ -2,6 +2,8 @@
 {{- $isCoreOS := .Values.isTargetOSCoreOS | default false }}
 {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
 {{- $registrySecret := .Values.registrySecret | default "none" }}
+{{- $varImages := .Values.images | default dict }}
+{{- $pullPolicy := $varImages.pullPolicy | default "Always" }}
 
 apiVersion: v1
 kind: ConfigMap
@@ -47,7 +49,8 @@ data:
           "prioritizeVerb": "prioritize",
           "weight": 5,
           "enableHttps": false,
-          "nodeCacheCapable": false
+          "nodeCacheCapable": false,
+          "httpTimeout": 300000000000
         }
       ]
     }
@@ -89,9 +92,14 @@ spec:
   selector:
     name: stork
   ports:
-    - protocol: TCP
+    - name: extender
+      protocol: TCP
       port: 8099
       targetPort: 8099
+    - name: webhook
+      protocol: TCP
+      port: 443
+      targetPort: 443
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -130,8 +138,13 @@ spec:
         - --driver=pxd
         - --verbose
         - --leader-elect=true
-        imagePullPolicy: Always
+        - --health-monitor-interval=120
+        - --webhook-controller=false
+        imagePullPolicy: {{ $pullPolicy }}
         image: {{ template "px.getStorkImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.storkVersion }}
+        env:
+        - name: "PX_SERVICE_NAME"
+          value: "portworx-api"
         resources:
           requests:
             cpu: '0.1'
@@ -142,14 +155,6 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: px/enabled
-                operator: {{ template "px.affinityPxEnabledOperator" . }}
-                values:
-                - {{ template "px.affinityPxEnabledValue" . }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
@@ -160,17 +165,6 @@ spec:
                     - stork
               topologyKey: "kubernetes.io/hostname"
       serviceAccountName: stork-account
----
-apiVersion: policy/v1beta1
-kind: PodDisruptionBudget
-metadata:
-  name: stork-pdb
-  namespace: kube-system
-spec:
-  minAvailable: 1
-  selector:
-    matchLabels:
-      name: stork
 ---
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
@@ -230,7 +224,7 @@ rules:
     resources: ["persistentvolumeclaims", "persistentvolumes"]
     verbs: ["get", "list", "watch"]
   - apiGroups: ["storage.k8s.io"]
-    resources: ["storageclasses", "csinodes"]
+    resources: ["storageclasses", "csinodes", "csidrivers", "csistoragecapacities"]
     verbs: ["get", "list", "watch"]
   - apiGroups: ["coordination.k8s.io"]
     resources: ["leases"]
@@ -281,6 +275,7 @@ spec:
         - --policy-configmap-namespace=kube-system
         - --lock-object-name=stork-scheduler
         image: "{{ template "px.getk8sImages" . }}/kube-scheduler-amd64:{{ template "px.kubernetesVersion" . }}"
+        imagePullPolicy: {{ $pullPolicy }}
         livenessProbe:
           httpGet:
             path: /healthz
@@ -299,14 +294,6 @@ spec:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-            - matchExpressions:
-              - key: px/enabled
-                operator: {{ template "px.affinityPxEnabledOperator" . }}
-                values:
-                - {{ template "px.affinityPxEnabledValue" . }}
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
@@ -318,15 +305,4 @@ spec:
               topologyKey: "kubernetes.io/hostname"
       hostPID: false
       serviceAccountName: stork-scheduler-account
----
-apiVersion: policy/v1beta1
-kind: PodDisruptionBudget
-metadata:
-  name: stork-scheduler-pdb
-  namespace: kube-system
-spec:
-  minAvailable: 1
-  selector:
-    matchLabels:
-      name: stork-scheduler
 {{- end }}
