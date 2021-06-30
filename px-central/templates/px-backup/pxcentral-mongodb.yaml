@@ -3,6 +3,7 @@
 {{- $mongodbEnabled := eq .Values.pxbackup.datastore "mongodb" }}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $mongoCacheSize := int .Values.persistentStorage.mongoCacheSize}}
 {{- if and (eq $pxBackupEnabled true) (eq $mongodbEnabled true) }}
 apiVersion: v1
 kind: ConfigMap
@@ -196,7 +197,7 @@ spec:
             - name: MONGODB_ENABLE_DIRECTORY_PER_DB
               value: "no"
             - name: MONGODB_EXTRA_FLAGS
-              value: {{ printf "--wiredTigerCacheSizeGB=%d" .Values.persistentStorage.mongoCacheSize}}
+              value: {{ printf "--wiredTigerCacheSizeGB=%d" $mongoCacheSize }}
           ports:
             - containerPort: 27017
               name: mongodb
