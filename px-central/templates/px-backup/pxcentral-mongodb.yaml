@@ -195,6 +195,8 @@ spec:
               value: "no"
             - name: MONGODB_ENABLE_DIRECTORY_PER_DB
               value: "no"
+            - name: MONGODB_EXTRA_FLAGS
+              value: {{ printf "--wiredTigerCacheSizeGB=%d" .Values.persistentStorage.mongoCacheSize}}
           ports:
             - containerPort: 27017
               name: mongodb

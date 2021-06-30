@@ -14,6 +14,7 @@ persistentStorage:
   mysqlVolumeSize: "100Gi"
   etcdVolumeSize: "64Gi"
   mongodbVolumeSize: "64Gi"
+  mongoCacheSize: 4
   keycloakThemeVolumeSize: "5Gi"
   keycloakBackendVolumeSize: "10Gi"
 
