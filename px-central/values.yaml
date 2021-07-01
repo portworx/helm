@@ -117,8 +117,8 @@ images:
   pxcentralApiServerImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-api
-    tag: 1.3.0-dev
+    imageName: pxcentral-onprem-api-base
+    tag: 2.0.0-dev
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
@@ -137,8 +137,8 @@ images:
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-post-setup
-    tag: 1.3.0-dev
+    imageName: pxcentral-onprem-post-setup-base
+    tag: 2.0.0-dev
   keycloakBackendImage:
     registry: docker.io
     repo: portworx
