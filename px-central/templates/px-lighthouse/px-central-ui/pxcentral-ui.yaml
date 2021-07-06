@@ -189,6 +189,11 @@ spec:
                 secretKeyRef:
                   name: pxc-backup-secret
                   key: OIDC_CLIENT_SECRET
+            - name: KEYCLOAK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: credential
+                  name: px-central-admin
           envFrom:
             - configMapRef:
                 name: pxcentral-ui-configmap
@@ -236,6 +241,11 @@ spec:
                 secretKeyRef:
                   name: pxc-backup-secret
                   key: OIDC_CLIENT_SECRET
+            - name: KEYCLOAK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: credential
+                  name: px-central-admin
           resources: {}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
