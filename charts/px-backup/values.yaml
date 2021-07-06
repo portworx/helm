@@ -33,6 +33,7 @@ pxbackup:
   enabled: true
   orgName: default
   callHome: true
+  nodeAffinityLabel:
 
 operatorToChartUpgrade: false
 

@@ -156,10 +156,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxbackup.nodeAffinityLabel }}
+              - key: {{ .Values.pxbackup.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxbackup/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       initContainers:
         - name: init-mysql-db
           image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralBackendImage.registry .Values.images.pxcentralBackendImage.repo .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
@@ -281,10 +286,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxbackup.nodeAffinityLabel }}
+              - key: {{ .Values.pxbackup.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxbackup/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       containers:
         - name: pxcentral-frontend
           image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralFrontendImage.registry .Values.images.pxcentralFrontendImage.repo .Values.images.pxcentralFrontendImage.imageName .Values.images.pxcentralFrontendImage.tag }}
@@ -376,7 +386,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: "100Gi"
+      storage: {{ .Values.persistentStorage.mysqlVolumeSize }}
   {{- if .Values.persistentStorage.storageClassName }}
   storageClassName: {{ .Values.persistentStorage.storageClassName }}
   {{- end }}
@@ -411,10 +421,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxbackup.nodeAffinityLabel }}
+              - key: {{ .Values.pxbackup.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxbackup/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       {{- if eq .Values.storkRequired true }}
       schedulerName: stork
       {{- end }}

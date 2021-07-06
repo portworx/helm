@@ -1,0 +1,47 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
+{{- $sslEnabled := .Values.pxmonitor.sslEnabled | default false -}}
+{{- if eq $pxMonitorEnabled true }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pxcentral-grafana-ini-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    grafana: portworx
+    app.kubernetes.io/component: pxcentral-grafana
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  grafana.ini: |
+    [users]
+    auto_assign_org_role = Admin
+
+    [server]
+    domain = {{ .Values.pxmonitor.pxCentralEndpoint }} 
+    root_url = "%(protocol)s://%(domain)s/grafana"
+    enforce_domain = false
+
+    [auth.basic]
+    disable_login_form= true
+    oauth_auto_login= true
+    
+    [auth.generic_oauth]
+    enabled= true
+    client_id= {{ .Values.pxmonitor.oidcClientID }}
+    name = "OIDC"
+    client_secret = ""
+    {{- if eq $sslEnabled true }}
+    auth_url = {{ printf "https://%s/auth/realms/master/protocol/openid-connect/auth" .Values.pxmonitor.pxCentralEndpoint }} 
+    token_url = {{ printf "https://%s/auth/realms/master/protocol/openid-connect/token" .Values.pxmonitor.pxCentralEndpoint }} 
+    api_url = {{ printf "https://%s/auth/realms/master/protocol/openid-connect/userinfo" .Values.pxmonitor.pxCentralEndpoint }} 
+    redirect_uri = {{ printf "https://%s/grafana/login/generic_oauth" .Values.pxmonitor.pxCentralEndpoint }} 
+    {{- else }}
+    auth_url = {{ printf "http://%s/auth/realms/master/protocol/openid-connect/auth" .Values.pxmonitor.pxCentralEndpoint }} 
+    token_url = {{ printf "http://%s/auth/realms/master/protocol/openid-connect/token" .Values.pxmonitor.pxCentralEndpoint }} 
+    api_url = {{ printf "http://%s/auth/realms/master/protocol/openid-connect/userinfo" .Values.pxmonitor.pxCentralEndpoint }} 
+    redirect_uri = {{ printf "http://%s/grafana/login/generic_oauth" .Values.pxmonitor.pxCentralEndpoint }} 
+    {{- end }}
+    allowed_domains = 
+    allow_sign_up = true
+---
+{{- end -}}

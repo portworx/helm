@@ -185,7 +185,6 @@ spec:
     matchLabels:
       k8s-app: pxcentral-prometheus-operator
       app.kubernetes.io/component: pxcentral-prometheus
-{{- include "px-monitor.labels" . | nindent 6 }}
   template:
     metadata:
       labels:
@@ -198,10 +197,15 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
+              {{- if .Values.pxmonitor.nodeAffinityLabel }}
+              - key: {{ .Values.pxmonitor.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
               - key: pxmonitor/enabled
                 operator: NotIn
                 values:
                 - "false"
+              {{- end }}
       containers:
         - args:
             - -namespaces={{ .Release.Namespace }}

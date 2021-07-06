@@ -17,7 +17,6 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/component: pxcentral-license-server
-{{- include "px-license-server.labels" . | nindent 6 }}
   minReadySeconds: 30
   strategy:
     rollingUpdate:

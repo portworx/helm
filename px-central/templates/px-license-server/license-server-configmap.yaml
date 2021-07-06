@@ -1,0 +1,20 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $UATLSType := .Values.pxlicenseserver.internal.lsTypeUAT -}}
+{{- $AirgappedLSType := .Values.pxlicenseserver.internal.lsTypeAirgapped -}}
+{{- $lsEnabled := .Values.pxlicenseserver.enabled | default false -}}
+{{- if eq $lsEnabled true }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pxcentral-ls-configmap
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-license-server
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  PX_CENTRAL_LICENSE_SERVER: "{{ .Values.pxlicenseserver.internal.enabled }}"
+  EXTERNAL_LICENSE_SERVER: "{{ .Values.pxlicenseserver.external.enabled }}"
+  MAIN_NODE: "{{ .Values.pxlicenseserver.mainNodeIP }}"
+  BACKUP_NODE: "{{ .Values.pxlicenseserver.backupNodeIP }}"
+  LICENSE_SERVER_TYPE: "{{ .Values.pxlicenseserver.internal.type }}"
+{{- end -}}
