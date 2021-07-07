@@ -28,7 +28,7 @@ $ helm search repo portworx
 Output:
 ```console
 NAME                    CHART VERSION   APP VERSION         DESCRIPTION
-portworx/px-central     1.3.0        	  1.3.0      	    A Helm chart for installing PX-Central        
+portworx/px-central     2.0.0        	  2.0.0      	    A Helm chart for installing PX-Central
 ```
 
 Helm 3:
@@ -57,7 +57,7 @@ $ kubectl delete ns central
 
 ## Upgrading the Chart
 
-  ### To Upgrade from >= 1.3.0 versions:
+  ### To Upgrade from >= 2.0.0 versions:
   To upgrade px-central:
 
   1. helm repo update

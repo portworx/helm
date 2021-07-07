@@ -1,0 +1,34 @@
+pxCentralVersion: 2.0.0
+modules:
+  pxCentral:
+    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:2.0.0-dev"
+    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:2.0-dev"
+    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:2.0-dev"
+    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:2.0-dev"
+    pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:2.0.0-dev"
+    postgresql: "docker.io/portworx/postgresql:11.7.0-debian-10-r9"
+    keycloak: "docker.io/portworx/keycloak:9.0.2"
+    keycloakLoginTheme: "docker.io/portworx/keycloak-login-theme:1.0.4"
+    busybox: "docker.io/portworx/busybox:1.31"
+    mysql: "docker.io/portworx/mysql:5.7.22"
+  pxBackup:
+    pxBackup: "docker.io/portworx/px-backup-base:2.0-dev"
+    etcd: "docker.io/portworx/etcd:3.4.13-debian-10-r22"
+    mongodb: "docker.io/portworx/mongodb:4.4.4-debian-10-r30"
+  pxMonitor:
+    cortex: "docker.io/portworx/cortex:v1.1.0"
+    cassandra: "docker.io/portworx/cassandra:3.11.6-debian-10-r153"
+    nginx: "docker.io/portworx/nginx:1.17"
+    consul: "docker.io/portworx/consul:1.9.5-debian-10-r18"
+    goDnsmasq: "docker.io/portworx/go-dnsmasq:release-1.0.7"
+    grafana: "docker.io/portworx/grafana:7.1.3"
+    prometheus: "docker.io/portworx/prometheus:v2.7.1"
+    configmapReload: "docker.io/portworx/configmap-reload:v0.0.1"
+    prometheusConfigReloader: "docker.io/portworx/prometheus-config-reloader:v0.34.0"
+    prometheusOperator: "docker.io/portworx/prometheus-operator:v0.34.0"
+    memcachedExporter: "docker.io/portworx/memcached-exporter:v0.4.1"
+    memcachedIndex: "docker.io/portworx/memcached:1.5.7-alpine"
+    memcached: "docker.io/portworx/memcached:1.5.12-alpine"
+    pxOperator: "docker.io/portworx/px-operator:1.3.1"
+  pxLicenseServer:
+    pxEls: "docker.io/portworx/px-els:1.1.0-rc0"

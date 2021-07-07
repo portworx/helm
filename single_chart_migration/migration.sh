@@ -37,7 +37,7 @@ pxls_release=""
 helm_cmd="helm"
 kubectl_cmd="kubectl"
 
-px_central_version="1.3.0"
+px_central_version="2.0.0"
 pxbackup_enabled=false
 pxmonitor_enabled=false
 pxls_enabled=false
@@ -50,7 +50,7 @@ post_install_job="pxcentral-post-install-hook"
 job_registry="docker.io"
 job_repo="portworx"
 job_image="pxcentral-onprem-post-setup"
-job_imagetag="1.3.0-dev"
+job_imagetag="2.0.0-dev"
 job_pull_secret="docregistry-secret"
 
 mongo_registry="docker.io"

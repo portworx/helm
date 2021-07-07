@@ -1,11 +1,11 @@
-# Upgrading to Single Chart from 1.2.x to 1.3.0
+# Upgrading to Single Chart from 1.2.x to 2.0.0
 
 PX-Central with 1.2.x has 3 different charts.
    - px-backup
    - px-monitor
    - px-license-server
 
-From 1.3.0, px-central is supported with a single chart (px-central) and the above features components can be enabled or disabled.
+From 2.0.0, px-central is supported with a single chart (px-central) and the above features components can be enabled or disabled.
 
 ### Steps to Upgrade:
 
@@ -37,7 +37,7 @@ $ helm search repo portworx
 $ helm ls -A | grep "px-backup-[0-9].[0-9].[0-9]" | awk '{print $2}'
 ```
 
-- Run migration.sh to upgrade to 1.3.0
+- Run migration.sh to upgrade to 2.0.0
 
 ```console
 $ ./migration.sh --namespace <namespace> --helmrepo <helm repo name> --admin-password <current admin user password>
