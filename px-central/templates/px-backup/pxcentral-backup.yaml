@@ -150,7 +150,7 @@ spec:
           httpGet:
             path: /v1/health
             port: 10001
-          initialDelaySeconds: 15
+          initialDelaySeconds: 600
           timeoutSeconds: 1
           periodSeconds: 60
         {{- if .Values.caCertsSecretName }}  
