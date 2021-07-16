@@ -181,16 +181,16 @@ spec:
             exec:
               command: ["/bin/sh", "-c", "nodetool status"]
             initialDelaySeconds: 60
-            periodSeconds: 30
-            timeoutSeconds: 5
+            periodSeconds: 60
+            timeoutSeconds: 10
             successThreshold: 1
             failureThreshold: 5
           readinessProbe:
             exec:
               command: ["/bin/sh", "-c", "nodetool status | grep -E \"^UN\\s+${POD_IP}\""]
             initialDelaySeconds: 60
-            periodSeconds: 10
-            timeoutSeconds: 5
+            periodSeconds: 30
+            timeoutSeconds: 10
             successThreshold: 1
             failureThreshold: 5
           ports:
