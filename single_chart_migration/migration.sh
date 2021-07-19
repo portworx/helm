@@ -46,6 +46,7 @@ frontend_deployment="pxcentral-frontend"
 cortex_nginx_deployment="pxcentral-cortex-nginx"
 ls_configmap="pxcentral-ls-configmap"
 post_install_job="pxcentral-post-install-hook"
+cassandra_pvc_name="pxcentral-cassandra-data-pxcentral-cortex-cassandra-0"
 
 job_registry="docker.io"
 job_repo="portworx"
@@ -572,6 +573,12 @@ fi
 
 if [ "$pxmonitor_enabled" == true ]; then
     upgrade_cmd="$upgrade_cmd --set pxmonitor.enabled=true"
+    cassandra_pvc_check_cmd="$kubectl_cmd --namespace $namespace get pvc $cassandra_pvc_name"
+    $cassandra_pvc_check_cmd
+    if [ $? -eq 0 ]; then
+        cassandra_pvc_size=`$kubectl_cmd --namespace $namespace get pvc $cassandra_pvc_name | grep -v NAME | tail -1 | awk '{print $4}'`
+        upgrade_cmd="$upgrade_cmd --set persistentStorage.cassandra.storage=$cassandra_pvc_size"
+    fi
 fi
 if [ "$pxls_enabled" == true ]; then
     upgrade_cmd="$upgrade_cmd --set pxlicenseserver.enabled=true"
