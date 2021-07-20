@@ -12,6 +12,7 @@ spec:
   names:
     kind: Prometheus
     plural: prometheuses
+  preserveUnknownFields: false
   scope: Namespaced
   versions:
   - additionalPrinterColumns:
