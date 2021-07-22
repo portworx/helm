@@ -179,6 +179,8 @@ spec:
               value: "no"
             - name: MONGODB_ENABLE_DIRECTORY_PER_DB
               value: "no"
+            - name: MONGODB_EXTRA_FLAGS
+              value: --wiredTigerCacheSizeGB=4
           ports:
             - containerPort: 27017
               name: mongodb
