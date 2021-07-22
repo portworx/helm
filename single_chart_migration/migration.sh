@@ -78,8 +78,6 @@ usage()
    echo -e "\t--image-pull-secret image-pull-secret is required for for pulling the images from custom registry."
 
    echo -e "\t\t\t\t"
-
-   exit 1 # Exit script after printing help
 }
 
 verify_release()
@@ -340,9 +338,14 @@ spec:
 # allow to continue with kvdb as datastore.
 rollback=""
 mongotrialmigration=false
-for i in $@
-do
-    case $i in
+
+if [ $# -eq 0 ]; then
+    usage
+    exit 1
+fi
+
+while [ $# -gt 0 ]; do
+    case $1 in
         --helmrepo)
             echo "helm repo name = $2"
             helmrepo=$2
@@ -406,6 +409,16 @@ do
             image_pull_secret=$2
             shift
             shift
+            ;;
+        -h | --help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo
+            echo "Invalid input '$1' "
+            usage
+            exit 1
             ;;
     esac
 done
