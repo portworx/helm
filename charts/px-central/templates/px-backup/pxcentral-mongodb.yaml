@@ -210,7 +210,7 @@ spec:
               - |
                 mongo --disableImplicitSessions $TLS_OPTIONS --eval 'db.adminCommand("ping") && db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'
             failureThreshold: 6
-            initialDelaySeconds: 60
+            initialDelaySeconds: 600
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 5
@@ -222,7 +222,7 @@ spec:
               - |
                 mongo --disableImplicitSessions $TLS_OPTIONS --eval 'db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'
             failureThreshold: 6
-            initialDelaySeconds: 5
+            initialDelaySeconds: 60
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 5
