@@ -207,14 +207,14 @@ spec:
             httpGet:
               path: /ping
               port: 8080
-            initialDelaySeconds: 15
+            initialDelaySeconds: 60
             timeoutSeconds: 1
             periodSeconds: 60
           livenessProbe:
             httpGet:
               path: /ping
               port: 8080
-            initialDelaySeconds: 15
+            initialDelaySeconds: 600
             timeoutSeconds: 1
             periodSeconds: 60
           envFrom:
@@ -264,7 +264,7 @@ metadata:
   labels:
     run: pxcentral-frontend
     app.kubernetes.io/component: pxcentral-frontend
-{{- include "px-central.labels" . | nindent 4 }} 
+{{- include "px-central.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
