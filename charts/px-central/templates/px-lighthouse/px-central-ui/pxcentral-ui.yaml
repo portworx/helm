@@ -207,14 +207,14 @@ spec:
             httpGet:
               path: /ping
               port: 8080
-            initialDelaySeconds: 60
+            initialDelaySeconds: 15
             timeoutSeconds: 1
             periodSeconds: 60
           livenessProbe:
             httpGet:
               path: /ping
               port: 8080
-            initialDelaySeconds: 600
+            initialDelaySeconds: 15
             timeoutSeconds: 1
             periodSeconds: 60
           envFrom:
@@ -483,7 +483,7 @@ spec:
                       password_aux=$(cat $MYSQL_ROOT_PASSWORD_FILE)
                   fi
                   mysqladmin status -uroot -p$password_aux
-            initialDelaySeconds: 120
+            initialDelaySeconds: 600
             periodSeconds: 10
             timeoutSeconds: 5
             successThreshold: 1
@@ -501,7 +501,7 @@ spec:
                       password_aux=$(cat $MYSQL_ROOT_PASSWORD_FILE)
                   fi
                   mysqladmin status -uroot -p$password_aux
-            initialDelaySeconds: 120
+            initialDelaySeconds: 60
             periodSeconds: 10
             timeoutSeconds: 5
             successThreshold: 1
