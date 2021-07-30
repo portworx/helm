@@ -1,0 +1,38 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
+{{- if eq $pxMonitorEnabled true }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-grafana
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: pxcentral-grafana
+    app.kubernetes.io/component: pxcentral-grafana
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.grafanaServiceType }}
+  ports:
+    - port: 3000
+  selector:
+    app: pxcentral-grafana
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-cortex-nginx
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-cortex
+    app: cortex-nginx
+    cortex: nginx
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.cortexNginxServiceType }}
+  ports:
+  - name: http
+    port: 80
+  selector:
+    name: nginx
+---
+{{- end -}}

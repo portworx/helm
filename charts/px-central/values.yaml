@@ -1,0 +1,257 @@
+persistentStorage:
+  enabled: true
+  storageClassName:
+  cassandra:
+    storage: 64Gi
+  grafana:
+    storage: 20Gi
+  consul:
+    storage: 8Gi
+  alertManager:
+    storage: 2Gi
+  ingester:
+    storage: 2Gi
+  mysqlVolumeSize: "100Gi"
+  etcdVolumeSize: "64Gi"
+  mongodbVolumeSize: "64Gi"
+  mongoCacheSize: 4
+  keycloakThemeVolumeSize: "5Gi"
+  keycloakBackendVolumeSize: "10Gi"
+
+storkRequired: false
+nodeAffinityLabel: ""
+
+pxcentralDBPassword: Password1
+caCertsSecretName: ""
+
+oidc:
+  centralOIDC:
+    enabled: true
+    defaultUsername: admin
+    defaultPassword: admin
+    defaultEmail: admin@portworx.com
+    keyCloakBackendUserName: keycloak
+    keyCloakBackendPassword: keycloak
+    clientId: "pxcentral"
+    updateAdminProfile: true
+
+  externalOIDC:
+    enabled: false
+    clientID:
+    clientSecret:
+    endpoint:
+
+pxbackup:
+  enabled: false
+  orgName: default
+  callHome: true
+  nodeAffinityLabel:
+  datastore: mongodb
+  mongoMigration: complete
+  retainEtcd: false
+
+pxlicenseserver:
+  enabled: false
+  internal:
+    enabled: true
+    lsTypeUAT: false
+    lsTypeAirgapped: false
+  external:
+    enabled: false
+  mainNodeIP: ""
+  backupNodeIP: ""
+  adminUserName: admin
+  adminUserPassword: Adm1n!Ur
+
+pxmonitor:
+  enabled: false
+  pxCentralEndpoint: 
+  sslEnabled: false
+  oidcClientID: pxcentral
+  consulBindInterface: ""
+  cortex:
+    alertmanager:
+        advertiseAddress: ""
+
+service:
+  pxCentralUIServiceType: "LoadBalancer"
+  pxBackupUIServiceType: "LoadBalancer"
+  grafanaServiceType: "NodePort"
+  cortexNginxServiceType: "NodePort"
+
+## Memory settings: These are calculated automatically unless specified otherwise
+## To run on environments with little resources (<= 8GB), tune your heap settings:
+## maxHeapSize:
+## - calculate 1/2 ram and cap to 1024MB
+## - calculate 1/4 ram and cap to 8192MB
+## - pick the max
+## newHeapSize:
+## A good guideline is 100 MB per CPU core.
+## - min(100 * num_cores, 1/4 * heap size)
+##
+# maxHeapSize: 4G
+# newHeapSize: 800M
+
+cassandra:
+  jvm:
+    maxHeapSize:
+    newHeapSize:
+
+installCRDs: false
+clusterDomain: "cluster.local"
+cassandraUsername: cassandra
+cassandraPassword: cassandra
+
+operatorToChartUpgrade: false
+
+securityContext:
+  runAsUser: 1000
+  fsGroup: 1000
+  runAsNonRoot: true
+
+images:
+  pullSecrets:
+    - docregistry-secret
+  pullPolicy: Always
+
+  pxcentralApiServerImage:
+    registry: docker.io
+    repo: portworx
+    imageName: pxcentral-onprem-api
+    tag: 2.0.0
+  pxcentralFrontendImage:
+    registry: docker.io
+    repo: portworx
+    imageName: pxcentral-onprem-ui-frontend
+    tag: 2.0.0
+  pxcentralBackendImage:
+    registry: docker.io
+    repo: portworx
+    imageName: pxcentral-onprem-ui-backend
+    tag: 2.0.0
+  pxcentralMiddlewareImage:
+    registry: docker.io
+    repo: portworx
+    imageName: pxcentral-onprem-ui-lhbackend
+    tag: 2.0.0
+  postInstallSetupImage:
+    registry: docker.io
+    repo: portworx
+    imageName: pxcentral-onprem-post-setup
+    tag: 2.0.0
+  keycloakBackendImage:
+    registry: docker.io
+    repo: portworx
+    imageName: postgresql
+    tag: 11.7.0-debian-10-r9
+  keycloakFrontendImage:
+    registry: docker.io
+    repo: portworx
+    imageName: keycloak
+    tag: 9.0.2
+  keycloakLoginThemeImage:
+    registry: docker.io
+    repo: portworx
+    imageName: keycloak-login-theme
+    tag: 1.0.4
+  keycloakInitContainerImage:
+    registry: docker.io
+    repo: portworx
+    imageName: busybox
+    tag: 1.31
+  mysqlImage:
+    registry: docker.io
+    repo: portworx
+    imageName: mysql
+    tag: 5.7.22
+
+  ## Images required for enabling px-backup
+  pxBackupImage:
+    registry: docker.io
+    repo: portworx
+    imageName: px-backup
+    tag: 2.0.0
+  etcdImage:
+    registry: docker.io
+    repo: portworx
+    imageName: etcd
+    tag: 3.4.13-debian-10-r22
+  mongodbImage:
+    registry: docker.io
+    repo: portworx
+    imageName: mongodb
+    tag: 4.4.4-debian-10-r30
+
+  ## Images required for enabling px-license-server
+  licenseServerImage:
+    registry: docker.io
+    repo: portworx
+    imageName: px-els
+    tag: 1.1.0
+
+  ## Images required for enabling px-monitor
+  cortexImage:
+    registry: docker.io
+    repo: portworx
+    imageName: cortex
+    tag: v1.1.0
+  cassandraImage:
+    registry: docker.io
+    repo: portworx
+    imageName: cassandra
+    tag: 3.11.6-debian-10-r153
+  proxyConfigImage:
+    registry: docker.io
+    repo: portworx
+    imageName: nginx
+    tag: 1.17
+  consulImage:
+    registry: docker.io
+    repo: portworx
+    imageName: consul
+    tag: 1.9.5-debian-10-r18
+  dnsmasqImage:
+    registry: docker.io
+    repo: portworx
+    imageName: go-dnsmasq
+    tag: release-1.0.7
+  grafanaImage:
+    registry: docker.io
+    repo: portworx
+    imageName: grafana
+    tag: 7.1.3
+  prometheusImage:
+    registry: docker.io
+    repo: portworx
+    imageName: prometheus
+    tag: v2.7.1
+  prometheusConfigReloadImage:
+    registry: docker.io
+    repo: portworx
+    imageName: configmap-reload
+    tag: v0.0.1
+  prometheusConfigReloadrImage:
+    registry: docker.io
+    repo: portworx
+    imageName: prometheus-config-reloader
+    tag: v0.34.0
+  prometheusOperatorImage:
+    registry: docker.io
+    repo: portworx
+    imageName: prometheus-operator
+    tag: v0.34.0
+  memcachedMetricsImage:
+    registry: docker.io
+    repo: portworx
+    imageName: memcached-exporter
+    tag: v0.4.1
+  memcachedIndexImage:
+    registry: docker.io
+    repo: portworx
+    imageName: memcached
+    tag: 1.5.7-alpine
+  memcachedImage:
+    registry: docker.io
+    repo: portworx
+    imageName: memcached
+    tag: 1.5.12-alpine
