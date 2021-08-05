@@ -117,28 +117,28 @@ images:
   pxcentralApiServerImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-api
-    tag: 2.0.0
+    imageName: pxcentral-onprem-api-base
+    tag: 2.0.1-dev
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-frontend
-    tag: 2.0.0
+    imageName: pxcentral-onprem-ui-frontend-private
+    tag: 2.0.1-dev
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-backend
-    tag: 2.0.0
+    imageName: pxcentral-onprem-ui-backend-private
+    tag: 2.0.1-dev
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-lhbackend
-    tag: 2.0.0
+    imageName: pxcentral-onprem-ui-lhbackend-private
+    tag: 2.0.1-dev
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-post-setup
-    tag: 2.0.0
+    imageName: pxcentral-onprem-post-setup-base
+    tag: 2.0.1-dev
   keycloakBackendImage:
     registry: docker.io
     repo: portworx
@@ -148,7 +148,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: keycloak
-    tag: 9.0.2
+    tag: 14.0.0
   keycloakLoginThemeImage:
     registry: docker.io
     repo: portworx
@@ -169,8 +169,8 @@ images:
   pxBackupImage:
     registry: docker.io
     repo: portworx
-    imageName: px-backup
-    tag: 2.0.0
+    imageName: px-backup-base
+    tag: 2.0.1-dev
   etcdImage:
     registry: docker.io
     repo: portworx
@@ -186,8 +186,8 @@ images:
   licenseServerImage:
     registry: docker.io
     repo: portworx
-    imageName: px-els
-    tag: 1.1.0
+    imageName: px-base-els
+    tag: latest
 
   ## Images required for enabling px-monitor
   cortexImage:
