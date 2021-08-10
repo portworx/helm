@@ -51,7 +51,7 @@ cassandra_pvc_name="pxcentral-cassandra-data-pxcentral-cortex-cassandra-0"
 job_registry="docker.io"
 job_repo="portworx"
 job_image="pxcentral-onprem-post-setup"
-job_imagetag="2.0.0-dev"
+job_imagetag="2.0.0"
 job_pull_secret="docregistry-secret"
 
 mongo_registry="docker.io"
