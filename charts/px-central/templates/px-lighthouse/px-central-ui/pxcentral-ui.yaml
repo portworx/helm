@@ -80,7 +80,7 @@ data:
         proxy_set_header X-Forwarded-Host  $http_host;
         proxy_set_header Port  $http_port;
         proxy_set_header X-Forwarded-Port  $http_port;
-        proxy_buffer_size 6k;
+        proxy_buffer_size 8k;
       }
       {{- if eq $pxMonitorEnabled true }}
       location /grafana/ {
