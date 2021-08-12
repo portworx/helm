@@ -37,7 +37,7 @@ pxls_release=""
 helm_cmd="helm"
 kubectl_cmd="kubectl"
 
-px_central_version="2.0.0"
+px_central_version="2.0.1"
 pxbackup_enabled=false
 pxmonitor_enabled=false
 pxls_enabled=false
@@ -51,7 +51,7 @@ cassandra_pvc_name="pxcentral-cassandra-data-pxcentral-cortex-cassandra-0"
 job_registry="docker.io"
 job_repo="portworx"
 job_image="pxcentral-onprem-post-setup"
-job_imagetag="2.0.0"
+job_imagetag="2.0.1"
 job_pull_secret="docregistry-secret"
 
 mongo_registry="docker.io"
@@ -68,6 +68,7 @@ usage()
    echo -e "\t--helmrepo <helm repo name for px-central components> helm repo name , can get with helm repo list command"
    echo -e "\t--admin-password <current admin user password needed to update keycloak for RBAC settings> admin user current password"
    echo -e "\n\t Optional parameters"
+   echo -e "\t--upgrade-version <version to upgrade to> px-central chart version to which upgrade will happen"
    echo -e "\t--kubeconfig <kubeconfig file path> kubeconfig file to set the context"
    echo -e "\t--air-gapped, this needs to be specified when the cluster is in airgapped environment."
    echo -e "\t--helm-values-file, file path of values.yaml which needs to be provided for airgapped clusters or if the last installation/upgrade has been done using the values.yaml"
@@ -231,11 +232,34 @@ do_rollback() {
     namespace=$1
     version=$2
 
+    current_px_central_version="2.0.1"
+    if [ `helm list -n px-backup | grep "px-central-2.0.0" | wc -l` -eq 1 ]; then
+        current_px_central_version="2.0.0"
+    fi
+
+    # job_imagetag
+    if [ $current_px_central_version == "2.0.1" ]; then
+        # TODO: Needs to modify to public tags in 2.0.1 final patch
+        job_image="pxcentral-onprem-post-setup-base"
+        job_imagetag="2.0.1-dev"
+    elif [ $current_px_central_version == "2.0.0" ]; then
+        job_image="pxcentral-onprem-post-setup"
+        job_imagetag="2.0.0"
+    else
+        echo "Invalid px-central-chart version: $px_central_version , supported ones are : 2.0.1 and 2.0.0"
+    fi
+
     image="$job_registry/$job_repo/$job_image:$job_imagetag"
     backup_image="$job_registry/$job_repo/px-backup:$version"
-    uibackend_image="$job_registry/$job_repo/pxcentral-onprem-ui-backend:$version"
-    frontend_image="$job_registry/$job_repo/pxcentral-onprem-ui-frontend:$version"
-    lhbackend_image="$job_registry/$job_repo/pxcentral-onprem-ui-lhbackend:$version"
+    if [ $version == "1.2.4" ]; then
+        uibackend_image="$job_registry/$job_repo/pxcentral-onprem-ui-backend:1.2.3"
+        frontend_image="$job_registry/$job_repo/pxcentral-onprem-ui-frontend:1.2.3"
+        lhbackend_image="$job_registry/$job_repo/pxcentral-onprem-ui-lhbackend:1.2.3"
+    else
+        uibackend_image="$job_registry/$job_repo/pxcentral-onprem-ui-backend:$version"
+        frontend_image="$job_registry/$job_repo/pxcentral-onprem-ui-frontend:$version"
+        lhbackend_image="$job_registry/$job_repo/pxcentral-onprem-ui-lhbackend:$version"
+    fi
     jobspec='
 apiVersion: batch/v1
 kind: Job
@@ -370,6 +394,12 @@ while [ $# -gt 0 ]; do
             shift
             shift
             ;;
+        --upgrade-version)
+            echo "upgrade version = $2"
+            px_central_version=$2
+            shift
+            shift
+            ;;
         --rollback-version)
             echo "rollback version = $2"
             rollbackversion=$2
@@ -465,6 +495,18 @@ if [ "$helmvaluesfile" != "" ]; then
     fi
 fi
 
+if [ "$px_central_version" != "" ]; then
+    if [ $px_central_version != "2.0.0" ] && [ $px_central_version != "2.0.1" ]; then
+        echo "upgrade-version can only be 2.0.1 or 2.0.0"
+        usage
+        exit 1
+    fi
+else
+    echo "upgrade-version is empty"
+    usage
+    exit 1
+fi
+
 #invoke mongo trial migration, if mongotrainmigration option is set.
 if [ "$mongotrialmigration" == true ]; then
     if [ ! -f "mongo.yaml" ] || [ ! -f "migrationctl" ]; then
@@ -488,8 +530,8 @@ fi
 # If rollbackversion is set do the rollback
 if [ ! -z "$rollbackversion" ]; then
     echo "Input rollback version:  $rollbackversion"
-    if [ $rollbackversion != "1.2.2" ] && [ $rollbackversion != "1.2.3" ]; then
-        echo "rollback version is $rollbackversion but rollback is supported only to 1.2.3 or 1.2.2"
+    if [ $rollbackversion != "1.2.2" ] && [ $rollbackversion != "1.2.3" ] && [ $rollbackversion != "1.2.4" ]; then
+        echo "rollback version is $rollbackversion but rollback is supported only to 1.2.4, 1.2.3 or 1.2.2 version"
         exit 1
     fi
     if [ "$image_registry" != "" ]; then
