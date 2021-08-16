@@ -41,6 +41,9 @@ oidc:
     clientSecret:
     endpoint:
 
+postInstallJob:
+  sslEnabled: true
+
 pxbackup:
   enabled: false
   orgName: default
