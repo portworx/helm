@@ -44,6 +44,8 @@ spec:
             value: INFO
           - name: UPDATE_ADMIN_USER_PROFILE
             value: "{{ .Values.oidc.centralOIDC.updateAdminProfile }}"
+          - name: K8S_SSL_ENABLED
+            value: "{{ .Values.postInstallJob.sslEnabled }}"
           - name: PXC_NAMESPACE
             valueFrom:
               fieldRef:
