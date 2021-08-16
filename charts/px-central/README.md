@@ -530,6 +530,7 @@ Parameter | Description | Default
 `oidc.externalOIDC.clientSecret` | External OIDC client secret | `""`
 `oidc.externalOIDC.endpoint` | External OIDC endpoint | `""`
 `securityContext` | Security context for the pod | `{runAsUser: 1000, fsGroup: 1000, runAsNonRoot: true}`
+`postInstallJob.sslEnabled` | k8s apis with ssl enabled in post-install-job pod | `true`
 `images.pullSecrets` | Image pull secrets | `docregistry-secret`
 `images.pullPolicy` | Image pull policy | `Always`
 `images.pxcentralApiServerImage.registry` | API server image registry | `docker.io`
