@@ -240,8 +240,8 @@ do_rollback() {
     # job_imagetag
     if [ $current_px_central_version == "2.0.1" ]; then
         # TODO: Needs to modify to public tags in 2.0.1 final patch
-        job_image="pxcentral-onprem-post-setup-base"
-        job_imagetag="2.0.1-dev"
+        job_image="pxcentral-onprem-post-setup"
+        job_imagetag="2.0.1"
     elif [ $current_px_central_version == "2.0.0" ]; then
         job_image="pxcentral-onprem-post-setup"
         job_imagetag="2.0.0"
