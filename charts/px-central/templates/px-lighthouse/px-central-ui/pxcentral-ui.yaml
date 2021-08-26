@@ -448,7 +448,6 @@ spec:
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
             - "--ignore-db-dir=lost+found"
-          tty: true
           ports:
             - containerPort: 3306
           env:
