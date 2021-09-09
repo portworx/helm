@@ -37,7 +37,7 @@ pxls_release=""
 helm_cmd="helm"
 kubectl_cmd="kubectl"
 
-px_central_version="2.0.1"
+px_central_version="2.0.2"
 pxbackup_enabled=false
 pxmonitor_enabled=false
 pxls_enabled=false
@@ -51,7 +51,7 @@ cassandra_pvc_name="pxcentral-cassandra-data-pxcentral-cortex-cassandra-0"
 job_registry="docker.io"
 job_repo="portworx"
 job_image="pxcentral-onprem-post-setup"
-job_imagetag="2.0.1"
+job_imagetag="2.0.2"
 job_pull_secret="docregistry-secret"
 
 mongo_registry="docker.io"
@@ -232,21 +232,25 @@ do_rollback() {
     namespace=$1
     version=$2
 
-    current_px_central_version="2.0.1"
-    if [ `helm list -n px-backup | grep "px-central-2.0.0" | wc -l` -eq 1 ]; then
+    current_px_central_version="2.0.2"
+    if [ `helm list -n px-backup | grep "px-central-2.0.1" | wc -l` -eq 1 ]; then
+        current_px_central_version="2.0.1"
+    elif [ `helm list -n px-backup | grep "px-central-2.0.0" | wc -l` -eq 1 ]; then
         current_px_central_version="2.0.0"
     fi
 
     # job_imagetag
-    if [ $current_px_central_version == "2.0.1" ]; then
-        # TODO: Needs to modify to public tags in 2.0.1 final patch
+    if [ $current_px_central_version == "2.0.2" ]; then
+        job_image="pxcentral-onprem-post-setup"
+        job_imagetag="2.0.2"
+    elif [ $current_px_central_version == "2.0.1" ]; then
         job_image="pxcentral-onprem-post-setup"
         job_imagetag="2.0.1"
     elif [ $current_px_central_version == "2.0.0" ]; then
         job_image="pxcentral-onprem-post-setup"
         job_imagetag="2.0.0"
     else
-        echo "Invalid px-central-chart version: $px_central_version , supported ones are : 2.0.1 and 2.0.0"
+        echo "Invalid px-central-chart version: $px_central_version , supported ones are : 2.0.2, 2.0.1 and 2.0.0"
     fi
 
     image="$job_registry/$job_repo/$job_image:$job_imagetag"
