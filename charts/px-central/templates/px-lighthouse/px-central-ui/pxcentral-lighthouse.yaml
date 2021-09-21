@@ -73,6 +73,10 @@ spec:
         image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralMiddlewareImage.registry .Values.images.pxcentralMiddlewareImage.repo .Values.images.pxcentralMiddlewareImage.imageName .Values.images.pxcentralMiddlewareImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
+          - name: K8S_QPS
+            value: "100"
+          - name: K8S_BURST
+            value: "100"
           - name: PX_NAMESPACE
             valueFrom:
               fieldRef:
