@@ -37,7 +37,7 @@ Access PX-Central UI:
 --------------------------------------------------
 Using port forwarding:
 
-    kubectl port-forward service/px-backup-ui 8080:80 --namespace px-backup
+    kubectl port-forward service/px-backup-ui 8080:80 --namespace {{ .Release.Namespace }}
 
 To access PX-Central:  http://localhost:8080
 {{- if eq .Release.IsInstall true }}
