@@ -69,6 +69,20 @@ metadata:
     app.kubernetes.io/component: pxcentral-prometheus
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          {{- if .Values.nodeAffinityLabel }}
+          - key: {{ .Values.nodeAffinityLabel }}
+            operator: Exists
+          {{- else }}
+          - key: pxmonitor/enabled
+            operator: NotIn
+            values:
+            - "false"
+          {{- end }}
   replicas: 1
   logLevel: debug
   serviceAccountName: pxcentral-prometheus
