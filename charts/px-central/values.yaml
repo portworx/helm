@@ -120,28 +120,28 @@ images:
   pxcentralApiServerImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-api
-    tag: 2.0.1
+    imageName: pxcentral-onprem-api-base
+    tag: 2.1.0-dev
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-frontend
-    tag: 2.0.1
+    imageName: pxcentral-onprem-ui-frontend-private
+    tag: master
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-backend
-    tag: 2.0.1
+    imageName: pxcentral-onprem-ui-backend-private
+    tag: master
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-lhbackend
-    tag: 2.0.1
+    imageName: pxcentral-onprem-ui-lhbackend-private
+    tag: master
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-post-setup
-    tag: 2.0.1
+    imageName: pxcentral-onprem-post-setup-base
+    tag: 2.1.0-dev
   keycloakBackendImage:
     registry: docker.io
     repo: portworx
@@ -172,8 +172,8 @@ images:
   pxBackupImage:
     registry: docker.io
     repo: portworx
-    imageName: px-backup
-    tag: 2.0.1
+    imageName: px-backup-base
+    tag: 2.1.0-dev
   etcdImage:
     registry: docker.io
     repo: portworx
