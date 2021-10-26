@@ -151,7 +151,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: keycloak
-    tag: 14.0.0
+    tag: 14.0.0_custom
   keycloakLoginThemeImage:
     registry: docker.io
     repo: portworx
