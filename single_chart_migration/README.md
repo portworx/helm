@@ -37,7 +37,7 @@ $ helm search repo portworx
 $ helm ls -A | grep "px-backup-[0-9].[0-9].[0-9]" | awk '{print $2}'
 ```
 
-- Run migration.sh to upgrade to 2.0.0
+- Run migration.sh to upgrade to 2.0.2
 
 ```console
 $ ./migration.sh --namespace <namespace> --helmrepo <helm repo name> --admin-password <current admin user password>

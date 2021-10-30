@@ -14,5 +14,5 @@ name: px-central
 sources:
 - https://github.com/portworx/helm/tree/master/charts/px-central
 version: 2.0.2
-appVersion: 2.0.2-dev
+appVersion: 2.0.2
 name: px-central
