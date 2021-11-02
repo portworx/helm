@@ -500,8 +500,8 @@ if [ "$helmvaluesfile" != "" ]; then
 fi
 
 if [ "$px_central_version" != "" ]; then
-    if [ $px_central_version != "2.0.0" ] && [ $px_central_version != "2.0.1" ]; then
-        echo "upgrade-version can only be 2.0.1 or 2.0.0"
+    if [ $px_central_version != "2.0.0" ] && [ $px_central_version != "2.0.1" ] && [ $px_central_version != "2.0.2" ]; then
+        echo "upgrade-version can only be 2.0.2 or 2.0.1 or 2.0.0"
         usage
         exit 1
     fi
