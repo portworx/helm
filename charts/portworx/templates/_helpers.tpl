@@ -25,15 +25,6 @@ release: {{ .Release.Name | quote }}
 {{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+"}}{{$version}}
 {{- end -}}
 
-{{- define "px.storkSchedulerVersion" -}}
-{{- $version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+" -}}
-{{- if semverCompare ">=1.22" $version -}}
-{{"v1.21.4"}}
-{{- else -}}
-{{$version}}
-{{- end -}}
-{{- end -}}
-
 {{- define "px.kubectlImageTag" -}}
 {{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+" | trimPrefix "v" | split "."}}
 {{- $major := index $version "_0" -}}
