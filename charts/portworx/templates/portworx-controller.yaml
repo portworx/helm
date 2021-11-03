@@ -104,7 +104,7 @@ spec:
       - command:
         - kube-controller-manager
         - --leader-elect=true
-        {{- if (semverCompare ">=1.22" .Capabilities.KubeVersion.GitVersion) }}
+        {{- if (semverCompare "<1.22" .Capabilities.KubeVersion.GitVersion) }}
         - --address=0.0.0.0
         {{- end }}
         - --controllers=persistentvolume-binder,persistentvolume-expander
@@ -117,8 +117,8 @@ spec:
             host: 127.0.0.1
             path: /healthz
             {{- if semverCompare ">=1.22" .Capabilities.KubeVersion.GitVersion }}
-            {{- if $AKSorEKSInstall }}
-            port: {{ add .Values.pxStartPort 30 }}
+            {{- if (eq .Values.AKSInstall true) }}
+            port: 9031
             {{- else }}
             port: 10257
             {{- end }}
