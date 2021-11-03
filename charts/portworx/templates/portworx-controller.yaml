@@ -104,7 +104,9 @@ spec:
       - command:
         - kube-controller-manager
         - --leader-elect=true
+        {{- if (semverCompare "<1.22" (include "px.kubernetesVersion" . )) }}
         - --address=0.0.0.0
+        {{- end }}
         - --controllers=persistentvolume-binder,persistentvolume-expander
         - --use-service-account-credentials=true
         - --leader-elect-resource-lock=configmaps
@@ -114,8 +116,17 @@ spec:
           httpGet:
             host: 127.0.0.1
             path: /healthz
+            {{- if semverCompare ">=1.22" (include "px.kubernetesVersion" . ) }}
+            {{- if (eq .Values.AKSInstall true) }}
+            port: 9031
+            {{- else }}
+            port: 10257
+            {{- end }}
+            scheme: HTTPS
+            {{- else }}
             port: 10252
             scheme: HTTP
+            {{- end }}
           initialDelaySeconds: 15
           timeoutSeconds: 15
         name: portworx-pvc-controller-manager

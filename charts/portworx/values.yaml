@@ -21,7 +21,7 @@ managementInterface: none             # Name of the interface <ethX>
 envVars: none                         # NOTE: This is a ";" seperated list of environment variables. For eg: MYENV1=myvalue1;MYENV2=myvalue2
 
 stork: true                           # Use Stork https://docs.portworx.com/scheduler/kubernetes/stork.html for hyperconvergence.
-storkVersion: 2.6.3
+storkVersion: 2.7.0
 
 customRegistryURL:
 registrySecret:
@@ -66,4 +66,3 @@ clusterToken:
 replicas: 3                         # Replica count for pvc-controller, stork, stork-scheduler.
 
 #requirePxEnabledTag: true               # if set to true, portworx will only install on nodes with px/enabled: true label. Not required in most scenarios.
-
