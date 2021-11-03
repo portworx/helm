@@ -28,7 +28,7 @@ release: {{ .Release.Name | quote }}
 {{- define "px.storkSchedulerVersion" -}}
 {{- $version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+" -}}
 {{- if semverCompare ">=1.22" $version -}}
-"v1.21.4"
+{{"v1.21.4"}}
 {{- else -}}
 {{$version}}
 {{- end -}}
