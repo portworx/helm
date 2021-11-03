@@ -274,7 +274,11 @@ spec:
         - --policy-configmap=stork-config
         - --policy-configmap-namespace=kube-system
         - --lock-object-name=stork-scheduler
-        image: "{{ template "px.getk8sImages" . }}/kube-scheduler-amd64:{{ template "px.storkSchedulerVersion" . }}"
+        {{- if semverCompare ">=1.22" (include "px.kubernetesVersion" . ) }}
+        image: "{{ template "px.getk8sImages" . }}/kube-scheduler-amd64:v1.21.4"
+        {{- else }}
+        image: "{{ template "px.getk8sImages" . }}/kube-scheduler-amd64:{{ template "px.kubernetesVersion" . }}"
+        {{- end }}
         imagePullPolicy: {{ $pullPolicy }}
         livenessProbe:
           httpGet:
