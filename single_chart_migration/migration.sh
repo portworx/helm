@@ -144,7 +144,7 @@ set_enabled_modules() {
         pxmonitor_enabled=true
     fi
 
-    ls_match=`$kubectl_cmd --namespace $namespace get deployment pxcentral-license-server`
+    ls_match=`$kubectl_cmd --namespace $namespace get configmap $cmListLS`
     if [ $? -eq 0 ] ; then
         pxls_enabled=true
     fi
@@ -153,13 +153,12 @@ set_enabled_modules() {
 
 find_releases() {
     namespace=$1
-    if [ "$pxbackup_enabled" == true ]; then
-        # Finding px-backup release name from frontend deployment as px-backup may not be installed
-        pxbackup_release=`$kubectl_cmd --namespace $namespace get deployment $frontend_deployment  -o yaml | grep "^[ ]*meta.helm.sh/release-name:" | tail -1 | awk -F ":" '{print $2}' | awk '{$1=$1}1'`
-        if [ "$pxbackup_release" == "" ]; then
-            echo "px-backup is enabled but could not find the px-backup release"
-            exit 1
-        fi
+    # Finding px-backup release name from frontend deployment as px-backup may not be installed
+    # px-backup release must be installed for 1.2.x chart versions
+    pxbackup_release=`$kubectl_cmd --namespace $namespace get deployment $frontend_deployment  -o yaml | grep "^[ ]*meta.helm.sh/release-name:" | tail -1 | awk -F ":" '{print $2}' | awk '{$1=$1}1'`
+    if [ "$pxbackup_release" == "" ]; then
+        echo "px-backup is enabled but could not find the px-backup release"
+        exit 1
     fi
     if [ "$pxmonitor_enabled" == true ]; then
         pxmonitor_release=`$kubectl_cmd --namespace $namespace get deployment $cortex_nginx_deployment  -o yaml | grep "^[ ]*meta.helm.sh/release-name:" | tail -1 | awk -F ":" '{print $2}' | awk '{$1=$1}1'`
