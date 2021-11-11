@@ -68,13 +68,13 @@ pxlicenseserver:
 
 pxmonitor:
   enabled: false
-  pxCentralEndpoint: 
+  pxCentralEndpoint:
   sslEnabled: false
   oidcClientID: pxcentral
   consulBindInterface: ""
   cortex:
     alertmanager:
-        advertiseAddress: ""
+      advertiseAddress: ""
 
 service:
   pxCentralUIServiceType: "LoadBalancer"
@@ -151,7 +151,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: keycloak
-    tag: 14.0.0
+    tag: 14.0.0-v2
   keycloakLoginThemeImage:
     registry: docker.io
     repo: portworx
