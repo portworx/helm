@@ -126,17 +126,17 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend-private
-    tag: master
+    tag: release-2.1.0-pb
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend-private
-    tag: master
+    tag: release-2.1.0-pb
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend-private
-    tag: master
+    tag: release-2.1.0-pb
   postInstallSetupImage:
     registry: docker.io
     repo: portworx

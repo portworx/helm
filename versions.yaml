@@ -2,9 +2,9 @@ pxCentralVersion: 2.0.1
 modules:
   pxCentral:
     pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:2.1.0-dev"
-    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:master"
-    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:master"
-    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:master"
+    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:release-2.1.0-pb"
+    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:release-2.1.0-pb"
+    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:release-2.1.0-pb"
     pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:2.1.0-dev"
     postgresql: "docker.io/portworx/postgresql:11.13.0-debian-10-r19"
     keycloak: "docker.io/portworx/keycloak:14.0.0-v2"
