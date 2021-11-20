@@ -144,7 +144,7 @@ set_enabled_modules() {
         pxmonitor_enabled=true
     fi
 
-    ls_match=`$kubectl_cmd --namespace $namespace get deployment pxcentral-license-server`
+    ls_match=`$kubectl_cmd --namespace $namespace get configmap $cmListLS`
     if [ $? -eq 0 ] ; then
         pxls_enabled=true
     fi
@@ -153,13 +153,12 @@ set_enabled_modules() {
 
 find_releases() {
     namespace=$1
-    if [ "$pxbackup_enabled" == true ]; then
-        # Finding px-backup release name from frontend deployment as px-backup may not be installed
-        pxbackup_release=`$kubectl_cmd --namespace $namespace get deployment $frontend_deployment  -o yaml | grep "^[ ]*meta.helm.sh/release-name:" | tail -1 | awk -F ":" '{print $2}' | awk '{$1=$1}1'`
-        if [ "$pxbackup_release" == "" ]; then
-            echo "px-backup is enabled but could not find the px-backup release"
-            exit 1
-        fi
+    # Finding px-backup release name from frontend deployment as px-backup may not be installed
+    # px-backup release must be installed for 1.2.x chart versions
+    pxbackup_release=`$kubectl_cmd --namespace $namespace get deployment $frontend_deployment  -o yaml | grep "^[ ]*meta.helm.sh/release-name:" | tail -1 | awk -F ":" '{print $2}' | awk '{$1=$1}1'`
+    if [ "$pxbackup_release" == "" ]; then
+        echo "px-backup is enabled but could not find the px-backup release"
+        exit 1
     fi
     if [ "$pxmonitor_enabled" == true ]; then
         pxmonitor_release=`$kubectl_cmd --namespace $namespace get deployment $cortex_nginx_deployment  -o yaml | grep "^[ ]*meta.helm.sh/release-name:" | tail -1 | awk -F ":" '{print $2}' | awk '{$1=$1}1'`
@@ -232,21 +231,26 @@ do_rollback() {
     namespace=$1
     version=$2
 
-    current_px_central_version="2.0.1"
-    if [ `helm list -n px-backup | grep "px-central-2.0.0" | wc -l` -eq 1 ]; then
+    current_px_central_version="2.1.0"
+    if [ `helm list -n px-backup | grep "px-central-2.0.1" | wc -l` -eq 1 ]; then
+        current_px_central_version="2.0.1"
+    elif [ `helm list -n px-backup | grep "px-central-2.0.0" | wc -l` -eq 1 ]; then
         current_px_central_version="2.0.0"
     fi
 
     # job_imagetag
-    if [ $current_px_central_version == "2.0.1" ]; then
-        # TODO: Needs to modify to public tags in 2.0.1 final patch
+    if [ $current_px_central_version == "2.1.0" ]; then
+        # TODO: Change the following to released tag
+        job_image="pxcentral-onprem-post-setup-base"
+        job_imagetag="2.1.0-dev"
+    elif [ $current_px_central_version == "2.0.1" ]; then
         job_image="pxcentral-onprem-post-setup"
         job_imagetag="2.0.1"
     elif [ $current_px_central_version == "2.0.0" ]; then
         job_image="pxcentral-onprem-post-setup"
         job_imagetag="2.0.0"
     else
-        echo "Invalid px-central-chart version: $px_central_version , supported ones are : 2.0.1 and 2.0.0"
+        echo "Invalid px-central-chart version: $px_central_version , supported ones are : 2.1.0, 2.0.1 and 2.0.0"
     fi
 
     image="$job_registry/$job_repo/$job_image:$job_imagetag"
@@ -496,8 +500,8 @@ if [ "$helmvaluesfile" != "" ]; then
 fi
 
 if [ "$px_central_version" != "" ]; then
-    if [ $px_central_version != "2.0.0" ] && [ $px_central_version != "2.0.1" ]; then
-        echo "upgrade-version can only be 2.0.1 or 2.0.0"
+    if [ $px_central_version != "2.1.0" ] && [ $px_central_version != "2.0.1" ] && [ $px_central_version != "2.0.0" ]; then
+        echo "upgrade-version can only be 2.1.0, 2.0.1 or 2.0.0"
         usage
         exit 1
     fi
