@@ -1,8 +1,9 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $UATLSType := .Values.pxlicenseserver.internal.lsTypeUAT -}}
 {{- $AirgappedLSType := .Values.pxlicenseserver.internal.lsTypeAirgapped -}}
+{{- $lsExternalEnabled := .Values.pxlicenseserver.external.enabled | default false -}}
 {{- $lsEnabled := .Values.pxlicenseserver.enabled | default false -}}
-{{- if eq $lsEnabled true }}
+{{- if and (eq $lsEnabled true) (eq $lsExternalEnabled false) }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
