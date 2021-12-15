@@ -132,11 +132,16 @@ rules:
       - monitoring.coreos.com
     resources:
       - alertmanagers
+      - alertmanagers/finalizers
+      - alertmanagerconfigs
       - prometheuses
       - prometheuses/finalizers
+      - thanosrulers
+      - thanosrulers/finalizers
       - servicemonitors
       - prometheusrules
       - podmonitors
+      - probes
     verbs: ["*"]
   - apiGroups:
       - apps
@@ -224,7 +229,6 @@ spec:
         - args:
             - -namespaces={{ .Release.Namespace }}
             - --kubelet-service={{ .Release.Namespace }}/kubelet
-            - --config-reloader-image={{ printf "%s/%s/%s:%s" .Values.images.prometheusConfigReloadImage.registry .Values.images.prometheusConfigReloadImage.repo .Values.images.prometheusConfigReloadImage.imageName .Values.images.prometheusConfigReloadImage.tag }}
             - --prometheus-config-reloader={{ printf "%s/%s/%s:%s" .Values.images.prometheusConfigReloadrImage.registry .Values.images.prometheusConfigReloadrImage.repo .Values.images.prometheusConfigReloadrImage.imageName .Values.images.prometheusConfigReloadrImage.tag }}
           image: {{ printf "%s/%s/%s:%s" .Values.images.prometheusOperatorImage.registry .Values.images.prometheusOperatorImage.repo .Values.images.prometheusOperatorImage.imageName .Values.images.prometheusOperatorImage.tag }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}

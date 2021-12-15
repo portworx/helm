@@ -227,22 +227,17 @@ images:
     registry: docker.io
     repo: portworx
     imageName: prometheus
-    tag: v2.7.1
-  prometheusConfigReloadImage:
-    registry: docker.io
-    repo: portworx
-    imageName: configmap-reload
-    tag: v0.0.1
+    tag: v2.29.1
   prometheusConfigReloadrImage:
     registry: docker.io
     repo: portworx
     imageName: prometheus-config-reloader
-    tag: v0.34.0
+    tag: v0.50.0
   prometheusOperatorImage:
     registry: docker.io
     repo: portworx
     imageName: prometheus-operator
-    tag: v0.34.0
+    tag: v0.50.0
   memcachedMetricsImage:
     registry: docker.io
     repo: portworx
