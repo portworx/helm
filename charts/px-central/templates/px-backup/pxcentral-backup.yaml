@@ -61,7 +61,7 @@ rules:
     verbs: ["get", "create", "delete", "update", "list"]
   - apiGroups: [""]
     resources: ["configmaps"]
-    verbs: ["get", "update"]
+    verbs: ["get", "update", "create"]
   - apiGroups: ["batch"]
     resources: ["jobs"]
     verbs: ["get", "create", "delete", "update"]
