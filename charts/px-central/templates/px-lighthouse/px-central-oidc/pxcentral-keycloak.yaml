@@ -99,6 +99,9 @@ data:
     batch
     ## Sets the node identifier to the node name (= pod name). Node identifiers have to be unique. They can have a
     ## maximum length of 23 characters. Thus, the chart's fullname template truncates its length accordingly.
+    {{- if or .Values.proxyHTTPEndpoint .Values.proxyHTTPSEndpoint }}
+    /subsystem=keycloak-server/spi=connectionsHttpClient/provider=default:write-attribute(name=properties.proxy-mappings,value=[".*{{ template "keykloak.proxy" . }}"])
+    {{- end }}
     /subsystem=transactions:write-attribute(name=node-identifier, value=${jboss.node.name})
     
     

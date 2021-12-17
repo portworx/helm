@@ -107,6 +107,9 @@ cassandraPassword: cassandra
 
 operatorToChartUpgrade: false
 
+proxyHTTPEndpoint: ""
+proxyHTTPSEndpoint: ""
+
 securityContext:
   runAsUser: 1000
   fsGroup: 1000
