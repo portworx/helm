@@ -14,6 +14,7 @@ metadata:
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
   replicas: 2
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app.kubernetes.io/component: pxcentral-license-server
