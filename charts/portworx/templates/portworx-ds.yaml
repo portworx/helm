@@ -18,7 +18,7 @@
 {{- $pksInstall := .Values.pksInstall | default false }}
 {{- $internalKVDB := .Values.internalKVDB | default false }}
 {{- $kvdbDevice := .Values.kvdbDevice | default "none" }}
-{{- $csi := .Values.csi | default false }}
+{{- $csi := .Values.csi | default (not (.Capabilities.KubeVersion.GitVersion | toString | regexFind "(k3s|rke2)" | empty)) }}
 
 {{- $etcdCredentials := .Values.etcd.credentials | default "none:none" }}
 {{- $etcdCertPath := .Values.etcd.certPath | default "none" }}
@@ -259,6 +259,10 @@ spec:
             - mountPath: /etc/pwx/etcdcerts
               name: etcdcerts
           {{- end }}
+          {{- if not (.Capabilities.KubeVersion.GitVersion | toString | regexFind "(k3s|rke2)" | empty) }}
+            - name: containerd-k3s
+              mountPath: /run/containerd/containerd.sock
+          {{- end }}
             - name: diagsdump
               mountPath: /var/cores
             - name: dockersock
@@ -348,8 +352,6 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: spec.nodeName
-          securityContext:
-            privileged: true
           volumeMounts:
             - name: csi-driver-path
               mountPath: /csi
@@ -358,6 +360,11 @@ spec:
            {{- end }}
 
       restartPolicy: Always
+      {{- if not (.Capabilities.KubeVersion.GitVersion | toString | regexFind "(k3s|rke2)" | empty) }}
+      tolerations:
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
+      {{- end }}
       serviceAccountName: px-account
       volumes:
           {{- if not (eq $etcdCertPath "none") }}
@@ -376,6 +383,11 @@ spec:
               path: client-key.key
             {{- end -}}
           {{- end}}
+        {{- if not (.Capabilities.KubeVersion.GitVersion | toString | regexFind "(k3s|rke2)" | empty) }}
+        - name: containerd-k3s
+          hostPath:
+            path: /run/k3s/containerd/containerd.sock
+        {{- end }}
         - name: diagsdump
           hostPath:
             path: {{if eq $pksInstall true }}/var/vcap/store/cores{{else}}/var/cores{{end}}
@@ -507,7 +519,7 @@ spec:
       serviceAccountName: px-account
 {{- if eq $csi true }}
 ---
-apiVersion: storage.k8s.io/v1beta1
+apiVersion: storage.k8s.io/v1
 kind: CSIDriver
 metadata:
   name: "pxd.portworx.com"
