@@ -34,7 +34,6 @@ Create chart name and version as used by the chart label.
 Common labels
 */}}
 {{- define "px-central.labels" -}}
-helm.sh/chart: {{ include "px-central.chart" . }}
 app.kubernetes.io/name: {{ template "px-central.name" . }}
 app.kubernetes.io/instance: {{.Release.Name | quote }}
 app.kubernetes.io/managed-by: {{.Release.Service | quote }}

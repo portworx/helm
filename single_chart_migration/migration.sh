@@ -37,7 +37,7 @@ pxls_release=""
 helm_cmd="helm"
 kubectl_cmd="kubectl"
 
-px_central_version="2.0.1"
+px_central_version="2.1.1"
 pxbackup_enabled=false
 pxmonitor_enabled=false
 pxls_enabled=false
@@ -51,14 +51,16 @@ cassandra_pvc_name="pxcentral-cassandra-data-pxcentral-cortex-cassandra-0"
 job_registry="docker.io"
 job_repo="portworx"
 job_image="pxcentral-onprem-post-setup"
-job_imagetag="2.0.1"
+job_imagetag="2.1.1"
 job_pull_secret="docregistry-secret"
 
 mongo_registry="docker.io"
-mongo_repo="bitnami"
+mongo_repo="portworx"
 mongo_image="mongodb"
 mongo_imagetag="4.4.4-debian-10-r30"
 mongo_pull_secret="docregistry-secret"
+
+supported_dest_versions=("2.0.0" "2.0.1" "2.1.1")
 
 usage()
 {
@@ -79,6 +81,16 @@ usage()
    echo -e "\t--image-pull-secret image-pull-secret is required for for pulling the images from custom registry."
 
    echo -e "\t\t\t\t"
+}
+
+supports_migration()
+{
+    dest_release=$1
+    found=1
+    for ver in "${supported_dest_versions[@]}" ; do
+        [[ "$ver" = "$dest_release" ]] && found=0
+    done
+    return $found
 }
 
 verify_release()
@@ -232,22 +244,20 @@ do_rollback() {
     namespace=$1
     version=$2
 
-    current_px_central_version="2.0.1"
-    if [ `helm list -n px-backup | grep "px-central-2.0.0" | wc -l` -eq 1 ]; then
-        current_px_central_version="2.0.0"
-    fi
+    for ver in "${supported_dest_versions[@]}" ; do
+        if [ `helm list -n $namespace | grep "px-central-$ver" | wc -l` -eq 1 ]; then
+                current_px_central_version=$ver
+        fi
+    done
 
-    # job_imagetag
-    if [ $current_px_central_version == "2.0.1" ]; then
-        # TODO: Needs to modify to public tags in 2.0.1 final patch
-        job_image="pxcentral-onprem-post-setup"
-        job_imagetag="2.0.1"
-    elif [ $current_px_central_version == "2.0.0" ]; then
-        job_image="pxcentral-onprem-post-setup"
-        job_imagetag="2.0.0"
-    else
-        echo "Invalid px-central-chart version: $px_central_version , supported ones are : 2.0.1 and 2.0.0"
+    if [ -z $current_px_central_version ]; then
+        echo "current px-central versions can only be ${supported_dest_versions[@]}"
+        # Need the following output for debugging
+        helm list -n $namespace | grep "px-central-$ver" | wc -l
+        exit 1
     fi
+    job_image="pxcentral-onprem-post-setup"
+    job_imagetag=$current_px_central_version
 
     image="$job_registry/$job_repo/$job_image:$job_imagetag"
     backup_image="$job_registry/$job_repo/px-backup:$version"
@@ -496,8 +506,9 @@ if [ "$helmvaluesfile" != "" ]; then
 fi
 
 if [ "$px_central_version" != "" ]; then
-    if [ $px_central_version != "2.0.0" ] && [ $px_central_version != "2.0.1" ]; then
-        echo "upgrade-version can only be 2.0.1 or 2.0.0"
+    supports_migration $px_central_version
+    if [ $? -ne 0 ]; then
+        echo "upgrade-version can only be ${supported_dest_versions[@]}"
         usage
         exit 1
     fi

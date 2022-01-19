@@ -68,13 +68,13 @@ pxlicenseserver:
 
 pxmonitor:
   enabled: false
-  pxCentralEndpoint: 
+  pxCentralEndpoint:
   sslEnabled: false
   oidcClientID: pxcentral
   consulBindInterface: ""
   cortex:
     alertmanager:
-        advertiseAddress: ""
+      advertiseAddress: ""
 
 service:
   pxCentralUIServiceType: "LoadBalancer"
@@ -121,37 +121,37 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 2.0.1
+    tag: 2.1.1
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 2.0.1
+    tag: 2.1.1
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 2.0.1
+    tag: 2.1.1
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 2.0.1
+    tag: 2.1.1
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 2.0.1
+    tag: 2.1.1
   keycloakBackendImage:
     registry: docker.io
     repo: portworx
     imageName: postgresql
-    tag: 11.7.0-debian-10-r9
+    tag: 11.13.0-debian-10-r19
   keycloakFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: keycloak
-    tag: 14.0.0
+    tag: 14.0.0-v2
   keycloakLoginThemeImage:
     registry: docker.io
     repo: portworx
@@ -166,14 +166,14 @@ images:
     registry: docker.io
     repo: portworx
     imageName: mysql
-    tag: 5.7.22
+    tag: 5.7.35
 
   ## Images required for enabling px-backup
   pxBackupImage:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 2.0.1
+    tag: 2.1.1
   etcdImage:
     registry: docker.io
     repo: portworx
@@ -227,22 +227,17 @@ images:
     registry: docker.io
     repo: portworx
     imageName: prometheus
-    tag: v2.7.1
-  prometheusConfigReloadImage:
-    registry: docker.io
-    repo: portworx
-    imageName: configmap-reload
-    tag: v0.0.1
+    tag: v2.29.1
   prometheusConfigReloadrImage:
     registry: docker.io
     repo: portworx
     imageName: prometheus-config-reloader
-    tag: v0.34.0
+    tag: v0.50.0
   prometheusOperatorImage:
     registry: docker.io
     repo: portworx
     imageName: prometheus-operator
-    tag: v0.34.0
+    tag: v0.50.0
   memcachedMetricsImage:
     registry: docker.io
     repo: portworx
