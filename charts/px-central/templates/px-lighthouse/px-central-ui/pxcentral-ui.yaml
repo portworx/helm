@@ -162,7 +162,6 @@ spec:
         - name: init-mysql-db
           image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralBackendImage.registry .Values.images.pxcentralBackendImage.repo .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
-          name: init-mysql-db
           command:
             - bash
             - -c
