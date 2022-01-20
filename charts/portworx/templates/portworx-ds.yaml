@@ -18,7 +18,7 @@
 {{- $pksInstall := .Values.pksInstall | default false }}
 {{- $internalKVDB := .Values.internalKVDB | default false }}
 {{- $kvdbDevice := .Values.kvdbDevice | default "none" }}
-{{- $isK3s := .Capabilities.KubeVersion.GitVersion | toString | regexFind "(k3s|rke2)" }}
+{{- $isK3s := not (.Capabilities.KubeVersion.GitVersion | toString | regexFind "(k3s|rke2)" | empty)}}
 {{- $csi := .Values.csi | default $isK3s }}
 
 {{- $etcdCredentials := .Values.etcd.credentials | default "none:none" }}
