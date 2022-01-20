@@ -18,7 +18,8 @@
 {{- $pksInstall := .Values.pksInstall | default false }}
 {{- $internalKVDB := .Values.internalKVDB | default false }}
 {{- $kvdbDevice := .Values.kvdbDevice | default "none" }}
-{{- $csi := .Values.csi | default (not (.Capabilities.KubeVersion.GitVersion | toString | regexFind "(k3s|rke2)" | empty)) }}
+{{- $isK3s := .Capabilities.KubeVersion.GitVersion | toString | regexFind "(k3s|rke2)" }}
+{{- $csi := .Values.csi | default $isK3s }}
 
 {{- $etcdCredentials := .Values.etcd.credentials | default "none:none" }}
 {{- $etcdCertPath := .Values.etcd.certPath | default "none" }}
@@ -259,7 +260,7 @@ spec:
             - mountPath: /etc/pwx/etcdcerts
               name: etcdcerts
           {{- end }}
-          {{- if not (.Capabilities.KubeVersion.GitVersion | toString | regexFind "(k3s|rke2)" | empty) }}
+          {{- if $isK3s }}
             - name: containerd-k3s
               mountPath: /run/containerd/containerd.sock
           {{- end }}
@@ -360,7 +361,7 @@ spec:
            {{- end }}
 
       restartPolicy: Always
-      {{- if not (.Capabilities.KubeVersion.GitVersion | toString | regexFind "(k3s|rke2)" | empty) }}
+      {{- if $isK3s }}
       tolerations:
         - key: node-role.kubernetes.io/master
           effect: NoSchedule
@@ -383,7 +384,7 @@ spec:
               path: client-key.key
             {{- end -}}
           {{- end}}
-        {{- if not (.Capabilities.KubeVersion.GitVersion | toString | regexFind "(k3s|rke2)" | empty) }}
+        {{- if $isK3s }}
         - name: containerd-k3s
           hostPath:
             path: /run/k3s/containerd/containerd.sock
