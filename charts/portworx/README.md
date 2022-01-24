@@ -106,7 +106,7 @@ Alternatively, you can also use the `--set` directive to do the same. For exampl
 helm upgrade my-release --set imageVersion=<px-version>,etcdEndPoint=<list-of-etcd-endpoints>,clusterName=<cluster-name> -f ./helm/charts/portworx/values.yaml  ./helm/charts/portworx --namespace kube-system
 ```
 
-> **Tip**: You can check the upgrade with the new values took effect using. Check the reference for upgrade [here](https://v2.helm.sh/docs/using_helm/#helm-upgrade-and-helm-rollback-upgrading-a-release-and-recovering-on-failure)
+> **Tip**: You can check the upgrade with the new values took effect using. Check the reference for upgrade [here](https://helm.sh/docs/intro/using_helm/#helm-upgrade-and-helm-rollback-upgrading-a-release-and-recovering-on-failure)
 ```
 helm get values my-release
 ```
@@ -114,7 +114,7 @@ helm get values my-release
 ## Uninstalling the Chart
 
 To uninstall/delete the `my-release` deployment:
-The chart would follow the process as outlined here. (https://docs.portworx.com/scheduler/kubernetes/install.html#uninstall)
+The chart would follow the process as outlined here. (https://docs.portworx.com/portworx-install-with-kubernetes/operate-and-maintain-on-kubernetes/uninstall/uninstall/)
 
 > **Tip** > The Portworx configuration files under `/etc/pwx/` directory are preserved, and will not be deleted.
 
