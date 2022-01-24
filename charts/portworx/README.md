@@ -3,13 +3,15 @@
 [Portworx](https://portworx.com/) is a software defined persistent storage solution designed and purpose built for applications deployed as containers, via container orchestrators such as Kubernetes, Marathon and Swarm. It is a clustered block storage solution and provides a Cloud-Native layer from which containerized stateful applications programmatically consume block, file and object storage services directly through the scheduler.
 
 ## Pre-requisites
-The helm chart (portworx-helm) deploys Portworx and STork(https://docs.portworx.com/scheduler/kubernetes/stork.html) on your Kubernetes cluster. The minimum requirements for deploying the helm chart are as follows:
 
-- Helm has been installed on the client machine from where you would install the chart. (https://docs.helm.sh/using_helm/#installing-helm)
-- Tiller version 2.9.0 and above is running on the Kubernetes cluster where you wish to deploy Portworx.
-- Tiller has been provided with the right RBAC permissions for the chart to be deployed correctly.
-- Kubernetes 1.7+
-- All [Pre-requisites](https://docs.portworx.com/#minimum-requirements). for Portworx fulfilled.
+Helm 2 and tiller is deprecated and not supproted anymore
+
+The helm chart (portworx-helm) deploys Portworx and Stork(https://docs.portworx.com/scheduler/kubernetes/stork.html) on your Kubernetes cluster. The minimum requirements for deploying the helm chart are as follows:
+
+
+- Helm has been installed on the client machine from where you would install the chart. (https://helm.sh/docs/intro/install/)
+- A compliant [kubernetes version](https://docs.portworx.com/portworx-install-with-kubernetes/)
+- All [Pre-requisites](https://docs.portworx.com/start-here-installation/). for Portworx fulfilled.
 
 ## Installing the Chart
 
@@ -25,7 +27,7 @@ If the etcdcluster being used is a secured ETCD (SSL/TLS) then please follow ins
 For eg:
 ```
 git clone https://github.com/portworx/helm.git
-helm install --debug --name my-release --set etcdEndPoint=etcd:http://192.168.70.90:2379,clusterName=$(uuidgen) ./helm/charts/portworx/
+helm install --debug my-release --set etcdEndPoint=etcd:http://192.168.70.90:2379,clusterName=$(uuidgen) ./helm/charts/portworx/ --namespace kube-system
 ```
 
 ## Configuration
@@ -74,12 +76,12 @@ Details are [here](https://docs.portworx.com/portworx-install-with-kubernetes/cl
 
 > **Tip**: In this case the chart is located at `./helm/charts/portworx`, do change it as per your setup.
 ```
-helm install --name my-release --set imageVersion=1.2.12.0,etcdEndPoint=etcd:http://192.168.70.90:2379 ./helm/charts/portworx/
+helm install my-release --set imageVersion=1.2.12.0,etcdEndPoint=etcd:http://192.168.70.90:2379 ./helm/charts/portworx/ --namespace kube-system
 ```
 
 Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
 ```
-helm install --name my-release -f ./helm/charts/portworx/values.yaml ./helm/charts/portworx
+helm install my-release -f ./helm/charts/portworx/values.yaml ./helm/charts/portworx --namespace kube-system
 ```
 > **Tip**: You can use the default [values.yaml](values.yaml) and make changes as per your requirement
 
@@ -96,12 +98,12 @@ helm repo add ibm-porx https://raw.githubusercontent.com/IBM/charts/master/repo/
 
 You can update the `imageVersion` value in the YAML file that specifies the values for the parameters used while installing the chart.
 ```
-helm upgrade my-release -f ./helm/charts/portworx/values.yaml ./helm/charts/portworx
+helm upgrade my-release -f ./helm/charts/portworx/values.yaml ./helm/charts/portworx --namespace kube-system
 ```
 
 Alternatively, you can also use the `--set` directive to do the same. For example,
 ```
-helm upgrade my-release --set imageVersion=<px-version>,etcdEndPoint=<list-of-etcd-endpoints>,clusterName=<cluster-name> -f ./helm/charts/portworx/values.yaml  ./helm/charts/portworx 
+helm upgrade my-release --set imageVersion=<px-version>,etcdEndPoint=<list-of-etcd-endpoints>,clusterName=<cluster-name> -f ./helm/charts/portworx/values.yaml  ./helm/charts/portworx --namespace kube-system
 ```
 
 > **Tip**: You can check the upgrade with the new values took effect using. Check the reference for upgrade [here](https://v2.helm.sh/docs/using_helm/#helm-upgrade-and-helm-rollback-upgrading-a-release-and-recovering-on-failure)
@@ -117,7 +119,7 @@ The chart would follow the process as outlined here. (https://docs.portworx.com/
 > **Tip** > The Portworx configuration files under `/etc/pwx/` directory are preserved, and will not be deleted.
 
 ```
-helm delete my-release
+helm uninstall my-release --namespace kube-system
 ```
 The command removes all the Kubernetes components associated with the chart and deletes the release.
 
