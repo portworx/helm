@@ -4,7 +4,7 @@
 
 ## Pre-requisites
 
-Helm 2 and tiller is deprecated and not supproted anymore
+Helm 2 and tiller is deprecated and not supported anymore
 
 The helm chart (portworx-helm) deploys Portworx and Stork(https://docs.portworx.com/scheduler/kubernetes/stork.html) on your Kubernetes cluster. The minimum requirements for deploying the helm chart are as follows:
 
