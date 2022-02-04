@@ -120,8 +120,8 @@ images:
   pxcentralApiServerImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-api
-    tag: 2.1.1
+    imageName: pxcentral-onprem-api-base
+    tag: 2.1.2-dev
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx

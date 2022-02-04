@@ -1,7 +1,7 @@
 pxCentralVersion: 2.0.1
 modules:
   pxCentral:
-    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api:2.1.1"
+    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:2.1.2-dev"
     pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend:2.1.1"
     pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend:2.1.1"
     pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend:2.1.1"
