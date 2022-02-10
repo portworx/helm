@@ -1,6 +1,7 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
+{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -253,6 +254,11 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
       restartPolicy: Always
 status: {}
 ---
@@ -358,6 +364,11 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
       restartPolicy: Always
 status: {}
 ---
@@ -440,6 +451,11 @@ spec:
         {{- range $sec := .Values.images.pullSecrets }}
         - name: {{ $sec | quote }}
         {{- end }}
+      {{- end }}
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
       containers:
         - name: mysql
