@@ -78,7 +78,11 @@ pxmonitor:
 
 service:
   pxCentralUIServiceType: "LoadBalancer"
+  ## To set the LoadBalancer service type to internal only
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
+  pxCentralUIServiceAnnotations: {}
   pxBackupUIServiceType: "LoadBalancer"
+  pxBackupUIServiceAnnotations: {}
   grafanaServiceType: "NodePort"
   cortexNginxServiceType: "NodePort"
 

@@ -580,6 +580,10 @@ metadata:
     run: pxcentral-frontend
     app.kubernetes.io/component: pxcentral-frontend
 {{- include "px-central.labels" . | nindent 4 }}
+  annotations:
+    {{- if .Values.service.pxCentralUIServiceAnnotations }}
+    {{- include "pxcentral.render" (dict "value" .Values.service.pxCentralUIServiceAnnotations "context" $) | nindent 4 }}
+    {{- end }}
 spec:
   type: {{ .Values.service.pxCentralUIServiceType }}
   selector:
@@ -599,6 +603,10 @@ metadata:
     run: pxcentral-frontend
     app.kubernetes.io/component: pxcentral-frontend
 {{- include "px-central.labels" . | nindent 4 }}
+  annotations:
+    {{- if .Values.service.pxBackupUIServiceAnnotations }}
+    {{- include "pxcentral.render" (dict "value" .Values.service.pxBackupUIServiceAnnotations "context" $) | nindent 4 }}
+    {{- end }}
 spec:
   type: {{ .Values.service.pxBackupUIServiceType }}
   selector:

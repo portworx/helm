@@ -60,3 +60,16 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Renders a value that contains template.
+Usage:
+{{ include "pxcentral.render" ( dict "value" .Values.path.to.the.Value "context" $) }}
+*/}}
+{{- define "pxcentral.render" -}}
+    {{- if typeIs "string" .value }}
+        {{- tpl .value .context }}
+    {{- else }}
+        {{- tpl (.value | toYaml) .context }}
+    {{- end }}
+{{- end -}}
