@@ -597,6 +597,7 @@ if [ "$pxmonitor_enabled" == true ]; then
     change_annotation "servicemonitor" "$servicemonitorListMonitor"
     delete_resource "statefulset" "$statefulsetListMonitorDelete"
     delete_resource "deployment" "$deploymentListMonitorDelete"
+    delete_resource "prometheus" "$prometheusMonitor"
 fi
 
 if [ "$pxls_enabled" == true ]; then
