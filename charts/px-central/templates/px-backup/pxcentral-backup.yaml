@@ -1,6 +1,7 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $mongodbEnabled := eq .Values.pxbackup.datastore "mongodb" }}
+{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- if eq $pxBackupEnabled true }}
 apiVersion: v1
 kind: ServiceAccount
@@ -229,6 +230,11 @@ spec:
         {{- range $sec := .Values.images.pullSecrets }}
         - name: {{ $sec | quote }}
         {{- end }}
+      {{- end }}
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
 ---
 {{- end -}}

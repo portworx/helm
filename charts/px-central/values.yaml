@@ -78,7 +78,11 @@ pxmonitor:
 
 service:
   pxCentralUIServiceType: "LoadBalancer"
+  ## To set the LoadBalancer service type to internal only
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
+  pxCentralUIServiceAnnotations: {}
   pxBackupUIServiceType: "LoadBalancer"
+  pxBackupUIServiceAnnotations: {}
   grafanaServiceType: "NodePort"
   cortexNginxServiceType: "NodePort"
 
@@ -121,27 +125,27 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 2.1.1
+    tag: 2.1.2
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 2.1.1
+    tag: 2.1.2
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 2.1.1
+    tag: 2.1.2
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 2.1.1
+    tag: 2.1.2
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 2.1.1
+    tag: 2.1.2
   keycloakBackendImage:
     registry: docker.io
     repo: portworx
@@ -173,7 +177,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 2.1.1
+    tag: 2.1.2
   etcdImage:
     registry: docker.io
     repo: portworx

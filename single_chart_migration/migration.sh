@@ -37,7 +37,7 @@ pxls_release=""
 helm_cmd="helm"
 kubectl_cmd="kubectl"
 
-px_central_version="2.1.1"
+px_central_version="2.1.2"
 pxbackup_enabled=false
 pxmonitor_enabled=false
 pxls_enabled=false
@@ -51,7 +51,7 @@ cassandra_pvc_name="pxcentral-cassandra-data-pxcentral-cortex-cassandra-0"
 job_registry="docker.io"
 job_repo="portworx"
 job_image="pxcentral-onprem-post-setup"
-job_imagetag="2.1.1"
+job_imagetag="2.1.2"
 job_pull_secret="docregistry-secret"
 
 mongo_registry="docker.io"
@@ -60,7 +60,7 @@ mongo_image="mongodb"
 mongo_imagetag="4.4.4-debian-10-r30"
 mongo_pull_secret="docregistry-secret"
 
-supported_dest_versions=("2.0.0" "2.0.1" "2.1.1")
+supported_dest_versions=("2.0.0" "2.0.1" "2.1.1" "2.1.2")
 
 usage()
 {
@@ -597,6 +597,7 @@ if [ "$pxmonitor_enabled" == true ]; then
     change_annotation "servicemonitor" "$servicemonitorListMonitor"
     delete_resource "statefulset" "$statefulsetListMonitorDelete"
     delete_resource "deployment" "$deploymentListMonitorDelete"
+    delete_resource "prometheus" "$prometheusMonitor"
 fi
 
 if [ "$pxls_enabled" == true ]; then
