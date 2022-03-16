@@ -75,6 +75,9 @@ rules:
   - apiGroups: ["kdmp.portworx.com"]
     resources: ["volumebackupdeletes"]
     verbs: ["get", "create", "delete", "update"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list"]
 ---
 apiVersion: v1
 kind: ConfigMap
