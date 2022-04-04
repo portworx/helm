@@ -498,6 +498,17 @@ spec:
                 values:
                 - "false"
               {{- end }}
+        {{- if eq .Values.podAntiAffinity true }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - cortex-distributor
+              topologyKey: kubernetes.io/hostname
+        {{- end }}
       serviceAccountName: px-monitor
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -586,6 +597,17 @@ spec:
                 values:
                 - "false"
               {{- end }}
+        {{- if eq .Values.podAntiAffinity true }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - cortex-nginx
+              topologyKey: kubernetes.io/hostname
+        {{- end }}
       serviceAccountName: px-monitor
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -673,6 +695,17 @@ spec:
                 values:
                 - "false"
               {{- end }}
+        {{- if eq .Values.podAntiAffinity true }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - cortex-querier
+              topologyKey: kubernetes.io/hostname
+        {{- end }}
       serviceAccountName: px-monitor
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -763,6 +796,17 @@ spec:
                 values:
                 - "false"
               {{- end }}
+        {{- if eq .Values.podAntiAffinity true }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - cortex-query-frontend
+              topologyKey: kubernetes.io/hostname
+        {{- end }}
       serviceAccountName: px-monitor
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -1154,6 +1198,17 @@ spec:
                 values:
                 - "false"
               {{- end }}
+        {{- if eq .Values.podAntiAffinity true }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - cortex-ingester
+              topologyKey: kubernetes.io/hostname
+        {{- end }}
       {{- if eq $storkRequired true }}
       schedulerName: stork
       {{- end }}

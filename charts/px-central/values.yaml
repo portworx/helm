@@ -20,6 +20,7 @@ persistentStorage:
 
 storkRequired: false
 nodeAffinityLabel: ""
+podAntiAffinity: false
 
 pxcentralDBPassword: Password1
 caCertsSecretName: ""
@@ -48,7 +49,6 @@ pxbackup:
   enabled: false
   orgName: default
   callHome: true
-  nodeAffinityLabel:
   datastore: mongodb
   mongoMigration: complete
   retainEtcd: false

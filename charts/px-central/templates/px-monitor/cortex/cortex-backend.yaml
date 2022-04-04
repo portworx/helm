@@ -113,6 +113,17 @@ spec:
                 values:
                 - "false"
               {{- end }}
+        {{- if eq .Values.podAntiAffinity true }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - cassandra
+              topologyKey: kubernetes.io/hostname
+        {{- end }}
       {{- if $isOpenshiftCluster}}
       {{- else }}
       securityContext:
