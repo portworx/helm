@@ -507,11 +507,11 @@ Parameter | Description | Default
 `persistentStorage.enabled` | Enable persistent storage | `true`
 `persistentStorage.storageClassName` | Provide storage class name which exists | `""`
 `persistentStorage.mysqlVolumeSize` | MySQL volume size | `"100Gi"`
-`persistentStorage.etcdVolumeSize` | ETCD volume size | `"64Gi"`
 `persistentStorage.keycloakThemeVolumeSize` | Keycloak frontend theme volume size | `"5Gi"`
 `persistentStorage.keycloakBackendVolumeSize` | Keycloak backend volume size | `"10Gi"`
 `storkRequired` | Scheduler name as stork | `false`
-`nodeAffinityLabel` | Label for node affinity for px-central components| `""`
+`nodeAffinityLabel` | Label for node affinity for px-central components | `""`
+`podAntiAffinity` | PodAntiAffinity will make sure pods are distributed | `false`
 `pxcentralDBPassword` | PX-Central cluster store mysql database password | `Password1`
 `caCertsSecretName` | Name of the Kubernetes Secret, which contains the CA Certificates. | `""`
 `oidc` | Enable OIDC for PX-Central and PX-backup for RBAC | `""`
@@ -589,10 +589,10 @@ Parameter | Description | Default
 `images.etcdImage.repo` | PX-Backup etcd image repo | `bitnami`
 `images.etcdImage.imageName` | PX-Backup etcd image name | `etcd`
 `images.etcdImage.tag` | PX-Backup etcd image tag | `3.4.13-debian-10-r22`
-`images.mongodbImage.registry` | PX-Backup etcd image registry | `docker.io`
-`images.mongodbImage.repo` | PX-Backup etcd image repo | `bitnami`
-`images.mongodbImage.imageName` | PX-Backup etcd image name | `mongodb`
-`images.mongodbImage.tag` | PX-Backup etcd image tag | `4.4.4-debian-10-r30`
+`images.mongodbImage.registry` | PX-Backup mongodb image registry | `docker.io`
+`images.mongodbImage.repo` | PX-Backup mongodb image repo | `bitnami`
+`images.mongodbImage.imageName` | PX-Backup mongodb image name | `mongodb`
+`images.mongodbImage.tag` | PX-Backup mongodb image tag | `4.4.4-debian-10-r30`
 
 ### PX-Monitor parameters
 

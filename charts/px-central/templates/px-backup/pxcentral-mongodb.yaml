@@ -120,6 +120,17 @@ spec:
                 values:
                 - "false"
               {{- end }}
+        {{- if eq .Values.podAntiAffinity true }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - pxc-backup-mongodb
+              topologyKey: kubernetes.io/hostname
+        {{- end }}
       {{- if eq .Values.storkRequired true }}
       schedulerName: stork
       {{- end }}
