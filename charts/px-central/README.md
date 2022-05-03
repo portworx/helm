@@ -568,7 +568,7 @@ Parameter | Description | Default
 `images.mongodbImage.registry` | PX-Backup mongodb image registry | `docker.io`
 `images.mongodbImage.repo` | PX-Backup mongodb image repo | `bitnami`
 `images.mongodbImage.imageName` | PX-Backup mongodb image name | `mongodb`
-`images.mongodbImage.tag` | PX-Backup mongodb image tag | `4.4.4-debian-10-r30`
+`images.mongodbImage.tag` | PX-Backup mongodb image tag | `4.4.8-debian-10-r48`
 
 ### PX-Monitor parameters
 
