@@ -1,10 +1,9 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
-{{- $mongodbEnabled := eq .Values.pxbackup.datastore "mongodb" }}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $mongoCacheSize := int .Values.persistentStorage.mongoCacheSize}}
-{{- if and (eq $pxBackupEnabled true) (eq $mongodbEnabled true) }}
+{{- if eq $pxBackupEnabled true }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -120,6 +119,17 @@ spec:
                 values:
                 - "false"
               {{- end }}
+        {{- if eq .Values.podAntiAffinity true }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - pxc-backup-mongodb
+              topologyKey: kubernetes.io/hostname
+        {{- end }}
       {{- if eq .Values.storkRequired true }}
       schedulerName: stork
       {{- end }}
