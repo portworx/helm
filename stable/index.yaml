@@ -3,7 +3,7 @@ entries:
   portworx:
   - apiVersion: v1
     appVersion: 2.9.1
-    created: "2022-04-12T16:38:14.729386333-06:00"
+    created: "2022-05-04T15:42:52.129722+05:30"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 71a44b527872750c42c9c39a6e3e03c431e0d74063aa8abf70d11f1401fddad2
     home: https://portworx.com/
@@ -15,7 +15,7 @@ entries:
     - https://raw.githubusercontent.com/portworx/helm/master/stable/portworx-2.9.1.tgz
     version: 2.9.1
   - apiVersion: v1
-    created: "2022-04-12T16:38:14.726890691-06:00"
+    created: "2022-05-04T15:42:52.126456+05:30"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: c312df602c509a2c5d60d6197ec137bf8484ecffb3444f1ded6be19964bc3c9f
     home: https://portworx.com/
@@ -27,7 +27,7 @@ entries:
     - https://raw.githubusercontent.com/portworx/helm/master/stable/portworx-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v1
-    created: "2022-04-12T16:38:14.72513724-06:00"
+    created: "2022-05-04T15:42:52.123851+05:30"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: ac01a7ae62587285d9a29e2d36c386727eb96694810a563ecf723b21f7582dec
     home: https://portworx.com/
@@ -41,9 +41,8 @@ entries:
   px-backup:
   - apiVersion: v1
     appVersion: 1.2.4
-    created: "2022-04-12T16:38:14.747614218-06:00"
-    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.156363+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes and Openshift
     digest: 4e1c290efdbd1cf8487e81e4b02b945d2be6aa5b3b9771091214d39c4cd6b868
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -63,9 +62,8 @@ entries:
     version: 1.2.4
   - apiVersion: v1
     appVersion: 1.2.3
-    created: "2022-04-12T16:38:14.746096023-06:00"
-    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.154675+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes and Openshift
     digest: 5041aaabb806d9075722c79d34f9dec8f4e80a75f5346d097cb0123417b08c2d
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -85,9 +83,8 @@ entries:
     version: 1.2.3
   - apiVersion: v1
     appVersion: 1.2.2
-    created: "2022-04-12T16:38:14.744518268-06:00"
-    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.153039+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes and Openshift
     digest: 5536c872859c726b4dd1cff1bcd21ef4f56903d58fcbbe5b4859b5bd242873cf
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -107,9 +104,8 @@ entries:
     version: 1.2.2
   - apiVersion: v1
     appVersion: 1.2.1
-    created: "2022-04-12T16:38:14.743452823-06:00"
-    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.151305+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes and Openshift
     digest: a9b0290cb08d6d3c39adf27ab07be9a17424493980c720223e3a656fa77917ba
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -129,9 +125,8 @@ entries:
     version: 1.2.1
   - apiVersion: v1
     appVersion: 1.2.0
-    created: "2022-04-12T16:38:14.742338973-06:00"
-    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.149353+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes and Openshift
     digest: 7f42744f732e8d80793d06189b14f5ed8f7439706db99dd272d96d43a1fd65ab
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -151,9 +146,8 @@ entries:
     version: 1.2.0
   - apiVersion: v1
     appVersion: 1.1.1
-    created: "2022-04-12T16:38:14.741263787-06:00"
-    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.147707+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes and Openshift
     digest: 73215fe714e1a3af6bdf958eb06791b90f878b363c85b3adf4c8cfe664a08202
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -173,9 +167,8 @@ entries:
     version: 1.1.6
   - apiVersion: v1
     appVersion: 1.1.0
-    created: "2022-04-12T16:38:14.740152217-06:00"
-    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.146121+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes and Openshift
     digest: 6cc1c8df6ddd7e7e49f69db6791f1bdd6b39dc0943f60282fd9212872071103c
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -195,9 +188,8 @@ entries:
     version: 1.1.5
   - apiVersion: v1
     appVersion: 1.1.0
-    created: "2022-04-12T16:38:14.738920928-06:00"
-    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.143526+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes and Openshift
     digest: 4115cfbf2e4e8158331bcec3d4404054c9648fb227f6947747f0122ad4f2418a
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -217,9 +209,8 @@ entries:
     version: 1.1.4
   - apiVersion: v1
     appVersion: 1.1.0-rc4
-    created: "2022-04-12T16:38:14.737009272-06:00"
-    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.141507+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes and Openshift
     digest: 0121036cb537c93fff9281f05cf935345b5f769017b131b5e903cc4b8354c8ac
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -239,9 +230,8 @@ entries:
     version: 1.1.3
   - apiVersion: v1
     appVersion: 1.1.0-rc2
-    created: "2022-04-12T16:38:14.735795113-06:00"
-    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.139835+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes and Openshift
     digest: 96f785bc9ad2c477068d39f351d5c078f080264104ccd6e7630eabae6d0a514c
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -261,9 +251,8 @@ entries:
     version: 1.1.2
   - apiVersion: v1
     appVersion: 1.1.0-rc2
-    created: "2022-04-12T16:38:14.734676115-06:00"
-    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.138294+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes and Openshift
     digest: 7167db17211627d3d111441d01c8d71c57a1980c27145dc7c08ebb3ff9f7d548
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -283,9 +272,8 @@ entries:
     version: 1.1.1
   - apiVersion: v1
     appVersion: 1.1.0-rc1
-    created: "2022-04-12T16:38:14.733620022-06:00"
-    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.13668+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes and Openshift
     digest: 1a2c71389dc08d58f51f66e3ebe44e63fe7410691ec92d642c0dcfaa57c17605
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -305,9 +293,8 @@ entries:
     version: 1.1.0
   - apiVersion: v1
     appVersion: 1.0.2
-    created: "2022-04-12T16:38:14.732473629-06:00"
-    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.135101+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes and Openshift
     digest: fd9316e9719a924eb8aa2d6d947d90e162f602ef4b77e28ef070099fd1dfb1cf
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -327,9 +314,8 @@ entries:
     version: 1.0.2
   - apiVersion: v1
     appVersion: 1.0.2
-    created: "2022-04-12T16:38:14.73148843-06:00"
-    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.133191+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes and Openshift
     digest: 0e96c406605816b9a70a0440710d4a82743d373c2b9da20696e6f3a1b1ef2698
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -349,9 +335,8 @@ entries:
     version: 1.0.1
   - apiVersion: v1
     appVersion: 1.0.2
-    created: "2022-04-12T16:38:14.730497853-06:00"
-    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.131622+05:30"
+    description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes and Openshift
     digest: 2bb9b69ade7b648d46ca618f2f798ba0af346022b42ce540d3988b2c8a387226
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -371,8 +356,29 @@ entries:
     version: 1.0.0
   px-central:
   - apiVersion: v1
+    appVersion: 2.2.0
+    created: "2022-05-04T15:42:52.19432+05:30"
+    description: A Helm chart for installing PX-Central on Kubernetes and Openshift
+    digest: d22206f8b66527c3bf699aab9c3227a5f40065fcb7134207a18813035a1766c2
+    home: https://portworx.com/
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
+    keywords:
+    - px-backup
+    - storage
+    - persistent disk
+    - pvc
+    - portworx
+    - px-central
+    - lighthouse
+    name: px-central
+    sources:
+    - https://github.com/portworx/helm/tree/master/charts/px-central
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-central-2.2.0.tgz
+    version: 2.2.0
+  - apiVersion: v1
     appVersion: 2.1.2
-    created: "2022-04-12T16:38:14.776999503-06:00"
+    created: "2022-05-04T15:42:52.18663+05:30"
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 8b45b7ef443c2b02dc41b88b70877f7d83d8180621bf1f708fbbebd8a0dad3bd
     home: https://portworx.com/
@@ -393,7 +399,7 @@ entries:
     version: 2.1.2
   - apiVersion: v1
     appVersion: 2.1.1
-    created: "2022-04-12T16:38:14.768173009-06:00"
+    created: "2022-05-04T15:42:52.177916+05:30"
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: ab68db760b922dfeb49448ab8a5393104d02d92134b2007ffc37932b12dadb5c
     home: https://portworx.com/
@@ -414,7 +420,7 @@ entries:
     version: 2.1.1
   - apiVersion: v1
     appVersion: 2.0.1
-    created: "2022-04-12T16:38:14.761093026-06:00"
+    created: "2022-05-04T15:42:52.170842+05:30"
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: f719f6251797b14ffad588f8db5648cd9f515e0bf855c487804f4a731f26f8cb
     home: https://portworx.com/
@@ -435,7 +441,7 @@ entries:
     version: 2.0.1
   - apiVersion: v1
     appVersion: 2.0.0
-    created: "2022-04-12T16:38:14.75463965-06:00"
+    created: "2022-05-04T15:42:52.163554+05:30"
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 58adcc335f387a3090cd55316ca7f2f4ebedaeea1375764d1bf18582551d4d96
     home: https://portworx.com/
@@ -457,9 +463,8 @@ entries:
   px-license-server:
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2022-04-12T16:38:14.779411186-06:00"
-    description: A Helm chart for install and configure PX-License-Server on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.200771+05:30"
+    description: A Helm chart for install and configure PX-License-Server on Kubernetes and Openshift
     digest: 70a52d0e5a59dfcbdabba7dda742d748d42937aecb4cdd8f603738cbbfb2c8a4
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -474,9 +479,8 @@ entries:
     version: 1.2.1
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2022-04-12T16:38:14.778907654-06:00"
-    description: A Helm chart for install and configure PX-License-Server on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.199772+05:30"
+    description: A Helm chart for install and configure PX-License-Server on Kubernetes and Openshift
     digest: 5ee27e632cc313ab281a50c2deebbd8713657d19e0b394ea97ae4fdee76f4f09
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -491,9 +495,8 @@ entries:
     version: 1.2.0
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2022-04-12T16:38:14.778431862-06:00"
-    description: A Helm chart for install and configure PX-License-Server on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.198092+05:30"
+    description: A Helm chart for install and configure PX-License-Server on Kubernetes and Openshift
     digest: 55f496792430763626acecb5082eaff7c5276879a0f527ae993635ad8ac90640
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -508,9 +511,8 @@ entries:
     version: 1.1.0
   - apiVersion: v1
     appVersion: 1.0.1
-    created: "2022-04-12T16:38:14.777965063-06:00"
-    description: A Helm chart for install and configure PX-License-Server on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.196505+05:30"
+    description: A Helm chart for install and configure PX-License-Server on Kubernetes and Openshift
     digest: 6673a056155f5329ef7c8cf2c4436668af4b023d234d004448e1db8a2696e1f1
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -525,9 +527,8 @@ entries:
     version: 1.0.1
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2022-04-12T16:38:14.777511978-06:00"
-    description: A Helm chart for install and configure PX-License-Server on Kubernetes
-      and Openshift
+    created: "2022-05-04T15:42:52.195562+05:30"
+    description: A Helm chart for install and configure PX-License-Server on Kubernetes and Openshift
     digest: bb595272c93ef8071e8bc606a3cf8bdb5d7099646d4f8066748f9bd57ac76af1
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -543,9 +544,8 @@ entries:
   px-monitor:
   - apiVersion: v1
     appVersion: 1.2.1
-    created: "2022-04-12T16:38:14.800287476-06:00"
-    description: A Helm chart for install and configure PX-Monitor on Kubernetes and
-      Openshift
+    created: "2022-05-04T15:42:52.219272+05:30"
+    description: A Helm chart for install and configure PX-Monitor on Kubernetes and Openshift
     digest: 9ecba7fb39e84dbdf274784b509780465bda9b0b0c0574b7e729f5575a4a4a1e
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -563,9 +563,8 @@ entries:
     version: 1.2.1
   - apiVersion: v1
     appVersion: 1.2.0
-    created: "2022-04-12T16:38:14.795162884-06:00"
-    description: A Helm chart for install and configure PX-Monitor on Kubernetes and
-      Openshift
+    created: "2022-05-04T15:42:52.214685+05:30"
+    description: A Helm chart for install and configure PX-Monitor on Kubernetes and Openshift
     digest: ed29de40a6aedebd2df7cce93084cf008b565d72cc36bcaf92c33048a920fade
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -583,9 +582,8 @@ entries:
     version: 1.2.0
   - apiVersion: v1
     appVersion: 1.1.1
-    created: "2022-04-12T16:38:14.79053181-06:00"
-    description: A Helm chart for install and configure PX-Monitor on Kubernetes and
-      Openshift
+    created: "2022-05-04T15:42:52.210521+05:30"
+    description: A Helm chart for install and configure PX-Monitor on Kubernetes and Openshift
     digest: 66e6d465883dc5be2b6413cb09809aa48cc898400c5e149cf8ead44ed84ec504
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -603,9 +601,8 @@ entries:
     version: 1.1.1
   - apiVersion: v1
     appVersion: 1.1.0
-    created: "2022-04-12T16:38:14.78644078-06:00"
-    description: A Helm chart for install and configure PX-Monitor on Kubernetes and
-      Openshift
+    created: "2022-05-04T15:42:52.20539+05:30"
+    description: A Helm chart for install and configure PX-Monitor on Kubernetes and Openshift
     digest: 079c699ed5fcba8f9214bde2b9f7b641883bac7cb57d3075a796583a10a2f9ed
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
@@ -621,4 +618,4 @@ entries:
     urls:
     - https://raw.githubusercontent.com/portworx/helm/master/stable/px-monitor-1.1.0.tgz
     version: 1.1.0
-generated: "2022-04-12T16:38:14.72334996-06:00"
+generated: "2022-05-04T15:42:52.119172+05:30"

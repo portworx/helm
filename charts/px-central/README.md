@@ -277,26 +277,6 @@ Note: Keycloak auth and Grafana UI will be accessible on same endpoint on differ
    $ kubectl logs -f --namespace {{ .Release.Namespace }} -ljob-name=pxcentral-post-install-hook
    ```
 
-2. If one or many pods of the etcd replica goes into `CrashLoopBackOff` state during install or upgrade and error looks like following:
-```
-pxc-backup-etcd-1                          0/1     CrashLoopBackOff   6          10m
-[root@ip-node1 helm]# kubectl logs pxc-backup-etcd-1 -n px-backup
-==> Bash debug is off
-==> Detected data from previous deployments...
-==> Adding new member to existing cluster...
-```
-
-then, to resolve this issue scale down etcd cluster to 0 and scale it back to 3.
-- To scale down etcd cluster to 0:
-```console
-$ kubectl scale sts --namespace central pxc-backup-etcd --replicas=0`
-```
-
-- To scale up etcd cluster to 3:
-```console
-$ kubectl scale sts --namespace central pxc-backup-etcd --replicas=3`
-```
-
 # PX-Monitor
 
 Using PX-Monitor, you can manage and monitor portworx cluster metrics.
@@ -507,11 +487,11 @@ Parameter | Description | Default
 `persistentStorage.enabled` | Enable persistent storage | `true`
 `persistentStorage.storageClassName` | Provide storage class name which exists | `""`
 `persistentStorage.mysqlVolumeSize` | MySQL volume size | `"100Gi"`
-`persistentStorage.etcdVolumeSize` | ETCD volume size | `"64Gi"`
 `persistentStorage.keycloakThemeVolumeSize` | Keycloak frontend theme volume size | `"5Gi"`
 `persistentStorage.keycloakBackendVolumeSize` | Keycloak backend volume size | `"10Gi"`
 `storkRequired` | Scheduler name as stork | `false`
-`nodeAffinityLabel` | Label for node affinity for px-central components| `""`
+`nodeAffinityLabel` | Label for node affinity for px-central components | `""`
+`podAntiAffinity` | PodAntiAffinity will make sure pods are distributed | `false`
 `pxcentralDBPassword` | PX-Central cluster store mysql database password | `Password1`
 `caCertsSecretName` | Name of the Kubernetes Secret, which contains the CA Certificates. | `""`
 `oidc` | Enable OIDC for PX-Central and PX-backup for RBAC | `""`
@@ -585,14 +565,10 @@ Parameter | Description | Default
 `images.pxBackupImage.repo` | PX-Backup image repo | `portworx`
 `images.pxBackupImage.imageName` | PX-Backup image name | `px-backup`
 `images.pxBackupImage.tag` | PX-Backup image tag | `1.2.2`
-`images.etcdImage.registry` | PX-Backup etcd image registry | `docker.io`
-`images.etcdImage.repo` | PX-Backup etcd image repo | `bitnami`
-`images.etcdImage.imageName` | PX-Backup etcd image name | `etcd`
-`images.etcdImage.tag` | PX-Backup etcd image tag | `3.4.13-debian-10-r22`
-`images.mongodbImage.registry` | PX-Backup etcd image registry | `docker.io`
-`images.mongodbImage.repo` | PX-Backup etcd image repo | `bitnami`
-`images.mongodbImage.imageName` | PX-Backup etcd image name | `mongodb`
-`images.mongodbImage.tag` | PX-Backup etcd image tag | `4.4.4-debian-10-r30`
+`images.mongodbImage.registry` | PX-Backup mongodb image registry | `docker.io`
+`images.mongodbImage.repo` | PX-Backup mongodb image repo | `bitnami`
+`images.mongodbImage.imageName` | PX-Backup mongodb image name | `mongodb`
+`images.mongodbImage.tag` | PX-Backup mongodb image tag | `4.4.4-debian-10-r30`
 
 ### PX-Monitor parameters
 

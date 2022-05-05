@@ -12,7 +12,6 @@ persistentStorage:
   ingester:
     storage: 2Gi
   mysqlVolumeSize: "100Gi"
-  etcdVolumeSize: "64Gi"
   mongodbVolumeSize: "64Gi"
   mongoCacheSize: 4
   keycloakThemeVolumeSize: "5Gi"
@@ -20,6 +19,7 @@ persistentStorage:
 
 storkRequired: false
 nodeAffinityLabel: ""
+podAntiAffinity: false
 
 pxcentralDBPassword: Password1
 caCertsSecretName: ""
@@ -48,10 +48,7 @@ pxbackup:
   enabled: false
   orgName: default
   callHome: true
-  nodeAffinityLabel:
-  datastore: mongodb
   mongoMigration: complete
-  retainEtcd: false
 
 pxlicenseserver:
   enabled: false
@@ -125,27 +122,27 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 2.1.2
+    tag: 2.2.0
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 2.1.2
+    tag: 2.2.0
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 2.1.2
+    tag: 2.2.0
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 2.1.2
+    tag: 2.2.0
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 2.1.2
+    tag: 2.2.0
   keycloakBackendImage:
     registry: docker.io
     repo: portworx
@@ -170,19 +167,14 @@ images:
     registry: docker.io
     repo: portworx
     imageName: mysql
-    tag: 5.7.35
+    tag: 5.7.37
 
   ## Images required for enabling px-backup
   pxBackupImage:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 2.1.2
-  etcdImage:
-    registry: docker.io
-    repo: portworx
-    imageName: etcd
-    tag: 3.4.13-debian-10-r22
+    tag: 2.2.0
   mongodbImage:
     registry: docker.io
     repo: portworx
@@ -211,7 +203,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: nginx
-    tag: 1.17
+    tag: 1.21.6
   consulImage:
     registry: docker.io
     repo: portworx
@@ -246,14 +238,14 @@ images:
     registry: docker.io
     repo: portworx
     imageName: memcached-exporter
-    tag: v0.4.1
+    tag: v0.9.0
   memcachedIndexImage:
     registry: docker.io
     repo: portworx
     imageName: memcached
-    tag: 1.5.7-alpine
+    tag: 1.6.15-alpine
   memcachedImage:
     registry: docker.io
     repo: portworx
     imageName: memcached
-    tag: 1.5.12-alpine
+    tag: 1.6.15-alpine
