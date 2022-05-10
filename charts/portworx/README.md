@@ -6,8 +6,9 @@
 The helm chart (portworx-helm) deploys Portworx and STork(https://docs.portworx.com/scheduler/kubernetes/stork.html) on your Kubernetes cluster. The minimum requirements for deploying the helm chart are as follows:
 
 - Helm has been installed on the client machine from where you would install the chart. (https://docs.helm.sh/using_helm/#installing-helm)
-- Tiller version 2.9.0 and above is running on the Kubernetes cluster where you wish to deploy Portworx.
-- Tiller has been provided with the right RBAC permissions for the chart to be deployed correctly.
+- For helm 2 (skip for helm 3)
+  - Tiller version 2.9.0 and above is running on the Kubernetes cluster where you wish to deploy Portworx.
+  - Tiller has been provided with the right RBAC permissions for the chart to be deployed correctly.
 - Kubernetes 1.7+
 - All [Pre-requisites](https://docs.portworx.com/#minimum-requirements). for Portworx fulfilled.
 
