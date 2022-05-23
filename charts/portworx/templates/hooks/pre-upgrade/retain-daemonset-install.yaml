@@ -1,0 +1,57 @@
+{{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
+{{- $registrySecret := .Values.registrySecret | default "none" }}
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: kube-system
+  name: px-hook-retain-daemonset-resources
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    app.kubernetes.io/managed-by: {{.Release.Service | quote }}
+    app.kubernetes.io/instance: {{.Release.Name | quote }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "10"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  {{ if semverCompare ">= 1.8" .Capabilities.KubeVersion.GitVersion }}
+  backoffLimit: 0
+  {{ else }}
+  activeDeadlineSeconds: 30
+  {{ end }}
+  template:
+    spec:
+      {{- if not (eq $registrySecret "none") }}
+      imagePullSecrets:
+        - name: {{ $registrySecret }}
+      {{- end }}
+      serviceAccountName: {{ template "px.hookServiceAccount" . }}
+      restartPolicy: Never
+      containers:
+        - name: retain-px-daemonset
+          {{- if eq $customRegistryURL "none" }}
+          image: "bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
+          {{- else}}
+          image: "{{ $customRegistryURL }}/bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
+          {{- end}}
+          command: ['/bin/sh',
+                    '-c',
+                    'kubectl -n kube-system annotate daemonset portworx helm.sh/resource-policy=keep --overwrite;
+                     kubectl -n kube-system annotate daemonset portworx-api helm.sh/resource-policy=keep --overwrite;
+                     kubectl -n kube-system annotate namespace portworx helm.sh/resource-policy=keep --overwrite || true;
+                     kubectl -n kube-system annotate serviceaccount px-account helm.sh/resource-policy=keep --overwrite || true;
+                     kubectl -n kube-system annotate storageclass portworx-db-sc helm.sh/resource-policy=keep --overwrite || true;
+                     kubectl -n kube-system annotate storageclass portworx-db2-sc helm.sh/resource-policy=keep --overwrite || true;
+                     kubectl -n kube-system annotate storageclass portworx-shared-sc helm.sh/resource-policy=keep --overwrite || true;
+                     kubectl -n kube-system annotate storageclass portworx-null-sc helm.sh/resource-policy=keep --overwrite || true;
+                     kubectl annotate ClusterRole node-get-put-list-role helm.sh/resource-policy=keep --overwrite || true;
+                     kubectl annotate ClusterRoleBinding node-role-binding helm.sh/resource-policy=keep --overwrite || true;
+                     kubectl -n kube-system annotate role px-role helm.sh/resource-policy=keep --overwrite || true;
+                     kubectl -n kube-system annotate RoleBinding px-role-binding helm.sh/resource-policy=keep --overwrite || true;
+                     kubectl -n kube-system annotate Service portworx-service helm.sh/resource-policy=keep --overwrite || true;
+                     kubectl -n kube-system annotate Service portworx-api helm.sh/resource-policy=keep --overwrite || true;
+                     ']
+

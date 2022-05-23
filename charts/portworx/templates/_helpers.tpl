@@ -32,6 +32,18 @@ release: {{ .Release.Name | quote }}
 {{printf "%s.%s" $major $minor }}
 {{- end -}}
 
+{{- define "px.getPxOperatorImage" -}}
+{{- if (.Values.customRegistryURL) -}}
+    {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
+        {{ cat (trim .Values.customRegistryURL) "/px-operator" | replace " " ""}}
+    {{- else -}}
+        {{cat (trim .Values.customRegistryURL) "/portworx/px-operator" | replace " " ""}}
+    {{- end -}}
+{{- else -}}
+    {{ "portworx/px-operator" }}
+{{- end -}}
+{{- end -}}
+
 {{- define "px.getImage" -}}
 {{- if (.Values.customRegistryURL) -}}
     {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
