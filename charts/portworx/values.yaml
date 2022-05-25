@@ -64,6 +64,4 @@ clusterToken:
   secretName: px-vol-encryption    # Name of kubernetes secret to be created. Requires clusterToken.create to be true.
   serviceAccountName: px-create-cluster-token # Service account name to use for post-install hook to create cluster token
 
-replicas: 3                         # Replica count for pvc-controller, stork, stork-scheduler.
-
 #requirePxEnabledTag: true               # if set to true, portworx will only install on nodes with px/enabled: true label. Not required in most scenarios.
