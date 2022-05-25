@@ -1,0 +1,163 @@
+{{- if not (lookup "apps/v1" "DaemonSet" "kube-system" "portworx") }}
+
+  {{- $isCoreOS := .Values.isTargetOSCoreOS | default false }}
+  {{- $internalKVDB := .Values.internalKVDB | default false }}
+  {{- $etcdEndPoints := .Values.etcdEndPoint }}
+  {{- $openshiftInstall := .Values.openshiftInstall | default false }}
+  {{- $EKSInstall := .Values.EKSInstall | default false }}
+  {{- $pksInstall := .Values.pksInstall | default false }}
+  {{- $AKSInstall := .Values.AKSInstall | default false }}
+  {{- $usefileSystemDrive := .Values.usefileSystemDrive | default false }}
+  {{- $usedrivesAndPartitions := .Values.usedrivesAndPartitions | default false }}
+  {{- $secretType := .Values.secretType | default "k8s" }}
+  {{- $deployEnvironmentIKS := .Capabilities.KubeVersion.GitVersion | regexMatch "IKS" }}
+  {{- $drives := .Values.drives | default "none" }}
+  {{- $dataInterface := .Values.dataInterface | default "none" }}
+  {{- $managementInterface := .Values.managementInterface | default "none" }}
+  {{- $envVars := .Values.envVars | default "none" }}
+  {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
+  {{- $registrySecret := .Values.registrySecret | default "none" }}
+  {{- $licenseSecret := .Values.licenseSecret | default "none" }}
+  {{- $kvdbDevice := .Values.kvdbDevice | default "none" }}
+
+kind: StorageCluster
+apiVersion: core.libopenstorage.org/v1
+metadata:
+  name: "{{ required "Clustername cannot be empty" .Values.clusterName }}"
+  namespace: kube-system
+  annotations:
+    {{- if eq $openshiftInstall true }}
+    portworx.io/is-openshift: "true"
+    {{- end }}
+    {{- if eq $pksInstall true }}
+    portworx.io/is-pks: "true"
+    {{- end }}
+    {{- if eq $EKSInstall true }}
+    portworx.io/is-eks: "true"
+    {{- end }}
+    {{- if eq $AKSInstall true }}
+    portworx.io/is-aks: "true"
+    {{- end }}
+    # TODO: remove
+    portworx.io/migration-approved: "false"
+spec:
+  image: portworx/oci-monitor:{{ required "A valid Image tag is required in the SemVer format" .Values.imageVersion }}
+  imagePullPolicy: Always
+  {{- if not (eq $customRegistryURL "none") }}
+  customImageRegistry: {{ $customRegistryURL }}
+  {{- end }}
+  {{- if not (eq $registrySecret "none") }}
+  imagePullSecret: {{ $registrySecret }}
+  {{- end }}
+
+  kvdb:
+  {{- if eq $internalKVDB true }}
+    internal: true
+  {{- else }}
+    internal: false
+    {{- if empty $etcdEndPoints }}
+    "{{ required "A valid ETCD url in the format etcd:http://<your-etcd-endpoint> is required. Verify that the key is correct and there isnt any typo in specifying that, also ensure it is accessible from all node of your kubernetes cluster" .etcdEndPoint}}"
+    {{- else }}
+    endpoints:
+      {{- $endpoints := $etcdEndPoints | split ";" }}
+      {{- range $key, $val := $endpoints }}
+      - {{$val}}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+  storage:
+    {{- if not (eq $drives "none") }}
+    devices:
+      {{- $driveNames := $drives | split ";" }}
+      {{- range $index, $name := $driveNames }}
+      - {{ $name }}
+      {{- end }}
+    {{- end }}
+    {{- if eq $usefileSystemDrive true }}
+    forceUseDisks: true
+    {{- end }}
+    {{- if eq $usedrivesAndPartitions true }}
+    useAllWithPartitions: true
+    {{- end }}
+    {{- if ne $kvdbDevice "none" }}
+    kvdbDevice: {{ $kvdbDevice }}
+    {{- end }}
+
+  network:
+    {{- if ne $dataInterface "none" }}
+    dataInterface: {{ $dataInterface }}
+    {{- end -}}
+    {{- if ne $managementInterface "none" }}
+    mgmtInterface: {{ $managementInterface }}
+    {{- end -}}
+
+  {{- if ne $secretType "none" }}
+  secretsProvider: {{$secretType}}
+  {{- else }}
+    {{- if $deployEnvironmentIKS }}
+  secretsProvider: ibm-kp
+    {{- end }}
+  {{- end }}
+
+  env:
+  {{ if not (eq $envVars "none") }}
+    {{- $vars := $envVars | split ";" }}
+    {{- range $key, $val := $vars }}
+    {{-  $envVariable := $val | split "=" }}
+    - name: {{ $envVariable._0 | trim | quote }}
+      value: {{ $envVariable._1 | trim | quote }}
+    {{ end }}
+  {{- end }}
+  {{- if ne $licenseSecret "none" }}
+    - name: SAAS_ACCOUNT_KEY_STRING
+      valueFrom:
+        secretKeyRef:
+          name: "{{ $licenseSecret }}"
+          key: accountKey
+  {{- end }}
+
+  stork:
+    {{- if (and (.Values.stork) (eq .Values.stork true))}}
+    enabled: true
+      {{- if .Values.storkVersion }}
+    image: {{ template "px.getStorkImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.storkVersion }}
+      {{- end }}
+    {{- else }}
+    enabled: false
+    {{- end }}
+
+  {{- if eq $isCoreOS true}}
+  volumes:
+    - name: src
+      mountPath: /lib/modules
+      hostPath: /lib/modules
+  {{- end }}
+
+  {{- if (and (.Values.monitoring) (eq .Values.monitoring true)) }}
+  monitoring:
+    prometheus:
+      enabled: true
+      exportMetrics: true
+      alertManager:
+        enabled: true
+  {{- end }}
+
+  {{- if (and (.Values.csi) (eq .Values.csi true))}}
+  csi:
+    enabled: true
+  {{- end }}
+  {{- if (and (.Values.aut) (eq .Values.aut true))}}
+  autopilot:
+    enabled: true
+  {{- end }}
+
+  placement:
+    {{- with .Values.tolerations }}
+    tolerations:
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+
+{{- end }}
+
+
