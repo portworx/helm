@@ -193,12 +193,12 @@ images:
     registry: docker.io
     repo: portworx
     imageName: cortex
-    tag: v1.1.0
+    tag: v1.11.1
   cassandraImage:
     registry: docker.io
     repo: portworx
     imageName: cassandra
-    tag: 3.11.6-debian-10-r153
+    tag: 4.0.4-debian-10-r12
   proxyConfigImage:
     registry: docker.io
     repo: portworx
@@ -208,7 +208,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: consul
-    tag: 1.9.5-debian-10-r18
+    tag: 1.12.1-debian-10-r4
   dnsmasqImage:
     registry: docker.io
     repo: portworx
@@ -260,15 +260,15 @@ cortexConfig:
       memcached:
         expiration: 1h
       memcached_client:
-        timeout: 1s
-    max_look_back_period: 0s
+        timeout: 1s 
   distributor:
     pool:
       health_check_ingesters: true
     shard_by_all_labels: true
   frontend:
-    compress_responses: true
     log_queries_longer_than: 10s
+  api:
+    response_compression_enabled: true
   ingester:
     lifecycler:
       final_sleep: 0s
@@ -288,11 +288,11 @@ cortexConfig:
     grpc_client_config:
       max_recv_msg_size: 104857600
       max_send_msg_size: 104857600
-      use_gzip_compression: true
   limits:
     enforce_metric_name: false
     reject_old_samples: true
     reject_old_samples_max_age: 168h
+    max_query_lookback: 0s
   querier:
     active_query_tracker_dir: /data/cortex/querier
     query_ingesters_within: 1h
