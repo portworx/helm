@@ -211,7 +211,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: consul
-    tag: 1.9.5-debian-10-r18
+    tag: 1.12.2-debian-11-r0
   dnsmasqImage:
     registry: docker.io
     repo: portworx
