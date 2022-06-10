@@ -46,11 +46,13 @@ spec:
         - name: pxcentral-license-server
           image: {{ printf "%s/%s/%s:%s" .Values.images.licenseServerImage.registry .Values.images.licenseServerImage.repo .Values.images.licenseServerImage.imageName .Values.images.licenseServerImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
-          {{- if eq $UATLSType true }}
-          args: [ "--UAT" ]
-          {{- else if eq $AirgappedLSType true }}
-          args: [ "--air-gapped" ]
-          {{- end }}
+          args:
+            {{- if eq $UATLSType true }}
+            - --UAT
+            {{- end}}
+            {{- if eq $AirgappedLSType true }}
+            - --air-gapped
+            {{- end }}
           securityContext:
             privileged: true
           ports:
