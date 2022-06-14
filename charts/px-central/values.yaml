@@ -160,7 +160,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: keycloak-login-theme
-    tag: 2.0.1
+    tag: 2.2.0
   keycloakInitContainerImage:
     registry: docker.io
     repo: portworx
