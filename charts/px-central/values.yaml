@@ -196,7 +196,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: cortex
-    tag: v1.1.0
+    tag: v1.11.1
   cassandraImage:
     registry: docker.io
     repo: portworx
