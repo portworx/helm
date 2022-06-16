@@ -150,12 +150,12 @@ images:
     registry: docker.io
     repo: portworx
     imageName: postgresql
-    tag: 11.13.0-debian-10-r19
+    tag: 11.16.0-debian-11-r5
   keycloakFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: keycloak
-    tag: 14.0.0-v2
+    tag: 16.1.1
   keycloakLoginThemeImage:
     registry: docker.io
     repo: portworx
@@ -170,7 +170,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: mysql
-    tag: 5.7.37
+    tag: 5.7.38
 
   ## Images required for enabling px-backup
   pxBackupImage:
