@@ -81,7 +81,7 @@ spec:
       - {{ $name }}
       {{- end }}
     {{- end }}
-    {{- if eq $usefileSystemDrive true }}
+    {{- if or $usefileSystemDrive $deployEnvironmentIKS }}
     forceUseDisks: true
     {{- end }}
     {{- if eq $usedrivesAndPartitions true }}
@@ -91,13 +91,21 @@ spec:
     kvdbDevice: {{ $kvdbDevice }}
     {{- end }}
 
+  {{- if .AKSInstall }}
+  cloudStorage:
+    deviceSpecs:
+      - type=Premium_LRS,size=150
+  {{- end }}
+
+  {{- if or (ne $dataInterface "none") (ne $managementInterface "none") }}
   network:
     {{- if ne $dataInterface "none" }}
     dataInterface: {{ $dataInterface }}
-    {{- end -}}
+    {{- end }}
     {{- if ne $managementInterface "none" }}
     mgmtInterface: {{ $managementInterface }}
-    {{- end -}}
+    {{- end }}
+  {{- end }}
 
   {{- if ne $secretType "none" }}
   secretsProvider: {{$secretType}}
@@ -123,6 +131,23 @@ spec:
           name: "{{ $licenseSecret }}"
           key: accountKey
   {{- end }}
+  {{- if .Values.AKSInstall }}
+    - name: AZURE_CLIENT_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: px-azure
+          key: AZURE_CLIENT_SECRET
+    - name: AZURE_CLIENT_ID
+      valueFrom:
+        secretKeyRef:
+          name: px-azure
+          key: AZURE_CLIENT_ID
+    - name: AZURE_TENANT_ID
+      valueFrom:
+        secretKeyRef:
+          name: px-azure
+          key: AZURE_TENANT_ID
+  {{- end }}
 
   stork:
     {{- if (and (.Values.stork) (eq .Values.stork true))}}
@@ -138,7 +163,9 @@ spec:
   volumes:
     - name: src
       mountPath: /lib/modules
-      hostPath: /lib/modules
+      hostPath:
+        path: /lib/modules
+        type: Directory
   {{- end }}
 
   {{- if (and (.Values.monitoring) (eq .Values.monitoring true)) }}
