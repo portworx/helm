@@ -1,4 +1,4 @@
-{{- if not (lookup "apps/v1" "DaemonSet" "kube-system" "portworx") }}
+{{- if and (.Values.deployCluster) (or (not (lookup "apps/v1" "DaemonSet" "kube-system" "portworx")) (default true .Values.generateStorageClusterForMigration)) }}
 
   {{- $isCoreOS := .Values.isTargetOSCoreOS | default false }}
   {{- $internalKVDB := .Values.internalKVDB | default false }}
@@ -38,8 +38,15 @@ metadata:
     {{- if eq $AKSInstall true }}
     portworx.io/is-aks: "true"
     {{- end }}
-    # TODO: remove
+    {{- if (lookup "apps/v1" "Daemonset" "kube-system" "portworx") }}
     portworx.io/migration-approved: "false"
+    {{- end }}
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+    app.kubernetes.io/managed-by: {{.Release.Service | quote }}
+    app.kubernetes.io/instance: {{.Release.Name | quote }}
 spec:
   image: portworx/oci-monitor:{{ required "A valid Image tag is required in the SemVer format" .Values.imageVersion }}
   imagePullPolicy: Always
@@ -120,9 +127,9 @@ spec:
   stork:
     {{- if (and (.Values.stork) (eq .Values.stork true))}}
     enabled: true
-      {{- if .Values.storkVersion }}
+    {{- if .Values.storkVersion }}
     image: {{ template "px.getStorkImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.storkVersion }}
-      {{- end }}
+    {{- end }}
     {{- else }}
     enabled: false
     {{- end }}
@@ -152,12 +159,14 @@ spec:
     enabled: true
   {{- end }}
 
+  {{- with .Values.tolerations }}
   placement:
-    {{- with .Values.tolerations }}
     tolerations:
       {{- toYaml . | nindent 4 }}
-    {{- end }}
+  {{- end }}
 
+  {{- if .Values.deleteStrategy.type }}
+  deleteStrategy:
+    type: {{ .Values.deleteStrategy.type }}
+  {{- end }}
 {{- end }}
-
-
