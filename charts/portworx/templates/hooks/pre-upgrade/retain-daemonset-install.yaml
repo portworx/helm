@@ -1,3 +1,5 @@
+{{- if (lookup "apps/v1" "Daemonset" "kube-system" "portworx") }}
+
 {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
 {{- $registrySecret := .Values.registrySecret | default "none" }}
 
@@ -15,7 +17,7 @@ metadata:
   annotations:
     "helm.sh/hook": pre-upgrade
     "helm.sh/hook-weight": "10"
-    "helm.sh/hook-delete-policy": before-hook-creation
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
   {{ if semverCompare ">= 1.8" .Capabilities.KubeVersion.GitVersion }}
   backoffLimit: 0
@@ -101,4 +103,4 @@ spec:
                      kubectl -n kube-system annotate PrometheusRule prometheus-portworx-rules-portworx.rules.yaml helm.sh/resource-policy=keep --overwrite || true;
                      kubectl -n kube-system annotate ServiceMonitor portworx-prometheus-sm helm.sh/resource-policy=keep --overwrite || true;
                      ']
-
+{{- end }}
