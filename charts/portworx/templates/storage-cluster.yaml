@@ -73,13 +73,26 @@ spec:
     {{- end }}
   {{- end }}
 
-  storage:
-    {{- if not (eq $drives "none") }}
-    devices:
+{{- if and (ne $drives "none") (not (hasPrefix "/" $drives)) }}
+  cloudStorage:
+    deviceSpecs:
       {{- $driveNames := $drives | split ";" }}
       {{- range $index, $name := $driveNames }}
       - {{ $name }}
       {{- end }}
+{{- else }}
+  {{- if .AKSInstall }}
+  cloudStorage:
+    deviceSpecs:
+      - type=Premium_LRS,size=150
+  {{- else }}
+  storage:
+    {{- if hasPrefix "/" $drives }}
+    devices:
+      {{- $driveNames := $drives | split ";" }}
+        {{- range $index, $name := $driveNames }}
+        - {{ $name }}
+        {{- end }}
     {{- end }}
     {{- if or $usefileSystemDrive $deployEnvironmentIKS }}
     forceUseDisks: true
@@ -90,12 +103,8 @@ spec:
     {{- if ne $kvdbDevice "none" }}
     kvdbDevice: {{ $kvdbDevice }}
     {{- end }}
-
-  {{- if .AKSInstall }}
-  cloudStorage:
-    deviceSpecs:
-      - type=Premium_LRS,size=150
   {{- end }}
+{{- end }}
 
   {{- if or (ne $dataInterface "none") (ne $managementInterface "none") }}
   network:
