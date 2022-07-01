@@ -74,7 +74,7 @@ spec:
   {{- end }}
 
   storage:
-    {{- if not (eq $drives "none") }}
+    {{- if or (hasPrefix "/" $drives) (contains ";/" $drives) }}
     devices:
       {{- $driveNames := $drives | split ";" }}
       {{- range $index, $name := $driveNames }}
@@ -91,10 +91,19 @@ spec:
     kvdbDevice: {{ $kvdbDevice }}
     {{- end }}
 
+  {{- if and (ne $drives "none") (and (not (hasPrefix "/" $drives)) (not (contains ";/" $drives)) ) }}
+  cloudStorage:
+    deviceSpecs:
+      {{- $driveNames := $drives | split ";" }}
+      {{- range $index, $name := $driveNames }}
+      - {{ $name }}
+      {{- end }}
+  {{- else }}
   {{- if .AKSInstall }}
   cloudStorage:
     deviceSpecs:
       - type=Premium_LRS,size=150
+  {{- end }}
   {{- end }}
 
   {{- if or (ne $dataInterface "none") (ne $managementInterface "none") }}
