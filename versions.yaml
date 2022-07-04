@@ -21,7 +21,7 @@ modules:
     nginx: "docker.io/portworx/nginx:1.22.0-alpine"
     consul: "docker.io/portworx/consul:1.12.2-debian-11-r0"
     goDnsmasq: "docker.io/portworx/go-dnsmasq:release-1.0.7-v2"
-    grafana: "docker.io/portworx/grafana:8.5.3"
+    grafana: "docker.io/portworx/grafana:7.5.16"
     prometheus: "docker.io/portworx/prometheus:v2.35.0"
     prometheusConfigReloader: "docker.io/portworx/prometheus-config-reloader:v0.56.3"
     prometheusOperator: "docker.io/portworx/prometheus-operator:v0.56.3"
