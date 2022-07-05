@@ -221,7 +221,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: grafana
-    tag: 8.5.3
+    tag: 7.5.16
   prometheusImage:
     registry: docker.io
     repo: portworx
