@@ -574,7 +574,7 @@ Parameter | Description | Default
 `images.pxBackupImage.imageName` | PX-Backup image name | `px-backup`
 `images.pxBackupImage.tag` | PX-Backup image tag | `1.2.2`
 `images.mongodbImage.registry` | PX-Backup mongodb image registry | `docker.io`
-`images.mongodbImage.repo` | PX-Backup mongodb image repo | `bitnami`
+`images.mongodbImage.repo` | PX-Backup mongodb image repo | `portworx`
 `images.mongodbImage.imageName` | PX-Backup mongodb image name | `mongodb`
 `images.mongodbImage.tag` | PX-Backup mongodb image tag | `4.4.4-debian-10-r30`
 
@@ -685,9 +685,4 @@ Parameter | Description | Default
 `images.licenseServerImage.registry` | License server image registry | `docker.io`
 `images.licenseServerImage.repo` | License server image repo | `portworx`
 `images.licenseServerImage.imageName` | License server image name | `px-els`
-`images.licenseServerImage.tag` | License server image tag | `1.0.0`
-`images.pxLicenseHAConfigContainerImage` | License server HA configuration image | ``
-`images.pxLicenseHAConfigContainerImage.registry` | License server HA configuration image registry | `docker.io`
-`images.pxLicenseHAConfigContainerImage.repo` | License server HA configuration image repo | `portworx`
-`images.pxLicenseHAConfigContainerImage.imageName` | License server HA configuration image name | `pxcentral-onprem-els-ha-setup`
-`images.pxLicenseHAConfigContainerImage.tag` | License server HA configuration image tag | `1.0.2`
+`images.licenseServerImage.tag` | License server image tag | `2.2.1`
