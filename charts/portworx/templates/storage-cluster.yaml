@@ -3,6 +3,9 @@
   {{- $isCoreOS := .Values.isTargetOSCoreOS | default false }}
   {{- $internalKVDB := .Values.internalKVDB | default false }}
   {{- $etcdEndPoints := .Values.etcdEndPoint }}
+  {{- $etcdCertPath := .Values.etcd.certPath | default "none" }}
+  {{- $etcdCert := .Values.etcd.cert | default "none" }}
+  {{- $etcdKey := .Values.etcd.key | default "none" }}
   {{- $openshiftInstall := .Values.openshiftInstall | default false }}
   {{- $EKSInstall := .Values.EKSInstall | default false }}
   {{- $pksInstall := .Values.pksInstall | default false }}
@@ -19,6 +22,8 @@
   {{- $registrySecret := .Values.registrySecret | default "none" }}
   {{- $licenseSecret := .Values.licenseSecret | default "none" }}
   {{- $kvdbDevice := .Values.kvdbDevice | default "none" }}
+  {{- $miscArgs := include "px.miscArgs" . }}
+  {{- $volumesPresent := include "px.volumesPresent" . }}
 
 kind: StorageCluster
 apiVersion: core.libopenstorage.org/v1
@@ -40,6 +45,9 @@ metadata:
     {{- end }}
     {{- if (lookup "apps/v1" "Daemonset" "kube-system" "portworx") }}
     portworx.io/migration-approved: "false"
+    {{- end }}
+    {{- if $miscArgs }}
+    portworx.io/misc-args: {{ $miscArgs | quote }}
     {{- end }}
   labels:
     heritage: {{.Release.Service | quote }}
@@ -70,6 +78,9 @@ spec:
       {{- range $key, $val := $endpoints }}
       - {{$val}}
       {{- end }}
+    {{- end }}
+    {{- if .Values.kvdb.authSecretName }}
+    authSecret: {{ .Values.kvdb.authSecretName }}
     {{- end }}
   {{- end }}
 
@@ -168,13 +179,32 @@ spec:
     enabled: false
     {{- end }}
 
-  {{- if eq $isCoreOS true}}
+  {{- if eq $volumesPresent "true" }}
   volumes:
-    - name: src
-      mountPath: /lib/modules
-      hostPath:
-        path: /lib/modules
-        type: Directory
+  {{- if eq $isCoreOS true}}
+  - name: src
+    mountPath: /lib/modules
+    hostPath:
+      path: /lib/modules
+      type: Directory
+  {{- end }}
+  {{- if ne $etcdCertPath "none" }}
+  - name: etcdcerts
+    mountPath: /etc/pwx/etcdcerts
+    secret:
+      secretName: px-etcd-certs
+      items:
+      - key: ca.pem
+        path: ca.pem
+      {{- if ne $etcdCert "none" }}
+      - key: client.pem
+        path: client.pem
+      {{- end -}}
+      {{- if ne $etcdKey "none" }}
+      - key: client-key.pem
+        path: client-key.key
+      {{- end -}}
+  {{- end}}
   {{- end }}
 
   {{- if (and (.Values.monitoring) (eq .Values.monitoring true)) }}
