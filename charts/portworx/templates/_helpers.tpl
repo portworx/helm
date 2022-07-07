@@ -227,3 +227,39 @@ Generate a random token for storage provisioning
     {{ "false" | quote }}
 {{- end -}}
 {{- end -}}
+
+{{- define "px.deprecatedKvdbArgs" }}
+{{- $result := "" }}
+{{- if ne .Values.etcd.credentials "none:none" }}
+    {{- $result = printf "%s -userpwd %s" $result .Values.etcd.credentials }}
+{{- end }}
+{{- if ne .Values.etcd.ca "none" }}
+    {{- $result = printf "%s -ca %s" $result .Values.etcd.ca }}
+{{- end }}
+{{- if ne .Values.etcd.cert "none" }}
+    {{- $result = printf "%s -cert %s" $result .Values.etcd.cert }}
+{{- end }}
+{{- if ne .Values.etcd.key "none" }}
+    {{- $result = printf "%s -key %s" $result .Values.etcd.key }}
+{{- end }}
+{{- if ne .Values.consul.token "none" }}
+    {{- $result = printf "%s -acltoken %s" $result .Values.consul.token }}
+{{- end }}
+{{- trim $result }}
+{{- end }}
+
+{{- define "px.miscArgs" }}
+{{- $result := "" }}
+{{- if (include "px.deprecatedKvdbArgs" .) }}
+    {{- $result = printf "%s %s" $result (include "px.deprecatedKvdbArgs" .) }}
+{{- end }}
+{{- trim $result }}
+{{- end }}
+
+{{- define "px.volumesPresent" }}
+{{- $result := false }}
+{{- if (default false .Values.isTargetOSCoreOS) }}
+    {{- $result = true }}
+{{- end }}
+{{- $result }}
+{{- end }}
