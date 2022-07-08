@@ -2,13 +2,13 @@
 */}}
 
 {{- define "rbac.apiVersion" -}}
-{{- if semverCompare ">= 1.8" .Capabilities.KubeVersion.GitVersion -}}
+{{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+" | trimPrefix "v"}}
+{{- if semverCompare ">= 1.8" $version -}}
 "rbac.authorization.k8s.io/v1"
 {{- else -}}
 "rbac.authorization.k8s.io/v1beta1"
 {{- end -}}
 {{- end -}}
-
 
 {{- define "px.labels" -}}
 chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
