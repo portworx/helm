@@ -81,7 +81,7 @@ release: {{ .Release.Name | quote }}
 {{- end -}}
 
 {{- define "px.getk8sImages" -}}
-{{- $version := .Capabilities.KubeVersion.GitVersion -}}
+{{- $version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+" | trimPrefix "v" -}}
 {{- if (.Values.customRegistryURL) -}}
     {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
         {{ trim .Values.customRegistryURL }}
@@ -139,7 +139,8 @@ release: {{ .Release.Name | quote }}
 {{- end -}}
 
 {{- define "px.registryConfigType" -}}
-{{- if semverCompare ">=1.9" .Capabilities.KubeVersion.GitVersion -}}
+{{- $version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+" | trimPrefix "v" -}}
+{{- if semverCompare ">=1.9" $version -}}
 ".dockerconfigjson"
 {{- else -}}
 ".dockercfg"
