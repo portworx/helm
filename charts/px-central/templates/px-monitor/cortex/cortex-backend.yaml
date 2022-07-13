@@ -189,6 +189,8 @@ spec:
               value: rack1
             - name: CASSANDRA_ENABLE_RPC
               value: "true"
+            - name: JVM_EXTRA_OPTS
+              value: "-Dcassandra.ignore_corrupted_schema_tables=true"
             {{- if .Values.cassandra.jvm.maxHeapSize }}
             - name: MAX_HEAP_SIZE
               value: {{ .Values.cassandra.jvm.maxHeapSize}}
