@@ -1,5 +1,3 @@
-{{- if (lookup "apps/v1" "Daemonset" "kube-system" "portworx") }}
-
 {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
 {{- $registrySecret := .Values.registrySecret | default "none" }}
 
@@ -17,13 +15,8 @@ metadata:
   annotations:
     "helm.sh/hook": pre-upgrade
     "helm.sh/hook-weight": "10"
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    "helm.sh/hook-delete-policy": before-hook-creation
 spec:
-  {{ if semverCompare ">= 1.8" .Capabilities.KubeVersion.GitVersion }}
-  backoffLimit: 0
-  {{ else }}
-  activeDeadlineSeconds: 30
-  {{ end }}
   template:
     spec:
       {{- if not (eq $registrySecret "none") }}
@@ -42,8 +35,7 @@ spec:
           command: ['/bin/sh',
                     '-c',
                     'kubectl -n kube-system annotate DaemonSet portworx-api helm.sh/resource-policy=keep --overwrite;
-                     kubectl -n kube-system annotate DaemonSet portworx helm.sh/resource-policy=keep --overwrite;
-
+                     kubectl -n kube-system annotate DaemonSet portworx helm.sh/resource-policy=keep --overwrite || true;
                      kubectl -n kube-system annotate Service stork-service helm.sh/resource-policy=keep --overwrite || true;
                      kubectl -n kube-system annotate Service prometheus helm.sh/resource-policy=keep --overwrite || true;
                      kubectl -n kube-system annotate Service portworx-service helm.sh/resource-policy=keep --overwrite || true;
@@ -103,4 +95,3 @@ spec:
                      kubectl -n kube-system annotate PrometheusRule prometheus-portworx-rules-portworx.rules.yaml helm.sh/resource-policy=keep --overwrite || true;
                      kubectl -n kube-system annotate ServiceMonitor portworx-prometheus-sm helm.sh/resource-policy=keep --overwrite || true;
                      ']
-{{- end }}
