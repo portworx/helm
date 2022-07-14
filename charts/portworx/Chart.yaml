@@ -1,5 +1,5 @@
 name: portworx
-version: 2.11.0
+version: 2.9.1
 description: A Helm chart for installing Portworx on Kubernetes.
 tillerversion: ">=2.9.0"
 home: https://portworx.com/
