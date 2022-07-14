@@ -3,8 +3,6 @@
 deployOperator: true                    # Deploy the Portworx operator
 deployCluster: true                     # Deploy the Portworx cluster
 
-deploymentType: oci                     # accepts "oci" or "docker"
-imageType: none                         #
 imageVersion: 2.10.3                    # Version of the PX Image.
 pxOperatorImageVersion: 1.9.0           # Version of the PX operator image.
 
@@ -25,7 +23,7 @@ managementInterface: none             # Name of the interface <ethX>
 envVars: none                         # NOTE: This is a ";" seperated list of environment variables. For eg: MYENV1=myvalue1;MYENV2=myvalue2
 
 stork: true                           # Use Stork https://docs.portworx.com/scheduler/kubernetes/stork.html for hyperconvergence.
-storkVersion:                         # Version of Stork. For eg: 2.7.0
+storkVersion:                         # Optional: version of Stork. For eg: 2.7.0, when it's empty Portworx operator will pick up version according to Portworx version.
 
 customRegistryURL:
 registrySecret:
@@ -74,5 +72,5 @@ clusterToken:
 
 #requirePxEnabledTag: true               # if set to true, portworx will only install on nodes with px/enabled: true label. Not required in most scenarios.
 
-deleteStrategy:                           # Delete strategy for the portworx cluster
+deleteStrategy:                           # Optional: Delete strategy for the portworx cluster
   type:                                   # Valid values: Uninstall, UninstallAndWipe
