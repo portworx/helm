@@ -63,6 +63,7 @@ metadata:
 type: Opaque
 stringData:
   mongodb-root-password: "pxcentral"
+  mongodb-username: "pxbackup"
   mongodb-password: "Password1"
   mongodb-replica-set-key: "pxbackup"
 ---
