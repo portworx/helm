@@ -37,5 +37,5 @@ spec:
           {{- end}}
           command: ['/bin/sh',
                     '-c',
-                    'kubectl -n kube-system delete storagecluster {{ $clusterName }}']
+                    'kubectl -n kube-system delete storagecluster {{ $clusterName }} --ignore-not-found']
 {{- end }}
