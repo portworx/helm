@@ -254,12 +254,21 @@ Generate a random token for storage provisioning
 {{- if (include "px.deprecatedKvdbArgs" .) }}
     {{- $result = printf "%s %s" $result (include "px.deprecatedKvdbArgs" .) }}
 {{- end }}
+{{- if ne .Values.miscArgs "none" }}
+    {{- $result = printf "%s %s" $result .Values.miscArgs }}
+{{- end }}
 {{- trim $result }}
 {{- end }}
 
 {{- define "px.volumesPresent" }}
 {{- $result := false }}
 {{- if (default false .Values.isTargetOSCoreOS) }}
+    {{- $result = true }}
+{{- end }}
+{{- if ne (default "none" .Values.etcd.certPath) "none" }}
+    {{- $result = true }}
+{{- end }}
+{{- if .Values.volumes }}
     {{- $result = true }}
 {{- end }}
 {{- $result }}
