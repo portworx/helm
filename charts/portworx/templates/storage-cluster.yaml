@@ -205,7 +205,7 @@ spec:
     {{- $args := .Values.storkSpec.args | split ";" }}
     {{- range $key, $val := $args }}
     {{- $arg := $val | split "=" }}
-    - {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
+      {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
     {{- end }}
     {{- end }}
     {{- else }}
