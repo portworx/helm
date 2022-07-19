@@ -43,11 +43,17 @@ metadata:
     {{- if eq $AKSInstall true }}
     portworx.io/is-aks: "true"
     {{- end }}
-    {{- if (lookup "apps/v1" "Daemonset" "kube-system" "portworx") }}
-    portworx.io/migration-approved: "false"
-    {{- end }}
     {{- if $miscArgs }}
     portworx.io/misc-args: {{ $miscArgs | quote }}
+    {{- end }}
+    {{- if eq .Values.disableStorageClass true }}
+    portworx.io/disable-storage-class: "true"
+    {{- end }}
+    {{- if and (ne .Values.serviceType "") (ne .Values.serviceType "none") }}
+    portworx.io/service-type: {{ .Values.serviceType | quote }}
+    {{- end }}
+    {{- if (lookup "apps/v1" "Daemonset" "kube-system" "portworx") }}
+    portworx.io/migration-approved: "false"
     {{- end }}
   labels:
     heritage: {{.Release.Service | quote }}
@@ -91,11 +97,23 @@ spec:
       {{- range $index, $name := $driveNames }}
       - {{ $name }}
       {{- end }}
+    {{- if and (ne $kvdbDevice "none") (not (hasPrefix "/" $kvdbDevice)) }}
+    kvdbDeviceSpec: {{ $kvdbDevice }}
+    {{- end }}
+    {{- if ne (.Values.maxStorageNodesPerZone | int) 0 }}
+    maxStorageNodesPerZone: {{ .Values.maxStorageNodesPerZone }}
+    {{- end }}
 {{- else }}
-  {{- if .AKSInstall }}
+  {{- if $AKSInstall }}
   cloudStorage:
     deviceSpecs:
       - type=Premium_LRS,size=150
+    {{- if and (ne $kvdbDevice "none") (not (hasPrefix "/" $kvdbDevice)) }}
+    kvdbDeviceSpec: {{ $kvdbDevice }}
+    {{- end }}
+    {{- if gt (.Values.maxStorageNodesPerZone | int) 0 }}
+    maxStorageNodesPerZone: {{ .Values.maxStorageNodesPerZone }}
+    {{- end }}
   {{- else }}
   storage:
     {{- if hasPrefix "/" $drives }}
@@ -111,7 +129,7 @@ spec:
     {{- if eq $usedrivesAndPartitions true }}
     useAllWithPartitions: true
     {{- end }}
-    {{- if ne $kvdbDevice "none" }}
+    {{- if and (ne $kvdbDevice "none") (hasPrefix "/" $kvdbDevice) }}
     kvdbDevice: {{ $kvdbDevice }}
     {{- end }}
   {{- end }}
@@ -136,37 +154,40 @@ spec:
   {{- end }}
 
   env:
-  {{ if not (eq $envVars "none") }}
+  {{- with .Values.envs }}
+    {{- toYaml . | nindent 2 }}
+  {{- end -}}
+  {{- if not (eq $envVars "none") }}
     {{- $vars := $envVars | split ";" }}
     {{- range $key, $val := $vars }}
-    {{-  $envVariable := $val | split "=" }}
-    - name: {{ $envVariable._0 | trim | quote }}
-      value: {{ $envVariable._1 | trim | quote }}
-    {{ end }}
+    {{- $envVariable := $val | split "=" }}
+  - name: {{ $envVariable._0 | trim | quote }}
+    value: {{ $envVariable._1 | trim | quote }}
+    {{- end }}
   {{- end }}
   {{- if ne $licenseSecret "none" }}
-    - name: SAAS_ACCOUNT_KEY_STRING
-      valueFrom:
-        secretKeyRef:
-          name: "{{ $licenseSecret }}"
-          key: accountKey
+  - name: SAAS_ACCOUNT_KEY_STRING
+    valueFrom:
+      secretKeyRef:
+        name: "{{ $licenseSecret }}"
+        key: accountKey
   {{- end }}
   {{- if .Values.AKSInstall }}
-    - name: AZURE_CLIENT_SECRET
-      valueFrom:
-        secretKeyRef:
-          name: px-azure
-          key: AZURE_CLIENT_SECRET
-    - name: AZURE_CLIENT_ID
-      valueFrom:
-        secretKeyRef:
-          name: px-azure
-          key: AZURE_CLIENT_ID
-    - name: AZURE_TENANT_ID
-      valueFrom:
-        secretKeyRef:
-          name: px-azure
-          key: AZURE_TENANT_ID
+  - name: AZURE_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: px-azure
+        key: AZURE_CLIENT_SECRET
+  - name: AZURE_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: px-azure
+        key: AZURE_CLIENT_ID
+  - name: AZURE_TENANT_ID
+    valueFrom:
+      secretKeyRef:
+        name: px-azure
+        key: AZURE_TENANT_ID
   {{- end }}
 
   stork:
@@ -174,6 +195,18 @@ spec:
     enabled: true
     {{- if .Values.storkVersion }}
     image: {{ template "px.getStorkImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.storkVersion }}
+    {{- end }}
+    {{- with .Values.storkSpec.volumes }}
+    volumes:
+      {{- toYaml . | nindent 4 }}
+    {{- end -}}
+    {{- if .Values.storkSpec.args }}
+    args:
+    {{- $args := .Values.storkSpec.args | split ";" }}
+    {{- range $key, $val := $args }}
+    {{- $arg := $val | split "=" }}
+    - {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
+    {{- end }}
     {{- end }}
     {{- else }}
     enabled: false
@@ -204,6 +237,9 @@ spec:
       - key: client-key.pem
         path: client-key.key
       {{- end -}}
+  {{- end}}
+  {{- with .Values.volumes }}
+    {{- toYaml . | nindent 2 }}
   {{- end}}
   {{- end }}
 
