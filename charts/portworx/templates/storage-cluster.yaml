@@ -129,7 +129,7 @@ spec:
     {{- if eq $usedrivesAndPartitions true }}
     useAllWithPartitions: true
     {{- end }}
-    {{- if ne $kvdbDevice "none" }}
+    {{- if and (ne $kvdbDevice "none") (hasPrefix "/" $kvdbDevice) }}
     kvdbDevice: {{ $kvdbDevice }}
     {{- end }}
   {{- end }}

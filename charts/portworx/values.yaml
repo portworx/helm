@@ -30,7 +30,8 @@ serviceType: none                     # Kubernetes service type for services dep
                                       # 'LoadBalancer', 'NodePort' will change all services. To change the types of specific
                                       # services, value can be specified as 'portworx-service:LoadBalancer;portworx-api:ClusterIP'
 
-envVars: none                         # NOTE: This is a ";" seperated list of environment variables.
+envVars: none                         # DEPRECATED: Use envs section to set env variables
+                                      # NOTE: This is a ";" seperated list of environment variables.
                                       # For eg: MYENV1=myvalue1;MYENV2=myvalue2
 
 envs:                                 # Add environment variables to the Portworx container in all Kubernetes supported formats
