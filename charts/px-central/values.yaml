@@ -20,9 +20,6 @@ persistentStorage:
 storkRequired: false
 nodeAffinityLabel: ""
 podAntiAffinity: false
-## ipV6 support is currently only for px-central with px-license server.
-## Neither px-backup and px-monitor supports it.
-useIPV6: false
 
 pxcentralDBPassword: Password1
 caCertsSecretName: ""
