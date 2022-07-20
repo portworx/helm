@@ -2,7 +2,6 @@
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
-{{- $ipV6Enabled := .Values.useIPV6 | default false}}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -47,12 +46,7 @@ data:
     }
 
     server {
-      {{- if eq $ipV6Enabled true }}
-      listen [::]:8080;
-      {{- else }}
-      listen 8080;
-      {{- end }}
-
+      listen  8080;
       server_name localhost;
       server_tokens off;
       location / {
