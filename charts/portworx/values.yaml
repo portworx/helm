@@ -104,9 +104,9 @@ serviceAccount:
     name:
 
 clusterToken:
-  create: false                    # Create cluster token
-  secretName: px-vol-encryption    # Name of kubernetes secret to be created. Requires clusterToken.create to be true.
-  serviceAccountName: px-create-cluster-token # Service account name to use for post-install hook to create cluster token
+  create: false                                # Create cluster token
+  secretName: px-vol-encryption                # Name of kubernetes secret to be created. Requires clusterToken.create to be true.
+  serviceAccountName: px-create-cluster-token  # Service account name to use for post-install hook to create cluster token
 
 #requirePxEnabledTag: true               # if set to true, portworx will only install on nodes with px/enabled: true label. Not required in most scenarios.
 
