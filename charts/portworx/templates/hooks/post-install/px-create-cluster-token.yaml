@@ -120,7 +120,7 @@ metadata:
     "helm.sh/hook-delete-policy": before-hook-creation
     "helm.sh/hook": post-install
   name: {{ .Values.clusterToken.secretName }}
-  namespace: kube-system
+  namespace: portworx
   labels:
     name: {{ .Values.clusterToken.secretName }}
     heritage: {{ .Release.Service }}

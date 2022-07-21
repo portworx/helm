@@ -189,6 +189,8 @@ spec:
         name: px-azure
         key: AZURE_TENANT_ID
   {{- end }}
+  - name: PX_SECRETS_NAMESPACE
+    value: portworx
 
   stork:
     {{- if (and (.Values.stork) (eq .Values.stork true))}}
