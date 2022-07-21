@@ -113,8 +113,8 @@ spec:
                 values:
                 - "false"
               {{- end }}
-        {{- if eq .Values.podAntiAffinity true }}
         podAntiAffinity:
+          {{- if eq .Values.podAntiAffinity true }}
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
@@ -123,7 +123,18 @@ spec:
                   values:
                   - cassandra
               topologyKey: kubernetes.io/hostname
-        {{- end }}
+          {{- else }}
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                    - cassandra
+                topologyKey: kubernetes.io/hostname
+          {{- end }}
       {{- if $isOpenshiftCluster}}
       {{- else }}
       securityContext:
@@ -178,6 +189,8 @@ spec:
               value: rack1
             - name: CASSANDRA_ENABLE_RPC
               value: "true"
+            - name: JVM_EXTRA_OPTS
+              value: "-Dcassandra.ignore_corrupted_schema_tables=true"
             {{- if .Values.cassandra.jvm.maxHeapSize }}
             - name: MAX_HEAP_SIZE
               value: {{ .Values.cassandra.jvm.maxHeapSize}}
