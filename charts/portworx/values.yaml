@@ -66,7 +66,7 @@ deployOnMaster:  false                # For POC only
 csi: false                            # Enable CSI
 aut: false                            # Enable AutoPilot
 
-internalKVDB: false                   # internal KVDB
+internalKVDB: true                    # internal KVDB
 kvdbDevice: none                      # specify a separate device to store KVDB data, only used when internalKVDB is set to true
 
 etcd:                                 # DEPRECATED: Use kvdb.authSecretName for configuring secure etcd
