@@ -48,6 +48,7 @@ data:
     server {
       listen  8080;
       server_name localhost;
+      server_tokens off;
       location / {
         root   /usr/share/nginx/html;
         index  index.html index.htm;

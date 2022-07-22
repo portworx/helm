@@ -14,7 +14,7 @@ metadata:
     app: cortex
     release: pxcentral-cortex
 data:
-  cortex.yaml: YWxlcnRtYW5hZ2VyOgogIGV4dGVybmFsX3VybDogL2FwaS9wcm9tL2FsZXJ0bWFuYWdlcgphdXRoX2VuYWJsZWQ6IGZhbHNlCmNodW5rX3N0b3JlOgogIGNodW5rX2NhY2hlX2NvbmZpZzoKICAgIG1lbWNhY2hlZDoKICAgICAgZXhwaXJhdGlvbjogMWgKICAgIG1lbWNhY2hlZF9jbGllbnQ6CiAgICAgIHRpbWVvdXQ6IDFzCiAgbWF4X2xvb2tfYmFja19wZXJpb2Q6IDBzCmRpc3RyaWJ1dG9yOgogIHBvb2w6CiAgICBoZWFsdGhfY2hlY2tfaW5nZXN0ZXJzOiB0cnVlCiAgc2hhcmRfYnlfYWxsX2xhYmVsczogdHJ1ZQpmcm9udGVuZDoKICBjb21wcmVzc19yZXNwb25zZXM6IHRydWUKICBsb2dfcXVlcmllc19sb25nZXJfdGhhbjogMTBzCmluZ2VzdGVyOgogIGxpZmVjeWNsZXI6CiAgICBmaW5hbF9zbGVlcDogMHMKICAgIGpvaW5fYWZ0ZXI6IDBzCiAgICBudW1fdG9rZW5zOiA1MTIKICAgIHJpbmc6CiAgICAgIGt2c3RvcmU6CiAgICAgICAgY29uc3VsOgogICAgICAgICAgY29uc2lzdGVudF9yZWFkczogdHJ1ZQogICAgICAgICAgaG9zdDogcHhjZW50cmFsLWNvcnRleC1jb25zdWw6ODUwMAogICAgICAgICAgaHR0cF9jbGllbnRfdGltZW91dDogMjBzCiAgICAgICAgcHJlZml4OiBjb2xsZWN0b3JzLwogICAgICAgIHN0b3JlOiBjb25zdWwKICAgICAgcmVwbGljYXRpb25fZmFjdG9yOiAxCiAgbWF4X3RyYW5zZmVyX3JldHJpZXM6IDAKaW5nZXN0ZXJfY2xpZW50OgogIGdycGNfY2xpZW50X2NvbmZpZzoKICAgIG1heF9yZWN2X21zZ19zaXplOiAxMDQ4NTc2MDAKICAgIG1heF9zZW5kX21zZ19zaXplOiAxMDQ4NTc2MDAKICAgIHVzZV9nemlwX2NvbXByZXNzaW9uOiB0cnVlCmxpbWl0czoKICBlbmZvcmNlX21ldHJpY19uYW1lOiBmYWxzZQogIHJlamVjdF9vbGRfc2FtcGxlczogdHJ1ZQogIHJlamVjdF9vbGRfc2FtcGxlc19tYXhfYWdlOiAxNjhoCnF1ZXJpZXI6CiAgYWN0aXZlX3F1ZXJ5X3RyYWNrZXJfZGlyOiAvZGF0YS9jb3J0ZXgvcXVlcmllcgogIHF1ZXJ5X2luZ2VzdGVyc193aXRoaW46IDFoCnF1ZXJ5X3JhbmdlOgogIGFsaWduX3F1ZXJpZXNfd2l0aF9zdGVwOiB0cnVlCiAgY2FjaGVfcmVzdWx0czogdHJ1ZQogIHJlc3VsdHNfY2FjaGU6CiAgICBjYWNoZToKICAgICAgbWVtY2FjaGVkOgogICAgICAgIGV4cGlyYXRpb246IDFoCiAgICAgIG1lbWNhY2hlZF9jbGllbnQ6CiAgICAgICAgdGltZW91dDogMXMKICBzcGxpdF9xdWVyaWVzX2J5X2ludGVydmFsOiAyNGgKcnVsZXI6CiAgZW5hYmxlX2FsZXJ0bWFuYWdlcl9kaXNjb3Zlcnk6IGZhbHNlCnNjaGVtYToKICBjb25maWdzOgogIC0gZnJvbTogIjIwMTktMDctMjkiCiAgICBpbmRleDoKICAgICAgcGVyaW9kOiAyNGgKICAgICAgcHJlZml4OiBpbmRleF8KICAgIGNodW5rczoKICAgICAgcHJlZml4OiBjaHVua18KICAgICAgcGVyaW9kOiAyNGgKICAgIG9iamVjdF9zdG9yZTogY2Fzc2FuZHJhCiAgICBzY2hlbWE6IHYxMAogICAgc3RvcmU6IGNhc3NhbmRyYQpzZXJ2ZXI6CiAgZ3JwY19saXN0ZW5fcG9ydDogOTA5NQogIGdycGNfc2VydmVyX21heF9jb25jdXJyZW50X3N0cmVhbXM6IDEwMDAKICBncnBjX3NlcnZlcl9tYXhfcmVjdl9tc2dfc2l6ZTogMTA0ODU3NjAwCiAgZ3JwY19zZXJ2ZXJfbWF4X3NlbmRfbXNnX3NpemU6IDEwNDg1NzYwMAogIGh0dHBfbGlzdGVuX3BvcnQ6IDgwODAKc3RvcmFnZToKICBhenVyZToKICAgIGFjY291bnRfa2V5OiBudWxsCiAgICBhY2NvdW50X25hbWU6IG51bGwKICAgIGNvbnRhaW5lcl9uYW1lOiBudWxsCiAgY2Fzc2FuZHJhOgogICAgYWRkcmVzc2VzOiBweGNlbnRyYWwtY29ydGV4LWNhc3NhbmRyYTo5MDQyCiAgICBhdXRoOiB0cnVlCiAgICBrZXlzcGFjZTogY29ydGV4CiAgICBwYXNzd29yZDogY2Fzc2FuZHJhCiAgICB1c2VybmFtZTogY2Fzc2FuZHJhCiAgICB0aW1lb3V0OiAxMHMKICAgIGNvbm5lY3RfdGltZW91dDogMTBzCiAgICBtYXhfcmV0cmllczogMwogIGVuZ2luZTogY2h1bmtzCiAgaW5kZXhfcXVlcmllc19jYWNoZV9jb25maWc6CiAgICBtZW1jYWNoZWQ6CiAgICAgIGV4cGlyYXRpb246IDFoCiAgICBtZW1jYWNoZWRfY2xpZW50OgogICAgICB0aW1lb3V0OiAxcwp0YWJsZV9tYW5hZ2VyOgogIHJldGVudGlvbl9kZWxldGVzX2VuYWJsZWQ6IHRydWUKICByZXRlbnRpb25fcGVyaW9kOiAxOTJo
+  cortex.yaml: YWxlcnRtYW5hZ2VyOgogIGV4dGVybmFsX3VybDogL2FwaS9wcm9tL2FsZXJ0bWFuYWdlcgphdXRoX2VuYWJsZWQ6IGZhbHNlCmNodW5rX3N0b3JlOgogIGNodW5rX2NhY2hlX2NvbmZpZzoKICAgIG1lbWNhY2hlZDoKICAgICAgZXhwaXJhdGlvbjogMWgKICAgIG1lbWNhY2hlZF9jbGllbnQ6CiAgICAgIHRpbWVvdXQ6IDFzCmRpc3RyaWJ1dG9yOgogIHBvb2w6CiAgICBoZWFsdGhfY2hlY2tfaW5nZXN0ZXJzOiB0cnVlCiAgc2hhcmRfYnlfYWxsX2xhYmVsczogdHJ1ZQpmcm9udGVuZDoKICBsb2dfcXVlcmllc19sb25nZXJfdGhhbjogMTBzCmFwaToKICByZXNwb25zZV9jb21wcmVzc2lvbl9lbmFibGVkOiB0cnVlCmluZ2VzdGVyOgogIGxpZmVjeWNsZXI6CiAgICBmaW5hbF9zbGVlcDogMHMKICAgIGpvaW5fYWZ0ZXI6IDBzCiAgICBudW1fdG9rZW5zOiA1MTIKICAgIHJpbmc6CiAgICAgIGt2c3RvcmU6CiAgICAgICAgY29uc3VsOgogICAgICAgICAgY29uc2lzdGVudF9yZWFkczogdHJ1ZQogICAgICAgICAgaG9zdDogcHhjZW50cmFsLWNvcnRleC1jb25zdWw6ODUwMAogICAgICAgICAgaHR0cF9jbGllbnRfdGltZW91dDogMjBzCiAgICAgICAgcHJlZml4OiBjb2xsZWN0b3JzLwogICAgICAgIHN0b3JlOiBjb25zdWwKICAgICAgcmVwbGljYXRpb25fZmFjdG9yOiAxCiAgbWF4X3RyYW5zZmVyX3JldHJpZXM6IDEwCmluZ2VzdGVyX2NsaWVudDoKICBncnBjX2NsaWVudF9jb25maWc6CiAgICBtYXhfcmVjdl9tc2dfc2l6ZTogMTA0ODU3NjAwCiAgICBtYXhfc2VuZF9tc2dfc2l6ZTogMTA0ODU3NjAwCmxpbWl0czoKICBlbmZvcmNlX21ldHJpY19uYW1lOiBmYWxzZQogIHJlamVjdF9vbGRfc2FtcGxlczogdHJ1ZQogIHJlamVjdF9vbGRfc2FtcGxlc19tYXhfYWdlOiAxNjhoCiAgbWF4X3F1ZXJ5X2xvb2tiYWNrOiAwcwpxdWVyaWVyOgogIGFjdGl2ZV9xdWVyeV90cmFja2VyX2RpcjogL2RhdGEvY29ydGV4L3F1ZXJpZXIKICBxdWVyeV9pbmdlc3RlcnNfd2l0aGluOiAxMmgKcXVlcnlfcmFuZ2U6CiAgYWxpZ25fcXVlcmllc193aXRoX3N0ZXA6IHRydWUKICBjYWNoZV9yZXN1bHRzOiB0cnVlCiAgcmVzdWx0c19jYWNoZToKICAgIGNhY2hlOgogICAgICBtZW1jYWNoZWQ6CiAgICAgICAgZXhwaXJhdGlvbjogMWgKICAgICAgbWVtY2FjaGVkX2NsaWVudDoKICAgICAgICB0aW1lb3V0OiAxcwogIHNwbGl0X3F1ZXJpZXNfYnlfaW50ZXJ2YWw6IDI0aApydWxlcjoKICBlbmFibGVfYWxlcnRtYW5hZ2VyX2Rpc2NvdmVyeTogZmFsc2UKc2NoZW1hOgogIGNvbmZpZ3M6CiAgLSBmcm9tOiAiMjAxOS0wNy0yOSIKICAgIGluZGV4OgogICAgICBwZXJpb2Q6IDI0aAogICAgICBwcmVmaXg6IGluZGV4XwogICAgY2h1bmtzOgogICAgICBwcmVmaXg6IGNodW5rXwogICAgICBwZXJpb2Q6IDI0aAogICAgb2JqZWN0X3N0b3JlOiBjYXNzYW5kcmEKICAgIHNjaGVtYTogdjEwCiAgICBzdG9yZTogY2Fzc2FuZHJhCnNlcnZlcjoKICBncnBjX2xpc3Rlbl9wb3J0OiA5MDk1CiAgZ3JwY19zZXJ2ZXJfbWF4X2NvbmN1cnJlbnRfc3RyZWFtczogMTAwMAogIGdycGNfc2VydmVyX21heF9yZWN2X21zZ19zaXplOiAxMDQ4NTc2MDAKICBncnBjX3NlcnZlcl9tYXhfc2VuZF9tc2dfc2l6ZTogMTA0ODU3NjAwCiAgaHR0cF9saXN0ZW5fcG9ydDogODA4MApzdG9yYWdlOgogIGF6dXJlOgogICAgYWNjb3VudF9rZXk6IG51bGwKICAgIGFjY291bnRfbmFtZTogbnVsbAogICAgY29udGFpbmVyX25hbWU6IG51bGwKICBjYXNzYW5kcmE6CiAgICBhZGRyZXNzZXM6IHB4Y2VudHJhbC1jb3J0ZXgtY2Fzc2FuZHJhOjkwNDIKICAgIGF1dGg6IHRydWUKICAgIGtleXNwYWNlOiBjb3J0ZXgKICAgIHBhc3N3b3JkOiBjYXNzYW5kcmEKICAgIHVzZXJuYW1lOiBjYXNzYW5kcmEKICAgIHRpbWVvdXQ6IDMwcwogICAgY29ubmVjdF90aW1lb3V0OiAxMHMKICAgIG1heF9yZXRyaWVzOiA1CiAgZW5naW5lOiBjaHVua3MKICBpbmRleF9xdWVyaWVzX2NhY2hlX2NvbmZpZzoKICAgIG1lbWNhY2hlZDoKICAgICAgZXhwaXJhdGlvbjogMWgKICAgIG1lbWNhY2hlZF9jbGllbnQ6CiAgICAgIHRpbWVvdXQ6IDFzCnRhYmxlX21hbmFnZXI6CiAgcmV0ZW50aW9uX2RlbGV0ZXNfZW5hYmxlZDogdHJ1ZQogIHJldGVudGlvbl9wZXJpb2Q6IDE5Mmg=
 ---
 kind: ConfigMap
 apiVersion: v1
@@ -498,8 +498,8 @@ spec:
                 values:
                 - "false"
               {{- end }}
-        {{- if eq .Values.podAntiAffinity true }}
         podAntiAffinity:
+          {{- if eq .Values.podAntiAffinity true }}
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
@@ -508,7 +508,18 @@ spec:
                   values:
                   - cortex-distributor
               topologyKey: kubernetes.io/hostname
-        {{- end }}
+          {{- else }}
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                    - cortex-distributor
+                topologyKey: kubernetes.io/hostname
+          {{- end }}
       serviceAccountName: px-monitor
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -597,8 +608,8 @@ spec:
                 values:
                 - "false"
               {{- end }}
-        {{- if eq .Values.podAntiAffinity true }}
         podAntiAffinity:
+          {{- if eq .Values.podAntiAffinity true }}
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
@@ -607,7 +618,18 @@ spec:
                   values:
                   - cortex-nginx
               topologyKey: kubernetes.io/hostname
-        {{- end }}
+          {{- else }}
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                    - cortex-nginx
+                topologyKey: kubernetes.io/hostname
+          {{- end }}
       serviceAccountName: px-monitor
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -695,8 +717,8 @@ spec:
                 values:
                 - "false"
               {{- end }}
-        {{- if eq .Values.podAntiAffinity true }}
         podAntiAffinity:
+          {{- if eq .Values.podAntiAffinity true }}
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
@@ -705,7 +727,18 @@ spec:
                   values:
                   - cortex-querier
               topologyKey: kubernetes.io/hostname
-        {{- end }}
+          {{- else }}
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                    - cortex-querier
+                topologyKey: kubernetes.io/hostname
+          {{- end }}
       serviceAccountName: px-monitor
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -796,8 +829,8 @@ spec:
                 values:
                 - "false"
               {{- end }}
-        {{- if eq .Values.podAntiAffinity true }}
         podAntiAffinity:
+          {{- if eq .Values.podAntiAffinity true }}
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
@@ -806,7 +839,18 @@ spec:
                   values:
                   - cortex-query-frontend
               topologyKey: kubernetes.io/hostname
-        {{- end }}
+          {{- else }}
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                    - cortex-query-frontend
+                topologyKey: kubernetes.io/hostname
+          {{- end }}
       serviceAccountName: px-monitor
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -1198,8 +1242,8 @@ spec:
                 values:
                 - "false"
               {{- end }}
-        {{- if eq .Values.podAntiAffinity true }}
         podAntiAffinity:
+          {{- if eq .Values.podAntiAffinity true }}
           requiredDuringSchedulingIgnoredDuringExecution:
             - labelSelector:
                 matchExpressions:
@@ -1208,7 +1252,18 @@ spec:
                   values:
                   - cortex-ingester
               topologyKey: kubernetes.io/hostname
-        {{- end }}
+          {{- else }}
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                    - cortex-ingester
+                topologyKey: kubernetes.io/hostname
+          {{- end }}
       {{- if eq $storkRequired true }}
       schedulerName: stork
       {{- end }}
