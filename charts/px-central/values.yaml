@@ -186,7 +186,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: px-els
-    tag: 2.2.1
+    tag: 2.0.1
 
   ## Images required for enabling px-monitor
   cortexImage:
