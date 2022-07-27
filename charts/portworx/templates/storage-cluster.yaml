@@ -22,6 +22,7 @@
   {{- $registrySecret := .Values.registrySecret | default "none" }}
   {{- $licenseSecret := .Values.licenseSecret | default "none" }}
   {{- $kvdbDevice := .Values.kvdbDevice | default "none" }}
+  {{- $journalDevice := .Values.journalDevice | default "none" }}
   {{- $miscArgs := include "px.miscArgs" . }}
   {{- $volumesPresent := include "px.volumesPresent" . }}
 
@@ -52,7 +53,7 @@ metadata:
     {{- if and (ne .Values.serviceType "") (ne .Values.serviceType "none") }}
     portworx.io/service-type: {{ .Values.serviceType | quote }}
     {{- end }}
-    {{- if (lookup "apps/v1" "Daemonset" "kube-system" "portworx") }}
+    {{- if (lookup "apps/v1" "DaemonSet" "kube-system" "portworx") }}
     portworx.io/migration-approved: "false"
     {{- end }}
   labels:
@@ -100,6 +101,9 @@ spec:
     {{- if and (ne $kvdbDevice "none") (not (hasPrefix "/" $kvdbDevice)) }}
     kvdbDeviceSpec: {{ $kvdbDevice }}
     {{- end }}
+    {{- if and (ne $journalDevice "none") (not (hasPrefix "/" $journalDevice)) }}
+    journalDeviceSpec: {{ $journalDevice }}
+    {{- end }}
     {{- if ne (.Values.maxStorageNodesPerZone | int) 0 }}
     maxStorageNodesPerZone: {{ .Values.maxStorageNodesPerZone }}
     {{- end }}
@@ -110,6 +114,9 @@ spec:
       - type=Premium_LRS,size=150
     {{- if and (ne $kvdbDevice "none") (not (hasPrefix "/" $kvdbDevice)) }}
     kvdbDeviceSpec: {{ $kvdbDevice }}
+    {{- end }}
+    {{- if and (ne $journalDevice "none") (not (hasPrefix "/" $journalDevice)) }}
+    journalDeviceSpec: {{ $journalDevice }}
     {{- end }}
     {{- if gt (.Values.maxStorageNodesPerZone | int) 0 }}
     maxStorageNodesPerZone: {{ .Values.maxStorageNodesPerZone }}
@@ -131,6 +138,9 @@ spec:
     {{- end }}
     {{- if and (ne $kvdbDevice "none") (hasPrefix "/" $kvdbDevice) }}
     kvdbDevice: {{ $kvdbDevice }}
+    {{- end }}
+    {{- if and (ne $journalDevice "none") (hasPrefix "/" $journalDevice) }}
+    journalDevice: {{ $journalDevice }}
     {{- end }}
   {{- end }}
 {{- end }}
@@ -254,9 +264,9 @@ spec:
         enabled: true
   {{- end }}
 
-  {{- if (and (.Values.csi) (eq .Values.csi true))}}
+  {{- if or (eq .Values.csi true) (eq .Values.csi false) }}
   csi:
-    enabled: true
+    enabled: {{ .Values.csi }}
   {{- end }}
   {{- if (and (.Values.aut) (eq .Values.aut true))}}
   autopilot:
