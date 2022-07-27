@@ -6,6 +6,7 @@
   {{- $etcdCertPath := .Values.etcd.certPath | default "none" }}
   {{- $etcdCert := .Values.etcd.cert | default "none" }}
   {{- $etcdKey := .Values.etcd.key | default "none" }}
+  {{- $kvdbAuthSecret := .Values.kvdb.authSecretName | default "none" }}
   {{- $openshiftInstall := .Values.openshiftInstall | default false }}
   {{- $EKSInstall := .Values.EKSInstall | default false }}
   {{- $pksInstall := .Values.pksInstall | default false }}
@@ -86,7 +87,7 @@ spec:
       - {{$val}}
       {{- end }}
     {{- end }}
-    {{- if .Values.kvdb.authSecretName }}
+    {{- if ne $kvdbAuthSecret "none" }}
     authSecret: {{ .Values.kvdb.authSecretName }}
     {{- end }}
   {{- end }}
