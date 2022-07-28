@@ -11,6 +11,32 @@ The helm chart (portworx-helm) deploys Portworx and STork(https://docs.portworx.
 - Kubernetes 1.7+
 - All [Pre-requisites](https://docs.portworx.com/#minimum-requirements). for Portworx fulfilled.
 
+## Upgrading the Chart from an old chart with Daemonset
+1. Deploy StorageCluster CRD. 
+Helm does not handle CRD upgrade, let's manually deploy it.
+```
+kubectl apply -f ./charts/portworx/crds/core_v1_storagecluster_crd.yaml
+```
+2. Run helm upgrade with the original values.yaml that was used to deploy the Daemonset chart.
+```
+helm upgrade [RELEASE] [CHART] -f values.yaml
+```
+3. Review the StorageCluster spec. If any value is not expected, change values.yaml and run `helm upgrade` to update it.
+```
+kubectl -n kube-system describe storagecluster
+```
+4. Approve the migration
+```
+kubectl -n kube-system annotate storagecluster --all --overwrite portworx.io/migration-approved='true'
+```
+5. Wait for migration to complete
+Describe the StorageCluster to see event `Migration completed successfully`. If migration fails, there is corresponding event about the failure.
+```
+kubectl -n kube-system describe storagecluster
+```
+6. Rollback to Daemonset (Unsupported)
+Use `helm rollback` to rollback to Daemonset install is not supported, if there is any issue during migration please try to update values.yaml and perform `helm upgrade`. 
+
 ## Installing the Chart
 
 To install the chart with the release name `my-release` run the following commands substituting relevant values for your setup:
