@@ -35,6 +35,7 @@ Describe the StorageCluster to see event `Migration completed successfully`. If 
 kubectl -n kube-system describe storagecluster
 ```
 6. Rollback to Daemonset (Unsupported)
+
 Use `helm rollback` to rollback to Daemonset install is not supported, if there is any issue during migration please try to update values.yaml and perform `helm upgrade`. 
 
 ## Installing the Chart
