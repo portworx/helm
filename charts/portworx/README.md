@@ -17,54 +17,24 @@ Helm does not handle CRD upgrade, let's manually deploy it.
 ```
 kubectl apply -f ./charts/portworx/crds/core_v1_storagecluster_crd.yaml
 ```
-2. Add Portworx operator image to the original values.yaml that was used to deploy the Daemonset chart
-```
-pxOperatorImageVersion: 1.9.0
-```
-3. Run helm upgrade
+2. Run helm upgrade with the original values.yaml that was used to deploy the Daemonset chart.
 ```
 helm upgrade [RELEASE] [CHART] -f values.yaml
 ```
-4. [Optional] It's recommended to perform a dry run
+3. Review the StorageCluster spec. If any value is not expected, change values.yaml and run `helm upgrade` to update it.
 ```
-// Find Portworx operator pod
-kubectl -n kube-system get pod -l name=portworx-operator
-
-// Execute dry run tool in portworx operator container
-kubectl -n kube-system exec -it <portworx-operator-pod> -- /dryrun
+kubectl -n kube-system describe storagecluster
 ```
-
-If dry run is successful it should output at the end “Operator migration dry-run finished successfully”. Here is an example output:
+4. Approve the migration
 ```
-$ kubectl -n kube-system exec -it portworx-operator-6977cdcbd4-9b5j9 -- /dryrun
-INFO[0001] k8s version is v1.20.15
-INFO[0001] Reconciling StorageCluster                    Request.Name=px-cluster-0118 Request.Namespace=kube-system
-INFO[0001] Operator will deploy 61 objects, saved to folder /tmp/portworxSpecs
-INFO[0002] Got 43 objects from k8s cluster (daemonSet install), will compare with objects installed by operator (after migration)
-INFO[0002] Portworx will be deployed via Pod scheduled by operator (instead of DaemonSet)
-INFO[0002] ServiceMonitor name will change from portworx-prometheus-sm to portworx after migration
-INFO[0002] Prometheus service name will change from prometheus to px-prometheus after migration
-INFO[0002] Prometheus deployment will change from prometheus-operator to px-prometheus-operator after migration
-INFO[0002] Operator migration dry-run finished successfully
+kubectl -n kube-system annotate storagecluster --all --overwrite portworx.io/migration-approved='true'
 ```
-
-Review the specs that operator will deploy after migration. 
-```
-// List all specs that operator will deploy after migration
-kubectl -n kube-system exec -it <portworx-operator-pod> -- ls /tmp/portworxSpecs
-// Preview portworx pod spec after migration
-kubectl -n kube-system exec -it <portworx-operator-pod> -- cat /tmp/portworxSpecs/Pod.portworx.yaml
-```
-5. Approve the migration
-```
-kubectl -n kube-system annotate stc --all --overwrite portworx.io/migration-approved='true'
-```
-6. Wait for migration to complete
+5. Wait for migration to complete
 Describe the StorageCluster to see event `Migration completed successfully`. If migration fails, there is corresponding event about the failure.
 ```
-kubectl -n kube-system describe stc
+kubectl -n kube-system describe storagecluster
 ```
-7. Rollback to Daemonset (Unsupported)
+6. Rollback to Daemonset (Unsupported)
 Use `helm rollback` to rollback to Daemonset install is not supported, if there is any issue during migration please try to update values.yaml and perform `helm upgrade`. 
 
 ## Installing the Chart
