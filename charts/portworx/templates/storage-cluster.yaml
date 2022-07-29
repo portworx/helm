@@ -142,7 +142,7 @@ spec:
     {{- if and (ne $kvdbDevice "none") (hasPrefix "/" $kvdbDevice) }}
     kvdbDevice: {{ $kvdbDevice }}
     {{- end }}
-    {{- if and (ne $journalDevice "none") (hasPrefix "/" $journalDevice) }}
+    {{- if and (ne $journalDevice "none") (or (hasPrefix "/" $journalDevice) (eq "auto" $journalDevice)) }}
     journalDevice: {{ $journalDevice }}
     {{- end }}
   {{- end }}
