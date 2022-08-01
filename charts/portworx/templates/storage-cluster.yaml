@@ -24,6 +24,7 @@
   {{- $kvdbDevice := .Values.kvdbDevice | default "none" }}
   {{- $miscArgs := include "px.miscArgs" . }}
   {{- $volumesPresent := include "px.volumesPresent" . }}
+  {{- $serviceAccount := .Values.eksServiceAccount | default "none" }}
 
 kind: StorageCluster
 apiVersion: core.libopenstorage.org/v1
@@ -157,6 +158,10 @@ spec:
   {{- with .Values.envs }}
     {{- toYaml . | nindent 2 }}
   {{- end -}}
+  {{- if not (eq $serviceAccount "none") }}
+  - name: PX_SERVICE_ACCOUNT
+    value: {{ $serviceAccount }}
+  {{- end }}
   {{- if not (eq $envVars "none") }}
     {{- $vars := $envVars | split ";" }}
     {{- range $key, $val := $vars }}

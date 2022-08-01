@@ -3,7 +3,7 @@
 deployOperator: true                    # Deploy the Portworx operator
 deployCluster: true                     # Deploy the Portworx cluster
 
-imageVersion: 2.9.1.4                   # Version of the PX Image.
+imageVersion: 2.11.0                  # Version of the PX Image.
 pxOperatorImageVersion: 1.9.0-rc1       # Version of the PX operator image.
 
 openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
@@ -49,7 +49,7 @@ miscArgs: none                        # Miscellaneous arguments that will be pas
 disableStorageClass: false            # Instructs Operator to not install the default Portworx StorageClasses.
 
 stork: true                           # Use Stork https://docs.portworx.com/scheduler/kubernetes/stork.html for hyperconvergence.
-storkVersion:                         # Optional: version of Stork. For eg: 2.7.0, when it's empty Portworx operator will pick up
+storkVersion: 2.11.0                        # Optional: version of Stork. For eg: 2.7.0, when it's empty Portworx operator will pick up
                                       # version according to Portworx version.
 
 storkSpec:                            # Optional Stork configurations
@@ -102,6 +102,9 @@ serviceAccount:
   hook:
     create: true
     name:
+
+awsMarketplace: false
+eksServiceAccount: 
 
 clusterToken:
   create: false                    # Create cluster token

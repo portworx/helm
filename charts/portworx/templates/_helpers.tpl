@@ -273,3 +273,12 @@ Generate a random token for storage provisioning
 {{- end }}
 {{- $result }}
 {{- end }}
+
+{{- define "px.getProductID" -}}
+{{- $product := .Values.awsProduct | default "PX-ENTERPRISE" }}
+    {{- if eq $product "PX-ENTERPRISE-DR" }}
+        {{- cat "6a97e814-fbe5-4ae3-a3e2-14ca735b5e6b" }}
+    {{- else }}
+        {{- cat "3a3fcb1c-7ee5-4f3b-afe3-d293c3f9beb4" }}
+    {{- end }}
+{{- end -}}
