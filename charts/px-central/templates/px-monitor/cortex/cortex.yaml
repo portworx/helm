@@ -1157,7 +1157,7 @@ spec:
             - "-config.file=/etc/cortex/cortex.yaml"
             - "-alertmanager.configs.url=http://pxcentral-cortex-configs.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:8080"
             {{- if eq .Values.pxmonitor.cortex.alertmanager.advertiseAddress "pod_ip"}}
-            - "-cluster.advertise-address=$(MY_POD_IP):9094"
+            - "-alertmanager.cluster.advertise-address=$(MY_POD_IP):9094"
             {{- end }}
           env:
             - name: MY_POD_IP
