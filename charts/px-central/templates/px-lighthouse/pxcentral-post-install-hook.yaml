@@ -56,6 +56,13 @@ spec:
             {{- else }}
             value: "upgrade"
             {{- end }}
+          - name: HELM_VERSION
+            {{- $isHelm2 := regexMatch "\nTillerVersion:\n" (.Capabilities | toYaml) }}
+            {{- if eq $isHelm2 true }}
+            value: {{ .Capabilities.TillerVersion.SemVer }}
+            {{- else }}
+            value: {{ .Capabilities.HelmVersion.Version }}
+            {{- end }}
         command: ["python", "-u", "/pxcentral-post-install/pxc-post-setup.py"]
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
