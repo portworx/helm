@@ -130,7 +130,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend-private
-    tag: 2.3.0-dev
+    tag: PB-2991
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
@@ -140,7 +140,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend-private
-    tag: 2.3.0-dev
+    tag: PB-2991
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
