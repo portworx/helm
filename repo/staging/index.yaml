@@ -2,21 +2,21 @@ apiVersion: v1
 entries:
   portworx:
   - apiVersion: v1
-    created: "2022-08-22T19:39:18.522935+05:30"
+    created: "2022-08-24T05:32:48.864950447-06:00"
     description: A Helm chart for installing Portworx on Kubernetes.
-    digest: cc3fcf586eb69227b01e16cc240ee0ce2c195d384666bf09fe377d539a7579b3
+    digest: d0be93b87056ce9aa7e9e00f6b7512d43fef41bebceba443fe6080af1eaae29b
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     name: portworx
     sources:
     - https://github.com/portworx/helm
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/eks-blueprint/repo/staging/portworx-2.11.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/pradyuman-eks-blueprint/repo/staging/portworx-2.11.0.tgz
     version: 2.11.0
   px-backup:
   - apiVersion: v1
     appVersion: 1.2.0-rc1
-    created: "2022-08-22T19:39:18.528432+05:30"
+    created: "2022-08-24T05:32:48.871763102-06:00"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 4f94b405cab271965ecd893ae1409b2618583c1bb24fa56f9316de987820dbbf
@@ -34,11 +34,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/eks-blueprint/repo/staging/px-backup-1.2.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/pradyuman-eks-blueprint/repo/staging/px-backup-1.2.1.tgz
     version: 1.2.1
   - apiVersion: v1
     appVersion: 1.2.0
-    created: "2022-08-22T19:39:18.526091+05:30"
+    created: "2022-08-24T05:32:48.869423862-06:00"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: c27ecd2be0fd275057af598e78a0be89fb7b1d561df575058c9a926e4eb12274
@@ -56,11 +56,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/eks-blueprint/repo/staging/px-backup-1.2.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/pradyuman-eks-blueprint/repo/staging/px-backup-1.2.0.tgz
     version: 1.2.0
   - apiVersion: v1
     appVersion: 1.1.1
-    created: "2022-08-22T19:39:18.524351+05:30"
+    created: "2022-08-24T05:32:48.867160782-06:00"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 73215fe714e1a3af6bdf958eb06791b90f878b363c85b3adf4c8cfe664a08202
@@ -78,12 +78,12 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/eks-blueprint/repo/staging/px-backup-1.1.6.tgz
+    - https://raw.githubusercontent.com/portworx/helm/pradyuman-eks-blueprint/repo/staging/px-backup-1.1.6.tgz
     version: 1.1.6
   px-license-server:
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2022-08-22T19:39:18.530361+05:30"
+    created: "2022-08-24T05:32:48.875391632-06:00"
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: c84c506cd8fe3794692215b888e481be16b67df7dabac6a084859ae414a89c65
@@ -96,11 +96,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/eks-blueprint/repo/staging/px-license-server-1.2.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/pradyuman-eks-blueprint/repo/staging/px-license-server-1.2.0.tgz
     version: 1.2.0
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2022-08-22T19:39:18.529722+05:30"
+    created: "2022-08-24T05:32:48.874308593-06:00"
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: d48483e2a79be3f1cc3e8306abb118db0fd9da5bf2b28bae4b2864d50fc0b14d
@@ -113,11 +113,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/eks-blueprint/repo/staging/px-license-server-1.1.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/pradyuman-eks-blueprint/repo/staging/px-license-server-1.1.1.tgz
     version: 1.1.1
   - apiVersion: v1
     appVersion: 1.0.0
-    created: "2022-08-22T19:39:18.529115+05:30"
+    created: "2022-08-24T05:32:48.873140834-06:00"
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 76a226032c34459cb01ad74e66f90c863d7686c89e85828f5346b13395b7222b
@@ -130,12 +130,12 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/eks-blueprint/repo/staging/px-license-server-1.1.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/pradyuman-eks-blueprint/repo/staging/px-license-server-1.1.0.tgz
     version: 1.1.0
   px-monitor:
   - apiVersion: v1
     appVersion: 1.2.0
-    created: "2022-08-22T19:39:18.543743+05:30"
+    created: "2022-08-24T05:32:48.891014915-06:00"
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: 8b7a4ea654c15a5ca1bfe712a4003795a69f9af9cf28b348d48755c1900da58c
@@ -151,11 +151,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/eks-blueprint/repo/staging/px-monitor-1.2.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/pradyuman-eks-blueprint/repo/staging/px-monitor-1.2.0.tgz
     version: 1.2.0
   - apiVersion: v1
     appVersion: 1.1.1
-    created: "2022-08-22T19:39:18.539072+05:30"
+    created: "2022-08-24T05:32:48.885813432-06:00"
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: f84da236c3ae70ea883d1a23e1a266b649d3eaeb39ba5850432f0baff4f12701
@@ -171,11 +171,11 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/eks-blueprint/repo/staging/px-monitor-1.1.2.tgz
+    - https://raw.githubusercontent.com/portworx/helm/pradyuman-eks-blueprint/repo/staging/px-monitor-1.1.2.tgz
     version: 1.1.2
   - apiVersion: v1
     appVersion: 1.1.1
-    created: "2022-08-22T19:39:18.535145+05:30"
+    created: "2022-08-24T05:32:48.881596144-06:00"
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: 05f3c71e54ea1c0df623762ab86b9c2eb90853e250d33cb385f66d7fc7b433a9
@@ -191,6 +191,6 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/eks-blueprint/repo/staging/px-monitor-1.1.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/pradyuman-eks-blueprint/repo/staging/px-monitor-1.1.1.tgz
     version: 1.1.1
-generated: "2022-08-22T19:39:18.52097+05:30"
+generated: "2022-08-24T05:32:48.86000824-06:00"

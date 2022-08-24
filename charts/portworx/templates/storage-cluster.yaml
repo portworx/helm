@@ -24,7 +24,7 @@
   {{- $kvdbDevice := .Values.kvdbDevice | default "none" }}
   {{- $miscArgs := include "px.miscArgs" . }}
   {{- $volumesPresent := include "px.volumesPresent" . }}
-  {{- $serviceAccount := .Values.eksServiceAccount | default "none" }}
+  {{- $serviceAccount := .Values.aws.eksServiceAccount | default "none" }}
 
 kind: StorageCluster
 apiVersion: core.libopenstorage.org/v1
@@ -193,6 +193,18 @@ spec:
       secretKeyRef:
         name: px-azure
         key: AZURE_TENANT_ID
+  {{- end }}
+  {{- if .Values.aws.awsAccessKeyId}}
+  - name: AWS_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        name: px-aws-credentials
+        key: awsAccessKeyId
+  - name: AWS_SECRET_ACCESS_KEY
+    valueFrom:
+      secretKeyRef:
+        name: px-aws-credentials
+        key: awsSecretAccessKey
   {{- end }}
 
   stork:

@@ -102,9 +102,11 @@ serviceAccount:
   hook:
     create: true
     name:
-
-awsMarketplace: false
-eksServiceAccount: 
+aws:  
+  awsMarketplace: false
+  eksServiceAccount: 
+  awsAccessKeyId:
+  awsSecretAccessKey:
 
 clusterToken:
   create: false                    # Create cluster token
