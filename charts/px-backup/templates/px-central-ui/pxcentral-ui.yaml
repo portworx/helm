@@ -1,7 +1,18 @@
 {{/* Setting defaults if they are omitted. */}}
-{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
-{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: pxc-backup-secret
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-backup.labels" . | nindent 4 }}
+type: Opaque
+stringData:
+  OIDC_CLIENT_ID: "{{ .Values.oidc.centralOIDC.clientId }}"
+  OIDC_ENDPOINT: "http://pxcentral-keycloak-http:80/auth/realms/master"
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,7 +20,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-frontend
-{{- include "px-central.labels" . | nindent 4 }}
+{{- include "px-backup.labels" . | nindent 4 }}
 data:
   default.conf: |
     proxy_send_timeout 300s;
@@ -30,7 +41,6 @@ data:
       server pxcentral-keycloak-http:80;
     }
 
-    {{- if eq $pxMonitorEnabled true }}
     upstream grafana {
       server pxcentral-grafana:3000;
     }
@@ -38,7 +48,6 @@ data:
     upstream cortex {
       server pxcentral-cortex-nginx:80;
     }
-    {{- end }}
 
     map $http_x_forwarded_proto $myscheme {
       default $http_x_forwarded_proto;
@@ -48,7 +57,6 @@ data:
     server {
       listen  8080;
       server_name localhost;
-      server_tokens off;
       location / {
         root   /usr/share/nginx/html;
         index  index.html index.htm;
@@ -82,9 +90,7 @@ data:
         proxy_set_header X-Forwarded-Host  $http_host;
         proxy_set_header Port  $http_port;
         proxy_set_header X-Forwarded-Port  $http_port;
-        proxy_buffer_size 8k;
       }
-      {{- if eq $pxMonitorEnabled true }}
       location /grafana/ {
         proxy_pass http://grafana/;
         proxy_cache_bypass  $http_upgrade;
@@ -111,7 +117,6 @@ data:
         proxy_set_header Port  $http_port;
         proxy_set_header X-Forwarded-Port  $http_port;
       }
-      {{- end }}
       error_page 404 =200 /index.html;
       error_page   500 502 503 504  /50x.html;
       location = /50x.html {
@@ -127,7 +132,7 @@ metadata:
   labels:
     run: pxcentral-backend
     app.kubernetes.io/component: pxcentral-backend
-{{- include "px-central.labels" . | nindent 4 }}
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     matchLabels:
@@ -151,8 +156,8 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              {{- if .Values.nodeAffinityLabel }}
-              - key: {{ .Values.nodeAffinityLabel }}
+              {{- if .Values.pxbackup.nodeAffinityLabel }}
+              - key: {{ .Values.pxbackup.nodeAffinityLabel }}
                 operator: Exists
               {{- else }}
               - key: pxbackup/enabled
@@ -164,6 +169,7 @@ spec:
         - name: init-mysql-db
           image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralBackendImage.registry .Values.images.pxcentralBackendImage.repo .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
+          name: init-mysql-db
           command:
             - bash
             - -c
@@ -191,11 +197,6 @@ spec:
                 secretKeyRef:
                   name: pxc-backup-secret
                   key: OIDC_CLIENT_SECRET
-            - name: KEYCLOAK_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: credential
-                  name: px-central-admin
           envFrom:
             - configMapRef:
                 name: pxcentral-ui-configmap
@@ -243,22 +244,12 @@ spec:
                 secretKeyRef:
                   name: pxc-backup-secret
                   key: OIDC_CLIENT_SECRET
-            - name: KEYCLOAK_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: credential
-                  name: px-central-admin
           resources: {}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}
         - name: {{ $sec | quote }}
         {{- end }}
-      {{- end }}
-      {{- if $isOpenshiftCluster}}
-      {{- else }}
-      securityContext:
-{{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
       restartPolicy: Always
 status: {}
@@ -271,7 +262,7 @@ metadata:
   labels:
     run: pxcentral-frontend
     app.kubernetes.io/component: pxcentral-frontend
-{{- include "px-central.labels" . | nindent 4 }}
+{{- include "px-backup.labels" . | nindent 4 }} 
 spec:
   selector:
     matchLabels:
@@ -295,8 +286,8 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              {{- if .Values.nodeAffinityLabel }}
-              - key: {{ .Values.nodeAffinityLabel }}
+              {{- if .Values.pxbackup.nodeAffinityLabel }}
+              - key: {{ .Values.pxbackup.nodeAffinityLabel }}
                 operator: Exists
               {{- else }}
               - key: pxbackup/enabled
@@ -365,11 +356,6 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
-      {{- if $isOpenshiftCluster}}
-      {{- else }}
-      securityContext:
-{{ toYaml .Values.securityContext | indent 8 }}
-      {{- end }}
       restartPolicy: Always
 status: {}
 ---
@@ -378,13 +364,13 @@ kind: Secret
 metadata:
   labels:
     app.kubernetes.io/component: pxcentral-mysql
-{{- include "px-central.labels" . | nindent 4 }}
+{{- include "px-backup.labels" . | nindent 4 }}
   name: pxcentral-mysql-secret
   namespace: {{ .Release.Namespace }}
 type: Opaque
 stringData:
   DB_USERNAME: "root"
-  DB_PASSWORD: {{ .Values.pxcentralDBPassword | quote}}
+  DB_PASSWORD: {{ .Values.pxcentralDBPassword }}
 ---
 {{- if eq $externalPersistentStorageEnabled true }}
 apiVersion: v1
@@ -394,7 +380,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-mysql
-{{- include "px-central.labels" . | nindent 4 }}
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   accessModes:
     - ReadWriteOnce
@@ -412,7 +398,7 @@ metadata:
   labels:
     run: pxcentral-mysql
     app.kubernetes.io/component: pxcentral-mysql
-{{- include "px-central.labels" . | nindent 4 }}
+{{- include "px-backup.labels" . | nindent 4 }}
   name: pxcentral-mysql
   namespace: {{ .Release.Namespace }}
 spec:
@@ -435,8 +421,8 @@ spec:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
             - matchExpressions:
-              {{- if .Values.nodeAffinityLabel }}
-              - key: {{ .Values.nodeAffinityLabel }}
+              {{- if .Values.pxbackup.nodeAffinityLabel }}
+              - key: {{ .Values.pxbackup.nodeAffinityLabel }}
                 operator: Exists
               {{- else }}
               - key: pxbackup/enabled
@@ -453,17 +439,13 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
-      {{- if $isOpenshiftCluster}}
-      {{- else }}
-      securityContext:
-{{ toYaml .Values.securityContext | indent 8 }}
-      {{- end }}
       containers:
         - name: mysql
           image: {{ printf "%s/%s/%s:%s" .Values.images.mysqlImage.registry .Values.images.mysqlImage.repo .Values.images.mysqlImage.imageName .Values.images.mysqlImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
             - "--ignore-db-dir=lost+found"
+          tty: true
           ports:
             - containerPort: 3306
           env:
@@ -499,7 +481,7 @@ spec:
                       password_aux=$(cat $MYSQL_ROOT_PASSWORD_FILE)
                   fi
                   mysqladmin status -uroot -p$password_aux
-            initialDelaySeconds: 600
+            initialDelaySeconds: 120
             periodSeconds: 10
             timeoutSeconds: 5
             successThreshold: 1
@@ -517,7 +499,7 @@ spec:
                       password_aux=$(cat $MYSQL_ROOT_PASSWORD_FILE)
                   fi
                   mysqladmin status -uroot -p$password_aux
-            initialDelaySeconds: 60
+            initialDelaySeconds: 120
             periodSeconds: 10
             timeoutSeconds: 5
             successThreshold: 1
@@ -541,7 +523,7 @@ metadata:
     name: pxcentral-mysql
     run: pxcentral-mysql
     app.kubernetes.io/component: pxcentral-mysql
-{{- include "px-central.labels" . | nindent 4 }}
+{{- include "px-backup.labels" . | nindent 4 }}
   name: pxcentral-mysql
   namespace: {{ .Release.Namespace }}
 spec:
@@ -560,7 +542,7 @@ metadata:
   labels:
     run: pxcentral-frontend
     app.kubernetes.io/component: pxcentral-frontend
-{{- include "px-central.labels" . | nindent 4 }}
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     run: pxcentral-frontend
@@ -578,7 +560,7 @@ metadata:
   labels:
     run: pxcentral-backend
     app.kubernetes.io/component: pxcentral-backend
-{{- include "px-central.labels" . | nindent 4 }}
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
   selector:
     run: pxcentral-backend
@@ -591,41 +573,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: px-central-ui
-  namespace: {{ .Release.Namespace }}
-  labels:
-    run: pxcentral-frontend
-    app.kubernetes.io/component: pxcentral-frontend
-{{- include "px-central.labels" . | nindent 4 }}
-  annotations:
-    {{- if .Values.service.pxCentralUIServiceAnnotations }}
-    {{- include "pxcentral.render" (dict "value" .Values.service.pxCentralUIServiceAnnotations "context" $) | nindent 4 }}
-    {{- end }}
-spec:
-  type: {{ .Values.service.pxCentralUIServiceType }}
-  selector:
-    run: pxcentral-frontend
-  ports:
-    - name: http
-      port: 80
-      targetPort: 8080
-      protocol: TCP
----
-apiVersion: v1
-kind: Service
-metadata:
   name: px-backup-ui
   namespace: {{ .Release.Namespace }}
   labels:
     run: pxcentral-frontend
     app.kubernetes.io/component: pxcentral-frontend
-{{- include "px-central.labels" . | nindent 4 }}
-  annotations:
-    {{- if .Values.service.pxBackupUIServiceAnnotations }}
-    {{- include "pxcentral.render" (dict "value" .Values.service.pxBackupUIServiceAnnotations "context" $) | nindent 4 }}
-    {{- end }}
+{{- include "px-backup.labels" . | nindent 4 }}
 spec:
-  type: {{ .Values.service.pxBackupUIServiceType }}
+  type: LoadBalancer
   selector:
     run: pxcentral-frontend
   ports:
