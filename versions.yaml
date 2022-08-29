@@ -14,7 +14,7 @@ modules:
   pxBackup:
     pxBackup: "docker.io/portworx/px-backup-base:2.3.0-dev"
     mongodb: "docker.io/portworx/mongodb:5.0.10-debian-11-r3"
-    kopiaExecutor: "docker.io/portworx/kopiaexecutor:1.2.0"
+    kopiaExecutor: "docker.io/portworx/kopiaexecutor:1.2.2"
   pxMonitor:
     cortex: "docker.io/portworx/cortex:v1.11.1"
     cassandra: "docker.io/portworx/cassandra:4.0.4-debian-11-r14"
@@ -30,4 +30,4 @@ modules:
     memcached: "docker.io/portworx/memcached:1.6.15-alpine"
     pxOperator: "docker.io/portworx/px-operator:1.8.1"
   pxLicenseServer:
-    pxEls: "docker.io/portworx/px-els:2.2.1"
+    pxEls: "docker.io/portworx/px-els:2.0.1"

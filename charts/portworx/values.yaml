@@ -2,7 +2,7 @@
 
 deploymentType: oci                     # accepts "oci" or "docker"
 imageType: none                         #
-imageVersion: 2.9.1.4                   # Version of the PX Image.
+imageVersion: 2.10.3                   # Version of the PX Image.
 
 openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
 isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
@@ -21,7 +21,7 @@ managementInterface: none             # Name of the interface <ethX>
 envVars: none                         # NOTE: This is a ";" seperated list of environment variables. For eg: MYENV1=myvalue1;MYENV2=myvalue2
 
 stork: true                           # Use Stork https://docs.portworx.com/scheduler/kubernetes/stork.html for hyperconvergence.
-storkVersion: 2.7.0
+storkVersion: 2.11.0
 
 customRegistryURL:
 registrySecret:
