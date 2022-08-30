@@ -18,7 +18,11 @@ data:
 
     [server]
     domain = {{ .Values.pxmonitor.pxCentralEndpoint }} 
-    root_url = "%(protocol)s://%(domain)s/grafana"
+    {{- if eq $sslEnabled true }} 
+    root_url = "https://%(domain)s/grafana"
+    {{- else }}
+    root_url = "http://%(domain)s/grafana"
+    {{- end }}
     enforce_domain = false
 
     [auth.basic]
@@ -35,6 +39,7 @@ data:
     token_url = {{ printf "https://%s/auth/realms/master/protocol/openid-connect/token" .Values.pxmonitor.pxCentralEndpoint }} 
     api_url = {{ printf "https://%s/auth/realms/master/protocol/openid-connect/userinfo" .Values.pxmonitor.pxCentralEndpoint }} 
     redirect_uri = {{ printf "https://%s/grafana/login/generic_oauth" .Values.pxmonitor.pxCentralEndpoint }} 
+    tls_skip_verify_insecure = true
     {{- else }}
     auth_url = {{ printf "http://%s/auth/realms/master/protocol/openid-connect/auth" .Values.pxmonitor.pxCentralEndpoint }} 
     token_url = {{ printf "http://%s/auth/realms/master/protocol/openid-connect/token" .Values.pxmonitor.pxCentralEndpoint }} 
