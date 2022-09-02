@@ -565,6 +565,7 @@ Parameter | Description | Default
 `pxbackup.enabled` | Enabled PX-Backup | `false`
 `pxbackup.orgName` | PX-Backup organization name | `default`
 `pxbackup.mongoMigration` | flag for mongo migration while upgrading PX-Backup from 1.2.x to 2.x.x | `complete`
+`pxbackup.livenessProbeInitialDelay` | initialDelaySeconds for livenessProbe of PX-Backup pod | `1800`
 `persistentStorage.mongodbVolumeSize` | mongodb volume size | `"64Gi"`
 `persistentStorage.mongoCacheSize` | mongodb cache size in GB | `"4"`
 `service.pxBackupUIServiceType` | service type of PX-Backup UI | `"LoadBalancer"`
