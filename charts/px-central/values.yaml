@@ -49,6 +49,7 @@ pxbackup:
   orgName: default
   callHome: true
   mongoMigration: complete
+  livenessProbeInitialDelay: 1800
 
 pxlicenseserver:
   enabled: false
