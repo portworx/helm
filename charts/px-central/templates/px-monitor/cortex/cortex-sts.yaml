@@ -418,6 +418,8 @@ spec:
             {{- if .Values.pxmonitor.consulBindInterface }}
             - name: CONSUL_BIND_INTERFACE
               value: {{ .Values.pxmonitor.consulBindInterface }}
+            - name: CONSUL_BIND_ADDR
+              value: "127.0.0.1"
             {{- end }}
           livenessProbe:
             exec:

@@ -178,6 +178,10 @@ spec:
           value: {{ .Values.pxbackup.orgName }}
         - name: PX_BACKUP_DEFAULT_DATASTORE
           value: mongodb
+        - name: SOFT_LICENSING_PERIOD
+          value: "30"
+        - name: AIRGAP_REPORTING_PERIOD
+          value: "90"
         {{- if .Values.caCertsSecretName }}
         - name: SSL_CERT_DIR
           value: /tmp/certs
@@ -199,7 +203,7 @@ spec:
           httpGet:
             path: /v1/health
             port: 10001
-          initialDelaySeconds: 600
+          initialDelaySeconds: {{ .Values.pxbackup.livenessProbeInitialDelay }}
           timeoutSeconds: 1
           periodSeconds: 60
         {{- if .Values.caCertsSecretName }}  

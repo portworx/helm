@@ -1,25 +1,25 @@
-pxCentralVersion: 2.2.2
+pxCentralVersion: 2.3.0
 modules:
   pxCentral:
-    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api:2.2.2"
-    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend:2.2.2"
-    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend:2.2.2"
-    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend:2.2.2"
-    pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup:2.2.2"
+    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api:2.3.0"
+    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend:2.3.0"
+    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend:2.3.0"
+    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend:2.3.0"
+    pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup:2.3.0"
     postgresql: "docker.io/portworx/postgresql:11.16.0-debian-11-r5"
     keycloak: "docker.io/portworx/keycloak:16.1.1"
     keycloakLoginTheme: "docker.io/portworx/keycloak-login-theme:2.2.0"
     busybox: "docker.io/portworx/busybox:1.31"
     mysql: "docker.io/portworx/mysql:5.7.38"
   pxBackup:
-    pxBackup: "docker.io/portworx/px-backup:2.2.2"
-    mongodb: "docker.io/portworx/mongodb:4.4.4-debian-10-r30"
+    pxBackup: "docker.io/portworx/px-backup:2.3.0"
+    mongodb: "docker.io/portworx/mongodb:5.0.10-debian-11-r3"
     kopiaExecutor: "docker.io/portworx/kopiaexecutor:1.2.2"
   pxMonitor:
     cortex: "docker.io/portworx/cortex:v1.11.1"
-    cassandra: "docker.io/portworx/cassandra:4.0.4-debian-11-r0"
-    nginx: "docker.io/portworx/nginx:1.22.0-alpine"
-    consul: "docker.io/portworx/consul:1.12.2-debian-11-r0"
+    cassandra: "docker.io/portworx/cassandra:4.0.4-debian-11-r14"
+    nginx: "docker.io/portworx/nginx:1.22.0-alpine-v2"
+    consul: "docker.io/portworx/consul:1.12.2-debian-11-r14"
     goDnsmasq: "docker.io/portworx/go-dnsmasq:release-1.0.7-v2"
     grafana: "docker.io/portworx/grafana:7.5.16"
     prometheus: "docker.io/portworx/prometheus:v2.35.0"
@@ -28,6 +28,6 @@ modules:
     memcachedExporter: "docker.io/portworx/memcached-exporter:v0.9.0"
     memcachedIndex: "docker.io/portworx/memcached:1.6.15-alpine"
     memcached: "docker.io/portworx/memcached:1.6.15-alpine"
-    pxOperator: "docker.io/portworx/px-operator:1.7.1"
+    pxOperator: "docker.io/portworx/px-operator:1.8.1"
   pxLicenseServer:
     pxEls: "docker.io/portworx/px-els:2.0.1"

@@ -49,6 +49,7 @@ pxbackup:
   orgName: default
   callHome: true
   mongoMigration: complete
+  livenessProbeInitialDelay: 1800
 
 pxlicenseserver:
   enabled: false
@@ -122,27 +123,27 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 2.2.2
+    tag: 2.3.0
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 2.2.2
+    tag: 2.3.0
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 2.2.2
+    tag: 2.3.0
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 2.2.2
+    tag: 2.3.0
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 2.2.2
+    tag: 2.3.0
   keycloakBackendImage:
     registry: docker.io
     repo: portworx
@@ -174,12 +175,12 @@ images:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 2.2.2
+    tag: 2.3.0
   mongodbImage:
     registry: docker.io
     repo: portworx
     imageName: mongodb
-    tag: 4.4.4-debian-10-r30 
+    tag: 5.0.10-debian-11-r3
 
   ## Images required for enabling px-license-server
   licenseServerImage:
@@ -198,17 +199,17 @@ images:
     registry: docker.io
     repo: portworx
     imageName: cassandra
-    tag: 4.0.4-debian-11-r0
+    tag: 4.0.4-debian-11-r14
   proxyConfigImage:
     registry: docker.io
     repo: portworx
     imageName: nginx
-    tag: 1.22.0-alpine
+    tag: 1.22.0-alpine-v2
   consulImage:
     registry: docker.io
     repo: portworx
     imageName: consul
-    tag: 1.12.2-debian-11-r0
+    tag: 1.12.2-debian-11-r14
   dnsmasqImage:
     registry: docker.io
     repo: portworx
