@@ -492,7 +492,6 @@ Parameter | Description | Default
 `storkRequired` | Scheduler name as stork | `false`
 `nodeAffinityLabel` | Label for node affinity for px-central components | `""`
 `podAntiAffinity` | PodAntiAffinity will make sure pods are distributed | `false`
-`useIPV6` | Enable IPv6 support for PX-Central | `false`
 `pxcentralDBPassword` | PX-Central cluster store mysql database password | `Password1`
 `caCertsSecretName` | Name of the Kubernetes Secret, which contains the CA Certificates. | `""`
 `oidc` | Enable OIDC for PX-Central and PX-backup for RBAC | `""`
@@ -519,35 +518,35 @@ Parameter | Description | Default
 `images.pxcentralApiServerImage.registry` | API server image registry | `docker.io`
 `images.pxcentralApiServerImage.repo` | API server image repo | `portworx`
 `images.pxcentralApiServerImage.imageName` | API server image name | `pxcentral-onprem-api`
-`images.pxcentralApiServerImage.tag` | API server image tag | `1.2.1`
+`images.pxcentralApiServerImage.tag` | API server image tag | `2.3.1`
 `images.pxcentralFrontendImage.registry` | PX-Central frontend image registry | `docker.io`
 `images.pxcentralFrontendImage.repo` | PX-Central frontend image repo | `portworx`
 `images.pxcentralFrontendImage.imageName` | PX-Central frontend image name | `pxcentral-onprem-ui-frontend`
-`images.pxcentralFrontendImage.tag` | PX-Central frontend image tag | `1.2.2`
+`images.pxcentralFrontendImage.tag` | PX-Central frontend image tag | `2.3.1`
 `images.pxcentralBackendImage.registry` | PX-Central backend image registry | `docker.io`
 `images.pxcentralBackendImage.repo` | PX-Central backend image repo | `portworx`
 `images.pxcentralBackendImage.imageName` | PX-Central backend image name | `pxcentral-onprem-ui-backend`
-`images.pxcentralBackendImage.tag` | PX-Central backend image tag | `1.2.2`
+`images.pxcentralBackendImage.tag` | PX-Central backend image tag | `2.3.1`
 `images.pxcentralMiddlewareImage.registry` | PX-Central middleware image registry | `docker.io`
 `images.pxcentralMiddlewareImage.repo` | PX-Central middleware image repo | `portworx`
 `images.pxcentralMiddlewareImage.imageName` | PX-Central middleware image name | `pxcentral-onprem-ui-lhbackend`
-`images.pxcentralMiddlewareImage.tag`| PX-Central middleware image tag | `1.2.2`
+`images.pxcentralMiddlewareImage.tag`| PX-Central middleware image tag | `2.3.1`
 `images.postInstallSetupImage.registry` | PX-Backup post install setup image registry | `docker.io`
 `images.postInstallSetupImage.repo` | PX-Backup post install setup image repo | `portworx`
 `images.postInstallSetupImage.imageName` | PX-Backup post install setup image name | `pxcentral-onprem-post-setup`
-`images.postInstallSetupImage.tag` | PX-Backup post install setup image tag | `1.2.2`
+`images.postInstallSetupImage.tag` | PX-Backup post install setup image tag | `2.3.1`
 `images.keycloakBackendImage.registry` | PX-Backup keycloak backend image registry | `docker.io`
-`images.keycloakBackendImage.repo` | PX-Backup keycloak backend image repo | `bitnami`
+`images.keycloakBackendImage.repo` | PX-Backup keycloak backend image repo | `portworx`
 `images.keycloakBackendImage.imageName` | PX-Backup keycloak backend image name | `postgresql`
-`images.keycloakBackendImage.tag` | PX-Backup keycloak backend image tag | `11.7.0-debian-10-r9`
+`images.keycloakBackendImage.tag` | PX-Backup keycloak backend image tag | `11.16.0-debian-11-r5`
 `images.keycloakFrontendImage.registry` | PX-Backup keycloak frontend image registry | `docker.io`
-`images.keycloakFrontendImage.repo` | PX-Backup keycloak frontend image repo | `jboss`
+`images.keycloakFrontendImage.repo` | PX-Backup keycloak frontend image repo | `portworx`
 `images.keycloakFrontendImage.imageName` | PX-Backup keycloak frontend image name | `keycloak`
-`images.keycloakFrontendImage.tag` | PX-Backup keycloak frontend image tag | `9.0.2`
+`images.keycloakFrontendImage.tag` | PX-Backup keycloak frontend image tag | `16.1.1`
 `images.keycloakLoginThemeImage.registry` | PX-Backup keycloak login theme image registry | `docker.io`
 `images.keycloakLoginThemeImage.repo` | PX-Backup keycloak login theme image repo | `portworx`
 `images.keycloakLoginThemeImage.imageName` | PX-Backup keycloak login theme image name | `keycloak-login-theme`
-`images.keycloakLoginThemeImage.tag` | PX-Backup keycloak login theme image tag | `1.0.4`
+`images.keycloakLoginThemeImage.tag` | PX-Backup keycloak login theme image tag | `2.2.0`
 `images.keycloakInitContainerImage.registry` | PX-Backup keycloak init container image registry | `docker.io`
 `images.keycloakInitContainerImage.repo` | PX-Backup keycloak init container image repo | `library`
 `images.keycloakInitContainerImage.imageName` | PX-Backup keycloak init container image name | `busybox`
@@ -555,7 +554,7 @@ Parameter | Description | Default
 `images.mysqlImage.registry` | PX-Central cluster store mysql image registry | `docker.io`
 `images.mysqlImage.repo` | PX-Central cluster store mysql image repo | `library`
 `images.mysqlImage.imageName` | PX-Central cluster store mysql image name | `mysql`
-`images.mysqlImage.tag` | PX-Central cluster store mysql image tag | `5.7.22`
+`images.mysqlImage.tag` | PX-Central cluster store mysql image tag | `5.7.38`
 
 ### PX-Backup parameters
 
@@ -573,9 +572,9 @@ Parameter | Description | Default
 `images.pxBackupImage.registry` | PX-Backup image registry | `docker.io`
 `images.pxBackupImage.repo` | PX-Backup image repo | `portworx`
 `images.pxBackupImage.imageName` | PX-Backup image name | `px-backup`
-`images.pxBackupImage.tag` | PX-Backup image tag | `1.2.2`
+`images.pxBackupImage.tag` | PX-Backup image tag | `2.3.1`
 `images.mongodbImage.registry` | PX-Backup mongodb image registry | `docker.io`
-`images.mongodbImage.repo` | PX-Backup mongodb image repo | `bitnami`
+`images.mongodbImage.repo` | PX-Backup mongodb image repo | `portworx`
 `images.mongodbImage.imageName` | PX-Backup mongodb image name | `mongodb`
 `images.mongodbImage.tag` | PX-Backup mongodb image tag | `5.0.10-debian-11-r3`
 
@@ -617,15 +616,15 @@ Parameter | Description | Default
 `images.cassandraImage.registry` | PX-Monitor cassandra image registry | `docker.io`
 `images.cassandraImage.repo` | PX-Monitor cassandra image repo | `portworx`
 `images.cassandraImage.imageName` | PX-Monitor cassandra image name | `cassandra`
-`images.cassandraImage.tag` | PX-Monitor cassandra image tag | `4.0.4-debian-11-r0`
+`images.cassandraImage.tag` | PX-Monitor cassandra image tag | `4.0.4-debian-11-r14`
 `images.proxyConfigImage.registry` | PX-Monitor proxy config image registry | `docker.io`
 `images.proxyConfigImage.repo` | PX-Monitor proxy config image repo | `portworx`
 `images.proxyConfigImage.imageName` | PX-Monitor proxy config image name | `nginx`
-`images.proxyConfigImage.tag` | PX-Monitor proxy config image tag | `1.22.0-alpine`
+`images.proxyConfigImage.tag` | PX-Monitor proxy config image tag | `1.22.0-alpine-v2`
 `images.consulImage.registry` | PX-Monitor Consul image registry | `docker.io`
 `images.consulImage.repo` | PX-Monitor Consul image repo | `portworx`
 `images.consulImage.imageName` | PX-Monitor Consul image name | `consul`
-`images.consulImage.tag` | PX-Monitor Consul image tag | `1.12.2-debian-11-r0`
+`images.consulImage.tag` | PX-Monitor Consul image tag | `1.12.2-debian-11-r14`
 `images.dnsmasqImage.registry` | PX-Monitor dnsmasq image registry | `docker.io`
 `images.dnsmasqImage.repo` | PX-Monitor dnsmasq image repo | `portworx`
 `images.dnsmasqImage.imageName` | PX-Monitor dnsmasq image name | `go-dnsmasq`
@@ -633,7 +632,7 @@ Parameter | Description | Default
 `images.grafanaImage.registry` | PX-Monitor grafana image registry | `docker.io`
 `images.grafanaImage.repo` | PX-Monitor grafana image repo | `portworx`
 `images.grafanaImage.imageName` | PX-Monitor grafana image name | `grafana`
-`images.grafanaImage.tag` | PX-Monitor grafana image tag | `8.5.3`
+`images.grafanaImage.tag` | PX-Monitor grafana image tag | `7.5.16`
 `images.prometheusImage.registry` | PX-Monitor prometheus image registry | `docker.io`
 `images.prometheusImage.repo` | PX-Monitor prometheus image repo | `portworx`
 `images.prometheusImage.imageName` | PX-Monitor prometheus image name | `prometheus`
@@ -686,9 +685,4 @@ Parameter | Description | Default
 `images.licenseServerImage.registry` | License server image registry | `docker.io`
 `images.licenseServerImage.repo` | License server image repo | `portworx`
 `images.licenseServerImage.imageName` | License server image name | `px-els`
-`images.licenseServerImage.tag` | License server image tag | `1.0.0`
-`images.pxLicenseHAConfigContainerImage` | License server HA configuration image | ``
-`images.pxLicenseHAConfigContainerImage.registry` | License server HA configuration image registry | `docker.io`
-`images.pxLicenseHAConfigContainerImage.repo` | License server HA configuration image repo | `portworx`
-`images.pxLicenseHAConfigContainerImage.imageName` | License server HA configuration image name | `pxcentral-onprem-els-ha-setup`
-`images.pxLicenseHAConfigContainerImage.tag` | License server HA configuration image tag | `1.0.2`
+`images.licenseServerImage.tag` | License server image tag | `2.0.1`
