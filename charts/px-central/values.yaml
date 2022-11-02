@@ -41,6 +41,9 @@ oidc:
     clientSecret:
     endpoint:
 
+nfs:
+  enabled: false
+
 postInstallJob:
   sslEnabled: true
 
