@@ -33,7 +33,7 @@ rules:
 {{- if eq $nfsEnabled true }}
   - apiGroups: [""]
     resources: ["persistentvolumes"]
-    verbs: ["create", "update", "get", "patch", "list"]
+    verbs: ["create", "update", "get", "patch", "list", "delete"]
 {{- end }}
 ---
 kind: ClusterRoleBinding
