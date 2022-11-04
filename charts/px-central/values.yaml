@@ -171,7 +171,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: mysql
-    tag: 5.7.38
+    tag: 5.7.40
 
   ## Images required for enabling px-backup
   pxBackupImage:
