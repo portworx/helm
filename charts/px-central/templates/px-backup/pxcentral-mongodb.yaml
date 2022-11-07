@@ -253,6 +253,10 @@ spec:
             - mountPath: /scripts/setup.sh
               name: scripts
               subPath: setup.sh
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
       volumes:
         - name: scripts
           configMap:

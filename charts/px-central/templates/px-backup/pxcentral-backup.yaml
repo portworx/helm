@@ -242,6 +242,10 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
       {{- if $isOpenshiftCluster}}
       {{- else }}
       securityContext:
