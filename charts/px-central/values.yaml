@@ -117,6 +117,17 @@ securityContext:
   fsGroup: 1000
   runAsNonRoot: true
 
+## sample toleration while installing from values.yaml
+# tolerations:
+# - effect: NoSchedule
+#   key: key1
+#   operator: Exists
+#
+## sample toleration while setting the param inline
+# --set 'tolerations[0].operator=Exists,tolerations[0].effect=NoSchedule,tolerations[0].key=key1'
+# ensure toleration param is enclosed with single quotes
+tolerations: []
+
 images:
   pullSecrets:
     - docregistry-secret
