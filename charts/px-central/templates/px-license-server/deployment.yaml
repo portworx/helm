@@ -78,6 +78,10 @@ spec:
               mountPath: /export_bin
             - name: procmount
               mountPath: /hostproc 
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
       volumes:
         - name: data
           hostPath:
