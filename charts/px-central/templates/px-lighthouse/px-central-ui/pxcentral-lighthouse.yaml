@@ -145,6 +145,10 @@ spec:
           initialDelaySeconds: 15
           timeoutSeconds: 1
           periodSeconds: 60
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
       {{- if .Values.caCertsSecretName }}
       volumes:
         - name: ssl-cert-dir

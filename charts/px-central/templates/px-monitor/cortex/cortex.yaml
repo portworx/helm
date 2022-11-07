@@ -447,6 +447,10 @@ spec:
             initialDelaySeconds: 45
           securityContext:
             readOnlyRootFilesystem: true
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
       volumes:
         - name: config
           secret:
@@ -554,6 +558,10 @@ spec:
               path: /ready
               port: http-metrics
             initialDelaySeconds: 45
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
       volumes:
         - name: config
           secret:
@@ -666,6 +674,10 @@ spec:
             - "127.0.0.1:53"
             - --default-resolver
             - --append-search-domains
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
       volumes:
         - name: config
           configMap:
@@ -776,6 +788,10 @@ spec:
               path: /ready
               port: http-metrics
             initialDelaySeconds: 45
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
       volumes:
         - name: config
           secret:
@@ -885,6 +901,10 @@ spec:
               path: /ready
               port: http-metrics
             initialDelaySeconds: 45
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
       volumes:
         - name: config
           secret:
@@ -974,6 +994,10 @@ spec:
               path: /ready
               port: http-metrics
             initialDelaySeconds: 45
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
       volumes:
         - name: config
           secret:
@@ -1061,6 +1085,10 @@ spec:
               path: /ready
               port: http-metrics
             initialDelaySeconds: 45
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
       volumes:
         - name: config
           secret:
@@ -1184,6 +1212,10 @@ spec:
               path: /ready
               port: http-metrics
             initialDelaySeconds: 45
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -1315,4 +1347,8 @@ spec:
             periodSeconds: 30
             successThreshold: 1
             timeoutSeconds: 1
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
 {{- end -}}
