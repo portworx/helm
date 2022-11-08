@@ -41,9 +41,6 @@ oidc:
     clientSecret:
     endpoint:
 
-nfs:
-  enabled: false
-
 postInstallJob:
   sslEnabled: true
 
@@ -53,6 +50,8 @@ pxbackup:
   callHome: true
   mongoMigration: complete
   livenessProbeInitialDelay: 1800
+  nfs:
+    enabled: false
 
 pxlicenseserver:
   enabled: false
