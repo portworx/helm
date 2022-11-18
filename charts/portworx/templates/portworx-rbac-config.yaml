@@ -39,10 +39,12 @@ rules:
   - apiGroups: [""]
     resources: ["endpoints"]
     verbs: ["get", "list", "create", "update", "delete"]
+{{- if semverCompare "< 1.25" .Capabilities.KubeVersion.GitVersion }}
   - apiGroups: ["extensions"]
     resources: ["podsecuritypolicies"]
     resourceNames: ["privileged"]
     verbs: ["use"]
+{{- end}}
   - apiGroups: ["portworx.io"]
     resources: ["volumeplacementstrategies"]
     verbs: ["get", "list"]
