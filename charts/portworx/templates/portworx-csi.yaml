@@ -13,10 +13,12 @@ apiVersion: {{ template "rbac.apiVersion" . }}
 metadata:
    name: px-csi-role
 rules:
+{{- if semverCompare "< 1.25" .Capabilities.KubeVersion.GitVersion }}
 - apiGroups: ["extensions"]
   resources: ["podsecuritypolicies"]
   resourceNames: ["privileged"]
   verbs: ["use"]
+{{- end}}
 - apiGroups: ["apiextensions.k8s.io"]
   resources: ["customresourcedefinitions"]
   verbs: ["*"]
