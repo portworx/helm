@@ -180,7 +180,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: mongodb
-    tag: 5.0.10-debian-11-r3
+    tag: 5.0.14-debian-11-r1
 
   ## Images required for enabling px-license-server
   licenseServerImage:
