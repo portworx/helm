@@ -148,7 +148,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: postgresql
-    tag: 11.16.0-debian-11-r5
+    tag: 11.18.0-debian-11-r0
   keycloakFrontendImage:
     registry: docker.io
     repo: portworx
@@ -168,7 +168,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: mysql
-    tag: 5.7.38
+    tag: 5.7.40
 
   ## Images required for enabling px-backup
   pxBackupImage:
@@ -186,40 +186,40 @@ images:
   licenseServerImage:
     registry: docker.io
     repo: portworx
-    imageName: px-els
-    tag: 2.0.1
+    imageName: px-base-els
+    tag: 64173d7
 
   ## Images required for enabling px-monitor
   cortexImage:
     registry: docker.io
     repo: portworx
     imageName: cortex
-    tag: v1.11.1
+    tag: v1.13.1
   cassandraImage:
     registry: docker.io
     repo: portworx
     imageName: cassandra
-    tag: 4.0.4-debian-11-r14
+    tag: 4.0.7-debian-11-r9
   proxyConfigImage:
     registry: docker.io
     repo: portworx
     imageName: nginx
-    tag: 1.22.0-alpine-v2
+    tag: 1.23.1-alpine
   consulImage:
     registry: docker.io
     repo: portworx
     imageName: consul
-    tag: 1.12.2-debian-11-r14
+    tag: 1.13.3-debian-11-r7
   dnsmasqImage:
     registry: docker.io
     repo: portworx
     imageName: go-dnsmasq
-    tag: release-1.0.7-v2
+    tag: release-1.0.7-v3
   grafanaImage:
     registry: docker.io
     repo: portworx
     imageName: grafana
-    tag: 7.5.16
+    tag: 9.1.2
   prometheusImage:
     registry: docker.io
     repo: portworx
@@ -239,14 +239,14 @@ images:
     registry: docker.io
     repo: portworx
     imageName: memcached-exporter
-    tag: v0.9.0
+    tag: v0.10.0
   memcachedIndexImage:
     registry: docker.io
     repo: portworx
     imageName: memcached
-    tag: 1.6.15-alpine
+    tag: 1.6.17-alpine
   memcachedImage:
     registry: docker.io
     repo: portworx
     imageName: memcached
-    tag: 1.6.15-alpine
+    tag: 1.6.17-alpine
