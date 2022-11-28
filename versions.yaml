@@ -18,7 +18,7 @@ modules:
   pxMonitor:
     cortex: "docker.io/portworx/cortex:v1.13.1"
     cassandra: "docker.io/portworx/cassandra:4.0.7-debian-11-r9"
-    nginx: "docker.io/portworx/nginx:1.23.1-alpine"
+    nginx: "docker.io/portworx/nginx:1.23.2-alpine"
     consul: "docker.io/portworx/consul:1.13.3-debian-11-r7"
     goDnsmasq: "docker.io/portworx/go-dnsmasq:release-1.0.7-v3"
     grafana: "docker.io/portworx/grafana:9.1.2"
