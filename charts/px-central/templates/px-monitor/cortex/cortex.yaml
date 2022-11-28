@@ -753,7 +753,7 @@ spec:
           args:
             - "-target=querier"
             - "-config.file=/etc/cortex/cortex.yaml"
-            - "-querier.frontend-address=pxcentral-cortex-query-frontend-headless.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:"
+            - "-querier.frontend-address=pxcentral-cortex-query-frontend-headless.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:9095"
             - "-store.chunks-cache.memcached.addresses=dns+pxcentral-memcached.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:11211"
             - "-store.index-cache-read.memcached.addresses=dns+pxcentral-memcached-index-read.{{ .Release.Namespace }}.svc.{{ .Values.clusterDomain }}:11211"
           volumeMounts:
