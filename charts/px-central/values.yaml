@@ -204,7 +204,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: nginx
-    tag: 1.23.1-alpine
+    tag: 1.23.2-alpine
   consulImage:
     registry: docker.io
     repo: portworx
