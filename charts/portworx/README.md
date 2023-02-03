@@ -9,7 +9,7 @@ The helm chart (portworx-helm) deploys Portworx and Stork (https://docs.portworx
 - Tiller version 2.9.0 and above is running on the Kubernetes cluster where you wish to deploy Portworx.
 - Tiller has been provided with the right RBAC permissions for the chart to be deployed correctly.
 - Kubernetes 1.7+
-- All [pre-requisites] (https://docs.portworx.com/install-portworx/prerequisites/) for Portworx fulfilled.
+- All [pre-requisites](https://docs.portworx.com/install-portworx/prerequisites/) for Portworx fulfilled.
 
 ## Installing the Chart
 
