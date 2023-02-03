@@ -10,7 +10,7 @@ PX-Central is a unified, multi-user, multi-cluster management interface. Using P
 ```console
 $ kubectl label node <NODE_NAME> px/ls=true
 ```
-- For openshift cluster:
+- For OpenShift cluster:
 1. Edit `privileged` scc using command : `oc edit scc privileged` and add following into `users` section : `- system:serviceaccount:<PX_BACKUP_NAMESPACE>:pxcentral-license-server` change the PX_BACKUP_NAMESPACE.
 2. Enable SSH access on port 7070, To configure same add following into worker nodes where `px/ls=true` label is set: 
    - `-A INPUT -p tcp -m state --state NEW -m tcp --dport 7070 -j ACCEPT` in `/etc/sysconfig/iptables` file
