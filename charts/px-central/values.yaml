@@ -148,7 +148,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: postgresql
-    tag: 11.18.0-debian-11-r0
+    tag: 11.18.0-debian-11-r34
   keycloakFrontendImage:
     registry: docker.io
     repo: portworx
@@ -168,7 +168,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: mysql
-    tag: 5.7.40
+    tag: 5.7.41
 
   ## Images required for enabling px-backup
   pxBackupImage:
@@ -180,7 +180,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: mongodb
-    tag: 5.0.14-debian-11-r1
+    tag: 5.0.14-debian-11-r27
 
   ## Images required for enabling px-license-server
   licenseServerImage:
@@ -199,7 +199,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: cassandra
-    tag: 4.0.7-debian-11-r9
+    tag: 4.0.7-debian-11-r34
   proxyConfigImage:
     registry: docker.io
     repo: portworx
@@ -209,7 +209,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: consul
-    tag: 1.13.3-debian-11-r7
+    tag: 1.14.4-debian-11-r4
   dnsmasqImage:
     registry: docker.io
     repo: portworx
