@@ -3,8 +3,8 @@
 deployOperator: true                    # Deploy the Portworx operator
 deployCluster: true                     # Deploy the Portworx cluster
 
-imageVersion: 2.10.3                    # Version of the PX Image.
-pxOperatorImageVersion: 1.9.0           # Version of the PX operator image.
+imageVersion: 2.13.0                    # Version of the PX Image.
+pxOperatorImageVersion: 1.10.4           # Version of the PX operator image.
 
 openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
 isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
@@ -61,6 +61,7 @@ registrySecret:
 licenseSecret:
 
 monitoring: false
+telemetry: false
 
 deployOnMaster:  false                # For POC only
 csi: false                            # Enable CSI

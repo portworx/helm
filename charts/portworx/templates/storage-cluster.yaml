@@ -258,13 +258,19 @@ spec:
   {{- end}}
   {{- end }}
 
-  {{- if (and (.Values.monitoring) (eq .Values.monitoring true)) }}
+  {{- if (or (and (.Values.monitoring) (eq .Values.monitoring true)) (and (.Values.telemetry) (eq .Values.telemetry true) )) }}
   monitoring:
+    {{- if (and (.Values.monitoring) (eq .Values.monitoring true)) }}
     prometheus:
       enabled: true
       exportMetrics: true
       alertManager:
         enabled: true
+    {{- end }}
+    {{- if (and (.Values.telemetry) (eq .Values.telemetry true)) }}
+    telemetry:
+      enabled: true
+    {{- end }}
   {{- end }}
 
   {{- if or (eq .Values.csi true) (eq .Values.csi false) }}
