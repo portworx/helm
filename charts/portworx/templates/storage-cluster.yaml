@@ -11,6 +11,7 @@
   {{- $EKSInstall := .Values.EKSInstall | default false }}
   {{- $pksInstall := .Values.pksInstall | default false }}
   {{- $AKSInstall := .Values.AKSInstall | default false }}
+  {{- $OKEInstall := .Values.OKEInstall | default false }}
   {{- $usefileSystemDrive := .Values.usefileSystemDrive | default false }}
   {{- $usedrivesAndPartitions := .Values.usedrivesAndPartitions | default false }}
   {{- $secretType := .Values.secretType | default "k8s" }}
@@ -44,6 +45,9 @@ metadata:
     {{- end }}
     {{- if eq $AKSInstall true }}
     portworx.io/is-aks: "true"
+    {{- end }}
+    {{- if eq $OKEInstall true }}
+    portworx.io/is-oke: "true"
     {{- end }}
     {{- if $miscArgs }}
     portworx.io/misc-args: {{ $miscArgs | quote }}
@@ -202,6 +206,20 @@ spec:
         name: px-azure
         key: AZURE_TENANT_ID
   {{- end }}
+  {{- if .Values.OKEInstall }}
+  - name: PX_ORACLE_user_ocid
+    valueFrom:
+      secretKeyRef:
+        name: ociapikey
+        key: PX_ORACLE_user_ocid
+  - name: PX_ORACLE_fingerprint
+    valueFrom:
+      secretKeyRef:
+        name: ociapikey
+        key: PX_ORACLE_fingerprint
+  - name: "PX_ORACLE_private_key_path"
+    value: "/etc/pwx/oci_key/oci_api_key.pem"
+  {{- end }}
   - name: PX_SECRETS_NAMESPACE
     value: portworx
 
@@ -229,6 +247,15 @@ spec:
 
   {{- if eq $volumesPresent "true" }}
   volumes:
+  {{- if .Values.OKEInstall }}
+  - name: ociapikey
+    mountPath: /etc/pwx/oci_key
+    secret:
+      secretName: ociapikey
+      items:
+      - key: oci_api_key.pem
+        path: oci_api_key.pem
+  {{- end }}
   {{- if eq $isCoreOS true}}
   - name: src
     mountPath: /lib/modules
