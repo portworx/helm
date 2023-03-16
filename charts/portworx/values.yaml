@@ -11,6 +11,7 @@ isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to 
 pksInstall: false                       # installation on PKS (Pivotal Container Service)
 EKSInstall: false                     # installation on EKS.
 AKSInstall: false                      # installation on AKS
+OKEInstall: false                      # installation on OKE
 etcdEndPoint:                         # The ETCD endpoint. Should be in the format etcd:http://<your-etcd-endpoint>:2379. If there are multiple etcd endpoints they need to be ";" seperated.
                                       # the default value is empty since it requires to be explicity set using either the --set option of -f values.yaml.
 clusterName: mycluster                # This is the default. please change it to your cluster name.
