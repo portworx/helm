@@ -1,8 +1,26 @@
 name: portworx
-version: 2.11.4
+version: 2.13.0
 description: A Helm chart for installing Portworx on Kubernetes.
-tillerversion: ">=2.9.0"
+kubeVersion: ">=1.10.0"
+appVersion: "2.13.0"
+apiVersion: v1
+keywords:
+  - Storage
+  - ICP
+  - IKS
+  - persistent disk
+  - pvc
+  - cloud native storage
+  - persistent storage
+  - portworx
+  - amd64
+  - Commercial
+maintainers:
+  - name: Vinayak Shinde
+    email: vshinde@purestorage.com
+  - name: Tapas Sharma
+    email: tapas@portworx.com
 home: https://portworx.com/
 sources:
   - https://github.com/portworx/helm
-icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
+icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/k8s-porx.png

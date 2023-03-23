@@ -75,14 +75,14 @@ release: {{ .Release.Name | quote }}
         {{ trim .Values.customRegistryURL }}
     {{- else -}}
         {{- if or (or (and (semverCompare ">= 1.16.14" $version ) (semverCompare "<=1.17.0"  $version)) (and (semverCompare ">= 1.17.10" $version) (semverCompare "<=1.18.0" $version ))) (semverCompare ">=1.18.7" $version) -}}
-           {{cat (trim .Values.customRegistryURL) "/k8s.gcr.io" | replace " " ""}}
+           {{cat (trim .Values.customRegistryURL) "/registry.k8s.io" | replace " " ""}}
         {{- else -}}
            {{cat (trim .Values.customRegistryURL) "/gcr.io/google_containers" | replace " " ""}}
         {{- end -}}
     {{- end -}}
 {{- else -}}
      {{- if or (or (and (semverCompare ">= 1.16.14" $version ) (semverCompare "<=1.17.0"  $version)) (and (semverCompare ">= 1.17.10" $version) (semverCompare "<=1.18.0" $version ))) (semverCompare ">=1.18.7" $version) -}}
-        {{ "k8s.gcr.io" }}
+        {{ "registry.k8s.io" }}
      {{- else -}}
         {{ "gcr.io/google_containers" }}
     {{- end -}}
@@ -95,10 +95,10 @@ release: {{ .Release.Name | quote }}
     {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
         {{ trim .Values.customRegistryURL }}
     {{- else -}}
-        {{cat (trim .Values.customRegistryURL) "/k8s.gcr.io" | replace " " ""}}
+        {{cat (trim .Values.customRegistryURL) "/registry.k8s.io" | replace " " ""}}
     {{- end -}}
 {{- else -}}
-        {{ "k8s.gcr.io" }}
+        {{ "registry.k8s.io" }}
 {{- end -}}
 {{- end -}}
 
