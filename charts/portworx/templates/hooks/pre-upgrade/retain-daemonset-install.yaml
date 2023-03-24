@@ -1,37 +1,29 @@
-{{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
-{{- $registrySecret := .Values.registrySecret | default "none" }}
-
 apiVersion: batch/v1
 kind: Job
 metadata:
-  namespace: kube-system
   name: px-hook-retain-daemonset-resources
   labels:
-    heritage: {{.Release.Service | quote }}
-    release: {{.Release.Name | quote }}
-    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-    app.kubernetes.io/managed-by: {{.Release.Service | quote }}
-    app.kubernetes.io/instance: {{.Release.Name | quote }}
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
   annotations:
-    "helm.sh/hook": pre-upgrade
-    "helm.sh/hook-weight": "10"
-    "helm.sh/hook-delete-policy": before-hook-creation
+    helm.sh/hook: pre-upgrade
+    helm.sh/hook-weight: "10"
+    helm.sh/hook-delete-policy: before-hook-creation
 spec:
   template:
     spec:
-      {{- if not (eq $registrySecret "none") }}
+      {{- if .Values.global.image.pullSecret }}
       imagePullSecrets:
-        - name: {{ $registrySecret }}
+        - name: {{ .Values.global.image.pullSecret }}
       {{- end }}
       serviceAccountName: {{ template "px.hookServiceAccount" . }}
       restartPolicy: Never
       containers:
         - name: retain-px-daemonset
-          {{- if eq $customRegistryURL "none" }}
-          image: "bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
-          {{- else}}
-          image: "{{ $customRegistryURL }}/bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
-          {{- end}}
+          image: "{{ .Values.kubectl.image.repository }}:{{ default .Capabilities.KubeVersion.Version .Values.kubectl.image.tag }}"
           command: ['/bin/sh',
                     '-c',
                     'kubectl -n kube-system annotate DaemonSet portworx-api helm.sh/resource-policy=keep --overwrite;

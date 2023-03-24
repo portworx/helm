@@ -25,13 +25,6 @@ release: {{ .Release.Name | quote }}
 {{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+"}}{{$version}}
 {{- end -}}
 
-{{- define "px.kubectlImageTag" -}}
-{{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+" | trimPrefix "v" | split "."}}
-{{- $major := index $version "_0" -}}
-{{- $minor := index $version "_1" -}}
-{{printf "%s.%s" $major $minor }}
-{{- end -}}
-
 {{- define "px.getPxOperatorImage" -}}
 {{- if (.Values.customRegistryURL) -}}
     {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
@@ -221,6 +214,18 @@ Generate a random token for storage provisioning
 {{- end -}}
 
 
+{{- define "px.getDeploymentNamespace" -}}
+{{- if (.Release.Namespace) -}}
+    {{- if (eq "default" .Release.Namespace) -}}
+        {{- printf "kube-system"  -}}
+    {{- else -}}
+        {{- printf "%s" .Release.Namespace -}}
+    {{- end -}}
+{{- end -}}
+{{- end -}}
+
+
+
 {{- define "px.affinityPxEnabledValue" -}}
 {{- if .Values.requirePxEnabledTag -}}
     {{- "true"  | quote }}
@@ -231,19 +236,19 @@ Generate a random token for storage provisioning
 
 {{- define "px.deprecatedKvdbArgs" }}
 {{- $result := "" }}
-{{- if ne .Values.etcd.credentials "none:none" }}
+{{- if ne .Values.etcd.credentials "null:null" }}
     {{- $result = printf "%s -userpwd %s" $result .Values.etcd.credentials }}
 {{- end }}
-{{- if ne .Values.etcd.ca "none" }}
+{{- if ne .Values.etcd.ca null }}
     {{- $result = printf "%s -ca %s" $result .Values.etcd.ca }}
 {{- end }}
-{{- if ne .Values.etcd.cert "none" }}
+{{- if ne .Values.etcd.cert null }}
     {{- $result = printf "%s -cert %s" $result .Values.etcd.cert }}
 {{- end }}
-{{- if ne .Values.etcd.key "none" }}
+{{- if ne .Values.etcd.key null }}
     {{- $result = printf "%s -key %s" $result .Values.etcd.key }}
 {{- end }}
-{{- if ne .Values.consul.token "none" }}
+{{- if ne .Values.consul.token null }}
     {{- $result = printf "%s -acltoken %s" $result .Values.consul.token }}
 {{- end }}
 {{- trim $result }}
@@ -254,7 +259,7 @@ Generate a random token for storage provisioning
 {{- if (include "px.deprecatedKvdbArgs" .) }}
     {{- $result = printf "%s %s" $result (include "px.deprecatedKvdbArgs" .) }}
 {{- end }}
-{{- if ne .Values.miscArgs "none" }}
+{{- if ne .Values.miscArgs null }}
     {{- $result = printf "%s %s" $result .Values.miscArgs }}
 {{- end }}
 {{- trim $result }}
@@ -265,7 +270,7 @@ Generate a random token for storage provisioning
 {{- if (default false .Values.isTargetOSCoreOS) }}
     {{- $result = true }}
 {{- end }}
-{{- if ne (default "none" .Values.etcd.certPath) "none" }}
+{{- if ne (default null .Values.etcd.certPath) null }}
     {{- $result = true }}
 {{- end }}
 {{- if .Values.volumes }}

@@ -1,0 +1,16 @@
+---
+kind: RoleBinding
+apiVersion: {{ template "rbac.apiVersion" . }}
+metadata:
+  annotations:
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded,hook-failed
+    helm.sh/hook: post-install
+  name: {{ .Values.clusterToken.serviceAccountName }}-binding
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.clusterToken.serviceAccountName }}
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ .Values.clusterToken.serviceAccountName }}-role
+  apiGroup: rbac.authorization.k8s.io
