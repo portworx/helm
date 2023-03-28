@@ -3,40 +3,13 @@
 [Portworx](https://portworx.com/) is a software defined persistent storage solution designed and purpose built for applications deployed as containers, via container orchestrators such as Kubernetes, Marathon and Swarm. It is a clustered block storage solution and provides a Cloud-Native layer from which containerized stateful applications programmatically consume block, file and object storage services directly through the scheduler.
 
 ## Pre-requisites
-The helm chart (portworx-helm) deploys Portworx and Stork (https://docs.portworx.com/scheduler/kubernetes/stork.html) on your Kubernetes cluster. The minimum requirements for deploying the helm chart are as follows:
+The helm chart (portworx-helm) deploys Portworx and STork(https://docs.portworx.com/scheduler/kubernetes/stork.html) on your Kubernetes cluster. The minimum requirements for deploying the helm chart are as follows:
 
-- Helm has been installed on the client machine from where you would install the chart (https://docs.helm.sh/using_helm/#installing-helm).
+- Helm has been installed on the client machine from where you would install the chart. (https://docs.helm.sh/using_helm/#installing-helm)
 - Tiller version 2.9.0 and above is running on the Kubernetes cluster where you wish to deploy Portworx.
 - Tiller has been provided with the right RBAC permissions for the chart to be deployed correctly.
 - Kubernetes 1.7+
-- All [pre-requisites](https://docs.portworx.com/install-portworx/prerequisites/) for Portworx fulfilled.
-
-## Upgrading the Chart from an old chart with Daemonset
-1. Deploy StorageCluster CRD. 
-Helm does not handle CRD upgrade, let's manually deploy it.
-```
-kubectl apply -f ./charts/portworx/crds/core_v1_storagecluster_crd.yaml
-```
-2. Run helm upgrade with the original values.yaml that was used to deploy the Daemonset chart.
-```
-helm upgrade [RELEASE] [CHART] -f values.yaml
-```
-3. Review the StorageCluster spec. If any value is not expected, change values.yaml and run `helm upgrade` to update it.
-```
-kubectl -n kube-system describe storagecluster
-```
-4. Approve the migration
-```
-kubectl -n kube-system annotate storagecluster --all --overwrite portworx.io/migration-approved='true'
-```
-5. Wait for migration to complete
-Describe the StorageCluster to see event `Migration completed successfully`. If migration fails, there is corresponding event about the failure.
-```
-kubectl -n kube-system describe storagecluster
-```
-6. Rollback to Daemonset (Unsupported)
-
-Use `helm rollback` to rollback to Daemonset install is not supported, if there is any issue during migration please try to update values.yaml and perform `helm upgrade`. 
+- All [Pre-requisites](https://docs.portworx.com/#minimum-requirements). for Portworx fulfilled.
 
 ## Installing the Chart
 
@@ -44,7 +17,7 @@ To install the chart with the release name `my-release` run the following comman
 
 ##### NOTE:
 `etcdEndPoint` is a required field. The chart installation would not proceed unless this option is provided.
-If the etcd cluster being used is a secured etcd (SSL/TLS) then please follow instructions to create a kubernetes secret with the certs. https://docs.portworx.com/scheduler/kubernetes/etcd-certs-using-secrets.html#create-kubernetes-secret
+If the etcdcluster being used is a secured ETCD (SSL/TLS) then please follow instructions to create a kubernetes secret with the certs. https://docs.portworx.com/scheduler/kubernetes/etcd-certs-using-secrets.html#create-kubernetes-secret
 
 
 `clusterName` should be a unique name identifying your Portworx cluster. The default value is `mycluster`, but it is suggested to update it with your naming scheme.
@@ -67,7 +40,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `pksInstall` | Installing on Pivotal Container service? |
 | `EKSInstall` | Installing EKS (Amazon Elastic Container service) |
 | `AKSInstall` | Installing on AKS (Azure Kubernetes service) |
-| `etcdEndPoint` | (REQUIRED) etcd endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>". Multiple Urls should be semi-colon seperated example: etcd:http://<your-etcd-endpoint1>;etcd:http://<your-etcd-endpoint2> |
+| `etcdEndPoint` | (REQUIRED) ETCD endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>". Multiple Urls should be semi-colon seperated example: etcd:http://<your-etcd-endpoint1>;etcd:http://<your-etcd-endpoint2> |
 | `clusterName` | Portworx Cluster Name |
 | `usefileSystemDrive` | Should Portworx use an unmounted drive even with a filesystem ? |
 | `usedrivesAndPartitions` | Should Portworx use the drives as well as partitions on the disk ? |
@@ -84,11 +57,11 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `aut` | Enable AutoPilot (Tech Preview) |
 | `csi` | Enable CSI (Tech Preview) |
 | `internalKVDB` | Internal KVDB store |
-| `etcd.credentials` | Username and password for etcd authentication in the form user:password |
+| `etcd.credentials` | Username and password for ETCD authentication in the form user:password |
 | `etcd.certPath` | Base path where the certificates are placed. (example: if the certificates ca,.crt and the .key are in /etc/pwx/etcdcerts the value should be provided as /etc/pwx/etcdcerts Refer: https://docs.portworx.com/scheduler/kubernetes/etcd-certs-using-secrets.html) |
-| `etcd.ca` | Location of CA file for etcd authentication. Should be /path/to/server.ca |
-| `etcd.cert` | Location of certificate for etcd authentication. Should be /path/to/server.crt |
-| `etcd.key` | Location of certificate key for etcd authentication Should be /path/to/servery.key |
+| `etcd.ca` | Location of CA file for ETCD authentication. Should be /path/to/server.ca |
+| `etcd.cert` | Location of certificate for ETCD authentication. Should be /path/to/server.crt |
+| `etcd.key` | Location of certificate key for ETCD authentication Should be /path/to/servery.key |
 | `consul.acl` | ACL token value used for Consul authentication. (example: 398073a8-5091-4d9c-871a-bbbeb030d1f6) |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,

@@ -137,7 +137,7 @@ spec:
               mountPath: /csi
         - name: csi-snapshotter
           imagePullPolicy: {{ $pullPolicy }}
-          image: k8s.gcr.io/sig-storage/csi-snapshotter:v4.0.0
+          image: registry.k8s.io/sig-storage/csi-snapshotter:v4.0.0
           args:
             - "--v=3"
             - "--csi-address=$(ADDRESS)"
@@ -152,7 +152,7 @@ spec:
               mountPath: /csi
         - name: csi-snapshot-controller
           imagePullPolicy: {{ $pullPolicy }}
-          image: k8s.gcr.io/sig-storage/snapshot-controller:v4.0.0
+          image: registry.k8s.io/sig-storage/snapshot-controller:v4.0.0
           args:
             - "--v=3"
             - "--leader-election=true"
@@ -166,7 +166,7 @@ spec:
               mountPath: /csi
         - name: csi-resizer
           imagePullPolicy: {{ $pullPolicy }}
-          image: k8s.gcr.io/sig-storage/csi-resizer:v1.1.0
+          image: registry.k8s.io/sig-storage/csi-resizer:v1.1.0
           args:
             - "--v=3"
             - "--csi-address=$(ADDRESS)"
