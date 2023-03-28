@@ -333,9 +333,9 @@ spec:
         - name: csi-node-driver-registrar
           imagePullPolicy: {{ $pullPolicy }}
           {{- if eq $customRegistryURL "none" }}
-          image: "k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.1.0"
+          image: "registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.1.0"
           {{- else }}
-          image: "{{ $customRegistryURL }}/k8s.gcr.io/sig-storage/csi-node-driver-registrar:v2.1.0"
+          image: "{{ $customRegistryURL }}/registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.1.0"
           {{- end}}
           args:
             - "--v=5"

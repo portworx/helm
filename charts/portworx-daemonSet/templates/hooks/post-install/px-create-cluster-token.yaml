@@ -16,9 +16,13 @@ metadata:
   annotations:
     "helm.sh/hook": post-install
     "helm.sh/hook-weight": "10"
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    "helm.sh/hook-delete-policy": before-hook-creation
 spec:
+  {{ if semverCompare ">= 1.8" .Capabilities.KubeVersion.GitVersion }}
   backoffLimit: 0
+  {{ else }}
+  activeDeadlineSeconds: 360
+  {{ end }}
   template:
     spec:
       {{- if not (eq $registrySecret "none") }}
@@ -39,11 +43,9 @@ spec:
               value: kube-system
             - name: KEY
               value: cluster-wide-secret-key
-          command: ['/bin/bash', '-c']
+          command: ['/bin/sh', '-c']
           args:
-            - |
-              readyPortworxPod=$(kubectl -n $NS get pods -lname=portworx -o jsonpath='{range .items[*]}{.status.conditions[?(@.type=="Ready")].status}{" "}{.metadata.name}{"\n"}{end}' | grep True | cut -d' ' -f2 | head -n1)
-              kubectl -n $NS exec -c portworx $readyPortworxPod -- /opt/pwx/bin/pxctl secrets set-cluster-key --secret $KEY
+            - kubectl -n $NS exec $(kubectl get pods -l app=portworx -n $NS --no-headers -o name| head -n1) -- /opt/pwx/bin/pxctl secrets set-cluster-key --secret $KEY
       initContainers:
         - name: post-install-job-init
           {{- if eq $customRegistryURL "none" }}
@@ -54,16 +56,7 @@ spec:
           env:
             - name: NS
               value: kube-system
-          command: ['/bin/bash', '-c']
-          args:
-            - |
-              # Get ready state of all Portworx pods (True or False)
-              output=$(kubectl -n $NS get pods -l name=portworx -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}')
-              # Wait until there is at least one pod and at least one of them is ready
-              while [[ $(echo -n $output | wc -c) -eq 0 ]] || [[ $(echo -n $output | grep -v True) ]]; do
-                sleep 5
-                output=$(kubectl -n $NS get pods -l name=portworx -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}')
-              done
+          command: ['/bin/sh', '-c', "kubectl wait --for=condition=ready pod --timeout=600s -l app=portworx -n $NS"]
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -71,7 +64,7 @@ metadata:
   name: {{ .Values.clusterToken.serviceAccountName }}
   namespace: kube-system
   annotations:
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
+    "helm.sh/hook-delete-policy": before-hook-creation
     "helm.sh/hook": "post-install"
   labels:
     heritage: {{ .Release.Service }}
@@ -85,9 +78,8 @@ apiVersion: {{ template "rbac.apiVersion" . }}
 metadata:
   annotations:
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
-    "helm.sh/hook": post-install
+    "helm.sh/hook": "post-install"
   name: {{ .Values.clusterToken.serviceAccountName }}-role
-  namespace: kube-system
 rules:
   - apiGroups: [""]
     resources: ["pods"]
@@ -101,9 +93,8 @@ apiVersion: {{ template "rbac.apiVersion" . }}
 metadata:
   annotations:
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
-    "helm.sh/hook": post-install
+    "helm.sh/hook": "post-install"
   name: {{ .Values.clusterToken.serviceAccountName }}-binding
-  namespace: kube-system
 subjects:
   - kind: ServiceAccount
     name: {{ .Values.clusterToken.serviceAccountName }}
@@ -118,9 +109,9 @@ kind: Secret
 metadata:
   annotations:
     "helm.sh/hook-delete-policy": before-hook-creation
-    "helm.sh/hook": post-install
+    "helm.sh/hook": "post-install"
   name: {{ .Values.clusterToken.secretName }}
-  namespace: portworx
+  namespace:  portworx
   labels:
     name: {{ .Values.clusterToken.secretName }}
     heritage: {{ .Release.Service }}

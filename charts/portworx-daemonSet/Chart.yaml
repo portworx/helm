@@ -1,4 +1,4 @@
-name: portworx
+name: portworx-daemonSet
 version: 2.13.0
 description: A Helm chart for installing Portworx on Kubernetes.
 kubeVersion: ">=1.10.0"
