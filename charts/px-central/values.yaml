@@ -148,7 +148,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: postgresql
-    tag: 11.18.0-debian-11-r34
+    tag: 11.19.0-debian-11-r1
   keycloakFrontendImage:
     registry: docker.io
     repo: portworx
@@ -204,7 +204,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: nginx
-    tag: 1.23.2-alpine
+    tag: 1.23.3-alpine-slim
   consulImage:
     registry: docker.io
     repo: portworx
@@ -219,7 +219,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: grafana
-    tag: 9.1.2
+    tag: 9.1.3
   prometheusImage:
     registry: docker.io
     repo: portworx
