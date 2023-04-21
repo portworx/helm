@@ -38,14 +38,15 @@ envVars: none                         # DEPRECATED: Use envs section to set env 
                                       # NOTE: This is a ";" seperated list of environment variables.
                                       # For eg: MYENV1=myvalue1;MYENV2=myvalue2
 
-envs:                                 # Add environment variables to the Portworx container in all Kubernetes supported formats
-  # - name: AWS_CA_BUNDLE
-  #   value: "/etc/pwx/objectstore-cert/objectstore.pem"
-  # - name: AWS_ACCESS_KEY_ID
-  #   valueFrom:
-  #     secretKeyRef:
-  #       name: aws-creds
-  #       key: access-key
+# Add environment variables to the Portworx container
+envs:
+# - name: AWS_CA_BUNDLE
+#   value: "/etc/pwx/objectstore-cert/objectstore.pem"
+# - name: AWS_ACCESS_KEY_ID
+#   valueFrom:
+#     secretKeyRef:
+#       name: aws-creds
+#       key: access-key
 
 miscArgs: none                        # Miscellaneous arguments that will be passed to portworx verbatim. Only use this if there is
                                       # no equivalent way to specify these options directly via a StorageCluster spec field.
