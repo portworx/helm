@@ -15,9 +15,7 @@ OKEInstall: false                      # installation on OKE
 
 # List of endpoints for ETCD within the cluster.
 # Should be in the format etcd:http://<your-etcd-endpoint>:2379
-etcdEndpoints:
-- test
-- one
+etcdEndpoints: []
 
 clusterName: mycluster                # This is the default. please change it to your cluster name.
 usefileSystemDrive: false             # true/false Instructs PX to use an unmounted Drive even if it has a filesystem.
