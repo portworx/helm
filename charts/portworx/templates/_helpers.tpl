@@ -221,6 +221,18 @@ Generate a random token for storage provisioning
 {{- end -}}
 
 
+{{- define "px.getDeploymentNamespace" -}}
+{{- if (.Release.Namespace) -}}
+    {{- if (eq "default" .Release.Namespace) -}}
+        {{- printf "kube-system"  -}}
+    {{- else -}}
+        {{- printf "%s" .Release.Namespace -}}
+    {{- end -}}
+{{- end -}}
+{{- end -}}
+
+
+
 {{- define "px.affinityPxEnabledValue" -}}
 {{- if .Values.requirePxEnabledTag -}}
     {{- "true"  | quote }}

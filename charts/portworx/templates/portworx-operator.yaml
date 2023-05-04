@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: portworx-operator
-  namespace: kube-system
+  namespace: {{ template "px.getDeploymentNamespace" . }}
 {{- if (semverCompare "<1.25" (.Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+"| trimPrefix "v"))}}
 ---
 apiVersion: policy/v1beta1
@@ -47,7 +47,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: portworx-operator
-    namespace: kube-system
+    namespace: {{ template "px.getDeploymentNamespace" . }}
 roleRef:
   kind: ClusterRole
   name: portworx-operator
@@ -57,7 +57,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: portworx-operator
-  namespace: kube-system
+  namespace: {{ template "px.getDeploymentNamespace" . }}
 spec:
   strategy:
     rollingUpdate:

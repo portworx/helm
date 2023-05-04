@@ -5,7 +5,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  namespace: kube-system
+  namespace: {{ template "px.getDeploymentNamespace" . }}
   name: px-set-cluster-token
   labels:
     heritage: {{.Release.Service | quote }}
@@ -36,7 +36,7 @@ spec:
           {{- end }}
           env:
             - name: NS
-              value: kube-system
+              value: {{ template "px.getDeploymentNamespace" . }}
             - name: KEY
               value: cluster-wide-secret-key
           command: ['/bin/bash', '-c']
@@ -53,7 +53,7 @@ spec:
           {{- end }}
           env:
             - name: NS
-              value: kube-system
+              value: {{ template "px.getDeploymentNamespace" . }}
           command: ['/bin/bash', '-c']
           args:
             - |
@@ -69,7 +69,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: {{ .Values.clusterToken.serviceAccountName }}
-  namespace: kube-system
+  namespace: {{ template "px.getDeploymentNamespace" . }}
   annotations:
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
     "helm.sh/hook": "post-install"
@@ -87,7 +87,7 @@ metadata:
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
     "helm.sh/hook": post-install
   name: {{ .Values.clusterToken.serviceAccountName }}-role
-  namespace: kube-system
+  namespace: {{ template "px.getDeploymentNamespace" . }}
 rules:
   - apiGroups: [""]
     resources: ["pods"]
@@ -103,11 +103,11 @@ metadata:
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
     "helm.sh/hook": post-install
   name: {{ .Values.clusterToken.serviceAccountName }}-binding
-  namespace: kube-system
+  namespace: {{ template "px.getDeploymentNamespace" . }}
 subjects:
   - kind: ServiceAccount
     name: {{ .Values.clusterToken.serviceAccountName }}
-    namespace: kube-system
+    namespace: {{ template "px.getDeploymentNamespace" . }}
 roleRef:
   kind: Role
   name: {{ .Values.clusterToken.serviceAccountName }}-role
