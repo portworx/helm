@@ -50,8 +50,6 @@ pxbackup:
   callHome: true
   mongoMigration: complete
   livenessProbeInitialDelay: 1800
-  nfs:
-    enabled: false
 
 pxlicenseserver:
   enabled: false
