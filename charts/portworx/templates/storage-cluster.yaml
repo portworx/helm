@@ -32,7 +32,7 @@ kind: StorageCluster
 apiVersion: core.libopenstorage.org/v1
 metadata:
   name: "{{ required "Clustername cannot be empty" .Values.clusterName }}"
-  namespace: kube-system
+  namespace: {{ template "px.getDeploymentNamespace" . }}
   annotations:
     {{- if eq $openshiftInstall true }}
     portworx.io/is-openshift: "true"
