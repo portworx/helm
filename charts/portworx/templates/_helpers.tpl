@@ -225,7 +225,6 @@ Generate a random token for storage provisioning
 {{- end -}}
 
 
-
 {{- define "px.affinityPxEnabledValue" -}}
 {{- if .Values.requirePxEnabledTag -}}
     {{- "true"  | quote }}
@@ -236,19 +235,19 @@ Generate a random token for storage provisioning
 
 {{- define "px.deprecatedKvdbArgs" }}
 {{- $result := "" }}
-{{- if ne .Values.etcd.credentials "null:null" }}
+{{- if ne .Values.etcd.credentials "null" }}
     {{- $result = printf "%s -userpwd %s" $result .Values.etcd.credentials }}
 {{- end }}
-{{- if ne .Values.etcd.ca null }}
+{{- if ne .Values.etcd.ca "null" }}
     {{- $result = printf "%s -ca %s" $result .Values.etcd.ca }}
 {{- end }}
-{{- if ne .Values.etcd.cert null }}
+{{- if ne .Values.etcd.cert "null" }}
     {{- $result = printf "%s -cert %s" $result .Values.etcd.cert }}
 {{- end }}
-{{- if ne .Values.etcd.key null }}
+{{- if ne .Values.etcd.key "null" }}
     {{- $result = printf "%s -key %s" $result .Values.etcd.key }}
 {{- end }}
-{{- if ne .Values.consul.token null }}
+{{- if ne .Values.consul.token "null" }}
     {{- $result = printf "%s -acltoken %s" $result .Values.consul.token }}
 {{- end }}
 {{- trim $result }}
@@ -259,7 +258,7 @@ Generate a random token for storage provisioning
 {{- if (include "px.deprecatedKvdbArgs" .) }}
     {{- $result = printf "%s %s" $result (include "px.deprecatedKvdbArgs" .) }}
 {{- end }}
-{{- if ne .Values.miscArgs null }}
+{{- if ne .Values.miscArgs "null" }}
     {{- $result = printf "%s %s" $result .Values.miscArgs }}
 {{- end }}
 {{- trim $result }}
@@ -270,7 +269,7 @@ Generate a random token for storage provisioning
 {{- if (default false .Values.isTargetOSCoreOS) }}
     {{- $result = true }}
 {{- end }}
-{{- if ne (default null .Values.etcd.certPath) null }}
+{{- if ne (default "null" .Values.etcd.certPath) "null" }}
     {{- $result = true }}
 {{- end }}
 {{- if .Values.volumes }}
