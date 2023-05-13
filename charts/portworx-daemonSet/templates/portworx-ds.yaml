@@ -1,5 +1,7 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $deployEnvironmentIKS := .Capabilities.KubeVersion.GitVersion | regexMatch "IKS" }}
+{{- $deployEnvironmentK3S := .Capabilities.KubeVersion.GitVersion | regexMatch "k3s" }}
+{{- $deployEnvironmentRKE2 := .Capabilities.KubeVersion.GitVersion | regexMatch "rke2" }}
 {{- $usefileSystemDrive := .Values.usefileSystemDrive | default false }}
 {{- $drives := .Values.drives | default "none" }}
 {{- $usedrivesAndPartitions := .Values.usedrivesAndPartitions | default false }}
@@ -265,6 +267,8 @@ spec:
               mountPath: /var/run/docker.sock
             - name: containerdsock
               mountPath: /run/containerd
+            - name: containerdvardir
+              mountPath: /var/lib/containerd
             - name: criosock
               mountPath: /var/run/crio
             - name: etcpwx
@@ -328,6 +332,15 @@ spec:
               mountPath: /usr/src
           {{- end }}
           {{- end }}
+          {{- if or $deployEnvironmentK3S $deployEnvironmentRKE2 }}
+            - name: containerd-k3s
+              mountPath: /run/containerd/containerd.sock
+            - name: containerddir-k3s
+              mountPath: /var/lib/rancher
+          {{- else if $deployEnvironmentIKS }}
+            - name: cripersistentstorage-iks
+              mountPath: /var/data/cripersistentstorage
+          {{- end }}
 
           {{- if eq $csi true }}
         - name: csi-node-driver-registrar
@@ -385,6 +398,9 @@ spec:
         - name: containerdsock
           hostPath:
             path: {{if eq $pksInstall true}}/var/vcap/sys/run/containerd{{else}}/run/containerd{{end}}
+        - name: containerdvardir
+          hostPath:
+            path: {{if eq $pksInstall true}}/var/vcap/store/containerd{{else}}/var/lib/containerd{{end}}
         - name: criosock
           hostPath:
             path: {{if eq $pksInstall true}}/var/vcap/sys/run/crio{{else}}/var/run/crio{{end}}
@@ -457,6 +473,18 @@ spec:
         - name: hostproc
           hostPath:
             path: /proc
+        {{- end }}
+        {{- if or $deployEnvironmentK3S $deployEnvironmentRKE2 }}
+        - name: containerd-k3s
+          hostPath:
+            path: /run/k3s/containerd/containerd.sock
+        - name: containerddir-k3s
+          hostPath:
+            path: /var/lib/rancher
+        {{- else if $deployEnvironmentIKS }}
+        - name: cripersistentstorage-iks
+          hostPath:
+            path: /var/data/cripersistentstorage
         {{- end }}
 ---
 apiVersion: apps/v1
