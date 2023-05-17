@@ -45,4 +45,8 @@ spec:
                     values:
                       - portworx-operator
               topologyKey: "kubernetes.io/hostname"
+      {{- if .Values.global.image.pullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.global.image.pullSecret }}
+      {{- end }}
       serviceAccountName: portworx-operator
