@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: portworx-operator
-          imagePullPolicy: Always
+          imagePullPolicy: {{ .Values.operator.image.pullPolicy }}
           image: "{{ .Values.operator.image.repository }}:{{ default .Chart.AppVersion .Values.operator.image.tag }}"
           command:
             - /operator
