@@ -34,6 +34,9 @@ rules:
   - apiGroups: [""]
     resources: ["persistentvolumes"]
     verbs: ["create", "update", "get", "patch", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["delete"]
 {{- end }}
 ---
 kind: ClusterRoleBinding
