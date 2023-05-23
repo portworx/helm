@@ -150,10 +150,10 @@ images:
     imageName: postgresql
     tag: 11.19.0-debian-11-r1
   keycloakFrontendImage:
-    registry: docker.io
-    repo: portworx
+    registry: quay.io
+    repo: keycloak
     imageName: keycloak
-    tag: 16.1.1
+    tag: 21.1.1
   keycloakLoginThemeImage:
     registry: docker.io
     repo: portworx
