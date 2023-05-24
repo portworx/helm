@@ -275,7 +275,7 @@ spec:
       securityContext:
 {{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
-      containers:c 
+      containers: 
         - name: pxcentral-keycloak-postgresql
           image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakBackendImage.registry .Values.images.keycloakBackendImage.repo .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
