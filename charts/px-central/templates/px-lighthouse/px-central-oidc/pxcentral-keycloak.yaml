@@ -83,7 +83,7 @@ data:
     set -o errexit
     set -o nounset
 
-    exec /opt/jboss/tools/docker-entrypoint.sh -b 0.0.0.0  -c standalone.xml
+    exec /opt/keycloak/bin/kc.sh -b 0.0.0.0  -c standalone.xml
 ---
 apiVersion: v1
 kind: ConfigMap
