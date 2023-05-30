@@ -180,10 +180,7 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
-      {{- if $isOpenshiftCluster}}
-      {{- else }}
       securityContext:
 {{ toYaml .Values.securityContext | indent 8 }}
-      {{- end }}
       serviceAccountName: pxcentral-apiserver
       restartPolicy: Always
