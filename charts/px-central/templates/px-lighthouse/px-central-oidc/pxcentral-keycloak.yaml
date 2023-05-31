@@ -456,6 +456,10 @@ spec:
           command:
             - /scripts/keycloak.sh
           env:
+          - name: KEYCLOAK_FRONTEND_URL1
+            value: http://10.13.15.78:32462
+          - name: PROXY_ADDRESS_FORWARDING
+            value: "true"
           - name: KEYCLOAK_ADMIN
             value: {{ .Values.oidc.centralOIDC.defaultUsername }}
           - name: KEYCLOAK_ADMIN_PASSWORD
@@ -486,7 +490,7 @@ spec:
               mountPath: /opt/jboss/startup-scripts
               readOnly: true
             - name: theme
-              mountPath: /opt/jboss/keycloak/themes/portworx
+              mountPath: /opt/keycloak/themes/portworx/
             - name: keycloakdir
               mountPath: /.keycloak
             {{- if .Values.caCertsSecretName }}
