@@ -141,9 +141,9 @@ images:
     tag: 2.4.2
   postInstallSetupImage:
     registry: docker.io
-    repo: portworx
-    imageName: pxcentral-onprem-post-setup
-    tag: 2.4.2
+    repo: nidhinthomas
+    imageName: pxcentral-onprem-post-setup-base
+    tag: keycloak
   keycloakBackendImage:
     registry: docker.io
     repo: portworx
