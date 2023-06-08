@@ -9,4 +9,4 @@ metadata:
 type: Opaque
 stringData:
   OIDC_CLIENT_ID: {{ .Values.oidc.centralOIDC.clientId | quote}}
-  OIDC_ENDPOINT: "http://pxcentral-keycloak-http:80/auth/realms/master"
+  OIDC_ENDPOINT: "http://pxcentral-keycloak-http/auth/realms/master"
