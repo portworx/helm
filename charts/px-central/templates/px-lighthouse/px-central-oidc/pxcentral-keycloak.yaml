@@ -83,7 +83,7 @@ data:
     set -o errexit
     set -o nounset
 
-    exec /opt/keycloak/bin/kc.sh start-dev
+    opt/keycloak/bin/kc.sh --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true start-dev
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -498,7 +498,7 @@ spec:
               readOnly: true
               mountPath: /tmp/certs
             {{- end }}
-          ports:
+          ports:ZZ
             - name: http
               containerPort: 8080
               protocol: TCP
