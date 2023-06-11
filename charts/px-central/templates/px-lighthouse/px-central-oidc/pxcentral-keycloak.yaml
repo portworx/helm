@@ -83,7 +83,7 @@ data:
     set -o errexit
     set -o nounset
 
-    exec /opt/keycloak/bin/kc.sh --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true start
+    exec /opt/keycloak/bin/kc.sh start --optimized --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -284,6 +284,8 @@ spec:
             runAsUser: 1001
           {{- end }}
           env:
+            - name: HOSTNAME
+              value: http://pxcentral-keycloak-http
             - name: BITNAMI_DEBUG
               value: "false"
             - name: POSTGRESQL_PORT_NUMBER
