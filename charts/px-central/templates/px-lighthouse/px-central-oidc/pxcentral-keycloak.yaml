@@ -83,7 +83,7 @@ data:
     set -o errexit
     set -o nounset
 
-    exec /opt/keycloak/bin/kc.sh --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true start
+    exec /opt/keycloak/bin/kc.sh --optimized --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true start
 ---
 apiVersion: v1
 kind: ConfigMap
