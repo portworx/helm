@@ -284,8 +284,8 @@ spec:
             runAsUser: 1001
           {{- end }}
           env:
-            - name: HOSTNAME
-              value: http://pxcentral-keycloak-http
+            - name: KC_HOSTNAME
+              value: "http://pxcentral-keycloak-http"
             - name: BITNAMI_DEBUG
               value: "false"
             - name: POSTGRESQL_PORT_NUMBER
