@@ -339,6 +339,10 @@ spec:
               mountPath: /dev/shm
             - name: pxcentral-keycloak-data
               mountPath: /bitnami/postgresql
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
       volumes:
         - name: dshm
           emptyDir:
@@ -522,6 +526,10 @@ spec:
           resources:
             {}
       terminationGracePeriodSeconds: 60
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
       volumes:
         - name: sh
           configMap:
