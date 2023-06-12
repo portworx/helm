@@ -141,17 +141,17 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend-private
-    tag: 2.5.0-dev
+    tag: 2.5.1-dev
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend-private
-    tag: upgrade_keycloak
+    tag: 2.5.1-dev
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend-private
-    tag: 2.5.0-dev
+    tag: 2.5.1-dev
   postInstallSetupImage:
     registry: docker.io
     repo: pxkesavan
