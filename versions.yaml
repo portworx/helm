@@ -1,22 +1,22 @@
-pxCentralVersion: 2.5.0
+pxCentralVersion: 2.5.1
 modules:
   pxCentral:
-    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:2.5.0-dev"
-    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:2.5.0-dev"
-    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:2.5.0-dev"
-    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:2.5.0-dev"
-    pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:2.5.0-dev"
+    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:2.5.1-dev"
+    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:2.5.1-dev"
+    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:2.5.1-dev"
+    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:2.5.1-dev"
+    pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:2.5.1-dev"
     postgresql: "docker.io/portworx/postgresql:11.19.0-debian-11-r1"
-    keycloak: "docker.io/portworx/keycloak:16.1.1"
+    keycloak: "docker.io/portworx/keycloak:21.1.1"
     keycloakLoginTheme: "docker.io/portworx/keycloak-login-theme:2.2.0"
     busybox: "docker.io/portworx/busybox:1.31"
     mysql: "docker.io/portworx/mysql:5.7.41"
   pxBackup:
-    pxBackup: "docker.io/portworx/px-backup-base:2.5.0-dev"
+    pxBackup: "docker.io/portworx/px-backup-base:2.5.1-dev"
     mongodb: "docker.io/portworx/mongodb:5.0.14-debian-11-r27"
-    kopiaExecutor: "docker.io/portworx/kopiaexecutor:1.2.6"
-    nfsExecutor: "docker.io/portworx/nfsexecutor:1.2.6"
-    filesystemCtl: "docker.io/portworx/filesystemctl:1.2.6"
+    kopiaExecutor: "docker.io/portworx/kopiaexecutor:1.2.7-dev"
+    nfsExecutor: "docker.io/portworx/nfsexecutor:1.2.7-dev"
+    filesystemCtl: "docker.io/portworx/filesystemctl:1.2.7-dev"
   pxMonitor:
     cortex: "docker.io/portworx/cortex:v1.13.1"
     cassandra: "docker.io/portworx/cassandra:4.0.7-debian-11-r34"
