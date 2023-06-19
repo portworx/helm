@@ -478,6 +478,11 @@ spec:
             value: pxcentral-keycloak-postgresql
           - name: KC_DB_URL_PORT
             value: "5432"
+          - name: KC_DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: pxcentral-keycloak-postgresql
+                key: postgresql-username
           - name: KC_DB_PASSWORD
             valueFrom:
               secretKeyRef:
