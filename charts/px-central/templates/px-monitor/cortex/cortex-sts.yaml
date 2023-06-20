@@ -150,10 +150,6 @@ spec:
         ports:
         - name: metrics
           containerPort: 9150
-      {{- with .Values.tolerations }}
-      tolerations:
-      {{- toYaml . | nindent 8 }}
-      {{- end }} 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -234,10 +230,6 @@ spec:
         ports:
         - name: metrics
           containerPort: 9150
-      {{- with .Values.tolerations }}
-      tolerations:
-      {{- toYaml . | nindent 8 }}
-      {{- end }} 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -317,10 +309,6 @@ spec:
         ports:
         - name: metrics
           containerPort: 9150
-      {{- with .Values.tolerations }}
-      tolerations:
-      {{- toYaml . | nindent 8 }}
-      {{- end }} 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -463,10 +451,6 @@ spec:
         - name: pxcentral-consul-data
           emptyDir: {}
       {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-      {{- toYaml . | nindent 8 }}
-      {{- end }} 
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}
