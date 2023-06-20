@@ -51,7 +51,7 @@ pxbackup:
   mongoMigration: complete
   livenessProbeInitialDelay: 1800
   nfs:
-    enabled: true
+    enabled: false
 
 pxlicenseserver:
   enabled: false
