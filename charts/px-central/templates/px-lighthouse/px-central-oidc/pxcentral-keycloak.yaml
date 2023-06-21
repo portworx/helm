@@ -490,10 +490,10 @@ spec:
                 name: pxcentral-keycloak-postgresql
           - name: KC_PROXY
             value: edge
-            {{- if .Values.caCertsSecretName }}
-            - name: X509_CA_BUNDLE
-              value: /tmp/certs/*
-            {{- end }}
+          {{- if .Values.caCertsSecretName }}
+          - name: X509_CA_BUNDLE
+            value: /tmp/certs/*
+          {{- end }}
           volumeMounts:
             - name: sh
               mountPath: /scripts
