@@ -232,6 +232,10 @@ spec:
           volumeMounts:
             - name: pxcentral-cassandra-data
               mountPath: /bitnami/cassandra
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}

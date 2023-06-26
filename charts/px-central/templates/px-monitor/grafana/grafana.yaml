@@ -239,6 +239,10 @@ spec:
               mountPath: /tmp/certs
               readOnly: true
             {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
       volumes:
         - name: grafana-dashboard
           {{- if eq $externalPersistentStorageEnabled true }}

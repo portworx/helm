@@ -50,6 +50,8 @@ pxbackup:
   callHome: true
   mongoMigration: complete
   livenessProbeInitialDelay: 1800
+  nfs:
+    enabled: true
 
 pxlicenseserver:
   enabled: false
@@ -114,6 +116,17 @@ securityContext:
   fsGroup: 1000
   runAsNonRoot: true
 
+## sample toleration while installing from values.yaml
+# tolerations:
+# - effect: NoSchedule
+#   key: key1
+#   operator: Exists
+#
+## sample toleration while setting the param inline
+# --set 'tolerations[0].operator=Exists,tolerations[0].effect=NoSchedule,tolerations[0].key=key1'
+# ensure toleration param is enclosed with single quotes
+tolerations: []
+
 images:
   pullSecrets:
     - docregistry-secret
@@ -122,28 +135,28 @@ images:
   pxcentralApiServerImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-api
-    tag: 2.4.2
+    imageName: pxcentral-onprem-api-base
+    tag: 2.5.0-dev
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-frontend
-    tag: 2.4.2
+    imageName: pxcentral-onprem-ui-frontend-private
+    tag: 2.5.0-dev
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-backend
-    tag: 2.4.2
+    imageName: pxcentral-onprem-ui-backend-private
+    tag: 2.5.0-dev
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-lhbackend
-    tag: 2.4.2
+    imageName: pxcentral-onprem-ui-lhbackend-private
+    tag: 2.5.0-dev
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-post-setup
-    tag: 2.4.2
+    imageName: pxcentral-onprem-post-setup-base
+    tag: 2.5.0-dev
   keycloakBackendImage:
     registry: docker.io
     repo: portworx
@@ -153,7 +166,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: keycloak
-    tag: 16.1.1
+    tag: 21.1.1
   keycloakLoginThemeImage:
     registry: docker.io
     repo: portworx
@@ -174,8 +187,8 @@ images:
   pxBackupImage:
     registry: docker.io
     repo: portworx
-    imageName: px-backup
-    tag: 2.4.2
+    imageName: px-backup-base
+    tag: 2.5.0-dev
   mongodbImage:
     registry: docker.io
     repo: portworx
