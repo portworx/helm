@@ -46,6 +46,7 @@ data:
     api_url = {{ printf "http://%s/auth/realms/master/protocol/openid-connect/userinfo" .Values.pxmonitor.pxCentralEndpoint }} 
     redirect_uri = {{ printf "http://%s/grafana/login/generic_oauth" .Values.pxmonitor.pxCentralEndpoint }} 
     {{- end }}
+    scopes = openid
     allowed_domains = 
     allow_sign_up = true
 ---
