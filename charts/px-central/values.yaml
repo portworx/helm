@@ -186,9 +186,9 @@ images:
   ## Images required for enabling px-backup
   pxBackupImage:
     registry: docker.io
-    repo: portworx
-    imageName: px-backup
-    tag: 2.5.0
+    repo: sivaportworx
+    imageName: px-backup-base
+    tag: pb-3977
   mongodbImage:
     registry: docker.io
     repo: portworx
