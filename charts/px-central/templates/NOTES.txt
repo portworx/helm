@@ -33,14 +33,12 @@ PX-License-Server: disabled
 {{- end}}
 
 --------------------------------------------------
-Access PX-Central UI:
+Access PX-Central/PX-Backup UI:
 --------------------------------------------------
-Using port forwarding:
 
-    kubectl port-forward service/px-backup-ui 8080:80 --namespace {{ .Release.Namespace }}
+To access PX-Central/PX-Backup UI please refer:  https://backup.docs.portworx.com/use-px-backup/configure-ui/#access-the-portworx-backup-ui-using-a-node-ip
 
-To access PX-Central:  http://localhost:8080
-{{- if eq .Release.IsInstall true }}
+{{ if eq .Release.IsInstall true }}
 Login with the following credentials:
 
     Username: {{ .Values.oidc.centralOIDC.defaultUsername }}
