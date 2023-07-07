@@ -1,0 +1,20 @@
+{{- if (semverCompare "<1.25" (.Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+"| trimPrefix "v"))}}
+---
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: px-operator
+spec:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  volumes:
+    - secret
+  runAsUser:
+    rule: 'RunAsAny'
+  seLinux:
+    rule: 'RunAsAny'
+  supplementalGroups:
+    rule: 'RunAsAny'
+  fsGroup:
+    rule: 'RunAsAny'
+{{- end }}

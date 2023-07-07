@@ -1,193 +1,84 @@
 {{- if and (.Values.deployCluster) (or (not (lookup "apps/v1" "DaemonSet" "kube-system" "portworx")) (default true .Values.generateStorageClusterForMigration)) }}
-
-  {{- $isCoreOS := .Values.isTargetOSCoreOS | default false }}
-  {{- $internalKVDB := .Values.internalKVDB | default false }}
-  {{- $etcdEndPoints := .Values.etcdEndPoint }}
-  {{- $etcdCertPath := .Values.etcd.certPath | default "none" }}
-  {{- $etcdCert := .Values.etcd.cert | default "none" }}
-  {{- $etcdKey := .Values.etcd.key | default "none" }}
-  {{- $kvdbAuthSecret := .Values.kvdb.authSecretName | default "none" }}
-  {{- $openshiftInstall := .Values.openshiftInstall | default false }}
-  {{- $EKSInstall := .Values.EKSInstall | default false }}
-  {{- $pksInstall := .Values.pksInstall | default false }}
-  {{- $AKSInstall := .Values.AKSInstall | default false }}
-  {{- $OKEInstall := .Values.OKEInstall | default false }}
-  {{- $usefileSystemDrive := .Values.usefileSystemDrive | default false }}
-  {{- $usedrivesAndPartitions := .Values.usedrivesAndPartitions | default false }}
-  {{- $secretType := .Values.secretType | default "k8s" }}
-  {{- $deployEnvironmentIKS := .Capabilities.KubeVersion.GitVersion | regexMatch "IKS" }}
-  {{- $drives := .Values.drives | default "none" }}
-  {{- $dataInterface := .Values.dataInterface | default "none" }}
-  {{- $managementInterface := .Values.managementInterface | default "none" }}
-  {{- $envVars := .Values.envVars | default "none" }}
-  {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
-  {{- $registrySecret := .Values.registrySecret | default "none" }}
-  {{- $licenseSecret := .Values.licenseSecret | default "none" }}
-  {{- $kvdbDevice := .Values.kvdbDevice | default "none" }}
-  {{- $journalDevice := .Values.journalDevice | default "none" }}
-  {{- $miscArgs := include "px.miscArgs" . }}
-  {{- $volumesPresent := include "px.volumesPresent" . }}
-
+---
 kind: StorageCluster
 apiVersion: core.libopenstorage.org/v1
 metadata:
   name: "{{ required "Clustername cannot be empty" .Values.clusterName }}"
-  namespace: {{ template "px.getDeploymentNamespace" . }}
   annotations:
-    {{- if eq $openshiftInstall true }}
+    {{- if .Values.openshiftInstall }}
     portworx.io/is-openshift: "true"
     {{- end }}
-    {{- if eq $pksInstall true }}
+    {{- if .Values.pksInstall }}
     portworx.io/is-pks: "true"
     {{- end }}
-    {{- if eq $EKSInstall true }}
+    {{- if .Values.EKSInstall }}
     portworx.io/is-eks: "true"
     {{- end }}
-    {{- if eq $AKSInstall true }}
+    {{- if .Values.AKSInstall }}
     portworx.io/is-aks: "true"
     {{- end }}
-    {{- if eq $OKEInstall true }}
+    {{- if .Values.OKEInstall }}
     portworx.io/is-oke: "true"
     {{- end }}
-    {{- if $miscArgs }}
-    portworx.io/misc-args: {{ $miscArgs | quote }}
+    {{- if .Values.miscArgs }}
+    portworx.io/misc-args: {{ .Values.miscArgs | quote }}
     {{- end }}
-    {{- if eq .Values.disableStorageClass true }}
-    portworx.io/disable-storage-class: "true"
-    {{- end }}
-    {{- if and (ne .Values.serviceType "") (ne .Values.serviceType "none") }}
+    portworx.io/disable-storage-class: {{ .Values.disableStorageClass | quote }}
+    {{- if .Values.serviceType }}
     portworx.io/service-type: {{ .Values.serviceType | quote }}
     {{- end }}
     {{- if (lookup "apps/v1" "DaemonSet" "kube-system" "portworx") }}
     portworx.io/migration-approved: "false"
     {{- end }}
   labels:
-    heritage: {{.Release.Service | quote }}
-    release: {{.Release.Name | quote }}
-    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-    app.kubernetes.io/managed-by: {{.Release.Service | quote }}
-    app.kubernetes.io/instance: {{.Release.Name | quote }}
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
 spec:
-  image: portworx/oci-monitor:{{ required "A valid Image tag is required in the SemVer format" .Values.imageVersion }}
-  imagePullPolicy: Always
-  {{- if not (eq $customRegistryURL "none") }}
-  customImageRegistry: {{ $customRegistryURL }}
-  {{- end }}
-  {{- if not (eq $registrySecret "none") }}
-  imagePullSecret: {{ $registrySecret }}
-  {{- end }}
-
+  image: "{{ .Values.ociMonitor.image.repository }}:{{ default .Chart.AppVersion .Values.ociMonitor.image.tag }}"
+  imagePullPolicy: {{ .Values.ociMonitor.image.pullPolicy }}
+  customImageRegistry: {{ .Values.customRegistryURL }}
+  imagePullSecret: {{ .Values.global.image.pullSecret }}
   kvdb:
-  {{- if eq $internalKVDB true }}
-    internal: true
-  {{- else }}
-    internal: false
-    {{- if empty $etcdEndPoints }}
-    "{{ required "A valid ETCD url in the format etcd:http://<your-etcd-endpoint> is required. Verify that the key is correct and there isnt any typo in specifying that, also ensure it is accessible from all node of your kubernetes cluster" .etcdEndPoint}}"
-    {{- else }}
+    internal: {{ .Values.kvdb.internal }}
+    {{- with .Values.etcd.endpoints }}
     endpoints:
-      {{- $endpoints := $etcdEndPoints | split ";" }}
-      {{- range $key, $val := $endpoints }}
-      - {{$val}}
-      {{- end }}
+      {{- toYaml . | nindent 6 }}
     {{- end }}
-    {{- if ne $kvdbAuthSecret "none" }}
     authSecret: {{ .Values.kvdb.authSecretName }}
-    {{- end }}
+  {{- with .Values.cloudStorage }}
+  cloudStorage:
+    {{- toYaml . | nindent 4 }}
   {{- end }}
-
-{{- if and (ne $drives "none") (not (hasPrefix "/" $drives)) }}
-  cloudStorage:
-    deviceSpecs:
-      {{- $driveNames := $drives | split ";" }}
-      {{- range $index, $name := $driveNames }}
-      - {{ $name }}
-      {{- end }}
-    {{- if and (ne $kvdbDevice "none") (not (hasPrefix "/" $kvdbDevice)) }}
-    kvdbDeviceSpec: {{ $kvdbDevice }}
-    {{- end }}
-    {{- if and (ne $journalDevice "none") (not (hasPrefix "/" $journalDevice)) }}
-    journalDeviceSpec: {{ $journalDevice }}
-    {{- end }}
-    {{- if ne (.Values.maxStorageNodesPerZone | int) 0 }}
-    maxStorageNodesPerZone: {{ .Values.maxStorageNodesPerZone }}
-    {{- end }}
-{{- else }}
-  {{- if $AKSInstall }}
-  cloudStorage:
-    deviceSpecs:
-      - type=Premium_LRS,size=150
-    {{- if and (ne $kvdbDevice "none") (not (hasPrefix "/" $kvdbDevice)) }}
-    kvdbDeviceSpec: {{ $kvdbDevice }}
-    {{- end }}
-    {{- if and (ne $journalDevice "none") (not (hasPrefix "/" $journalDevice)) }}
-    journalDeviceSpec: {{ $journalDevice }}
-    {{- end }}
-    {{- if gt (.Values.maxStorageNodesPerZone | int) 0 }}
-    maxStorageNodesPerZone: {{ .Values.maxStorageNodesPerZone }}
-    {{- end }}
-  {{- else }}
+  {{- with .Values.storage }}
   storage:
-    {{- if hasPrefix "/" $drives }}
-    devices:
-      {{- $driveNames := $drives | split ";" }}
-        {{- range $index, $name := $driveNames }}
-        - {{ $name }}
-        {{- end }}
-    {{- end }}
-    {{- if or $usefileSystemDrive $deployEnvironmentIKS }}
-    forceUseDisks: true
-    {{- end }}
-    {{- if eq $usedrivesAndPartitions true }}
-    useAllWithPartitions: true
-    {{- else }}
-    useAll: true
-    {{- end }}
-    {{- if and (ne $kvdbDevice "none") (hasPrefix "/" $kvdbDevice) }}
-    kvdbDevice: {{ $kvdbDevice }}
-    {{- end }}
-    {{- if and (ne $journalDevice "none") (or (hasPrefix "/" $journalDevice) (eq "auto" $journalDevice)) }}
-    journalDevice: {{ $journalDevice }}
-    {{- end }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
-{{- end }}
-
-  {{- if or (ne $dataInterface "none") (ne $managementInterface "none") }}
+    kvdbDeviceSpec: {{ .Values.kvdb.device }}
+    journalDeviceSpec: {{ .Values.journalDevice }}
+    maxStorageNodesPerZone: {{ .Values.maxStorageNodesPerZone }}
+    forceUseDisks: {{ .Values.forceUseDisks }}
+    useAllWithPartitions: {{ .Values.useAllWithPartitions }}
+    useAll: {{ .Values.useAll }}
+    kvdbDevice: {{ .Values.kvdb.device }}
+    journalDevice: {{ .Values.journalDevice }}
   network:
-    {{- if ne $dataInterface "none" }}
-    dataInterface: {{ $dataInterface }}
-    {{- end }}
-    {{- if ne $managementInterface "none" }}
-    mgmtInterface: {{ $managementInterface }}
-    {{- end }}
-  {{- end }}
-
-  {{- if ne $secretType "none" }}
-  secretsProvider: {{$secretType}}
-  {{- else }}
-    {{- if $deployEnvironmentIKS }}
-  secretsProvider: ibm-kp
-    {{- end }}
-  {{- end }}
-
+    dataInterface: {{ .Values.network.dataInterface }}
+    mgmtInterface: {{ .Values.network.mgmtInterface }}
+  secretsProvider: {{ .Values.secretsProvider }}
   env:
-  {{- with .Values.envs }}
+  {{- with .Values.extraEnv }}
     {{- toYaml . | nindent 2 }}
-  {{- end -}}
-  {{- if not (eq $envVars "none") }}
-    {{- $vars := $envVars | split ";" }}
-    {{- range $key, $val := $vars }}
-    {{- $envVariable := $val | split "=" }}
-  - name: {{ $envVariable._0 | trim | quote }}
-    value: {{ $envVariable._1 | trim | quote }}
-    {{- end }}
   {{- end }}
-  {{- if ne $licenseSecret "none" }}
+  {{- end }}
+  {{- if and .Values.licenseSecret.name .Values.licenseSecret.key }}
   - name: SAAS_ACCOUNT_KEY_STRING
     valueFrom:
       secretKeyRef:
-        name: "{{ $licenseSecret }}"
-        key: accountKey
+        name: {{ .Values.licenseSecret.name }}
+        key: {{ .Values.licenseSecret.key }}
   {{- end }}
   {{- if .Values.AKSInstall }}
   - name: AZURE_CLIENT_SECRET
@@ -221,32 +112,21 @@ spec:
     value: "/etc/pwx/oci_key/oci_api_key.pem"
   {{- end }}
   - name: PX_SECRETS_NAMESPACE
-    value: portworx
-
+    value: {{ .Release.Namespace }}
   stork:
-    {{- if (and (.Values.stork) (eq .Values.stork true))}}
-    enabled: true
-    {{- if .Values.storkVersion }}
-    image: {{ template "px.getStorkImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.storkVersion }}
-    {{- end }}
+    enabled: {{ .Values.stork.enabled }}
+    image: "{{ .Values.stork.image.repository }}:{{ default .Chart.AppVersion .Values.stork.image.tag }}"
     {{- with .Values.storkSpec.volumes }}
     volumes:
       {{- toYaml . | nindent 4 }}
     {{- end -}}
-    {{- if .Values.storkSpec.args }}
+    {{- with .Values.storkSpec.extraArgs }}
     args:
-    {{- $args := .Values.storkSpec.args | split ";" }}
-    {{- range $key, $val := $args }}
-    {{- $arg := $val | split "=" }}
-      {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
+      {{- toYaml . | nindent 4 }}
     {{- end }}
-    {{- end }}
-    {{- else }}
-    enabled: false
-    {{- end }}
-
-  {{- if eq $volumesPresent "true" }}
   volumes:
+  - name: tmp
+    emptyDir: {}
   {{- if .Values.OKEInstall }}
   - name: ociapikey
     mountPath: /etc/pwx/oci_key
@@ -256,67 +136,41 @@ spec:
       - key: oci_api_key.pem
         path: oci_api_key.pem
   {{- end }}
-  {{- if eq $isCoreOS true}}
+  {{- if .Values.isTargetOSCoreOS }}
   - name: src
     mountPath: /lib/modules
     hostPath:
       path: /lib/modules
       type: Directory
   {{- end }}
-  {{- if ne $etcdCertPath "none" }}
+  {{- if .Values.etcd.enableCerts }}
   - name: etcdcerts
     mountPath: /etc/pwx/etcdcerts
     secret:
-      secretName: px-etcd-certs
+      secretName: {{ .Values.etcd.secretName }}
       items:
       - key: ca.pem
         path: ca.pem
-      {{- if ne $etcdCert "none" }}
       - key: client.pem
         path: client.pem
-      {{- end -}}
-      {{- if ne $etcdKey "none" }}
       - key: client-key.pem
         path: client-key.key
-      {{- end -}}
-  {{- end}}
+  {{- end }}
   {{- with .Values.volumes }}
     {{- toYaml . | nindent 2 }}
-  {{- end}}
   {{- end }}
-
-  {{- if (or (and (.Values.monitoring) (eq .Values.monitoring true)) (and (.Values.telemetry) (eq .Values.telemetry true) )) }}
+  {{- with .Values.monitoring }}
   monitoring:
-    {{- if (and (.Values.monitoring) (eq .Values.monitoring true)) }}
-    prometheus:
-      enabled: true
-      exportMetrics: true
-      alertManager:
-        enabled: true
-    {{- end }}
-    {{- if (and (.Values.telemetry) (eq .Values.telemetry true)) }}
-    telemetry:
-      enabled: true
-    {{- end }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
-
-  {{- if or (eq .Values.csi true) (eq .Values.csi false) }}
   csi:
-    enabled: {{ .Values.csi }}
-  {{- end }}
-  {{- if (and (.Values.aut) (eq .Values.aut true))}}
+    enabled: {{ .Values.csi.enabled }}
   autopilot:
-    enabled: true
-  {{- end }}
-
+    enabled: {{ .Values.autopilot.enabled }}
   {{- with .Values.tolerations }}
   placement:
     tolerations:
       {{- toYaml . | nindent 4 }}
   {{- end }}
-
-  {{- if .Values.deleteStrategy.type }}
   deleteStrategy:
     type: {{ .Values.deleteStrategy.type }}
-  {{- end }}
-{{- end }}

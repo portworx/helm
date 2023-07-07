@@ -1,0 +1,52 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: portworx-operator
+  namespace: {{ .Release.Namespace }}
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  replicas: 1
+  selector:
+    matchLabels:
+      name: portworx-operator
+  template:
+    metadata:
+      labels:
+        name: portworx-operator
+    spec:
+      containers:
+        - name: portworx-operator
+          imagePullPolicy: {{ .Values.operator.image.pullPolicy }}
+          image: "{{ .Values.operator.image.repository }}:{{ default .Chart.AppVersion .Values.operator.image.tag }}"
+          command:
+            - /operator
+            - --verbose
+            - --driver=portworx
+            - --leader-elect=true
+          env:
+            - name: OPERATOR_NAME
+              value: portworx-operator
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: "name"
+                    operator: In
+                    values:
+                      - portworx-operator
+              topologyKey: "kubernetes.io/hostname"
+      {{- if .Values.global.image.pullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.global.image.pullSecret }}
+      {{- end }}
+      serviceAccountName: portworx-operator

@@ -1,42 +1,34 @@
-{{- if (.Values.clusterToken.create) }}
-  {{- $customRegistryURL := .Values.customRegistryURL | default "none" }}
-  {{- $registrySecret := .Values.registrySecret | default "none" }}
-
+{{- if .Values.clusterToken.create }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  namespace: {{ template "px.getDeploymentNamespace" . }}
   name: px-set-cluster-token
   labels:
-    heritage: {{.Release.Service | quote }}
-    release: {{.Release.Name | quote }}
-    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-    app.kubernetes.io/managed-by: {{.Release.Service | quote }}
-    app.kubernetes.io/instance: {{.Release.Name | quote }}
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+    app.kubernetes.io/instance: {{ .Release.Name | quote }}
   annotations:
-    "helm.sh/hook": post-install
-    "helm.sh/hook-weight": "10"
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    helm.sh/hook: post-install
+    helm.sh/hook-weight: "10"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
 spec:
   backoffLimit: 0
   template:
     spec:
-      {{- if not (eq $registrySecret "none") }}
+      {{- if .Values.global.image.pullSecret }}
       imagePullSecrets:
-        - name: {{ $registrySecret }}
+        - name: {{ .Values.global.image.pullSecret }}
       {{- end }}
       restartPolicy: Never
       serviceAccountName: {{ .Values.clusterToken.serviceAccountName }}
       containers:
         - name: post-install-job
-          {{- if eq $customRegistryURL "none" }}
-          image: "bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
-          {{- else}}
-          image: "{{ $customRegistryURL }}/bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
-          {{- end }}
+          image: "{{ .Values.kubectl.image.repository }}:{{ default .Capabilities.KubeVersion.Version .Values.kubectl.image.tag }}"
           env:
             - name: NS
-              value: {{ template "px.getDeploymentNamespace" . }}
+              value: {{ .Release.Namespace }}
             - name: KEY
               value: cluster-wide-secret-key
           command: ['/bin/bash', '-c']
@@ -46,14 +38,10 @@ spec:
               kubectl -n $NS exec -c portworx $readyPortworxPod -- /opt/pwx/bin/pxctl secrets set-cluster-key --secret $KEY
       initContainers:
         - name: post-install-job-init
-          {{- if eq $customRegistryURL "none" }}
-          image: "bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
-          {{- else}}
-          image: "{{ $customRegistryURL }}/bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
-          {{- end }}
+          image: "{{ .Values.kubectl.image.repository }}:{{ default .Capabilities.KubeVersion.Version .Values.kubectl.image.tag }}"
           env:
             - name: NS
-              value: {{ template "px.getDeploymentNamespace" . }}
+              value: {{ .Release.Namespace }}
           command: ['/bin/bash', '-c']
           args:
             - |
@@ -64,71 +52,4 @@ spec:
                 sleep 5
                 output=$(kubectl -n $NS get pods -l name=portworx -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}')
               done
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: {{ .Values.clusterToken.serviceAccountName }}
-  namespace: {{ template "px.getDeploymentNamespace" . }}
-  annotations:
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
-    "helm.sh/hook": "post-install"
-  labels:
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{.Release.Service | quote }}
-    app.kubernetes.io/instance: {{.Release.Name | quote }}
-    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
----
-kind: Role
-apiVersion: {{ template "rbac.apiVersion" . }}
-metadata:
-  annotations:
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
-    "helm.sh/hook": post-install
-  name: {{ .Values.clusterToken.serviceAccountName }}-role
-  namespace: {{ template "px.getDeploymentNamespace" . }}
-rules:
-  - apiGroups: [""]
-    resources: ["pods"]
-    verbs: ["get", "watch", "list" ]
-  - apiGroups: [""]
-    resources: ["pods/exec"]
-    verbs: ["create"]
----
-kind: RoleBinding
-apiVersion: {{ template "rbac.apiVersion" . }}
-metadata:
-  annotations:
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
-    "helm.sh/hook": post-install
-  name: {{ .Values.clusterToken.serviceAccountName }}-binding
-  namespace: {{ template "px.getDeploymentNamespace" . }}
-subjects:
-  - kind: ServiceAccount
-    name: {{ .Values.clusterToken.serviceAccountName }}
-    namespace: {{ template "px.getDeploymentNamespace" . }}
-roleRef:
-  kind: Role
-  name: {{ .Values.clusterToken.serviceAccountName }}-role
-  apiGroup: rbac.authorization.k8s.io
----
-apiVersion: v1
-kind: Secret
-metadata:
-  annotations:
-    "helm.sh/hook-delete-policy": before-hook-creation
-    "helm.sh/hook": post-install
-  name: {{ .Values.clusterToken.secretName }}
-  namespace: portworx
-  labels:
-    name: {{ .Values.clusterToken.secretName }}
-    heritage: {{ .Release.Service }}
-    release: {{ .Release.Name }}
-    app.kubernetes.io/managed-by: {{.Release.Service | quote }}
-    app.kubernetes.io/instance: {{.Release.Name | quote }}
-    chart: "{{.Chart.Name}}-{{.Chart.Version}}"
-type: "Opaque"
-data:
-  cluster-wide-secret-key: {{ template "portworx-cluster-key"  }}
 {{- end }}

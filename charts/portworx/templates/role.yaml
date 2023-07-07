@@ -1,0 +1,15 @@
+---
+kind: Role
+apiVersion: {{ template "rbac.apiVersion" . }}
+metadata:
+  annotations:
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded,hook-failed
+    helm.sh/hook: post-install
+  name: {{ .Values.clusterToken.serviceAccountName }}-role
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "watch", "list" ]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
