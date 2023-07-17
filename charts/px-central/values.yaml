@@ -188,7 +188,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 2.5.0
+    tag: BAAS-1754
   mongodbImage:
     registry: docker.io
     repo: portworx
