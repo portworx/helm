@@ -13,7 +13,7 @@ modules:
     mysql: "docker.io/portworx/mysql:5.7.41"
   pxBackup:
     pxBackup: "docker.io/portworx/px-backup-base:2.5.2-dev"
-    mongodb: "docker.io/portworx/mongodb:5.0.14-debian-11-r27"
+    mongodb: "docker.io/portworx/mongodb:5.0.19-debian-11-r9"
     kopiaExecutor: "docker.io/portworx/kopiaexecutor:1.2.7"
     nfsExecutor: "docker.io/portworx/nfsexecutor:1.2.7"
     filesystemCtl: "docker.io/portworx/filesystemctl:1.2.7"
