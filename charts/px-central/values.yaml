@@ -141,17 +141,17 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend-private
-    tag: 2.5.2-dev
+    tag: PB-4103
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend-private
-    tag: 2.5.2-dev
+    tag: PB-4103
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend-private
-    tag: 2.5.2-dev
+    tag: PB-4104
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
@@ -186,9 +186,9 @@ images:
   ## Images required for enabling px-backup
   pxBackupImage:
     registry: docker.io
-    repo: portworx
+    repo: pallavpx
     imageName: px-backup-base
-    tag: 2.5.2-dev
+    tag: 4115-dev
   mongodbImage:
     registry: docker.io
     repo: portworx
