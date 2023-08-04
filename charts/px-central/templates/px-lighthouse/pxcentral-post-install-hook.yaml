@@ -1,6 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
-{{- $name := or .Values.oidc.centralOIDC.nodeIp .Values.oidc.centralOIDC.dnsName | required "either one of oidc.centralOIDC.nodeIp or .Values.oidc.centralOIDC.dnsName needs to be set." -}}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -47,10 +46,6 @@ spec:
             value: "{{ .Values.oidc.centralOIDC.updateAdminProfile }}"
           - name: K8S_SSL_ENABLED
             value: "{{ .Values.postInstallJob.sslEnabled }}"
-          {{- if .Values.oidc.centralOIDC.nodeIp }}
-          - name: NODE_IP
-            value: "{{ .Values.oidc.centralOIDC.nodeIp }}"
-          {{- end }}
           {{- if .Values.oidc.centralOIDC.dnsName }} 
           - name: DNS_NAME
             value: "{{ .Values.oidc.centralOIDC.dnsName }}"
