@@ -32,7 +32,7 @@ oidc:
     defaultEmail: admin@portworx.com
     keyCloakBackendUserName: keycloak
     keyCloakBackendPassword: keycloak
-    dnsName: ""
+    frontendUrl: ""
     clientId: "pxcentral"
     updateAdminProfile: true
 
