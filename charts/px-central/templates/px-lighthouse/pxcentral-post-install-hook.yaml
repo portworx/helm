@@ -46,9 +46,9 @@ spec:
             value: "{{ .Values.oidc.centralOIDC.updateAdminProfile }}"
           - name: K8S_SSL_ENABLED
             value: "{{ .Values.postInstallJob.sslEnabled }}"
-          {{- if .Values.oidc.centralOIDC.dnsName }} 
-          - name: DNS_NAME
-            value: "{{ .Values.oidc.centralOIDC.dnsName }}"
+          {{- if .Values.oidc.centralOIDC.frontendUrl }} 
+          - name: FRONTEND_URL
+            value: "{{ .Values.oidc.centralOIDC.frontendUrl }}"
           {{- end }}
           - name: PXC_NAMESPACE
             valueFrom:
