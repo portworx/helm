@@ -147,6 +147,7 @@ spec:
         run: pxcentral-backend
         app.kubernetes.io/component: pxcentral-backend
     spec:
+      serviceAccountName: pxcentral-apiserver
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -168,7 +169,9 @@ spec:
           command:
             - bash
             - -c
-            - cd /var/www/html && ./install.sh
+            - cd /var/www/html
+            - python3 pre-init.py
+            - ./install.sh
           env:
             - name: DB_INIT_TIMEOUT
               value: "300"
@@ -197,6 +200,10 @@ spec:
                 secretKeyRef:
                   key: credential
                   name: px-central-admin
+            - name: PXC_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           envFrom:
             - configMapRef:
                 name: pxcentral-ui-configmap
