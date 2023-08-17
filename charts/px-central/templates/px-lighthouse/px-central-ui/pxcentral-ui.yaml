@@ -169,9 +169,7 @@ spec:
           command:
             - bash
             - -c
-            - cd /var/www/html
-            - python3 pre-init.py
-            - ./install.sh
+            - cd /var/www/html && ./install.sh
           env:
             - name: DB_INIT_TIMEOUT
               value: "300"

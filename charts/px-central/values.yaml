@@ -147,7 +147,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend-private
-    tag: 2.5.1-dev
+    tag: keycloak-init-debug-2.5.1
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
