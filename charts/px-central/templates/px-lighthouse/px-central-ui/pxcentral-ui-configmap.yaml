@@ -15,6 +15,10 @@ data:
   PX_BACKUP_ENDPOINT: "px-backup:10002"
   PX_BACKUP_ORGID: "{{ .Values.pxbackup.orgName }}"
   PX_STATUS_ENDPOINT: "http://pxcentral-apiserver:10006"
+  {{- if .Values.oidc.centralOIDC.frontendUrl }} 
+  OIDC_AUTHSERVERURL: {{ printf "%srealms/master" .Values.oidc.centralOIDC.frontendUrl }}
+  {{- else }}
   OIDC_AUTHSERVERURL: http://pxcentral-keycloak-http:80/auth/realms/master
+  {{- end }}
   OIDC_SCOPES: openid
   HIDE_KUBE_CONFIG: "False"
