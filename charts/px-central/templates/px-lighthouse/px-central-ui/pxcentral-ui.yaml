@@ -205,6 +205,12 @@ spec:
           envFrom:
             - configMapRef:
                 name: pxcentral-ui-configmap
+          {{- if .Values.oidc.centralOIDC.cert }}
+          volumeMounts:
+            - mountPath: /var/www/html/storage/cert.pem
+              name: oidc-cert-dir
+              subPath: cert.pem
+          {{- end }}
       containers:
         - name: pxcentral-backend
           image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralBackendImage.registry .Values.images.pxcentralBackendImage.repo .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
@@ -261,6 +267,12 @@ spec:
                   key: credential
                   name: px-central-admin
           resources: {}
+          {{- if .Values.oidc.centralOIDC.cert }}
+          volumeMounts:
+            - mountPath: /var/www/html/storage/cert.pem
+              name: oidc-cert-dir
+              subPath: cert.pem
+          {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}
@@ -273,6 +285,15 @@ spec:
 {{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
       restartPolicy: Always
+      {{- if .Values.oidc.centralOIDC.cert }}
+      volumes:
+        - name: oidc-cert-dir
+          secret:
+            secretName: pxc-backup-secret
+            items:
+            - key: OIDC_CERT
+              path: cert.pem
+      {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
