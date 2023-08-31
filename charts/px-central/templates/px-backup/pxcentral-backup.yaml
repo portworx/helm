@@ -206,6 +206,10 @@ spec:
         - name: SSL_CERT_DIR
           value: /tmp/certs
         {{- end }}
+        {{- if .Values.oidc.centralOIDC.cert }} 
+        - name: OIDC_CERT_FILE
+          value: /tmp/oidcCert/oidc.crt       
+        {{- end}}
         image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupImage.registry .Values.images.pxBackupImage.repo .Values.images.pxBackupImage.imageName .Values.images.pxBackupImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         name: px-backup
@@ -226,23 +230,39 @@ spec:
           initialDelaySeconds: {{ .Values.pxbackup.livenessProbeInitialDelay }}
           timeoutSeconds: 1
           periodSeconds: 60
-        {{- if .Values.caCertsSecretName }}  
+        {{- if or .Values.caCertsSecretName .Values.oidc.centralOIDC.cert }}
         volumeMounts:
+        {{- end }}
+        {{- if .Values.caCertsSecretName }}  
           - mountPath: /tmp/certs
             readOnly: true
             name: ssl-cert-dir
+        {{- end }}
+        {{- if .Values.oidc.centralOIDC.cert }}  
+          - mountPath: /tmp/oidcCert
+            name: oidc-cert-dir
         {{- end }}
         command:
         - /px-backup
         - start
         - --datastoreEndpoints=mongodb://pxbackup:Password1@pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017/?authSource=px-backup&replicaSet=rs0
         - --mongo-migration={{.Values.pxbackup.mongoMigration}}
-      {{- if .Values.caCertsSecretName }}
+      {{- if or .Values.caCertsSecretName .Values.oidc.centralOIDC.cert }}
       volumes:
+      {{- end }}
+      {{- if .Values.caCertsSecretName }}
         - name: ssl-cert-dir
           secret:
             defaultMode: 420
             secretName: "{{ .Values.caCertsSecretName }}"
+      {{- end }}
+      {{- if .Values.oidc.centralOIDC.cert }}
+        - name: oidc-cert-dir
+          secret:
+            secretName: pxc-backup-secret
+            items:
+            - key: OIDC_CERT
+              path: oidc.crt
       {{- end }}
       serviceAccountName: px-backup-account
       {{- if .Values.images.pullSecrets }}

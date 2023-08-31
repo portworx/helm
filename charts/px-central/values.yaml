@@ -35,6 +35,7 @@ oidc:
     frontendUrl: ""
     clientId: "pxcentral"
     updateAdminProfile: true
+    cert: ""
 
   externalOIDC:
     enabled: false
