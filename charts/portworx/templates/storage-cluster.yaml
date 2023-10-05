@@ -9,6 +9,7 @@
   {{- $kvdbAuthSecret := .Values.kvdb.authSecretName | default "none" }}
   {{- $openshiftInstall := .Values.openshiftInstall | default false }}
   {{- $EKSInstall := .Values.EKSInstall | default false }}
+  {{- $GKEInstall := .Values.GKEInstall | default false }}
   {{- $pksInstall := .Values.pksInstall | default false }}
   {{- $AKSInstall := .Values.AKSInstall | default false }}
   {{- $OKEInstall := .Values.OKEInstall | default false }}
@@ -42,6 +43,9 @@ metadata:
     {{- end }}
     {{- if eq $EKSInstall true }}
     portworx.io/is-eks: "true"
+    {{- end }}
+    {{- if eq $GKEInstall true }}
+    portworx.io/is-gke: "true"
     {{- end }}
     {{- if eq $AKSInstall true }}
     portworx.io/is-aks: "true"
