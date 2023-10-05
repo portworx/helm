@@ -10,6 +10,7 @@ openshiftInstall: false                 # Defaults to false for installing Portw
 isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
 pksInstall: false                       # installation on PKS (Pivotal Container Service)
 EKSInstall: false                     # installation on EKS.
+GKEInstall: false                     # installation on GKE.
 AKSInstall: false                      # installation on AKS
 OKEInstall: false                      # installation on OKE
 etcdEndPoint:                         # The ETCD endpoint. Should be in the format etcd:http://<your-etcd-endpoint>:2379. If there are multiple etcd endpoints they need to be ";" seperated.
