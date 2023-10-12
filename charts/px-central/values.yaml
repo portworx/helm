@@ -11,6 +11,8 @@ persistentStorage:
     storage: 2Gi
   ingester:
     storage: 2Gi
+  prometheus:
+    storage: 2Gi
   mysqlVolumeSize: "100Gi"
   mongodbVolumeSize: "64Gi"
   mongoCacheSize: 4
@@ -50,6 +52,12 @@ pxbackup:
   callHome: true
   mongoMigration: complete
   livenessProbeInitialDelay: 1800
+  prometheus:
+    replicas: 2
+    retention: 90d
+  alertmanager:
+    replicas: 2
+    retention: 24h
   nfs:
     enabled: true
 

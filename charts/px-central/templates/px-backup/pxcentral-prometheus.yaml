@@ -1,0 +1,280 @@
+{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus-operator
+  namespace: {{ .Release.Namespace }}
+  labels:                    
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: prometheus-operator
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus-operator
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus-operator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+  - apiGroups:
+      - extensions
+    resources:
+      - thirdpartyresources
+    verbs: ["*"]
+  - apiGroups:
+      - apiextensions.k8s.io
+    resources:
+        - customresourcedefinitions
+    verbs: ["*"]
+  - apiGroups:
+      - monitoring.coreos.com
+    resources:
+        - alertmanagers
+        - prometheuses
+        - prometheuses/finalizers
+        - prometheuses/status
+        - servicemonitors
+        - prometheusrules
+        - podmonitors
+        - thanosrulers
+        - alertmanagerconfigs
+        - probes
+    verbs: ["*"]
+  - apiGroups:
+      - apps
+    resources:
+      - statefulsets
+    verbs: ["*"]
+  - apiGroups: [""]
+    resources:
+      - configmaps
+      - secrets
+    verbs: ["*"]
+  - apiGroups: [""]
+    resources:
+      - pods
+    verbs: ["list", "delete"]
+  - apiGroups: [""]
+    resources:
+      - services
+      - endpoints
+    verbs: ["get", "create", "update"]
+  - apiGroups: [""]
+    resources:
+      - nodes
+    verbs: ["list", "watch"]
+  - apiGroups: [""]
+    resources:
+      - namespaces
+    verbs: ["list", "watch", "get"]
+  
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus-operator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    k8s-app: prometheus-operator
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+  name: prometheus-operator
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      k8s-app: prometheus-operator
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        k8s-app: prometheus-operator
+    spec:
+      containers:
+      - args:
+          - -namespaces={{ .Release.Namespace }}
+          - --kubelet-service={{ .Release.Namespace }}/kubelet
+          - --prometheus-config-reloader={{ printf "%s/%s/%s:%s" .Values.images.prometheusConfigReloadrImage.registry .Values.images.prometheusConfigReloadrImage.repo .Values.images.prometheusConfigReloadrImage.imageName .Values.images.prometheusConfigReloadrImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" .Values.images.prometheusOperatorImage.registry .Values.images.prometheusOperatorImage.repo .Values.images.prometheusOperatorImage.imageName .Values.images.prometheusOperatorImage.tag }}
+        imagePullPolicy: {{ .Values.imagePullPolicy }}
+        name: prometheus-operator
+        ports:
+          - containerPort: 8080
+            name: http
+        {{- if $isOpenshiftCluster }}
+        {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      serviceAccountName: prometheus-operator
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+          {{- range $sec := .Values.images.pullSecrets }}
+          - name: {{ $sec | quote }}
+          {{- end }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: px-backup-prometheus
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - nodes
+  - services
+  - endpoints
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+- nonResourceURLs:
+  - /metrics
+  - /federate
+  verbs:
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: px-backup-prometheus
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: px-backup-prometheus
+subjects:
+- kind: ServiceAccount
+  name: px-backup-prometheus
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: px-backup-prometheus
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: web
+      port: 9090
+      protocol: TCP
+      targetPort: 9090
+  selector:
+    prometheus: px-backup-prometheus
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-backup-prometheus
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: px-backup-prometheus-sm
+  labels:
+    name: px-backup-prometheus-sm
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  endpoints:
+  - metricRelabelings:
+    - action: labeldrop
+      regex: (instance|pod)
+    port: rest-api
+    targetPort: 10001
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app: px-backup
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+   name: px-backup-prometheus
+   namespace: {{ .Release.Namespace }}
+spec:
+  {{- if .Values.persistentStorage.storageClassName }}
+  storage:
+    volumeClaimTemplate:
+      spec:
+        storageClassName: {{ .Values.persistentStorage.storageClassName }}
+        resources:
+          requests:
+            storage: {{ .Values.persistentStorage.prometheus.storage }}
+  {{- end }}
+  securityContext:
+    fsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
+  alerting:
+    alertmanagers:
+    - name: alertmanager-operated
+      namespace: {{ .Release.Namespace }}
+      port: web
+  logLevel: debug
+  replicas: {{ .Values.pxbackup.prometheus.replicas }}
+  ruleSelector:
+    matchLabels:
+      app: px-backup-alerts
+  serviceAccountName: px-backup-prometheus
+  {{- if .Values.images.pullSecrets }}
+  imagePullSecrets:
+    {{- range $sec := .Values.images.pullSecrets }}
+    - name: {{ $sec | quote }}
+    {{- end }}
+  {{- end }}
+  serviceMonitorSelector:
+    matchLabels:
+      name: px-backup-prometheus-sm
+  {{- with .Values.tolerations }}
+  tolerations:
+  {{- toYaml . | nindent 4 }}
+  {{- end }} 
