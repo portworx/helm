@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  name: px-backup-alertmanager
+  namespace: {{ .Release.Namespace }}
+spec:
+  alertmanagerConfigSelector:
+    matchLabels:
+      app: px-backup-alert-configs
+  replicas: {{ .Values.pxbackup.alertmanager.replicas }}
+  retention: {{ .Values.pxbackup.alertmanager.retention}}
+  {{- if .Values.persistentStorage.storageClassName }}
+  storage:
+    volumeClaimTemplate:
+      spec:
+        storageClassName: {{ .Values.persistentStorage.storageClassName }}
+        resources:
+          requests:
+            storage: {{ .Values.persistentStorage.prometheus.storage }}
+  {{- end }}  
