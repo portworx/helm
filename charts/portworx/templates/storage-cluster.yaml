@@ -249,7 +249,7 @@ spec:
     enabled: false
     {{- end }}
 
-  {{- if eq $volumesPresent "true" }}
+  {{- if or ( eq $volumesPresent "true") ( eq .Values.OKEInstall true) }}
   volumes:
   {{- if .Values.OKEInstall }}
   - name: ociapikey
