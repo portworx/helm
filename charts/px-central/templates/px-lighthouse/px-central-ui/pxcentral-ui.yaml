@@ -52,7 +52,7 @@ data:
       server_tokens off;
       location / {
         root   /usr/share/nginx/html;
-        add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate";
+        add_header Cache-Control "no-cache";
         index  index.html index.htm;
       }
 
