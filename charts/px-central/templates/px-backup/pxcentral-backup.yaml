@@ -89,6 +89,9 @@ rules:
   - apiGroups: ["apps"]
     resources: ["deployments"]
     verbs: ["get", "list"]
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["alertmanagerconfigs"]
+    verbs: ["get","create","delete","update","list"]
 {{- if eq $nfsEnabled true }}
   - apiGroups: [""]
     resources: ["persistentvolumeclaims"]
