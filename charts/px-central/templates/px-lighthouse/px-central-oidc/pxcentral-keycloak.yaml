@@ -563,6 +563,8 @@ spec:
           {{- if .Values.caCertsSecretName }}
           - name: X509_CA_BUNDLE
             value: /tmp/certs/*
+          - name: HELM_CHECKSUM
+            value: {{ randAlphaNum 8 | quote }}
           {{- end }}
           volumeMounts:
             - name: sh
