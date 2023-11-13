@@ -94,6 +94,9 @@ rules:
     resources: ["pods"]
     verbs: ["get", "list"]
   - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
     resources: ["events"]
     verbs: ["get", "list"]
 {{- end }}
