@@ -11,9 +11,6 @@ persistentStorage:
     storage: 2Gi
   ingester:
     storage: 2Gi
-  prometheus:
-    storage: 5Gi
-    retentionSize: 4600MB
   mysqlVolumeSize: "100Gi"
   mongodbVolumeSize: "64Gi"
   mongoCacheSize: 4
@@ -53,20 +50,8 @@ pxbackup:
   callHome: true
   mongoMigration: complete
   livenessProbeInitialDelay: 1800
-  prometheus:
-    replicas: 2
-    retention: 90d
-  alertmanager:
-    replicas: 2
-    retention: 2208h
   nfs:
     enabled: true
-  deployDedicatedMonitoringSystem: true
-  prometheusEndpoint: ""
-  alertmanagerEndpoint: ""
-  prometheusSecretName: ""
-  alertmanagerSecretName: ""
-  usePxBackupEmailAlertTemplate: true
 
 pxlicenseserver:
   enabled: false
@@ -150,28 +135,28 @@ images:
   pxcentralApiServerImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-api
-    tag: 2.7.1
+    imageName: pxcentral-onprem-api-base
+    tag: 2.7.0-dev
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-frontend
-    tag: 2.7.1
+    imageName: pxcentral-onprem-ui-frontend-private
+    tag: 2.7.0-dev
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-backend
-    tag: 2.7.1
+    imageName: pxcentral-onprem-ui-backend-private
+    tag: 2.7.0-dev
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-lhbackend
-    tag: 2.7.1
+    imageName: pxcentral-onprem-ui-lhbackend-private
+    tag: 2.7.0-dev
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-post-setup
-    tag: 2.7.1
+    imageName: pxcentral-onprem-post-setup-base
+    tag: 2.7.0-dev
   keycloakBackendImage:
     registry: docker.io
     repo: portworx
@@ -186,29 +171,29 @@ images:
     registry: docker.io
     repo: portworx
     imageName: keycloak-login-theme
-    tag: 2.7.0
+    tag: 2.2.0
   keycloakInitContainerImage:
     registry: docker.io
     repo: portworx
     imageName: busybox
-    tag: 1.35.0
+    tag: 1.31
   mysqlImage:
     registry: docker.io
     repo: portworx
     imageName: mysql
-    tag: 5.7.44
+    tag: 5.7.41
 
   ## Images required for enabling px-backup
   pxBackupImage:
     registry: docker.io
     repo: portworx
-    imageName: px-backup
-    tag: 2.7.1
+    imageName: px-backup-base
+    tag: 2.7.0-dev
   mongodbImage:
     registry: docker.io
     repo: portworx
     imageName: mongodb
-    tag: 5.0.24-debian-11-r0
+    tag: 5.0.20-debian-11-r13
 
   ## Images required for enabling px-license-server
   licenseServerImage:
@@ -253,26 +238,6 @@ images:
     repo: portworx
     imageName: prometheus
     tag: v2.35.0
-  pxBackupPrometheusImage:
-    registry: docker.io
-    repo: portworx
-    imageName: prometheus
-    tag: v2.48.0
-  pxBackupAlertmanagerImage:
-    registry: docker.io
-    repo: portworx
-    imageName: alertmanager
-    tag: v0.26.0
-  pxBackupPrometheusOperatorImage:
-    registry: docker.io
-    repo: portworx
-    imageName: prometheus-operator
-    tag: v0.70.0
-  pxBackupPrometheusConfigReloaderImage:
-    registry: docker.io
-    repo: portworx
-    imageName: prometheus-config-reloader
-    tag: v0.70.0
   prometheusConfigReloadrImage:
     registry: docker.io
     repo: portworx
