@@ -57,7 +57,7 @@ pxbackup:
     retention: 90d
   alertmanager:
     replicas: 2
-    retention: 24h
+    retention: 720h
   nfs:
     enabled: true
 
@@ -246,6 +246,26 @@ images:
     repo: portworx
     imageName: prometheus
     tag: v2.35.0
+  pxBackupPrometheusImage:
+    registry: docker.io
+    repo: portworx
+    imageName: prometheus
+    tag: v2.48.0
+  pxBackupAlertmanagerImage:
+    registry: docker.io
+    repo: portworx
+    imageName: alertmanager
+    tag: v0.26.0
+  pxBackupPometheusOperatorImage:
+    registry: docker.io
+    repo: portworx
+    imageName: prometheus-operator
+    tag: v0.70.0
+  pxBackupPrometheusConfigReloaderImage:
+    registry: docker.io
+    repo: portworx
+    imageName: prometheus-config-reloader
+    tag: v0.70.0
   prometheusConfigReloadrImage:
     registry: docker.io
     repo: portworx
