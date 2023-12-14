@@ -4,7 +4,7 @@ kind: ClusterRoleBinding
 metadata:
   name: prometheus-operator
   namespace: {{ .Release.Namespace }}
-  labels:                    
+  labels:
     app.kubernetes.io/component: px-backup
 {{- include "px-central.labels" . | nindent 4 }}
 subjects:
@@ -39,6 +39,7 @@ rules:
       - monitoring.coreos.com
     resources:
         - alertmanagers
+        - alertmanagers/status
         - prometheuses
         - prometheuses/finalizers
         - prometheuses/status
@@ -76,7 +77,7 @@ rules:
     resources:
       - namespaces
     verbs: ["list", "watch", "get"]
-  
+
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -110,9 +111,8 @@ spec:
       - args:
           - -namespaces={{ .Release.Namespace }}
           - --kubelet-service={{ .Release.Namespace }}/kubelet
-          - --prometheus-config-reloader={{ printf "%s/%s/%s:%s" .Values.images.prometheusConfigReloadrImage.registry .Values.images.prometheusConfigReloadrImage.repo .Values.images.prometheusConfigReloadrImage.imageName .Values.images.prometheusConfigReloadrImage.tag }}
-        image: {{ printf "%s/%s/%s:%s" .Values.images.prometheusOperatorImage.registry .Values.images.prometheusOperatorImage.repo .Values.images.prometheusOperatorImage.imageName .Values.images.prometheusOperatorImage.tag }}
-        imagePullPolicy: {{ .Values.imagePullPolicy }}
+          - --prometheus-config-reloader={{ printf "%s/%s/%s:%s" .Values.images.pxBackupPrometheusConfigReloaderImage.registry .Values.images.pxBackupPrometheusConfigReloaderImage.repo .Values.images.pxBackupPrometheusConfigReloaderImage.imageName .Values.images.pxBackupPrometheusConfigReloaderImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupPometheusOperatorImage.registry .Values.images.pxBackupPometheusOperatorImage.repo .Values.images.pxBackupPometheusOperatorImage.imageName .Values.images.pxBackupPometheusOperatorImage.tag }}
         name: prometheus-operator
         ports:
           - containerPort: 8080
@@ -132,7 +132,7 @@ spec:
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
-      {{- end }} 
+      {{- end }}
 
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -235,6 +235,22 @@ spec:
       app: px-backup
 
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    app.kubernetes.io/component: pxc-backup-metrics
+{{- include "px-central.labels" . | nindent 4 }}
+  name: pxc-backup-metrics
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+stringData:
+  metrics-secret: "YWRtaW46ZTFacEtheTczTnVW"
+  web-config-custom.yaml: |
+    basic_auth_users:
+      admin: $2a$12$EUVIFCn0M6cGdR612WlqSOFkj48VkxxlK.ElcgTZUjroOauS6MH3C
+
+---
 apiVersion: monitoring.coreos.com/v1
 kind: Prometheus
 metadata:
@@ -250,6 +266,46 @@ spec:
           requests:
             storage: {{ .Values.persistentStorage.prometheus.storage }}
   {{- end }}
+  containers:
+  - args:
+    - --web.console.templates=/etc/prometheus/consoles
+    - --web.console.libraries=/etc/prometheus/console_libraries
+    - --storage.tsdb.retention.time={{ .Values.pxbackup.prometheus.retention }}
+    - --config.file=/etc/prometheus/config_out/prometheus.env.yaml
+    - --storage.tsdb.path=/prometheus
+    - --web.enable-lifecycle
+    - --web.route-prefix=/
+    - --log.level=debug
+    - --web.config.file=/etc/prometheus/web_config/web-config-custom.yaml
+    env:
+    - name: AUTH_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: pxc-backup-metrics
+          key: metrics-secret
+    image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupPrometheusImage.registry .Values.images.pxBackupPrometheusImage.repo .Values.images.pxBackupPrometheusImage.imageName .Values.images.pxBackupPrometheusImage.tag }}
+    livenessProbe:
+      exec:
+        command:
+        - sh
+        - -c
+        - wget http://localhost:9090/-/healthy --header="Authorization:Basic $AUTH_SECRET"
+          -qO-
+    name: prometheus
+    readinessProbe:
+      exec:
+        command:
+        - sh
+        - -c
+        - wget http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
+          -qO-
+    startupProbe:
+      exec:
+        command:
+        - sh
+        - -c
+        - wget http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
+          -qO-
   securityContext:
     fsGroup: 2000
     runAsNonRoot: true
@@ -260,6 +316,17 @@ spec:
       namespace: {{ .Release.Namespace }}
       port: web
   logLevel: debug
+  listenLocal: true
+  volumeMounts:
+    - mountPath: /etc/prometheus/web_config/web-config-custom.yaml
+      name: web-config-custom
+      readOnly: true
+      subPath: web-config-custom.yaml
+  volumes:
+    - name: web-config-custom
+      secret:
+        defaultMode: 420
+        secretName: pxc-backup-metrics
   replicas: {{ .Values.pxbackup.prometheus.replicas }}
   ruleSelector:
     matchLabels:
@@ -277,4 +344,4 @@ spec:
   {{- with .Values.tolerations }}
   tolerations:
   {{- toYaml . | nindent 4 }}
-  {{- end }} 
+  {{- end }}
