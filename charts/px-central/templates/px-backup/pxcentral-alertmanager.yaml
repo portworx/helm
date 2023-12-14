@@ -9,6 +9,43 @@ spec:
       app: px-backup-alert-configs
   replicas: {{ .Values.pxbackup.alertmanager.replicas }}
   retention: {{ .Values.pxbackup.alertmanager.retention}}
+  containers:
+    - args:
+        - '--config.file=/etc/alertmanager/config_out/alertmanager.env.yaml'
+        - '--storage.path=/alertmanager'
+        - '--data.retention={{ .Values.pxbackup.alertmanager.retention }}'
+        - '--cluster.listen-address=[$(POD_IP)]:9094'
+        - '--web.listen-address=127.0.0.1:9093'
+        - '--web.route-prefix=/'
+        - '--cluster.label={{ .Release.Namespace }}/px-backup-alertmanager'
+        - '--cluster.peer=alertmanager-px-backup-alertmanager-0.alertmanager-operated:9094'
+        - '--cluster.peer=alertmanager-px-backup-alertmanager-1.alertmanager-operated:9094'
+        - '--cluster.reconnect-timeout=5m'
+        - '--web.config.file=/etc/alertmanager/web_config/web-config-custom.yaml'
+      env:
+        - name: AUTH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: pxc-backup-metrics
+              key: metrics-secret
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+      image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupAlertmanagerImage.registry .Values.images.pxBackupAlertmanagerImage.repo .Values.images.pxBackupAlertmanagerImage.imageName .Values.images.pxBackupAlertmanagerImage.tag }}
+      name: alertmanager
+  listenLocal: true
+  volumeMounts:
+    - mountPath: /etc/alertmanager/web_config/web-config-custom.yaml
+      name: web-config-custom
+      readOnly: true
+      subPath: web-config-custom.yaml
+  volumes:
+    - name: web-config-custom
+      secret:
+        defaultMode: 420
+        secretName: pxc-backup-metrics
   {{- if .Values.persistentStorage.storageClassName }}
   storage:
     volumeClaimTemplate:
@@ -17,4 +54,4 @@ spec:
         resources:
           requests:
             storage: {{ .Values.persistentStorage.prometheus.storage }}
-  {{- end }}  
+  {{- end }}
