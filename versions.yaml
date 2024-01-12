@@ -14,9 +14,9 @@ modules:
   pxBackup:
     pxBackup: "docker.io/portworx/px-backup-base:2.7.0-dev"
     mongodb: "docker.io/portworx/mongodb:5.0.20-debian-11-r13"
-    kopiaExecutor: "docker.io/portworx/kopiaexecutor:1.2.9"
-    nfsExecutor: "docker.io/portworx/nfsexecutor:1.2.9"
-    filesystemCtl: "docker.io/portworx/filesystemctl:1.2.9"
+    kopiaExecutor: "docker.io/portworx/kopiaexecutor:1.2.12"
+    nfsExecutor: "docker.io/portworx/nfsexecutor:1.2.12"
+    filesystemCtl: "docker.io/portworx/filesystemctl:1.2.12"
   pxMonitor:
     cortex: "docker.io/portworx/cortex:v1.13.1"
     cassandra: "docker.io/portworx/cassandra:4.0.7-debian-11-r34"
