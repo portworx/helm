@@ -15,7 +15,7 @@ spec:
         - '--storage.path=/alertmanager'
         - '--data.retention={{ .Values.pxbackup.alertmanager.retention }}'
         - '--cluster.listen-address=[$(POD_IP)]:9094'
-        - '--web.listen-address=127.0.0.1:9093'
+        - '--web.listen-address=:9093'
         - '--web.route-prefix=/'
         - '--cluster.label={{ .Release.Namespace }}/px-backup-alertmanager'
         - '--cluster.peer=alertmanager-px-backup-alertmanager-0.alertmanager-operated:9094'
@@ -27,7 +27,7 @@ spec:
           valueFrom:
             secretKeyRef:
               name: pxc-backup-metrics
-              key: metrics-secret
+              key: metrics-token
         - name: POD_IP
           valueFrom:
             fieldRef:
@@ -35,6 +35,36 @@ spec:
               fieldPath: status.podIP
       image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupAlertmanagerImage.registry .Values.images.pxBackupAlertmanagerImage.repo .Values.images.pxBackupAlertmanagerImage.imageName .Values.images.pxBackupAlertmanagerImage.tag }}
       name: alertmanager
+      ports:
+        - containerPort: 9093
+          name: web
+          protocol: TCP
+    - args:
+      - --listen-address=:8080
+      - --reload-url=http://$(USERNAME):$(PASSWORD)@localhost:9093/-/reload
+      - --config-file=/etc/alertmanager/config/alertmanager.yaml.gz
+      - --config-envsubst-file=/etc/alertmanager/config_out/alertmanager.env.yaml
+      - --watched-dir=/etc/alertmanager/config
+      env:
+      - name: USERNAME
+        valueFrom:
+          secretKeyRef:
+            key: metrics-username
+            name: pxc-backup-metrics
+      - name: PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: metrics-password
+            name: pxc-backup-metrics
+      name: config-reloader
+      ports:
+      - containerPort: 8080
+        name: reloader-web
+        protocol: TCP
+  securityContext:
+    fsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
   listenLocal: true
   volumeMounts:
     - mountPath: /etc/alertmanager/web_config/web-config-custom.yaml
