@@ -245,7 +245,9 @@ metadata:
   namespace: {{ .Release.Namespace }}
 type: Opaque
 stringData:
-  metrics-secret: "YWRtaW46ZTFacEtheTczTnVW"
+  metrics-token: "YWRtaW46ZTFacEtheTczTnVW"
+  metrics-username: admin
+  metrics-password: e1ZpKay73NuV
   web-config-custom.yaml: |
     basic_auth_users:
       admin: $2a$12$EUVIFCn0M6cGdR612WlqSOFkj48VkxxlK.ElcgTZUjroOauS6MH3C
@@ -282,7 +284,7 @@ spec:
       valueFrom:
         secretKeyRef:
           name: pxc-backup-metrics
-          key: metrics-secret
+          key: metrics-token
     image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupPrometheusImage.registry .Values.images.pxBackupPrometheusImage.repo .Values.images.pxBackupPrometheusImage.imageName .Values.images.pxBackupPrometheusImage.tag }}
     livenessProbe:
       exec:
