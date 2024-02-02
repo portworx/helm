@@ -251,6 +251,26 @@ stringData:
   web-config-custom.yaml: |
     basic_auth_users:
       admin: $2a$12$EUVIFCn0M6cGdR612WlqSOFkj48VkxxlK.ElcgTZUjroOauS6MH3C
+  am-configs.yaml: |
+    - path_prefix: /
+      scheme: http
+      kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+          - {{ .Release.Namespace }}
+      basic_auth:
+        username: admin
+        password: e1ZpKay73NuV
+      relabel_configs:
+      - action: keep
+        source_labels:
+        - __meta_kubernetes_service_name
+        regex: alertmanager-operated
+      - action: keep
+        source_labels:
+        - __meta_kubernetes_endpoint_port_name
+        regex: web
 
 ---
 apiVersion: monitoring.coreos.com/v1
@@ -259,6 +279,9 @@ metadata:
    name: px-backup-prometheus
    namespace: {{ .Release.Namespace }}
 spec:
+  additionalAlertManagerConfigs:
+    key: am-configs.yaml
+    name: pxc-backup-metrics
   {{- if .Values.persistentStorage.storageClassName }}
   storage:
     volumeClaimTemplate:
@@ -308,15 +331,37 @@ spec:
         - -c
         - wget http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
           -qO-
+    ports:
+    - containerPort: 9090
+      name: web
+      protocol: TCP
+  - args:
+    - --listen-address=:8080
+    - --reload-url=http://$(USERNAME):$(PASSWORD)@localhost:9090/-/reload
+    - --config-file=/etc/prometheus/config/prometheus.yaml.gz
+    - --config-envsubst-file=/etc/prometheus/config_out/prometheus.env.yaml
+    - --watched-dir=/etc/prometheus/rules/prometheus-px-backup-prometheus-rulefiles-0
+    - --log-level=debug
+    name: config-reloader
+    env:
+    - name: USERNAME
+      valueFrom:
+        secretKeyRef:
+          key: metrics-username
+          name: pxc-backup-metrics
+    - name: PASSWORD
+      valueFrom:
+        secretKeyRef:
+          key: metrics-password
+          name: pxc-backup-metrics
+    ports:
+    - containerPort: 8080
+      name: reloader-web
+      protocol: TCP
   securityContext:
     fsGroup: 2000
     runAsNonRoot: true
     runAsUser: 1000
-  alerting:
-    alertmanagers:
-    - name: alertmanager-operated
-      namespace: {{ .Release.Namespace }}
-      port: web
   logLevel: debug
   listenLocal: true
   volumeMounts:
