@@ -1,3 +1,4 @@
+{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 apiVersion: monitoring.coreos.com/v1
 kind: Alertmanager
 metadata:
@@ -61,10 +62,13 @@ spec:
       - containerPort: 8080
         name: reloader-web
         protocol: TCP
+  {{- if $isOpenshiftCluster }}
+  {{- else }}
   securityContext:
     fsGroup: 2000
     runAsNonRoot: true
     runAsUser: 1000
+  {{- end }}
   listenLocal: true
   volumeMounts:
     - mountPath: /etc/alertmanager/web_config/web-config-custom.yaml
