@@ -30,6 +30,9 @@ rules:
   - apiGroups: [""]
     resources: ["namespaces"]
     verbs: ["get", "list"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotclasses"]
+    verbs: ["get"]
 {{- if eq $nfsEnabled true }}
   - apiGroups: [""]
     resources: ["persistentvolumes"]
