@@ -72,7 +72,7 @@ data:
       location /lhBackend/ {
         proxy_pass http://lhBackend/;
       }
-      location /auth/ {
+      location /auth {
         proxy_pass http://keycloak;
         proxy_cache_bypass  $http_upgrade;
         proxy_set_header Upgrade           $http_upgrade;
