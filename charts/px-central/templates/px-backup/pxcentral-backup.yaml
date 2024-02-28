@@ -91,7 +91,7 @@ rules:
     verbs: ["get", "list"]
   - apiGroups: ["monitoring.coreos.com"]
     resources: ["alertmanagerconfigs"]
-    verbs: ["get","create","delete","update","list"]
+    verbs: ["get","create","delete","update","list","deletecollection"]
 {{- if eq $nfsEnabled true }}
   - apiGroups: [""]
     resources: ["persistentvolumeclaims"]
