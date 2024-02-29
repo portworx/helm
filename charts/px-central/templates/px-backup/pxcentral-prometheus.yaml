@@ -1,4 +1,7 @@
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem | default true }}
+{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
+{{- if eq $deployDedicatedMonitoringSystem true }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -212,66 +215,6 @@ metadata:
     app.kubernetes.io/component: px-backup
 {{- include "px-central.labels" . | nindent 4 }}
 
----
-apiVersion: monitoring.coreos.com/v1
-kind: ServiceMonitor
-metadata:
-  namespace: {{ .Release.Namespace }}
-  name: px-backup-prometheus-sm
-  labels:
-    name: px-backup-prometheus-sm
-    app.kubernetes.io/component: px-backup
-{{- include "px-central.labels" . | nindent 4 }}
-spec:
-  endpoints:
-  - metricRelabelings:
-    - action: labeldrop
-      regex: (instance|pod)
-    port: rest-api
-    targetPort: 10001
-  namespaceSelector:
-    any: true
-  selector:
-    matchLabels:
-      app: px-backup
-
----
-apiVersion: v1
-kind: Secret
-metadata:
-  labels:
-    app.kubernetes.io/component: pxc-backup-metrics
-{{- include "px-central.labels" . | nindent 4 }}
-  name: pxc-backup-metrics
-  namespace: {{ .Release.Namespace }}
-type: Opaque
-stringData:
-  metrics-token: "YWRtaW46ZTFacEtheTczTnVW"
-  metrics-username: admin
-  metrics-password: e1ZpKay73NuV
-  web-config-custom.yaml: |
-    basic_auth_users:
-      admin: $2a$12$EUVIFCn0M6cGdR612WlqSOFkj48VkxxlK.ElcgTZUjroOauS6MH3C
-  am-configs.yaml: |
-    - path_prefix: /
-      scheme: http
-      kubernetes_sd_configs:
-      - role: endpoints
-        namespaces:
-          names:
-          - {{ .Release.Namespace }}
-      basic_auth:
-        username: admin
-        password: e1ZpKay73NuV
-      relabel_configs:
-      - action: keep
-        source_labels:
-        - __meta_kubernetes_service_name
-        regex: alertmanager-operated
-      - action: keep
-        source_labels:
-        - __meta_kubernetes_endpoint_port_name
-        regex: web
 
 ---
 apiVersion: monitoring.coreos.com/v1
@@ -396,3 +339,69 @@ spec:
   tolerations:
   {{- toYaml . | nindent 4 }}
   {{- end }}
+{{- end}}
+
+{{- if (or (eq $deployDedicatedMonitoringSystem true) (eq $pxMonitorEnabled true))}}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    app.kubernetes.io/component: pxc-backup-metrics
+{{- include "px-central.labels" . | nindent 4 }}
+  name: pxc-backup-metrics
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+stringData:
+  metrics-token: "YWRtaW46ZTFacEtheTczTnVW"
+  metrics-username: admin
+  metrics-password: e1ZpKay73NuV
+  web-config-custom.yaml: |
+    basic_auth_users:
+      admin: $2a$12$EUVIFCn0M6cGdR612WlqSOFkj48VkxxlK.ElcgTZUjroOauS6MH3C
+  {{- if eq $deployDedicatedMonitoringSystem true }}
+  am-configs.yaml: |
+    - path_prefix: /
+      scheme: http
+      kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+          - {{ .Release.Namespace }}
+      basic_auth:
+        username: admin
+        password: e1ZpKay73NuV
+      relabel_configs:
+      - action: keep
+        source_labels:
+        - __meta_kubernetes_service_name
+        regex: alertmanager-operated
+      - action: keep
+        source_labels:
+        - __meta_kubernetes_endpoint_port_name
+        regex: web
+  {{- end }}
+{{- end}}
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: px-backup-prometheus-sm
+  labels:
+    name: px-backup-prometheus-sm
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  endpoints:
+  - metricRelabelings:
+    - action: labeldrop
+      regex: (instance|pod)
+    port: rest-api
+    targetPort: 10001
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app: px-backup
