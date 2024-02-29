@@ -1,4 +1,6 @@
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem | default true }}
+{{- if eq $deployDedicatedMonitoringSystem true }}
 apiVersion: monitoring.coreos.com/v1
 kind: Alertmanager
 metadata:
@@ -89,3 +91,4 @@ spec:
           requests:
             storage: {{ .Values.persistentStorage.prometheus.storage }}
   {{- end }}
+{{- end }}
