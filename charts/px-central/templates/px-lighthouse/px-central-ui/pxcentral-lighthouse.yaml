@@ -123,6 +123,18 @@ spec:
           - name: SSL_CERT_DIR
             value: /tmp/certs
           {{- end }}
+          {{- if .Values.pxbackup.monitoringNamespace }}
+          - name: MONITORING_NAMESPACE
+            value: {{ .Values.pxbackup.monitoringNamespace}}
+          {{- end }}
+          {{- if .Values.pxbackup.alertmanagerServiceName }}
+          - name: ALERTMANAGER_SERVICE_NAME
+            value: {{ .Values.pxbackup.alertmanagerServiceName}}
+          {{- end }}
+          {{- if .Values.pxbackup.prometheusServiceName }}
+          - name: PROMETHEUS_SERVICE_NAME
+            value: {{ .Values.pxbackup.prometheusServiceName}}
+          {{- end }}             
         ports:
           - name: http
             containerPort: 8091

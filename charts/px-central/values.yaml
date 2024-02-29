@@ -60,6 +60,10 @@ pxbackup:
     retention: 720h
   nfs:
     enabled: true
+  deployDedicatedMonitoringSystem: true
+  monitoringNamespace: ""
+  prometheusServiceName: ""
+  alertmanagerServiceName: ""
 
 pxlicenseserver:
   enabled: false
