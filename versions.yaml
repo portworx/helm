@@ -9,7 +9,7 @@ modules:
     postgresql: "docker.io/portworx/postgresql:11.19.0-debian-11-r1"
     keycloak: "docker.io/portworx/keycloak:21.1.1"
     keycloakLoginTheme: "docker.io/portworx/keycloak-login-theme:2.2.0"
-    busybox: "docker.io/portworx/busybox:1.31"
+    busybox: "docker.io/portworx/busybox:1.35.0"
     mysql: "docker.io/portworx/mysql:5.7.44"
   pxBackup:
     pxBackup: "docker.io/portworx/px-backup-base:2.7.0-dev"
