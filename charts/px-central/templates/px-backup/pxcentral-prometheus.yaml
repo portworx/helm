@@ -322,6 +322,8 @@ spec:
         defaultMode: 420
         secretName: pxc-backup-metrics
   replicas: {{ .Values.pxbackup.prometheus.replicas }}
+  evaluationInterval: 30s
+  scrapeInterval: 30s
   ruleSelector:
     matchLabels:
       app: px-backup-alerts
