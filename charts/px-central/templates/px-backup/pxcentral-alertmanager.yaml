@@ -73,11 +73,17 @@ spec:
   {{- end }}
   listenLocal: true
   volumeMounts:
+    - name: template
+      mountPath: /etc/alertmanager/config/email-template.tmpl
+      subPath: email-template.tmpl
     - mountPath: /etc/alertmanager/web_config/web-config-custom.yaml
       name: web-config-custom
       readOnly: true
       subPath: web-config-custom.yaml
   volumes:
+    - name: template
+      configmap:
+      name: email-template-alertmanager
     - name: web-config-custom
       secret:
         defaultMode: 420
