@@ -127,14 +127,14 @@ spec:
           - name: MONITORING_NAMESPACE
             value: {{ .Values.pxbackup.monitoringNamespace}}
           {{- end }}
-          {{- if .Values.pxbackup.alertmanagerServiceName }}
-          - name: ALERTMANAGER_SERVICE_NAME
+          - name: ALERTMANAGER_HOST_ENV
             value: {{ .Values.pxbackup.alertmanagerServiceName}}
-          {{- end }}
-          {{- if .Values.pxbackup.prometheusServiceName }}
-          - name: PROMETHEUS_SERVICE_NAME
+          - name: ALERTMANAGER_PORT_ENV
+            value: "{{ .Values.pxbackup.alertmanagerServicePort}}"
+          - name: PROMETHEUS_HOST_ENV
             value: {{ .Values.pxbackup.prometheusServiceName}}
-          {{- end }}             
+          - name: PROMETHEUS_PORT_ENV
+            value: "{{ .Values.pxbackup.prometheusServicePort}}"
         ports:
           - name: http
             containerPort: 8091
