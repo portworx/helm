@@ -62,8 +62,10 @@ pxbackup:
     enabled: true
   deployDedicatedMonitoringSystem: true
   monitoringNamespace: ""
-  prometheusServiceName: ""
-  alertmanagerServiceName: ""
+  prometheusServiceName: "px-backup-prometheus"
+  prometheusServicePort: "9090"
+  alertmanagerServiceName: "alertmanager-operated"
+  alertmanagerServicePort: "9093"
 
 pxlicenseserver:
   enabled: false
