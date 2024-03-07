@@ -407,3 +407,54 @@ spec:
   selector:
     matchLabels:
       app: px-backup
+
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  labels:
+    app: px-backup-alerts
+  name: px-backup-prometheus-rules
+spec:
+  groups:
+  - name: gauge_rules
+    rules:
+    - alert: ClusterAlert
+      annotations:
+        description: {{`The Cluster {{ $labels.name
+          }} failed.`}}
+        summary: Cluster addition failed
+      expr: pxbackup_cluster_status == 5
+      for: 1m
+      labels:
+        severity: critical
+
+    - alert: BackupAlert
+      annotations:
+        description: {{`The Backup {{ $labels.name
+          }} failed.`}}
+        summary: Backup failed
+      expr: pxbackup_backup_status == 4
+      for: 1m
+      labels:
+        severity: critical
+
+    - alert: RestoreAlert
+      annotations:
+        description: {{`The Restore {{ $labels.name
+          }} failed.`}}
+        summary: Restoring backup failed 
+      expr: pxbackup_restore_status == 4
+      for: 1m
+      labels:
+        severity: critical
+
+    - alert: BackupLocationAlert
+      annotations:
+        description: {{`The Backup Location {{ $labels.name
+          }} failed.`}}
+        summary: BackupLocation addition failed
+      expr: pxbackup_backuplocation_status == 4
+      for: 1m
+      labels:
+        severity: critical
