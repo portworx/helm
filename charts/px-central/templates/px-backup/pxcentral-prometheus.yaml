@@ -454,7 +454,7 @@ spec:
         description: {{`The Backup Location {{ $labels.name
           }} failed.`}}
         summary: BackupLocation addition failed
-      expr: pxbackup_backuplocation_status == 4
+      expr: pxbackup_backup_location_status == 4
       for: 1m
       labels:
         severity: critical
