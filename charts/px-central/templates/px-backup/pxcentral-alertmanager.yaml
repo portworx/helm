@@ -7,6 +7,7 @@ metadata:
   name: px-backup-alertmanager
   namespace: {{ .Release.Namespace }}
 spec:
+  configSecret: px-backup-alertmanager-custom-config
   alertmanagerConfigSelector:
     matchLabels:
       app: px-backup-alert-configs
@@ -92,3 +93,200 @@ spec:
             storage: {{ .Values.persistentStorage.prometheus.storage }}
   {{- end }}
 {{- end }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: px-backup-alertmanager-custom-config
+type: Opaque
+stringData:
+  alertmanager.yaml: |
+    route:
+      receiver: "null"
+    receivers:
+    - name: "null"
+    templates: [ "/etc/alertmanager/config/*.tmpl" ]
+  pxc_template.tmpl: |
+    <!DOCTYPE html>
+    <html>
+      <head>
+          <title>Px-Backup Email</title>
+          <style>
+            body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            background-color: #f4f4f4;
+            }
+            .container {
+            margin: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            h1 {
+            color: #333;
+            }
+            p {
+            color: #666;
+            }
+            td {
+            color: #292929;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            }
+            .bold-text {
+            padding-left: 20px;
+            font-weight: bold;
+            }
+            .pb-16,
+            td {
+            padding-bottom: 16px;
+            }
+          </style>
+      </head>
+      <body>
+          <div class="container">
+            <img height="50px" src="https://portworx.com/wp-content/themes/portworx/assets/images/header/portworx-logo.png" alt="" srcset="">
+            {{ range .Alerts }}
+            {{- if eq .Labels.alertname "ClusterAlert"}}
+            <div
+                class="pb-16"
+                style="width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: Cluster Disconnected
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 16px;
+                font-weight: 700;
+                "
+                >
+                Alert details
+            </div>
+            <table>
+                <tr>
+                  <td>Cluster name</td>
+                  <td class="bold-text">{{ .Labels.name }}</td>
+                </tr>
+                <tr>
+                  <td>Error</td>
+                  <td class="bold-text">Reason to be added here...</td>
+                </tr>
+                <tr>
+                  <td>Creation time</td>
+                  <td class="bold-text">{{ .StartsAt.Format "2006-01-02 15:04:05" }}</td>
+                </tr>
+            </table>
+            {{- else if eq .Labels.alertname "BackupAlert" }}
+            <div
+                class="pb-16"
+                style="width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: Backup Failed
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 16px;
+                font-weight: 700;
+                "
+                >
+                Alert details
+            </div>
+            <table>
+                <tr>
+                  <td>Backup name</td>
+                  <td class="bold-text">{{ .Labels.name }}</td>
+                </tr>
+                <tr>
+                  <td>Cluster name</td>
+                  <td class="bold-text">{{ .Labels.cluster }}</td>
+                </tr>
+                <tr>
+                  <td>Error</td>
+                  <td class="bold-text">Reason to be added here...</td>
+                <tr>
+                  <td>Creation time</td>
+                  <td class="bold-text">{{ .StartsAt.Format "2006-01-02 15:04:05" }}</td>
+                </tr>
+            </table>
+            {{- else if eq .Labels.alertname "RestoreAlert" }}
+            <div
+                class="pb-16"
+                style="width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: Restore Failed
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 16px;
+                font-weight: 700;
+                "
+                >
+                Alert details
+            </div>
+            <table>
+                <tr>
+                  <td>Restore name</td>
+                  <td class="bold-text">{{ .Labels.name }}</td>
+                </tr>
+                <tr>
+                  <td>Cluster name</td>
+                  <td class="bold-text">{{ .Labels.cluster }}</td>
+                </tr>
+                <tr>
+                  <td>Error</td>
+                  <td class="bold-text">Reason to be added here...</td>
+                <tr>
+                  <td>Creation time</td>
+                  <td class="bold-text">{{ .StartsAt.Format "2006-01-02 15:04:05" }}</td>
+                </tr>
+            </table>
+            {{- else if eq .Labels.alertname "BackupLocationAlert" }}
+            <div
+                class="pb-16"
+                style="width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: Backup Location Disconnected
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 16px;
+                font-weight: 700;
+                "
+                >
+                Alert details
+            </div>
+            <table>
+                <tr>
+                  <td>Backup Location</td>
+                  <td class="bold-text">{{ .Labels.name }}</td>
+                </tr>
+                <tr>
+                  <td>Error</td>
+                  <td class="bold-text">Reason to be added here...</td>
+                <tr>
+                  <td>Creation time</td>
+                  <td class="bold-text">{{ .StartsAt.Format "2006-01-02 15:04:05" }}</td>
+                </tr>
+            </table>
+            {{- end }}
+            {{ end }}
+            <div style="font-size: 14px" class="pb-16">
+                Please login to your Portworx Backup deployment to see more details and
+                take corrective actions.
+            </div>
+            <div style="font-size: 14px" class="pb-16">
+                Best Regards,<br />Portworx Team
+            </div>
+          </div>
+      </body>
+    </html>
