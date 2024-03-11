@@ -107,7 +107,7 @@ stringData:
     - name: "null"
     templates: [ "/etc/alertmanager/config/*.tmpl" ]
   pxc_template.tmpl: |
-    <!DOCTYPE html>
+    {{`<!DOCTYPE html>
     <html>
       <head>
           <title>Px-Backup Email</title>
@@ -289,4 +289,4 @@ stringData:
             </div>
           </div>
       </body>
-    </html>
+    </html>`}}
