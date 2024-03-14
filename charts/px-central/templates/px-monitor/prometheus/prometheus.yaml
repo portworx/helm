@@ -154,6 +154,8 @@ spec:
       name: reloader-web
       protocol: TCP
   replicas: 1
+  evaluationInterval: 30s
+  scrapeInterval: 30s
   logLevel: debug
   listenLocal: true
   volumeMounts:
