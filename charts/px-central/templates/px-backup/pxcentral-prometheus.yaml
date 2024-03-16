@@ -1,6 +1,11 @@
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem | default true }}
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
+{{- $metricsSecret := (lookup "v1" "Secret" .Release.Namespace "pxc-backup-metrics") | default dict }}
+{{- $metricsSecretData := (get $metricsSecret "data") | default dict }}
+{{- $metricsPass := (get $metricsSecretData "metrics-password" | b64dec) | default (randAlphaNum 12 ) }}
+{{- $metricsToken := (get $metricsSecretData "metrics-token" | b64dec) | default ( printf "admin:%s" $metricsPass | b64enc | quote ) }}
+{{- $metricsBasicAuth := htpasswd "admin" $metricsPass }}
 {{- if eq $deployDedicatedMonitoringSystem true }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -355,12 +360,12 @@ metadata:
   namespace: {{ .Release.Namespace }}
 type: Opaque
 stringData:
-  metrics-token: "YWRtaW46ZTFacEtheTczTnVW"
+  metrics-token: {{ $metricsToken }}
   metrics-username: admin
-  metrics-password: e1ZpKay73NuV
+  metrics-password: {{ $metricsPass }}
   web-config-custom.yaml: |
     basic_auth_users:
-      admin: $2a$12$EUVIFCn0M6cGdR612WlqSOFkj48VkxxlK.ElcgTZUjroOauS6MH3C
+      admin: {{ (split ":" $metricsBasicAuth)._1 }}
   {{- if eq $deployDedicatedMonitoringSystem true }}
   am-configs.yaml: |
     - path_prefix: /
@@ -372,7 +377,7 @@ stringData:
           - {{ .Release.Namespace }}
       basic_auth:
         username: admin
-        password: e1ZpKay73NuV
+        password: {{ $metricsPass }}
       relabel_configs:
       - action: keep
         source_labels:
