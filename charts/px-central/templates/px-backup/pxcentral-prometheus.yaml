@@ -426,8 +426,8 @@ spec:
     rules:
     - alert: ClusterAlert
       annotations:
-        description: {{`The Cluster {{ $labels.name
-          }} failed.`}}
+        description: {{`The Cluster "{{ $labels.name
+          }}" has failed.`}}
         summary: Cluster addition failed
       expr: pxbackup_cluster_status == 5
       for: 1m
@@ -436,8 +436,8 @@ spec:
 
     - alert: BackupAlert
       annotations:
-        description: {{`The Backup {{ $labels.name
-          }} failed.`}}
+        description: {{`The Backup "{{ $labels.name 
+          }}" {{- if eq .Labels.schedule_name "" }} {{ else }} part of backup schedule "{{ $labels.schedule_name}}" {{ end }} taken for cluster "{{ $labels.cluster}}" on namespace "{{ $labels.backup_namespace}}" has failed.`}}
         summary: Backup failed
       expr: pxbackup_backup_status == 4
       for: 1m
@@ -446,8 +446,8 @@ spec:
 
     - alert: RestoreAlert
       annotations:
-        description: {{`The Restore {{ $labels.name
-          }} failed.`}}
+        description: {{`The Restore "{{ $labels.name
+          }}" made from backup "{{ $labels.backup}}" has failed.`}}
         summary: Restoring backup failed 
       expr: pxbackup_restore_status == 4
       for: 1m
@@ -456,8 +456,8 @@ spec:
 
     - alert: BackupLocationAlert
       annotations:
-        description: {{`The Backup Location {{ $labels.name
-          }} failed.`}}
+        description: {{`The Backup Location "{{ $labels.name
+          }}" has failed.`}}
         summary: BackupLocation addition failed
       expr: pxbackup_backup_location_status == 4
       for: 1m
