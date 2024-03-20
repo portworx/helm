@@ -57,7 +57,7 @@ pxbackup:
     retention: 90d
   alertmanager:
     replicas: 2
-    retention: 720h
+    retention: 768h
   nfs:
     enabled: true
   deployDedicatedMonitoringSystem: true
