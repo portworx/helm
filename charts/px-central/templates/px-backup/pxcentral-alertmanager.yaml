@@ -176,7 +176,7 @@ stringData:
                 </tr>
                 <tr>
                   <td>Error</td>
-                  <td class="bold-text">Reason to be added here...</td>
+                  <td class="bold-text">{{ .Labels.error_reason }}</td>
                 </tr>
                 <tr>
                   <td>Creation time</td>
@@ -210,7 +210,7 @@ stringData:
                 </tr>
                 <tr>
                   <td>Error</td>
-                  <td class="bold-text">Reason to be added here...</td>
+                  <td class="bold-text">{{ .Labels.error_reason }}</td>
                 <tr>
                   <td>Creation time</td>
                   <td class="bold-text">{{ .StartsAt.Format "2006-01-02 15:04:05" }}</td>
@@ -243,7 +243,7 @@ stringData:
                 </tr>
                 <tr>
                   <td>Error</td>
-                  <td class="bold-text">Reason to be added here...</td>
+                  <td class="bold-text">{{ .Labels.error_reason }}</td>
                 <tr>
                   <td>Creation time</td>
                   <td class="bold-text">{{ .StartsAt.Format "2006-01-02 15:04:05" }}</td>
@@ -272,7 +272,7 @@ stringData:
                 </tr>
                 <tr>
                   <td>Error</td>
-                  <td class="bold-text">Reason to be added here...</td>
+                  <td class="bold-text">{{ .Labels.error_reason }}</td>
                 <tr>
                   <td>Creation time</td>
                   <td class="bold-text">{{ .StartsAt.Format "2006-01-02 15:04:05" }}</td>
