@@ -54,6 +54,9 @@ spec:
       {{- if eq $deployDedicatedMonitoringSystem true }}
           - name: DEDICATED_PROMETHEUS
             value: "true"
+      {{- else }}
+          - name: DEDICATED_PROMETHEUS
+            value: "false"
       {{- end }}
           - name: DEPLOYMENT_TYPE
             {{- if eq .Release.IsInstall true }}
