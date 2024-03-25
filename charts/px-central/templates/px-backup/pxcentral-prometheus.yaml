@@ -1,5 +1,5 @@
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
-{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem | default true }}
+{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $metricsSecret := (lookup "v1" "Secret" .Release.Namespace "pxc-backup-metrics") | default dict }}
 {{- $metricsSecretData := (get $metricsSecret "data") | default dict }}

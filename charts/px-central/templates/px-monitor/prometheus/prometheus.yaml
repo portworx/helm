@@ -1,6 +1,6 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
-{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem | default true }}
+{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- if eq $pxMonitorEnabled true }}
 {{- if eq $deployDedicatedMonitoringSystem false }}
