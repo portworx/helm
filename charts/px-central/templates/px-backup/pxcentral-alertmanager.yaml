@@ -1,5 +1,5 @@
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
-{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem | default true }}
+{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- if eq $deployDedicatedMonitoringSystem true }}
 apiVersion: monitoring.coreos.com/v1
 kind: Alertmanager
