@@ -151,12 +151,12 @@ stringData:
       </head>
       <body>
           <div class="container">
-            <img height="50px" src="https://portworx.com/wp-content/themes/portworx/assets/images/header/portworx-logo.png" alt="" srcset="">
+            <img style="height: 33px; width: 89px;" src="https://portworx.com/wp-content/themes/portworx/assets/images/header/portworx-logo.png" alt="" srcset="">
             {{ range .Alerts }}
             {{- if eq .Labels.alertname "ClusterAlert"}}
             <div
                 class="pb-16"
-                style="width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                style="margin: 32px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
                 Critical Alert: Cluster Disconnected
             </div>
             <div
@@ -186,7 +186,7 @@ stringData:
             {{- else if eq .Labels.alertname "BackupAlert" }}
             <div
                 class="pb-16"
-                style="width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                style="margin: 32px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
                 Critical Alert: Backup Failed
             </div>
             <div
@@ -219,7 +219,7 @@ stringData:
             {{- else if eq .Labels.alertname "RestoreAlert" }}
             <div
                 class="pb-16"
-                style="width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                style="margin: 32px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
                 Critical Alert: Restore Failed
             </div>
             <div
@@ -252,7 +252,7 @@ stringData:
             {{- else if eq .Labels.alertname "BackupLocationAlert" }}
             <div
                 class="pb-16"
-                style="width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                style="margin: 32px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
                 Critical Alert: Backup Location Disconnected
             </div>
             <div
@@ -283,9 +283,6 @@ stringData:
             <div style="font-size: 14px" class="pb-16">
                 Please login to your Portworx Backup deployment to see more details and
                 take corrective actions.
-            </div>
-            <div style="font-size: 14px" class="pb-16">
-                Best Regards,<br />Portworx Team
             </div>
           </div>
       </body>
