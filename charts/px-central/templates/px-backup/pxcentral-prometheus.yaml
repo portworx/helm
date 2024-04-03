@@ -3,7 +3,7 @@
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $metricsSecret := (lookup "v1" "Secret" .Release.Namespace "pxc-backup-metrics") | default dict }}
 {{- $metricsSecretData := (get $metricsSecret "data") | default dict }}
-{{- $metricsPass := (get $metricsSecretData "metrics-password" | b64dec) | default (randAlphaNum 12 ) }}
+{{- $metricsPass := (get $metricsSecretData "password" | b64dec) | default (randAlphaNum 12 ) }}
 {{- $metricsToken := (get $metricsSecretData "metrics-token" | b64dec) | default ( printf "admin:%s" $metricsPass | b64enc | quote ) }}
 {{- $metricsBasicAuth := htpasswd "admin" $metricsPass }}
 {{- if eq $deployDedicatedMonitoringSystem true }}
@@ -296,12 +296,12 @@ spec:
     - name: USERNAME
       valueFrom:
         secretKeyRef:
-          key: metrics-username
+          key: username
           name: pxc-backup-metrics
     - name: PASSWORD
       valueFrom:
         secretKeyRef:
-          key: metrics-password
+          key: password
           name: pxc-backup-metrics
     ports:
     - containerPort: 8080
@@ -361,8 +361,8 @@ metadata:
 type: Opaque
 stringData:
   metrics-token: {{ $metricsToken }}
-  metrics-username: admin
-  metrics-password: {{ $metricsPass }}
+  username: admin
+  password: {{ $metricsPass }}
   web-config-custom.yaml: |
     basic_auth_users:
       admin: {{ (split ":" $metricsBasicAuth)._1 }}

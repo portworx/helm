@@ -53,12 +53,12 @@ spec:
       - name: USERNAME
         valueFrom:
           secretKeyRef:
-            key: metrics-username
+            key: username
             name: pxc-backup-metrics
       - name: PASSWORD
         valueFrom:
           secretKeyRef:
-            key: metrics-password
+            key: password
             name: pxc-backup-metrics
       name: config-reloader
       ports:
