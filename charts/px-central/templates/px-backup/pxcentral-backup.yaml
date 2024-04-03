@@ -28,7 +28,7 @@ rules:
     resources: ["jobs"]
     verbs: ["get", "list"]
   - apiGroups: [""]
-    resources: ["namespaces"]
+    resources: ["namespaces", "services"]
     verbs: ["get", "list"]
   - apiGroups: ["snapshot.storage.k8s.io"]
     resources: ["volumesnapshotclasses"]
