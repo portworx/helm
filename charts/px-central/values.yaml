@@ -61,12 +61,11 @@ pxbackup:
   nfs:
     enabled: true
   deployDedicatedMonitoringSystem: true
-  monitoringNamespace: ""
-  prometheusServiceName: "px-backup-prometheus"
-  prometheusServicePort: "9090"
-  alertmanagerServiceName: "alertmanager-operated"
-  alertmanagerServicePort: "9093"
-  metricSyncInterval: ""
+  prometheusEndpoint: ""
+  alertmanagerEndpoint: ""
+  prometheusSecretName: ""
+  alertmanagerSecretName: ""
+  usePxBackupEmailAlertTemplate: true
 
 pxlicenseserver:
   enabled: false

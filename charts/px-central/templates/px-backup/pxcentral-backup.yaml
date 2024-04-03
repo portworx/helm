@@ -207,6 +207,8 @@ spec:
           value: {{ .Values.pxbackup.orgName }}
         - name: PX_BACKUP_DEFAULT_DATASTORE
           value: mongodb
+        - name: USE_PX_BACKUP_EMAIL_ALERT_TEMPLATE
+          value: "{{ .Values.pxbackup.usePxBackupEmailAlertTemplate }}"
         - name: SOFT_LICENSING_PERIOD
           value: "30"
         - name: AIRGAP_REPORTING_PERIOD
