@@ -142,12 +142,12 @@ spec:
     - name: USERNAME
       valueFrom:
         secretKeyRef:
-          key: metrics-username
+          key: username
           name: pxc-backup-metrics
     - name: PASSWORD
       valueFrom:
         secretKeyRef:
-          key: metrics-password
+          key: password
           name: pxc-backup-metrics
     ports:
     - containerPort: 8080
