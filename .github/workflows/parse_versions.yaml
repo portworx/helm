@@ -3,7 +3,7 @@ name: Parse YAML and write Docker images to file
 on:
   push:
     branches:
-      - *
+      - PCS-1433
 
 jobs:
   parse-yaml:
