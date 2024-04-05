@@ -67,6 +67,7 @@ pxbackup:
   alertmanagerServiceName: "alertmanager-operated"
   alertmanagerServicePort: "9093"
   metricSyncInterval: ""
+  authUser : "px-admin"
 
 pxlicenseserver:
   enabled: false
