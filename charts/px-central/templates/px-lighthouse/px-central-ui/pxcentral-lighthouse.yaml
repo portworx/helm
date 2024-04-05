@@ -139,6 +139,10 @@ spec:
             value: {{ .Values.pxbackup.prometheusServiceName}}
           - name: PROMETHEUS_PORT_ENV
             value: "{{ .Values.pxbackup.prometheusServicePort}}"
+          - name: AUTH_USER
+          value: "{{ .Values.pxbackup.authUser}}"
+          - name: AUTH_PW
+          value: "{{ randAlphaNum 12 }}"
         ports:
           - name: http
             containerPort: 8091
