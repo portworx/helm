@@ -262,7 +262,7 @@ images:
     repo: portworx
     imageName: alertmanager
     tag: v0.26.0
-  pxBackupPometheusOperatorImage:
+  pxBackupPrometheusOperatorImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: prometheus-operator

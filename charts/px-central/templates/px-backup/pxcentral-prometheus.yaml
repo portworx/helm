@@ -121,7 +121,7 @@ spec:
           - -namespaces={{ .Release.Namespace }}
           - --kubelet-service={{ .Release.Namespace }}/kubelet
           - --prometheus-config-reloader={{ printf "%s/%s/%s:%s" .Values.images.pxBackupPrometheusConfigReloaderImage.registry .Values.images.pxBackupPrometheusConfigReloaderImage.repo .Values.images.pxBackupPrometheusConfigReloaderImage.imageName .Values.images.pxBackupPrometheusConfigReloaderImage.tag }}
-        image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupPometheusOperatorImage.registry .Values.images.pxBackupPometheusOperatorImage.repo .Values.images.pxBackupPometheusOperatorImage.imageName .Values.images.pxBackupPometheusOperatorImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupPrometheusOperatorImage.registry .Values.images.pxBackupPrometheusOperatorImage.repo .Values.images.pxBackupPrometheusOperatorImage.imageName .Values.images.pxBackupPrometheusOperatorImage.tag }}
         name: prometheus-operator
         ports:
           - containerPort: 8080
