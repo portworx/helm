@@ -19,7 +19,7 @@ modules:
     filesystemCtl: "docker.io/portworx/filesystemctl:1.2.11"
     pxBackupPrometheusImage: docker.io/portworx/prometheus:v2.48.0
     pxBackupAlertmanagerImage: docker.io/portworx/alertmanager:v0.26.0
-    pxBackupPometheusOperatorImage: docker.io/portworx/prometheus-operator:v0.70.0
+    pxBackupPrometheusOperatorImage: docker.io/portworx/prometheus-operator:v0.70.0
     pxBackupPrometheusConfigReloaderImage: docker.io/portworx/prometheus-config-reloader:v0.70.0
   pxMonitor:
     cortex: "docker.io/portworx/cortex:v1.13.1"
