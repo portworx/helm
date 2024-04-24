@@ -148,6 +148,10 @@ spec:
           - name: SSL_CERT_DIR
             value: /tmp/certs
           {{- end }}
+          {{- if eq .Release.IsInstall true }}
+          - name: QUERY_ACTIVITY_TIMELINE_FROM_MONGO_DB
+            value: "false"        
+          {{- end }}
           - name: PROMETHEUS_ENDPOINT
             value: {{ $prometheusEndpoint }}
           - name: ALERTMANAGER_ENDPOINT
