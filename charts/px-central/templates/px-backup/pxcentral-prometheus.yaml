@@ -245,6 +245,7 @@ spec:
     - --web.console.templates=/etc/prometheus/consoles
     - --web.console.libraries=/etc/prometheus/console_libraries
     - --storage.tsdb.retention.time={{ .Values.pxbackup.prometheus.retention }}
+    - --storage.tsdb.retention.size={{ .Values.persistentStorage.prometheus.retentionSize }}
     - --config.file=/etc/prometheus/config_out/prometheus.env.yaml
     - --storage.tsdb.path=/prometheus
     - --web.enable-lifecycle
