@@ -13,7 +13,7 @@ persistentStorage:
     storage: 2Gi
   prometheus:
     storage: 5Gi
-    retentionSize: 4800MB
+    retentionSize: 4600MB
   mysqlVolumeSize: "100Gi"
   mongodbVolumeSize: "64Gi"
   mongoCacheSize: 4
