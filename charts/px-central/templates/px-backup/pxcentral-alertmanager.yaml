@@ -90,7 +90,7 @@ spec:
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         resources:
           requests:
-            storage: {{ .Values.persistentStorage.prometheus.storage }}
+            storage: {{ .Values.persistentStorage.alertManager.storage }}
   {{- end }}
 {{- end }}
 ---
