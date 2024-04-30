@@ -27,5 +27,3 @@ docker.io/portworx/memcached:1.6.17-alpine
 docker.io/portworx/memcached:1.6.17-alpine
 docker.io/portworx/px-operator:1.10.5
 docker.io/portworx/px-els:2.3.2
-
-
