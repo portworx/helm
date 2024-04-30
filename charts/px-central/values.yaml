@@ -12,7 +12,8 @@ persistentStorage:
   ingester:
     storage: 2Gi
   prometheus:
-    storage: 2Gi
+    storage: 5Gi
+    retentionSize: 4800MB
   mysqlVolumeSize: "100Gi"
   mongodbVolumeSize: "64Gi"
   mongoCacheSize: 4
