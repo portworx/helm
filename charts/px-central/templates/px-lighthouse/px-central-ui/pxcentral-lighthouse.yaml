@@ -1,7 +1,7 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
-{{- $prometheusEndpoint := "http://px-backup-prometheus:9090" }}
+{{- $prometheusEndpoint := "http://px-backup-dashboard-prometheus:9090" }}
 {{- $alertmanagerEndpoint := "http://alertmanager-operated:9093" }}
 {{- $prometheusSecretName := "pxc-backup-metrics" }}
 {{- $alertmanagerSecretName := "pxc-backup-metrics" }}
