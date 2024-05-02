@@ -147,7 +147,7 @@ spec:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: px-backup-prometheus
+  name: px-backup-dashboard-prometheus
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
@@ -179,7 +179,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: px-backup-prometheus
+  name: px-backup-dashboard-prometheus
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
@@ -187,16 +187,16 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: px-backup-prometheus
+  name: px-backup-dashboard-prometheus
 subjects:
 - kind: ServiceAccount
-  name: px-backup-prometheus
+  name: px-backup-dashboard-prometheus
   namespace: {{ .Release.Namespace }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: px-backup-prometheus
+  name: px-backup-dashboard-prometheus
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
@@ -209,12 +209,12 @@ spec:
       protocol: TCP
       targetPort: 9090
   selector:
-    prometheus: px-backup-prometheus
+    prometheus: px-backup-dashboard-prometheus
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: px-backup-prometheus
+  name: px-backup-dashboard-prometheus
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
@@ -225,7 +225,7 @@ metadata:
 apiVersion: monitoring.coreos.com/v1
 kind: Prometheus
 metadata:
-   name: px-backup-prometheus
+   name: px-backup-dashboard-prometheus
    namespace: {{ .Release.Namespace }}
 spec:
   additionalAlertManagerConfigs:
@@ -290,7 +290,7 @@ spec:
     - --reload-url=http://$(USERNAME):$(PASSWORD)@localhost:9090/-/reload
     - --config-file=/etc/prometheus/config/prometheus.yaml.gz
     - --config-envsubst-file=/etc/prometheus/config_out/prometheus.env.yaml
-    - --watched-dir=/etc/prometheus/rules/prometheus-px-backup-prometheus-rulefiles-0
+    - --watched-dir=/etc/prometheus/rules/prometheus-px-backup-dashboard-prometheus-rulefiles-0
     - --log-level=debug
     name: config-reloader
     env:
@@ -333,7 +333,7 @@ spec:
   ruleSelector:
     matchLabels:
       app: px-backup-alerts
-  serviceAccountName: px-backup-prometheus
+  serviceAccountName: px-backup-dashboard-prometheus
   {{- if .Values.images.pullSecrets }}
   imagePullSecrets:
     {{- range $sec := .Values.images.pullSecrets }}
@@ -342,7 +342,7 @@ spec:
   {{- end }}
   serviceMonitorSelector:
     matchLabels:
-      name: px-backup-prometheus-sm
+      name: px-backup-dashboard-prometheus-sm
   {{- with .Values.tolerations }}
   tolerations:
   {{- toYaml . | nindent 4 }}
@@ -396,9 +396,9 @@ apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
   namespace: {{ .Release.Namespace }}
-  name: px-backup-prometheus-sm
+  name: px-backup-dashboard-prometheus-sm
   labels:
-    name: px-backup-prometheus-sm
+    name: px-backup-dashboard-prometheus-sm
     app.kubernetes.io/component: px-backup
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
@@ -436,7 +436,7 @@ kind: PrometheusRule
 metadata:
   labels:
     app: px-backup-alerts
-  name: px-backup-prometheus-rules
+  name: px-backup-dashboard-prometheus-rules
 spec:
   groups:
   - name: gauge_rules
