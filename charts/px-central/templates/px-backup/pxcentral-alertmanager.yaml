@@ -12,6 +12,12 @@ spec:
     matchLabels:
       app: px-backup-alert-configs
   replicas: {{ .Values.pxbackup.alertmanager.replicas }}
+  {{- if .Values.images.pullSecrets }}
+  imagePullSecrets:
+    {{- range $sec := .Values.images.pullSecrets }}
+    - name: {{ $sec | quote }}
+    {{- end }}
+  {{- end }}
   retention: {{ .Values.pxbackup.alertmanager.retention}}
   containers:
     - args:
