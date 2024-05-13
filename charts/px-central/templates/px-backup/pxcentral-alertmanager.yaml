@@ -116,10 +116,10 @@ stringData:
     {{`<!DOCTYPE html>
     <html>
       <head>
-          <title>Px-Backup Email</title>
+          <title>Portworx-Backup Email</title>
           <style>
             body {
-            font-family: sans-serif;
+            font-family: "Calibri", sans-serif;
             margin: 0;
             padding: 0;
             display: flex;
@@ -139,19 +139,20 @@ stringData:
             p {
             color: #666;
             }
-            td {
+            li {
             color: #292929;
             font-size: 14px;
             font-style: normal;
             font-weight: 400;
+            margin-bottom: 5 px;
             }
             .bold-text {
             padding-left: 20px;
             font-weight: bold;
             }
             .pb-16,
-            td {
-            padding-bottom: 16px;
+            li {
+            padding-bottom: 10px;
             }
           </style>
       </head>
@@ -162,103 +163,127 @@ stringData:
             {{- if eq .Labels.alertname "ClusterAlert"}}
             <div
                 class="pb-16"
-                style="margin: 32px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
                 Critical Alert: Cluster Disconnected
             </div>
             <div
                 class="pb-16"
                 style="
                 color: var(--content-onBase-strong, #292929);
-                font-size: 16px;
+                font-size: 15px;
                 font-weight: 700;
                 "
                 >
-                Alert details
+                Alert details:
             </div>
-            <table>
-                <tr>
-                  <td>Cluster name</td>
-                  <td class="bold-text">{{ .Labels.name }}</td>
-                </tr>
-                <tr>
-                  <td>Error</td>
-                  <td class="bold-text">{{ .Labels.error_reason }}</td>
-                </tr>
-                <tr>
-                  <td>Creation time</td>
-                  <td class="bold-text">{{ .StartsAt.Format "2006-01-02 15:04:05" }}</td>
-                </tr>
-            </table>
+            <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Cluster Name:</div>
+                <div>{{ .Labels.name }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
+                <div>{{ .Labels.error_reason }}</div> 
+              </div>
+              </li>
+              <li> 
+              <div style="display: flex">
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div> 
+              </div>
+              </li>
+            </ul>
             {{- else if eq .Labels.alertname "BackupAlert" }}
             <div
                 class="pb-16"
-                style="margin: 32px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
                 Critical Alert: Backup Failed
             </div>
             <div
                 class="pb-16"
                 style="
                 color: var(--content-onBase-strong, #292929);
-                font-size: 16px;
+                font-size: 15px;
                 font-weight: 700;
                 "
                 >
-                Alert details
+                Alert details:
             </div>
-            <table>
-                <tr>
-                  <td>Backup name</td>
-                  <td class="bold-text">{{ .Labels.name }}</td>
-                </tr>
-                <tr>
-                  <td>Cluster name</td>
-                  <td class="bold-text">{{ .Labels.cluster }}</td>
-                </tr>
-                <tr>
-                  <td>Error</td>
-                  <td class="bold-text">{{ .Labels.error_reason }}</td>
-                <tr>
-                  <td>Creation time</td>
-                  <td class="bold-text">{{ .StartsAt.Format "2006-01-02 15:04:05" }}</td>
-                </tr>
-            </table>
+            <ul>
+              <li>
+                <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Backup name:</div>
+                <div>{{ .Labels.name }}</div>
+                </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Cluster name:</div>
+                <div>{{ .Labels.cluster }}</div>
+                </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
+                <div>{{ .Labels.error_reason }}</div> 
+                </div>
+              </li>
+              <li> 
+              <div style="display: flex">
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div> 
+              </div>
+              </li>
+            </ul>
             {{- else if eq .Labels.alertname "RestoreAlert" }}
             <div
                 class="pb-16"
-                style="margin: 32px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
                 Critical Alert: Restore Failed
             </div>
             <div
                 class="pb-16"
                 style="
                 color: var(--content-onBase-strong, #292929);
-                font-size: 16px;
+                font-size: 15px;
                 font-weight: 700;
                 "
                 >
-                Alert details
+                Alert details:
             </div>
-            <table>
-                <tr>
-                  <td>Restore name</td>
-                  <td class="bold-text">{{ .Labels.name }}</td>
-                </tr>
-                <tr>
-                  <td>Cluster name</td>
-                  <td class="bold-text">{{ .Labels.cluster }}</td>
-                </tr>
-                <tr>
-                  <td>Error</td>
-                  <td class="bold-text">{{ .Labels.error_reason }}</td>
-                <tr>
-                  <td>Creation time</td>
-                  <td class="bold-text">{{ .StartsAt.Format "2006-01-02 15:04:05" }}</td>
-                </tr>
-            </table>
+            <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Restore name:</div>
+                <div>{{ .Labels.name }}</div>
+              </div>
+              </li>
+              <li>
+               <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Cluster name:</div>
+                <div>{{ .Labels.cluster }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
+                <div>{{ .Labels.error_reason }}</div> 
+              </div>
+              </li>
+              <li> 
+              <div style="display: flex">
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div> 
+              </div>
+              </li>
+            </ul>
             {{- else if eq .Labels.alertname "BackupLocationAlert" }}
             <div
                 class="pb-16"
-                style="margin: 32px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
                 Critical Alert: Backup Location Disconnected
             </div>
             <div
@@ -269,25 +294,32 @@ stringData:
                 font-weight: 700;
                 "
                 >
-                Alert details
+                Alert details:
             </div>
-            <table>
-                <tr>
-                  <td>Backup Location</td>
-                  <td class="bold-text">{{ .Labels.name }}</td>
-                </tr>
-                <tr>
-                  <td>Error</td>
-                  <td class="bold-text">{{ .Labels.error_reason }}</td>
-                <tr>
-                  <td>Creation time</td>
-                  <td class="bold-text">{{ .StartsAt.Format "2006-01-02 15:04:05" }}</td>
-                </tr>
-            </table>
+            <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Backup Location name:</div>
+                <div>{{ .Labels.name }}</div>
+                </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
+                <div>{{ .Labels.error_reason }}</div> 
+                </div>
+              </li>
+              <li> 
+              <div style="display: flex">
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
+              </div> 
+              </li>
+            </ul>
             {{- end }}
             {{ end }}
             <div style="font-size: 14px" class="pb-16">
-                Please login to your Portworx Backup deployment to see more details and
+                Please login to your Portworx Backup deployment to view more details and
                 take corrective actions.
             </div>
           </div>
