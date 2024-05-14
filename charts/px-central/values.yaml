@@ -44,6 +44,9 @@ oidc:
     clientSecret:
     endpoint:
 
+proxy:
+  azureProxyEnabled: false
+
 postInstallJob:
   sslEnabled: true
 

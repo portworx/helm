@@ -2,6 +2,7 @@
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $nfsEnabled := .Values.pxbackup.nfs.enabled | default false }}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $pxBackupEnabled true }}
 apiVersion: v1
 kind: ServiceAccount
@@ -182,6 +183,10 @@ spec:
     metadata:
       labels:
         app: px-backup
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
     spec:
       affinity:
         nodeAffinity:

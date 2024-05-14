@@ -3,6 +3,7 @@
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $mongoCacheSize := int .Values.persistentStorage.mongoCacheSize}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $pxBackupEnabled true }}
 apiVersion: v1
 kind: ConfigMap
@@ -137,6 +138,10 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         app.kubernetes.io/name: {{.Release.Name }}
         app.kubernetes.io/instance: {{.Release.Name }}
