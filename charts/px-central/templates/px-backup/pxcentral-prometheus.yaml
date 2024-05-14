@@ -6,6 +6,7 @@
 {{- $metricsPass := (get $metricsSecretData "password" | b64dec) | default (randAlphaNum 12 ) }}
 {{- $metricsToken := (get $metricsSecretData "metrics-token" | b64dec) | default ( printf "admin:%s" $metricsPass | b64enc | quote ) }}
 {{- $metricsBasicAuth := htpasswd "admin" $metricsPass }}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $deployDedicatedMonitoringSystem true }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -115,6 +116,10 @@ spec:
     metadata:
       labels:
         k8s-app: prometheus-operator
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
     spec:
       containers:
       - args:
@@ -231,6 +236,11 @@ spec:
   additionalAlertManagerConfigs:
     key: am-configs.yaml
     name: pxc-backup-metrics
+  {{- if eq $azureProxyEnabled true }}
+  podMetadata:
+    annotations:
+      kubernetes.azure.com/no-http-proxy-vars: "true"
+  {{- end }}
   {{- if .Values.persistentStorage.storageClassName }}
   storage:
     volumeClaimTemplate:
