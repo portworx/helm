@@ -4,6 +4,7 @@
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $storkRequired := .Values.storkRequired | default false -}}
 {{- $sslEnabled := .Values.pxmonitor.sslEnabled | default false -}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $pxMonitorEnabled true }}
 apiVersion: v1
 kind: Service
@@ -92,6 +93,10 @@ spec:
       app.kubernetes.io/managed-by: {{.Release.Service }}
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         app: pxcentral-memcached-index-read
         app.kubernetes.io/component: pxcentral-memcached-index-read
@@ -176,6 +181,10 @@ spec:
       app.kubernetes.io/managed-by: {{.Release.Service }}
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         app: pxcentral-memcached-index-write
         app.kubernetes.io/component: pxcentral-memcached-index-write
@@ -260,6 +269,10 @@ spec:
       app.kubernetes.io/managed-by: {{.Release.Service }}
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         app: pxcentral-memcached
         app.kubernetes.io/component: pxcentral-memcached
@@ -346,6 +359,10 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         app.kubernetes.io/component: pxcentral-cortex-consul
         cortex: consul
