@@ -3,6 +3,7 @@
 {{- $centralOIDC := .Values.oidc.centralOIDC.enabled | default false -}}
 {{- $operatorToChartUpgrade := .Values.operatorToChartUpgrade | default false -}}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $centralOIDC true }}
 apiVersion: v1
 kind: ServiceAccount
@@ -308,6 +309,10 @@ spec:
   template:
     metadata:
       name: pxcentral-keycloak-postgresql
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         app: postgresql
         role: master
@@ -459,6 +464,10 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         app.kubernetes.io/component: keycloak
         app.kubernetes.io/name: {{.Release.Name }}
