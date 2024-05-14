@@ -4,6 +4,7 @@
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $storkRequired := .Values.storkRequired | default false -}}
 {{- $sslEnabled := .Values.pxmonitor.sslEnabled | default false -}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $pxMonitorEnabled true }}
 apiVersion: v1
 kind: Secret
@@ -395,6 +396,9 @@ spec:
         target: configs
         release: pxcentral-cortex
       annotations:
+      {{- if eq $azureProxyEnabled true }}
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
     spec:
@@ -487,6 +491,9 @@ spec:
       annotations:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
+      {{- if eq $azureProxyEnabled true }}
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
     spec:
       affinity:
         nodeAffinity:
@@ -601,6 +608,9 @@ spec:
       annotations:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: ""
+      {{- if eq $azureProxyEnabled true }}
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
     spec:
       affinity:
         nodeAffinity:
@@ -714,6 +724,9 @@ spec:
       annotations:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
+      {{- if eq $azureProxyEnabled true }}
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
     spec:
       affinity:
         nodeAffinity:
@@ -830,6 +843,9 @@ spec:
       annotations:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
+      {{- if eq $azureProxyEnabled true }}
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
     spec:
       affinity:
         nodeAffinity:
@@ -941,6 +957,9 @@ spec:
       annotations:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
+      {{- if eq $azureProxyEnabled true }}
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
     spec:
       affinity:
         nodeAffinity:
@@ -1036,6 +1055,9 @@ spec:
       annotations:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
+      {{- if eq $azureProxyEnabled true }}
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
     spec:
       affinity:
         nodeAffinity:
@@ -1138,6 +1160,9 @@ spec:
       annotations:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
+      {{- if eq $azureProxyEnabled true }}
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
     spec:
       affinity:
         nodeAffinity:
@@ -1257,6 +1282,9 @@ spec:
         target: ingester
         release: pxcentral-cortex
       annotations:
+      {{- if eq $azureProxyEnabled true }}
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
     spec:

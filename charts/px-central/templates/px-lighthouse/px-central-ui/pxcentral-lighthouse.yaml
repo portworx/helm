@@ -1,4 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $prometheusEndpoint := "http://px-backup-dashboard-prometheus:9090" }}
@@ -113,6 +114,10 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         run: pxcentral-lh-middleware
         app.kubernetes.io/component: pxcentral-lh-middleware
