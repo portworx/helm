@@ -2,6 +2,7 @@
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $pxMonitorEnabled true }}
 {{- if eq $deployDedicatedMonitoringSystem false }}
 apiVersion: v1
@@ -72,6 +73,11 @@ metadata:
     app.kubernetes.io/component: pxcentral-prometheus
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
+  {{- if eq $azureProxyEnabled true }}
+  podMetadata:
+    annotations:
+      kubernetes.azure.com/no-http-proxy-vars: "true"
+  {{- end }}
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -293,6 +299,10 @@ spec:
       app.kubernetes.io/component: pxcentral-prometheus
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         k8s-app: pxcentral-prometheus-operator
         app.kubernetes.io/component: pxcentral-prometheus

@@ -1,5 +1,6 @@
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $deployDedicatedMonitoringSystem true }}
 apiVersion: monitoring.coreos.com/v1
 kind: Alertmanager
@@ -8,6 +9,11 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   configSecret: px-backup-alertmanager-custom-config
+  {{- if eq $azureProxyEnabled true }}
+  podMetadata:
+    annotations:
+      kubernetes.azure.com/no-http-proxy-vars: "true"
+  {{- end }}
   alertmanagerConfigSelector:
     matchLabels:
       app: px-backup-alert-configs
