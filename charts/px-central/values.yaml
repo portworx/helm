@@ -151,27 +151,27 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api-base
-    tag: 2.7.0-dev
+    tag: 2.7.1-dev
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend-private
-    tag: 2.7.0-dev
+    tag: 2.7.1-dev
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend-private
-    tag: 2.7.0-dev
+    tag: 2.7.1-dev
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend-private
-    tag: 2.7.0-dev
+    tag: 2.7.1-dev
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup-base
-    tag: 2.7.0-dev
+    tag: 2.7.1-dev
   keycloakBackendImage:
     registry: docker.io
     repo: portworx
@@ -185,8 +185,8 @@ images:
   keycloakLoginThemeImage:
     registry: docker.io
     repo: portworx
-    imageName: keycloak-login-theme
-    tag: 2.7.0
+    imageName: sb-keycloak-login-theme
+    tag: 2.7.1
   keycloakInitContainerImage:
     registry: docker.io
     repo: portworx
@@ -203,7 +203,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: px-backup-base
-    tag: 2.7.0-dev
+    tag: 2.7.1-dev
   mongodbImage:
     registry: docker.io
     repo: portworx
