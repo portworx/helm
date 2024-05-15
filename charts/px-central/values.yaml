@@ -156,17 +156,17 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend-private
-    tag: 2.7.0-dev
+    tag: partial-backup-success-dev
   pxcentralBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-backend-private
-    tag: 2.7.0-dev
+    tag: partial-backup-success-dev
   pxcentralMiddlewareImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend-private
-    tag: 2.7.0-dev
+    tag: partial-backup-success-dev
   postInstallSetupImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
@@ -200,10 +200,10 @@ images:
 
   ## Images required for enabling px-backup
   pxBackupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
-    imageName: px-backup-base
-    tag: 2.7.0-dev
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
+    repo: nthomas
+    imageName: px-backup
+    tag: partial-backup-alert
   mongodbImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx

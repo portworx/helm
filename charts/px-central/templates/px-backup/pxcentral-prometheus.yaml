@@ -443,8 +443,7 @@ spec:
     rules:
     - alert: ClusterAlert
       annotations:
-        description: {{`The Cluster "{{ $labels.name
-          }}" has failed.`}}
+        description: {{`The Cluster "{{ $labels.name }}" has failed.`}}
         summary: Cluster addition failed
       expr: pxbackup_cluster_status == 5
       for: 1m
@@ -453,10 +452,14 @@ spec:
 
     - alert: BackupAlert
       annotations:
-        description: {{`The Backup "{{ $labels.name 
-          }}" {{- if eq .Labels.schedule_name "" }} {{ else }} part of backup schedule "{{ $labels.schedule_name}}" {{ end }} taken for cluster "{{ $labels.cluster}}" on namespace "{{ $labels.backup_namespace}}" has failed.`}}
-        summary: Backup failed
-      expr: pxbackup_backup_status == 4
+        description: {{`The Backup "{{ $labels.name }}"
+          {{- if eq .Labels.schedule_name "" }}
+          {{ else }} part of backup schedule "{{ $labels.schedule_name}}"
+          {{ end }} taken for cluster "{{ $labels.cluster}}" on namespace "{{ $labels.backup_namespace}}"
+          {{ if eq .Value 4.00 }} has failed.{{ else if eq .Value 8.00 }} was only completed partially.
+          {{ else }} unknown {{ end }}`}}
+        summary: {{`'{{ if eq .Value 4.00 }}Backup failed{{ else if eq .Value 8.00 }}Partial Backup Success{{ else }}unknown{{ end }}'`}}
+      expr: pxbackup_backup_status == 4 or pxbackup_backup_status == 8
       for: 1m
       labels:
         severity: critical
@@ -465,7 +468,7 @@ spec:
       annotations:
         description: {{`The Restore "{{ $labels.name
           }}" made from backup "{{ $labels.backup}}" has failed.`}}
-        summary: Restoring backup failed 
+        summary: Restoring backup failed
       expr: pxbackup_restore_status == 4
       for: 1m
       labels:
@@ -473,10 +476,9 @@ spec:
 
     - alert: BackupLocationAlert
       annotations:
-        description: {{`The Backup Location "{{ $labels.name
-          }}" has failed.`}}
-        summary: BackupLocation addition failed
-      expr: pxbackup_backup_location_status == 4
+        description: {{`The Backup Location "{{ $labels.name }}" has {{ if eq .Value 4.00 }}failed{{ else if eq .Value 5.00 }}been moved to Limited Available State{{ end }}.`}}
+        summary: {{`Backup Location {{ if eq .Value 4.00 }}addition failed.{{ else if eq .Value 5.00 }}status moved to limited availability{{else }}unknown{{ end }}.`}}
+      expr: pxbackup_backup_location_status == 4 or pxbackup_backup_location_status == 5
       for: 1m
       labels:
         severity: critical
