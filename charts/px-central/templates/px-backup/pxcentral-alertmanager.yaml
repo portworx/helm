@@ -44,6 +44,7 @@ spec:
             secretKeyRef:
               name: pxc-backup-metrics
               key: metrics-token
+        {{ include "proxy.noProxyEnv" . | nindent 8 }}
         - name: POD_IP
           valueFrom:
             fieldRef:
@@ -72,6 +73,7 @@ spec:
           secretKeyRef:
             key: password
             name: pxc-backup-metrics
+      {{ include "proxy.noProxyEnv" . | nindent 6 }}
       name: config-reloader
       ports:
       - containerPort: 8080

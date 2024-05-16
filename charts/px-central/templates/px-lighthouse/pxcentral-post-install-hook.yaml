@@ -51,6 +51,7 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+          {{- include "proxy.noProxyEnv" . | nindent 10 }}
       {{- if eq $deployDedicatedMonitoringSystem true }}
           - name: DEDICATED_PROMETHEUS
             value: "true"
