@@ -62,6 +62,10 @@ spec:
             privileged: true
           ports:
             - containerPort: 7070
+          {{- if .Values.proxy.httpProxy.noProxy }}
+          env:
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           livenessProbe:
             periodSeconds: 120
             initialDelaySeconds: 150

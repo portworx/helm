@@ -381,6 +381,7 @@ spec:
               value: "keycloak"
             - name: POSTGRESQL_ENABLE_LDAP
               value: "no"
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
           ports:
             - name: tcp-postgresql
               containerPort: 5432
@@ -519,7 +520,15 @@ spec:
               echo 'PostgreSQL OK ✓'
           resources:
             {}
+          {{- if .Values.proxy.httpProxy.noProxy }}
+          env:
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
         - name: px-keycloak-login-theme
+          {{- if .Values.proxy.httpProxy.noProxy }}
+          env:
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakLoginThemeImage.registry .Values.images.keycloakLoginThemeImage.repo .Values.images.keycloakLoginThemeImage.imageName .Values.images.keycloakLoginThemeImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
@@ -575,6 +584,7 @@ spec:
           - name: HELM_CHECKSUM
             value: {{ randAlphaNum 8 | quote }}
           {{- end }}
+          {{- include "proxy.noProxyEnv" . | nindent 10 }}
           volumeMounts:
             - name: sh
               mountPath: /scripts

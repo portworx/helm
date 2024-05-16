@@ -204,6 +204,7 @@ spec:
                 secretKeyRef:
                   key: credential
                   name: px-central-admin
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
           envFrom:
             - configMapRef:
                 name: pxcentral-ui-configmap
@@ -242,6 +243,7 @@ spec:
                 secretKeyRef:
                   name: pxcentral-mysql-secret
                   key: DB_PASSWORD
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -358,6 +360,7 @@ spec:
                 secretKeyRef:
                   name: pxcentral-mysql-secret
                   key: DB_PASSWORD
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -516,6 +519,7 @@ spec:
               value: pxcentral-mysql
             - name: SERVICE_TAGS
               value: dev
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
           livenessProbe:
             exec:
               command:
