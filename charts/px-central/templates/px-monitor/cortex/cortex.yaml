@@ -427,6 +427,10 @@ spec:
         - name: cortex
           image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
+          {{- if .Values.proxy.httpProxy }}
+          env:
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           args:
             - "-target=configs"
             - "-config.file=/etc/cortex/cortex.yaml"
@@ -540,6 +544,10 @@ spec:
       {{- end }}
       containers:
         - name: cortex
+          {{- if .Values.proxy.httpProxy }}
+          env:
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
@@ -676,6 +684,10 @@ spec:
               path: /healthz
               port: http
             initialDelaySeconds: 10
+          {{- if .Values.proxy.httpProxy }}
+          env:
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
         - name: dnsmasq
           image: {{ printf "%s/%s/%s:%s" .Values.images.dnsmasqImage.registry .Values.images.dnsmasqImage.repo .Values.images.dnsmasqImage.imageName .Values.images.dnsmasqImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
@@ -684,6 +696,10 @@ spec:
             - "127.0.0.1:53"
             - --default-resolver
             - --append-search-domains
+          {{- if .Values.proxy.httpProxy }}
+          env:
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -801,6 +817,10 @@ spec:
               path: /ready
               port: http-metrics
             initialDelaySeconds: 45
+          {{- if .Values.proxy.httpProxy }}
+          env:
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -917,6 +937,10 @@ spec:
               path: /ready
               port: http-metrics
             initialDelaySeconds: 45
+          {{- if .Values.proxy.httpProxy }}
+          env:
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -1013,6 +1037,10 @@ spec:
               path: /ready
               port: http-metrics
             initialDelaySeconds: 45
+          {{- if .Values.proxy.httpProxy }}
+          env:
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -1107,6 +1135,10 @@ spec:
               path: /ready
               port: http-metrics
             initialDelaySeconds: 45
+          {{- if .Values.proxy.httpProxy }}
+          env:
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -1218,6 +1250,7 @@ spec:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: status.podIP
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
           volumeMounts:
             - name: config
               mountPath: /etc/cortex
@@ -1375,6 +1408,10 @@ spec:
             periodSeconds: 30
             successThreshold: 1
             timeoutSeconds: 1
+          {{- if .Values.proxy.httpProxy }}
+          env:
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}

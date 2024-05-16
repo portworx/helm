@@ -109,13 +109,14 @@ spec:
         secretKeyRef:
           name: pxc-backup-metrics
           key: metrics-token
+    {{- include "proxy.noProxyEnv" . | nindent 4 }}
     image: {{ printf "%s/%s/%s:%s" .Values.images.prometheusImage.registry .Values.images.prometheusImage.repo .Values.images.prometheusImage.imageName .Values.images.prometheusImage.tag }}
     livenessProbe:
       exec:
         command:
         - sh
         - -c
-        - wget http://localhost:9090/-/healthy --header="Authorization:Basic $AUTH_SECRET"
+        - wget {{ if .Values.proxy.httpProxy.noProxy }}--no-proxy{{ end }} http://localhost:9090/-/healthy --header="Authorization:Basic $AUTH_SECRET"
           -qO-
     name: prometheus
     readinessProbe:
@@ -123,14 +124,14 @@ spec:
         command:
         - sh
         - -c
-        - wget http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
+        - wget {{ if .Values.proxy.httpProxy.noProxy }}--no-proxy{{ end }} http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
           -qO-
     startupProbe:
       exec:
         command:
         - sh
         - -c
-        - wget http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
+        - wget {{ if .Values.proxy.httpProxy.noProxy }}--no-proxy{{ end }} http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
           -qO-
     ports:
     - containerPort: 9090
@@ -155,6 +156,7 @@ spec:
         secretKeyRef:
           key: password
           name: pxc-backup-metrics
+    {{- include "proxy.noProxyEnv" . | nindent 4 }}
     ports:
     - containerPort: 8080
       name: reloader-web
@@ -330,6 +332,10 @@ spec:
           image: {{ printf "%s/%s/%s:%s" .Values.images.prometheusOperatorImage.registry .Values.images.prometheusOperatorImage.repo .Values.images.prometheusOperatorImage.imageName .Values.images.prometheusOperatorImage.tag }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           name: pxcentral-prometheus-operator
+          {{- if .Values.proxy.httpProxy }}
+          env:
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           ports:
             - containerPort: 8080
               name: http

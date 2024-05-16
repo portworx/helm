@@ -161,6 +161,7 @@ spec:
             value: {{ $prometheusEndpoint }}
           - name: ALERTMANAGER_ENDPOINT
             value: {{ $alertmanagerEndpoint }}
+          {{- include "proxy.noProxyEnv" . | nindent 10 }}
         ports:
           - name: http
             containerPort: 8091
