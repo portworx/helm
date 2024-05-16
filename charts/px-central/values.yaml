@@ -46,6 +46,8 @@ oidc:
 
 proxy:
   azureProxyEnabled: false
+  httpProxy:
+    noProxy: ""
 
 postInstallJob:
   sslEnabled: true
