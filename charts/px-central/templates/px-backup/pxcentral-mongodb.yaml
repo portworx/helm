@@ -262,6 +262,7 @@ spec:
               value: "no"
             - name: MONGODB_EXTRA_FLAGS
               value: {{ printf "--wiredTigerCacheSizeGB=%d" $mongoCacheSize }}
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
           ports:
             - containerPort: 27017
               name: mongodb
