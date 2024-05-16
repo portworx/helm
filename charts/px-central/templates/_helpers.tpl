@@ -43,11 +43,15 @@ app.kubernetes.io/version: {{ .Chart.Version | quote }}
 
 
 {{/*
-Selector labels
+HTTP proxy enabled env.
 */}}
-{{- define "px-central.selectorLabels" -}}
-app.kubernetes.io/name: {{ include "px-central.name" . }}
-app.kubernetes.io/instance: {{ .Release.Name }}
+{{- define "proxy.noProxyEnv" -}}
+{{- if .Values.proxy.httpProxy.noProxy }}
+- name: NO_PROXY
+  value: {{ .Values.proxy.httpProxy.noProxy }}
+- name: no_proxy
+  value: {{ .Values.proxy.httpProxy.noProxy }}
+{{- end }}
 {{- end }}
 
 {{/*

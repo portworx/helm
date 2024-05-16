@@ -220,6 +220,7 @@ spec:
           value: "36160"
         - name: AIRGAP_REPORTING_PERIOD
           value: "90"
+        {{- include "proxy.noProxyEnv" . | nindent 8 }}
         {{- if .Values.caCertsSecretName }}
         - name: SSL_CERT_DIR
           value: /tmp/certs
