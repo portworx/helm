@@ -185,7 +185,7 @@ images:
   keycloakLoginThemeImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: sb-keycloak-login-theme
+    imageName: keycloak-login-theme
     tag: 2.7.0
   keycloakInitContainerImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
