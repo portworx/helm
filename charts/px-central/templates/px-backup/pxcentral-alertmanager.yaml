@@ -113,7 +113,7 @@ stringData:
     - name: "null"
     templates: [ "/etc/alertmanager/config/*.tmpl" ]
   pxc_template.tmpl: |
-    {{`<!DOCTYPE html>
+   {{` <!DOCTYPE html>
     <html>
       <head>
           <title>Portworx-Backup Email</title>
@@ -196,11 +196,14 @@ stringData:
               </div>
               </li>
             </ul>
-            {{- else if eq .Labels.alertname "BackupAlert" }}
+            {{- else if or (eq .Labels.alertname "BackupAlert") (eq .Labels.alertname "PartialBackupAlert") }}
             <div
                 class="pb-16"
                 style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
-                Critical Alert: Backup Failed
+                Critical Alert: 
+                {{ if eq .Labels.alertname "PartialBackupAlert" }}Backup was only partially completed
+                {{ else if eq .Labels.alertname "BackupAlert" }}Backup Failed
+                {{else}}unknown{{ end }}
             </div>
             <div
                 class="pb-16"
@@ -280,11 +283,14 @@ stringData:
               </div>
               </li>
             </ul>
-            {{- else if eq .Labels.alertname "BackupLocationAlert" }}
+            {{- else if or (eq .Labels.alertname "BackupLocationAlert") (eq .Labels.alertname "BackupLocationLimitedAvailabilityAlert") }}
             <div
                 class="pb-16"
-                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
-                Critical Alert: Backup Location Disconnected
+                style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: 
+                {{if eq .Labels.alertname "BackupLocationAlert"}}Backup Location Disconnected
+                {{else if eq .Labels.alertname "BackupLocationLimitedAvailabilityAlert"}}Backup Location state changed to limited availability
+                {{ else }}unknown{{ end }}
             </div>
             <div
                 class="pb-16"
@@ -306,7 +312,9 @@ stringData:
               <li>
               <div style="display: flex">
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
-                <div>{{ .Labels.error_reason }}</div> 
+                <div>
+                  {{ .Labels.error_reason }}
+                </div> 
                 </div>
               </li>
               <li> 
