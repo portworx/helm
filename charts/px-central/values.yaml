@@ -83,7 +83,7 @@ pxlicenseserver:
 
 pxmonitor:
   enabled: false
-  pxCentralEndpoint:
+  pxCentralEndpoint: ""
   sslEnabled: false
   oidcClientID: pxcentral
   consulBindInterface: ""
@@ -116,8 +116,8 @@ service:
 
 cassandra:
   jvm:
-    maxHeapSize:
-    newHeapSize:
+    maxHeapSize: ""
+    newHeapSize: ""
 
 installCRDs: false
 clusterDomain: "cluster.local"
