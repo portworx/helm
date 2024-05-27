@@ -210,7 +210,7 @@ spec:
         - name: USE_PX_BACKUP_EMAIL_ALERT_TEMPLATE
           value: "{{ .Values.pxbackup.usePxBackupEmailAlertTemplate }}"
         - name: SOFT_LICENSING_PERIOD
-          value: "30"
+          value: "36160"
         - name: AIRGAP_REPORTING_PERIOD
           value: "90"
         {{- if .Values.caCertsSecretName }}
