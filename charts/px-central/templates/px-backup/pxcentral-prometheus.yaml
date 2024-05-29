@@ -477,9 +477,9 @@ spec:
 
     - alert: BackupLocationAlert
       annotations:
-        description: {{`The Backup Location "{{ $labels.name }}" has {{ if eq .Value 4.00 }}failed{{ else if eq .Value 5.00 }}been moved to Limited Available State{{ end }}.`}}
-        summary: {{`Backup Location {{ if eq .Value 4.00 }}addition failed.{{ else if eq .Value 5.00 }}status moved to limited availability{{else }}unknown{{ end }}.`}}
-      expr: pxbackup_backup_location_status == 4 or pxbackup_backup_location_status == 5
+        description: {{`The Backup Location "{{ $labels.name }}" has failed.`}}
+        summary: Backup Location addition failed
+      expr: pxbackup_backup_location_status == 4
       for: 1m
       labels:
         severity: critical
