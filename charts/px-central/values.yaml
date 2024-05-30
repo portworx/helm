@@ -67,6 +67,7 @@ pxbackup:
   prometheusSecretName: ""
   alertmanagerSecretName: ""
   usePxBackupEmailAlertTemplate: true
+  monitorBLHealthFrequency: 190m
 
 pxlicenseserver:
   enabled: false
