@@ -205,6 +205,10 @@ spec:
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
             - /scripts/setup.sh
+          {{- if or (eq $azureProxyEnabled true) (.Values.proxy.httpProxy.noProxy) }}
+          args:
+            - export MONGODB_INITIAL_PRIMARY_HOST=pxc-backup-mongodb-0.$(K8S_SERVICE_NAME) && export MONGODB_ADVERTISED_HOSTNAME=$(MY_POD_NAME).$(K8S_SERVICE_NAME) && /scripts/setup.sh
+          {{- end }}
           env:
             - name: BITNAMI_DEBUG
               value: "false"
