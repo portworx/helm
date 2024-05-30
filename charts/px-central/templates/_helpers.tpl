@@ -43,6 +43,14 @@ app.kubernetes.io/version: {{ .Chart.Version | quote }}
 
 
 {{/*
+Selector labels
+*/}}
+{{- define "px-central.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "px-central.name" . }}
+app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{/*
 HTTP proxy enabled env.
 */}}
 {{- define "proxy.noProxyEnv" -}}
