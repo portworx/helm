@@ -14,9 +14,9 @@ modules:
   pxBackup:
     pxBackup: "docker.io/portworx/px-backup:2.7.1"
     mongodb: "docker.io/portworx/mongodb:5.0.24-debian-11-r0"
-    kopiaExecutor: "docker.io/portworx/kopiaexecutor:1.2.11"
-    nfsExecutor: "docker.io/portworx/nfsexecutor:1.2.11"
-    filesystemCtl: "docker.io/portworx/filesystemctl:1.2.11"
+    kopiaExecutor: "docker.io/portworx/kopiaexecutor:1.2.12"
+    nfsExecutor: "docker.io/portworx/nfsexecutor:1.2.12"
+    filesystemCtl: "docker.io/portworx/filesystemctl:1.2.12"
     pxBackupPrometheusImage: "docker.io/portworx/prometheus:v2.48.0"
     pxBackupAlertmanagerImage: "docker.io/portworx/alertmanager:v0.26.0"
     pxBackupPrometheusOperatorImage: "docker.io/portworx/prometheus-operator:v0.70.0"
