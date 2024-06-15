@@ -116,6 +116,20 @@ spec:
       labels:
         k8s-app: prometheus-operator
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+              {{- end }}
       containers:
       - args:
           - -namespaces={{ .Release.Namespace }}
@@ -228,6 +242,20 @@ metadata:
    name: px-backup-dashboard-prometheus
    namespace: {{ .Release.Namespace }}
 spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          {{- if .Values.nodeAffinityLabel }}
+          - key: {{ .Values.nodeAffinityLabel }}
+            operator: Exists
+          {{- else }}
+          - key: pxbackup/enabled
+            operator: NotIn
+            values:
+            - "false"
+          {{- end }}
   additionalAlertManagerConfigs:
     key: am-configs.yaml
     name: pxc-backup-metrics
