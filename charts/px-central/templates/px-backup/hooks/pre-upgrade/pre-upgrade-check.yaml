@@ -1,0 +1,26 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pre-upgrade-check
+  labels:
+    app: px-backup
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": hook-succeeded,hook-failed
+spec:
+  template:
+    spec:
+      containers:
+        - name: check-upgrade
+          image: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/users/ss/pxcentral-onprem-post-setup-base:pre-hook
+          imagePullPolicy: Always
+          command: ["python", "-u", "/pxcentral-pre-upgrade/pxc-pre-upgrade.py"]
+          env:
+            - name: STATEFULSET_NAME
+              value: "pxc-backup-mongodb"  # StatefulSet name
+            - name: NAMESPACE
+              value: "px-backup"  # namespace
+            - name: TARGET_VERSION
+              value: "7"  # desired target version
+      restartPolicy: Never
