@@ -8,6 +8,20 @@ metadata:
   name: px-backup-alertmanager
   namespace: {{ .Release.Namespace }}
 spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          {{- if .Values.nodeAffinityLabel }}
+          - key: {{ .Values.nodeAffinityLabel }}
+            operator: Exists
+          {{- else }}
+          - key: pxbackup/enabled
+            operator: NotIn
+            values:
+            - "false"
+          {{- end }}
   configSecret: px-backup-alertmanager-custom-config
   {{- if eq $azureProxyEnabled true }}
   podMetadata:
