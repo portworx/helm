@@ -62,7 +62,46 @@ customRegistryURL:
 registrySecret:
 licenseSecret:
 
-monitoring: false
+monitoring: 
+  prometheus:
+    enabled: yes
+    exportMetrics: false
+    alertManager: false
+    resources: 
+      # requests:
+      #   memory: "64Mi"
+      #   cpu: "250m"
+      # limits:
+      #   memory: "128Mi"
+      #   cpu: "500m"
+    replicas: 0
+    retention: ""
+    retentionSize: ""    
+    
+    #Prometheus StorageSpec for persistent data
+    storage:
+      # volumeClaimTemplate:
+      #   spec:
+      #     storageClassName: gluster
+      #     accessModes: ["ReadWriteOnce"]
+      #     resources:
+      #       requests:
+      #         storage: 50Gi
+      #     selector: {}
+    volumes: 
+    # - name: objectstore-cert
+    #   mountPath: /etc/pwx/objectstore-cert
+    #   secret:
+    #     secretName: objectstore-cert
+    #     items:
+    #     - key: objectstore.pem
+    #       path: objectstore.pem
+    volumeMounts: []
+    securityContext: 
+      runAsNonRoot: false
+  telemetry: true
+  grafana: true
+
 telemetry: false
 
 deployOnMaster:  false                # For POC only
