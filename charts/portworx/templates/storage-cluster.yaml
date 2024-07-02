@@ -307,9 +307,13 @@ spec:
   {{- if or (eq .Values.csi.enabled true) (eq .Values.csi.enabled false) }}
   csi:
     enabled: {{ .Values.csi.enabled }}
+    {{- if eq .Values.csi.topology true}}
     topology:
-      enabled: {{ .Values.csi.topology}}
-    installSnapshotController: {{.Values.csi.installSnapshotController}}
+      enabled: true
+    {{- end}}
+    {{- if eq .Values.csi.installSnapshotController true}}
+    installSnapshotController: true
+    {{- end}}
   {{- end }}
   {{- if (and (.Values.aut) (eq .Values.aut true))}}
   autopilot:

@@ -8,7 +8,10 @@ storkSpec:
     mountPath: /etc/kubernetes
     secret:
       configMap: stork-config
-csi: true
+csi: 
+  enabled: true
+  topology: true
+  installSnapshotController: true
 aut: true
 monitoring: true
 telemetry: true
