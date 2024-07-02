@@ -210,6 +210,8 @@ spec:
               fieldPath: metadata.namespace
         - name: PX_BACKUP_DEFAULT_ORG
           value: {{ .Values.pxbackup.orgName }}
+        - name: ENABLE_MONITOR_BL_HEALTH
+          value: {{ .Values.pxbackup.enableMonitorBLHealth }}
         - name: MONITOR_BL_HEALTH_FREQUENCY
           value: {{ .Values.pxbackup.monitorBLHealthFrequency }}
         - name: PX_BACKUP_DEFAULT_DATASTORE
