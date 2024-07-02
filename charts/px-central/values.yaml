@@ -73,6 +73,7 @@ pxbackup:
   alertmanagerSecretName: ""
   usePxBackupEmailAlertTemplate: true
   monitorBLHealthFrequency: 210m
+  enableMonitorBLHealth: false
 
 pxlicenseserver:
   enabled: false
