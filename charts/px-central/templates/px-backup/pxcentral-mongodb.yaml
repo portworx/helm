@@ -25,6 +25,28 @@ data:
     echo "Advertised Hostname: $MONGODB_ADVERTISED_HOSTNAME"
     echo "Advertised Service: $K8S_SERVICE_NAME"
 
+    if [[ "$MY_POD_NAME" = "pxc-backup-mongodb-0" ]]; then
+      echo "This node is currently PRIMARY - will apply rs.conf settings"
+
+      usernameAndPassword="-u ${MONGODB_ROOT_USER} -p ${MONGODB_ROOT_PASSWORD}"
+      settingsToConfigure="${settingsToConfigure}cfg.settings.heartbeatTimeoutSecs = 60; "
+      settingsToConfigure="${settingsToConfigure}cfg.settings.electionTimeoutMillis = 20000; "
+
+      # avoiding tricky string substitution with single quotes by making the eval string a set of vars
+      rsconf="cfg = rs.conf();"
+      rsreconf="rs.reconfig(cfg);"
+      rsCommand="${rsconf} ${settingsToConfigure} ${rsreconf}"
+
+      mongosh ${usernameAndPassword} --eval "${rsCommand}"
+      if [ $? -ne 0 ]; then
+        logger "Failed to apply mongodb cfg.settings configuration"
+      else
+        logger "mongodb replicaset cfg.settings configuration applied"
+        logger "Will check rs conf"
+        # don't exit just yet - the settings will be checked in the next loop
+      fi  
+    fi
+
     # Check for existing replica set in case there is no data in the PVC
     # This is for cases where the PVC is lost or for MongoDB caches without
     # persistence
