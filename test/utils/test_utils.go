@@ -30,6 +30,7 @@ func TestRenderedHelmTemplate(t *testing.T, helmOptions *helm.Options, helmChart
 
 	output := helm.RenderTemplate(t, helmOptions, helmChartPath, "my-release", []string{fmt.Sprintf("templates/%v", renderTemplateFileName)})
 
+	fmt.Printf("\n--------------------->\n%v",string(output))
 	var storageCluster interface{}
 	helm.UnmarshalK8SYaml(t, output, &storageCluster)
 
@@ -39,7 +40,7 @@ func TestRenderedHelmTemplate(t *testing.T, helmOptions *helm.Options, helmChart
 func isYamlMatched(expected, actual interface{}) bool {
 	if !reflect.DeepEqual(expected, actual) {
 		diff := cmp.Diff(expected, actual)
-		log.Infof("Differences found:\n%v", diff)
+		fmt.Printf("\nDifferences found:\n%v", diff)
 		return false
 	}
 	return true

@@ -59,6 +59,20 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				ValuesFiles: []string{"./testValues/storagecluster_placement.yaml"},
 			},
 		},
+		{
+			name:           "TestMonitoringWithAllValues",
+			resultFileName: "storagecluster_monitoring.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_monitoring.yaml"},
+			},
+		},
+		{
+			name:           "TestEnableMonitoringByEnablingTelemetry",
+			resultFileName: "storagecluster_monitoring_enable_with_enable_telemetry.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{"monitoring.telemetry": "true", "internalKVDB": "true"},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

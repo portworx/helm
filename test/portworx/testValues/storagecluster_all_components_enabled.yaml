@@ -10,5 +10,8 @@ storkSpec:
       configMap: stork-config
 csi: true
 aut: true
-monitoring: true
-telemetry: true
+monitoring:
+  prometheus:
+    enabled: true
+  telemetry: true
+  grafana: true
