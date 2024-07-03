@@ -1,0 +1,17 @@
+# storagecluster_all_components_enabled.yaml
+stork: true
+internalKVDB: true
+storkSpec:
+  args: "webhook-controller=true;verbose=true"
+  volumes:                    
+  - name: scheduler-config
+    mountPath: /etc/kubernetes
+    secret:
+      configMap: stork-config
+csi: true
+aut: true
+monitoring:
+  prometheus:
+    enabled: true
+  telemetry: true
+  grafana: true

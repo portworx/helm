@@ -1,0 +1,35 @@
+internalKVDB: true
+monitoring: 
+  prometheus:                        
+    enabled: true                    
+    exportMetrics: true              
+    alertManager: true              
+    resources:                       
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    replicas: 5                    
+    retention: "24h"                    
+    retentionSize: "10GiB"               
+    storage:                         
+      volumeClaimTemplate:
+        spec:
+          storageClassName: px-csi-db
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 2Gi
+    volumes:                        
+      - name: additional-volume
+        hostPath:
+          path: /mountdata
+    volumeMounts:                     
+      - mountPath: /data/prometheus
+        name: additional-volume
+    securityContext:                 
+      runAsNonRoot: false
+  telemetry: true                   
+  grafana: true                    
