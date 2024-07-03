@@ -1,0 +1,10 @@
+internalKVDB: true
+tolerations: 
+  - key: "key"
+    operator: "Equal"
+    value: "test-storage-node-1"
+    effect: "NoSchedule"
+  - key: "key"
+    operator: "Exists"
+    value: "test-storage-node-2"
+    effect: "PreferNoSchedule"
