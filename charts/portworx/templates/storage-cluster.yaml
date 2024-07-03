@@ -28,6 +28,9 @@
   {{- $journalDevice := .Values.journalDevice | default "none" }}
   {{- $miscArgs := include "px.miscArgs" . }}
   {{- $volumesPresent := include "px.volumesPresent" . }}
+  {{- $prometheus := .Values.monitoring.prometheus}}
+  {{- $prometheousRetention := .Values.monitoring.prometheus.retention | default "none"}}
+  {{- $prometheousRetentionSize := .Values.monitoring.prometheus.retentionSize | default "none"}}
 
 kind: StorageCluster
 apiVersion: core.libopenstorage.org/v1
@@ -289,20 +292,63 @@ spec:
   {{- end}}
   {{- end }}
 
-  {{- if (or (and (.Values.monitoring) (eq .Values.monitoring true)) (and (.Values.telemetry) (eq .Values.telemetry true) )) }}
+  {{- if or (and (.Values.monitoring.telemetry) (eq .Values.monitoring.telemetry true))
+  (and $prometheus.enabled (eq $prometheus.enabled true))
+  (and .Values.grafana (eq .Values.grafana true))
+  }}
   monitoring:
-    {{- if (and (.Values.monitoring) (eq .Values.monitoring true)) }}
+    {{- if (and ( $prometheus.enabled) (eq $prometheus.enabled true)) }}
     prometheus:
       enabled: true
+      {{- if (and ( $prometheus.exportMetrics) (eq $prometheus.exportMetrics true)) }}
       exportMetrics: true
+      {{- end}}
+      {{- if (and ( $prometheus.alertManager) (eq $prometheus.alertManager true)) }}
       alertManager:
         enabled: true
+      {{- end}}
+      {{- if gt (int $prometheus.replicas) 1 }}
+      replicas: {{ $prometheus.replicas }}
+      {{- end }}
+      {{- if ne $prometheousRetention "none"}}
+      retention: {{ $prometheousRetention }}
+      {{- end}}
+      {{- if ne $prometheousRetentionSize "none"}}
+      retentionSize: {{ $prometheousRetentionSize }}
+      {{- end}}
+      {{- with $prometheus.resources }}
+      resources:
+        {{- toYaml . | nindent 8  }}
+      {{- end}}
+     {{- with $prometheus.storage }}
+      storage:
+        {{- toYaml . | nindent 8 }}
+      {{- end}}
+      {{- with $prometheus.volumes }}
+      volumes:
+          {{- toYaml . | nindent 6  }}
+      {{- end }}
+      {{- with $prometheus.volumeMounts }}
+      volumeMounts:
+          {{- toYaml . | nindent 6  }}
+      {{- end}}
+      {{- if (and $prometheus.securityContext.runAsNonRoot (eq $prometheus.securityContext.runAsNonRoot true)) }}
+      securityContext:
+        runAsNonRoot: true
+      {{- end}}
     {{- end }}
-    {{- if (and (.Values.telemetry) (eq .Values.telemetry true)) }}
+
+    {{- if (and (.Values.monitoring.telemetry) (eq .Values.monitoring.telemetry true)) }}
     telemetry:
       enabled: true
     {{- end }}
+
+    {{- if (and (.Values.monitoring.grafana) (eq .Values.monitoring.grafana true)) }}
+    grafana:
+      enabled: true
+    {{- end }}
   {{- end }}
+
 
   {{- if or (eq .Values.csi true) (eq .Values.csi false) }}
   csi:
