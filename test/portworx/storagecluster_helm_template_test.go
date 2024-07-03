@@ -67,7 +67,9 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 
 		t.Run(testCase.name, func(t *testing.T) {
 			t.Parallel()
-			test_utils.TestRenderedHelmTemplate(t, testCase.helmOption, helmChartPath, templateFileName, testCase.resultFileName)
+			resultFilePath, err := filepath.Abs(filepath.Join("testspec/", testCase.resultFileName))
+			require.NoError(t, err)
+			test_utils.TestRenderedHelmTemplate(t, testCase.helmOption, helmChartPath, templateFileName, resultFilePath)
 		})
 	}
 }

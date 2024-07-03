@@ -12,14 +12,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const (
-	resultsFolderPath = "./testspec/%v"
-)
-
-func TestRenderedHelmTemplate(t *testing.T, helmOptions *helm.Options, helmChartPath string, renderTemplateFileName string, resultFileName string) {
+func TestRenderedHelmTemplate(t *testing.T, helmOptions *helm.Options, helmChartPath string, renderTemplateFileName string, resultFilePath string) {
 	t.Helper()
 
-	resultFileContent, err := os.ReadFile(fmt.Sprintf(resultsFolderPath, resultFileName))
+	resultFileContent, err := os.ReadFile(resultFilePath)
 	if err != nil {
 		log.Errorf("Error while reading result YAML file. %v", err)
 		t.Fail()
@@ -39,7 +35,7 @@ func TestRenderedHelmTemplate(t *testing.T, helmOptions *helm.Options, helmChart
 func isYamlMatched(expected, actual interface{}) bool {
 	if !reflect.DeepEqual(expected, actual) {
 		diff := cmp.Diff(expected, actual)
-		log.Infof("Differences found:\n%v", diff)
+		fmt.Printf("Differences found:\n%v", diff)
 		return false
 	}
 	return true
