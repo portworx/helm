@@ -303,44 +303,35 @@ spec:
       {{- if (and ( $prometheus.exportMetrics) (eq $prometheus.exportMetrics true)) }}
       exportMetrics: true
       {{- end}}
-
       {{- if (and ( $prometheus.alertManager) (eq $prometheus.alertManager true)) }}
       alertManager:
         enabled: true
       {{- end}}
-
       {{- if gt (int $prometheus.replicas) 1 }}
       replicas: {{ $prometheus.replicas }}
       {{- end }}
-
       {{- if ne $prometheousRetention "none"}}
       retention: {{ $prometheousRetention }}
       {{- end}}
-
       {{- if ne $prometheousRetentionSize "none"}}
       retentionSize: {{ $prometheousRetentionSize }}
       {{- end}}
-
       {{- with $prometheus.resources }}
       resources:
         {{- toYaml . | nindent 8  }}
       {{- end}}      
-
      {{- with $prometheus.storage }}
       storage:
         {{- toYaml . | nindent 8 }}
       {{- end}}
-
       {{- with $prometheus.volumes }}
       volumes:
           {{- toYaml . | nindent 6  }}
       {{- end }}
-
       {{- with $prometheus.volumeMounts }}
       volumeMounts:
           {{- toYaml . | nindent 6  }}
       {{- end}}
-
       {{- if (and $prometheus.securityContext.runAsNonRoot (eq $prometheus.securityContext.runAsNonRoot true)) }}
       securityContext:
         runAsNonRoot: true
