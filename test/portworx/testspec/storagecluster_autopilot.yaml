@@ -1,0 +1,57 @@
+kind: StorageCluster
+apiVersion: core.libopenstorage.org/v1
+metadata:
+  name: "mycluster"
+  namespace: kube-system
+  annotations:
+  labels:
+    heritage: "Helm"
+    release: "my-release"
+    chart: "portworx-3.1.0"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "my-release"
+spec:
+  image: portworx/oci-monitor:3.1.0
+  imagePullPolicy: Always
+
+  kvdb:
+    internal: true
+  storage:
+    useAll: true
+  secretsProvider: k8s
+
+  env:
+  - name: PX_SECRETS_NAMESPACE
+    value: portworx
+
+  stork:
+    enabled: true
+  csi:
+    enabled: false
+  autopilot:
+    enabled: true
+    image: portworx/autopilot:1.3.14
+    lockImage: true
+    args: 
+      min_poll_interval: "4"
+      log-level: "info"
+    env:
+    - name: PX_SHARED_SECRET
+      valueFrom:
+        secretKeyRef:
+          key: apps-secret
+          name: px-system-secrets
+    volumes:
+    - mountPath: /etc/pwx/test-cert-vol
+      name: test-cert-vol
+      secret:
+        items:
+        - key: test.pem
+          path: test.pem
+        secretName: test-cert
+    providers:
+    - name: ""
+      type: "prometheus"
+      params:
+        url: "http://datadog:9090"
+        auth: "foobar"

@@ -9,6 +9,7 @@ storkSpec:
     secret:
       configMap: stork-config
 csi: true
-aut: true
+autopilot: 
+  enabled: true
 monitoring: true
 telemetry: true

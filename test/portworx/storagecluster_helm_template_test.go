@@ -59,6 +59,13 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				ValuesFiles: []string{"./testValues/storagecluster_placement.yaml"},
 			},
 		},
+		{
+			name:           "TestAutoPilot",
+			resultFileName: "storagecluster_autopilot.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_autopilot.yaml"},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
