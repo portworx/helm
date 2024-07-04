@@ -215,7 +215,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: mongodb
-    tag: 6.0.13-debian-11-r21
+    tag: 5.0.24-debian-11-r20
 
   ## Images required for enabling px-license-server
   licenseServerImage:
