@@ -308,9 +308,51 @@ spec:
   csi:
     enabled: {{ .Values.csi }}
   {{- end }}
-  {{- if (and (.Values.aut) (eq .Values.aut true))}}
+
+
+  {{- if (and (.Values.autopilot.enabled) (eq .Values.autopilot.enabled true))}}
   autopilot:
     enabled: true
+    {{- if ne .Values.autopilot.image ""}}
+    image: {{.Values.autopilot.image}}
+    {{- end }}
+    {{- if eq .Values.autopilot.lockImage true}}
+    lockImage: true
+    {{- end }}
+    {{- if .Values.autopilot.args }}
+    args:
+    {{- $args := .Values.autopilot.args | split ";" }}
+    {{- range $key, $val := $args }}
+    {{- $arg := $val | split "=" }}
+      {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
+    {{- end }}
+    {{- end }}
+    {{- with .Values.autopilot.env }}
+    env:
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+
+    {{- with .Values.autopilot.volumes }}
+    volumes:
+      {{- toYaml . | nindent 4}}
+    {{- end }}
+    {{- with .Values.autopilot.providers }}
+    providers:
+    {{- range . }}
+    - name: "{{ .name }}"
+      type: "{{ .type }}"
+      params:
+        {{- $params := splitList ";" .params }}
+        {{- range $params }}
+        {{- $pair := splitList "=" . }}
+        {{- if eq (len $pair) 2 }}
+        {{- $key := index $pair 0 }}
+        {{- $value := index $pair 1 }}
+        {{ $key }}: "{{ $value }}"
+        {{- end }}
+        {{- end }}
+    {{- end }}
+  {{- end }}
   {{- end }}
 
   {{- with .Values.tolerations }}
