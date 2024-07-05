@@ -233,6 +233,11 @@ spec:
     {{- if .Values.stork.storkVersion }}
     image: {{ template "px.getStorkImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.stork.storkVersion }}
     {{- end }}
+
+    {{- if (and .Values.stork.lockImage (eq .Values.stork.lockImage true)) }}
+    lockImage: true
+    {{- end }}
+
     {{- with .Values.stork.env }}
     env:
       {{- toYaml . | nindent 4 }}

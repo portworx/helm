@@ -26,16 +26,18 @@ spec:
 
   stork:
     enabled: true
-    
-  monitoring:
-    prometheus:
-      enabled: true
-      exportMetrics: true
-      alertManager:
-        enabled: true
-    telemetry:
-      enabled: true
+    image: openstorage/stork:2.7.0
+    lockImage: true                      
+    env:
+    - name: PX_TEST_ENV
+      value: test_env_autopilot
+    volumes:
+    - hostPath:
+        path: /test
+      mountPath: /etc/px-test
+      name: px-test-volume
+    args:
+      verbose: "true"
+      webhook-controller: "true"
   csi:
-    enabled: true
-  autopilot:
-    enabled: true
+    enabled: false
