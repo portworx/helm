@@ -115,3 +115,14 @@ clusterToken:
 
 deleteStrategy:                           # Optional: Delete strategy for the portworx cluster
   type:                                   # Valid values: Uninstall, UninstallAndWipe
+
+updateStrategy:   
+  type:                                   # portworx supports the following update strategies- RollingUpdate and OnDelete
+
+  # maxUnavailable and minReadySeconds applicable only on selecting type RollingUpdate
+  maxUnavailable:                         # Similarly to how Kubernetes rolling update strategies work, this field specifies how many nodes can be down at any given time.
+  minReadySeconds:                        # During rolling updates, this flag will wait for all pods to be ready for at least minReadySeconds before updating the next batch of pods,
+                                          # where the size of the pod batch is specified through the spec.updateStrategy.rollingUpdate.maxUnavailable flag.
+
+  autoUpdateComponents:                   # Indicates the update strategy for the component images
+                                          # valid values None,Once,Always
