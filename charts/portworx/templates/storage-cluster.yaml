@@ -228,18 +228,22 @@ spec:
     value: portworx
 
   stork:
-    {{- if (and (.Values.stork) (eq .Values.stork true))}}
+    {{- if (and (.Values.stork.enabled) (eq .Values.stork.enabled true))}}
     enabled: true
-    {{- if .Values.storkVersion }}
-    image: {{ template "px.getStorkImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.storkVersion }}
+    {{- if .Values.stork.storkVersion }}
+    image: {{ template "px.getStorkImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.stork.storkVersion }}
     {{- end }}
-    {{- with .Values.storkSpec.volumes }}
+    {{- with .Values.stork.env }}
+    env:
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.stork.volumes }}
     volumes:
       {{- toYaml . | nindent 4 }}
     {{- end -}}
-    {{- if .Values.storkSpec.args }}
+    {{- if .Values.stork.args }}
     args:
-    {{- $args := .Values.storkSpec.args | split ";" }}
+    {{- $args := .Values.stork.args | split ";" }}
     {{- range $key, $val := $args }}
     {{- $arg := $val | split "=" }}
       {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
