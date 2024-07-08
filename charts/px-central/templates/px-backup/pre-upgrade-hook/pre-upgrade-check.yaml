@@ -2,7 +2,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: mongo-statefulset-reader
-  namespace: px-backup
+  namespace: {{ .Release.Namespace }}
   annotations:
     "helm.sh/hook": pre-upgrade
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
@@ -51,14 +51,14 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: mongo-statefulset-reader-binding
-  namespace: px-backup
+  namespace: {{ .Release.Namespace }}
   annotations:
     "helm.sh/hook": pre-upgrade
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 subjects:
   - kind: ServiceAccount
     name: default
-    namespace: px-backup
+    namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
   name: mongo-statefulset-reader
@@ -68,6 +68,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: pre-upgrade-check
+  namespace: {{ .Release.Namespace }}
   labels:
     app: px-backup
   annotations:
@@ -79,15 +80,37 @@ spec:
     spec:
       containers:
         - name: check-upgrade
-          image: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/users/ss/pxcentral-onprem-post-setup-base:pu-check
+          image: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/users/ss/pxcentral-onprem-post-setup-base:pu-test
           imagePullPolicy: Always
           command: ["python", "/pxcentral-pre-upgrade/pxc-pre-upgrade.py"]
           env:
             - name: STATEFULSET_NAME
-              value: "pxc-backup-mongodb" 
+              value: pxc-backup-mongodb
             - name: NAMESPACE
-              value: "px-backup"  
+              value: {{ .Release.Namespace }}  
             - name: TARGET_VERSION
-              value: "7"  # Change to the desired target version
+              value: {{ .Values.images.mongodbImage.tag }}
+            - name: K8S_SERVICE_NAME
+              value: pxc-backup-mongodb-headless
+            - name: MONGODB_ROOT_USERNAME
+              value: root
+            - name: MONGODB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb-root-password
+                  name: pxc-backup-mongodb
+            - name: JOB_TIMEOUT_SECONDS
+              value: "600"
+            - name: MONGODB_IMAGES
+              value: >
+                {
+                  "registry": "{{ .Values.mongodbImages.registry }}",
+                  "repo": "{{ .Values.mongodbImages.repo }}",
+                  "imageName": "{{ .Values.mongodbImages.imageName }}",
+                  "tags": {
+                    "mongodb5": "{{ .Values.mongodbImages.tags.mongodb5 }}",
+                    "mongodb6": "{{ .Values.mongodbImages.tags.mongodb6 }}",
+                    "mongodb7": "{{ .Values.mongodbImages.tags.mongodb7 }}"
+                  }
+                }
       restartPolicy: Never
-
