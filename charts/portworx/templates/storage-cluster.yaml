@@ -313,6 +313,39 @@ spec:
     enabled: true
   {{- end }}
 
+  {{- if .Values.runtimeOptions }}
+  runtimeOptions:
+  {{- $args := .Values.runtimeOptions | split ";" }}
+  {{- range $key, $val := $args }}
+  {{- $arg := $val | split "=" }}
+    {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
+  {{- end }}
+  {{- end }}
+
+  {{- if .Values.featureGates }}
+  featureGates:
+  {{- $args := .Values.featureGates | split ";" }}
+  {{- range $key, $val := $args }}
+  {{- $arg := $val | split "=" }}
+    {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
+  {{- end }}
+  {{- end }}
+
+  {{- if eq .Values.security.enabled true}}
+  security: 
+    enabled: true
+    auth:
+      {{- if (or (eq .Values.security.auth.guestAccess "Enabled") (eq .Values.security.auth.guestAccess "Disabled") (eq .Values.security.auth.guestAccess "Managed"))}}
+      guestAccess: {{.Values.security.auth.guestAccess}}
+      {{- end}}
+      {{- if and .Values.security.auth.selfSigned.tokenLifetime .Values.security.auth.selfSigned.issuer .Values.security.auth.selfSigned.sharedSecret }}
+      selfSigned:
+        tokenLifetime: {{.Values.security.auth.selfSigned.tokenLifetime}}
+        issuer: {{.Values.security.auth.selfSigned.issuer}}
+        sharedSecret: {{.Values.security.auth.selfSigned.sharedSecret}}
+      {{- end}}
+  {{- end}}
+
   {{- with .Values.tolerations }}
   placement:
     tolerations:
