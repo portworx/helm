@@ -6,6 +6,9 @@ metadata:
   annotations:
     "helm.sh/hook": pre-upgrade
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-pre-upgrade-hook
+    app.kubernetes.io/component: pxcentral-pre-upgrade-hook
 rules:
   - apiGroups: ["apps"]
     resources: ["statefulsets"]
@@ -74,14 +77,15 @@ metadata:
   annotations:
     "helm.sh/hook": pre-upgrade
     "helm.sh/hook-weight": "0"
-    #"helm.sh/hook-delete-policy": hook-succeeded,hook-failed
+    "helm.sh/hook-delete-policy": hook-succeeded
 spec:
   template:
     spec:
       containers:
         - name: check-upgrade
-          image: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/users/ss/pxcentral-onprem-post-setup-base:pu-test
-          imagePullPolicy: Always
+          #image: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/users/ss/pxcentral-onprem-post-setup-base:pu-test
+          image: {{ printf "%s/%s/%s:%s" .Values.images.preUpgradeHookImage.registry .Values.images.preUpgradeHookImage.repo .Values.images.preUpgradeHookImage.imageName .Values.images.preUpgradeHookImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: ["python", "/pxcentral-pre-upgrade/pxc-pre-upgrade.py"]
           env:
             - name: STATEFULSET_NAME
