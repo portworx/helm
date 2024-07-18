@@ -1,0 +1,38 @@
+kind: StorageCluster
+apiVersion: core.libopenstorage.org/v1
+metadata:
+  name: "mycluster"
+  namespace: kube-system
+  annotations:
+  labels:
+    heritage: "Helm"
+    release: "my-release"
+    chart: "portworx-3.1.0"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "my-release"
+spec:
+  image: portworx/oci-monitor:3.1.0
+  imagePullPolicy: Always
+
+  kvdb:
+    internal: true
+  storage:
+    useAll: true
+  secretsProvider: k8s
+
+  env:
+  - name: PX_SECRETS_NAMESPACE
+    value: portworx
+
+  stork:
+    enabled: true
+  csi:
+    enabled: false
+  security: 
+    enabled: true
+    auth:
+      guestAccess: Enabled
+      selfSigned:
+        tokenLifetime: 24h
+        issuer: my-issuer
+        sharedSecret: px-shared-secret

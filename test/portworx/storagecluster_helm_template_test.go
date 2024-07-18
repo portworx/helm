@@ -59,6 +59,40 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				ValuesFiles: []string{"./testValues/storagecluster_placement.yaml"},
 			},
 		},
+		{
+			name:           "TestRuntimeOptions",
+			resultFileName: "storagecluster_runtimeOptions.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"runtimeOptions": "num_io_threads=10",
+					"internalKVDB":"true",
+				},
+			},
+		},
+		{
+			name:           "TestFeatureGates",
+			resultFileName: "storagecluster_featureGates.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"featureGates": "CSI=true",
+					"internalKVDB":"true",
+				},
+			},
+		},
+		{
+			name:           "TestSecurityEnabled",
+			resultFileName: "storagecluster_security_enabled.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_security_enabled.yaml"},
+			},
+		},
+		{
+			name:           "TestSecurityDisabled",
+			resultFileName: "storagecluster_with_default_values.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_security_disabled.yaml"},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
