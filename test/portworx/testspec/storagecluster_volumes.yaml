@@ -32,5 +32,6 @@ spec:
     mountPath: /etc/test
     mountPropagation: Bidirectional
     name: test-volume
+    readOnly: true
   csi:
     enabled: false
