@@ -90,6 +90,7 @@ volumes:                              # Add volumes to Portworx container. Suppo
   # - name: objectstore-cert
   #   mountPath: /etc/pwx/objectstore-cert
   #   mountPropagation: None|HostToContainer|Bidirectional  
+  #   readOnly: true
   #   secret:
   #     secretName: objectstore-cert
   #     items:
