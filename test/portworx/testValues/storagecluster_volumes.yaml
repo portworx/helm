@@ -1,0 +1,7 @@
+volumes:                              # Add volumes to Portworx container. Supported volume types: Host, Secret, ConfigMap
+  - name: test-volume
+    mountPath: /etc/test
+    mountPropagation: Bidirectional  
+    hostPath:
+      path: /test
+internalKVDB: true
