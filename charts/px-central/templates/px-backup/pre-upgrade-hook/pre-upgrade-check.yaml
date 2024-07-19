@@ -70,6 +70,25 @@ roleRef:
   name: mongo-statefulset-reader
   apiGroup: rbac.authorization.k8s.io
 ---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: log-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: pxcentral-pre-upgrade-hook
+    app.kubernetes.io/component: pxcentral-pre-upgrade-hook
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "0"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: {{ .Values.persistentStorage.storageClassName }}
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -80,16 +99,22 @@ metadata:
   annotations:
     "helm.sh/hook": pre-upgrade
     "helm.sh/hook-weight": "0"
-    #"helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
     labels:
     name: pxcentral-pre-upgrade-hook
     app.kubernetes.io/component: pxcentral-pre-upgrade-hook
 spec:
   template:
     spec:
+      initContainers:
+        - name: init-permissions
+          image: busybox
+          command: ["sh", "-c", "mkdir -p /logs && chmod -R 777 /logs"]
+          volumeMounts:
+          - name: log-volume
+            mountPath: /logs
       containers:
         - name: check-upgrade
-          #image: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/users/ss/pxcentral-onprem-post-setup-base:pu-test
           image: {{ printf "%s/%s/%s:%s" .Values.images.preUpgradeHookImage.registry .Values.images.preUpgradeHookImage.repo .Values.images.preUpgradeHookImage.imageName .Values.images.preUpgradeHookImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: ["python", "/pxcentral-pre-upgrade/pxc-pre-upgrade.py"]
@@ -123,6 +148,13 @@ spec:
                     "mongodb7": "{{ .Values.mongodbImages.tags.mongodb7 }}"
                   }
                 }
+          volumeMounts:
+            - name: log-volume
+              mountPath: /logs
+      volumes:
+        - name: log-volume
+          persistentVolumeClaim:
+            claimName: log-pvc
       restartPolicy: Never
   backoffLimit: 0
   ttlSecondsAfterFinished: 3600  # Retain pod for 1 hour after completion

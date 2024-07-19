@@ -178,7 +178,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
     repo: users/ss
     imageName: pxcentral-onprem-post-setup-base
-    tag: pu-test
+    tag: pb-7264
   keycloakBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
@@ -208,7 +208,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
     repo: users/ss
     imageName: pxcentral-onprem-pre-upgrade-base
-    tag: pu-test
+    tag: pb-7264
 
   ## Images required for enabling px-backup
   pxBackupImage:
