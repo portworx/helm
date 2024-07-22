@@ -480,7 +480,6 @@ spec:
           image: {{ printf "%s/%s/%s:%s" .Values.images.mysqlImage.registry .Values.images.mysqlImage.repo .Values.images.mysqlImage.imageName .Values.images.mysqlImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
-            - "--ignore-db-dir=lost+found"
           ports:
             - containerPort: 3306
           env:
