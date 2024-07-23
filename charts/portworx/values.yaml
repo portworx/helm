@@ -44,6 +44,25 @@ security:
       issuer:                         # The issuer name to be used when configuring PX-Security. This field maps to the PORTWORX_AUTH_JWT_ISSUER environment variable in the Portworx Daemonset.
       sharedSecret:                   # The Kubernetes secret name for retrieving and storing your shared secret.
 
+resources:                            # Configure Portworx container usage such as memory and CPU usage
+  # requests:
+  #   memory: "64Mi"
+  #   cpu: "250m"
+
+customMetadata:                       # Configure custom labels and annotation for specific pod and services
+                                      # Pass labels and annotation with ";" sperated list. Example: application=my-app;environment=production
+  annotations:                        # Currently, custom annotations are supported on following types of components:
+    pod:
+      storage: ""
+    service:
+      portworxApi: ""
+      portworxService: ""
+      portworxKVDBService: ""
+  labels:                             # Currently, custom labels are only supported on the portworx-api service
+    service: 
+      portworxApi: ""
+
+
 envVars: none                         # DEPRECATED: Use envs section to set env variables
                                       # NOTE: This is a ";" seperated list of environment variables.
                                       # For eg: MYENV1=myvalue1;MYENV2=myvalue2

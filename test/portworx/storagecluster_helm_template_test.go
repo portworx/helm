@@ -93,6 +93,20 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				ValuesFiles: []string{"./testValues/storagecluster_security_disabled.yaml"},
 			},
 		},
+		{
+			name:           "TestPortworxContainerResources",
+			resultFileName: "storagecluster_portworx_container_resources.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_portworx_container_resources.yaml"},
+			},
+		},
+		{
+			name:           "TestCustomMetadata",
+			resultFileName: "storagecluster_custom_metadata.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_custom_metadata.yaml"},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
