@@ -59,6 +59,13 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				ValuesFiles: []string{"./testValues/storagecluster_placement.yaml"},
 			},
 		},
+		{
+			name:           "TestPlacementNodeAffinity",
+			resultFileName: "storagecluster_nodeAffinity.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_nodeAffinity.yaml"},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

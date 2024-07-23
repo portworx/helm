@@ -313,11 +313,17 @@ spec:
     enabled: true
   {{- end }}
 
-  {{- with .Values.tolerations }}
+  {{- if or .Values.tolerations .Values.nodeAffinity}}
   placement:
+  {{- with .Values.tolerations }}
     tolerations:
       {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- with .Values.nodeAffinity }}
+    nodeAffinity:
+      {{- toYaml . | nindent 5 }}
+  {{- end}}
+  {{- end}}
 
   {{- if .Values.deleteStrategy.type }}
   deleteStrategy:
