@@ -308,10 +308,10 @@ spec:
       alertManager:
         enabled: true
       {{- end}}
-      {{- if gt (int $prometheus.replicas) 1 }}
+      {{- if and ($prometheus.enabled) (ge (int $prometheus.replicas) 1) }}
       replicas: {{ $prometheus.replicas }}
       {{- end }}
-      {{- if ne $prometheousRetention "none"}}
+      {{- if and (ne $prometheousRetention "none") ($prometheus.enabled)}}
       retention: {{ $prometheousRetention }}
       {{- end}}
       {{- if ne $prometheousRetentionSize "none"}}

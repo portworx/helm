@@ -37,6 +37,8 @@ spec:
   monitoring:
     prometheus:
       enabled: true
+      retention: "24h"
+      replicas: 1
     telemetry:
       enabled: true
     grafana:
