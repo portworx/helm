@@ -292,18 +292,19 @@ spec:
   {{- end}}
   {{- end }}
 
-  {{- if or (and (.Values.monitoring.telemetry) (eq .Values.monitoring.telemetry true))
-  (and $prometheus.enabled (eq $prometheus.enabled true))
-  (and .Values.grafana (eq .Values.grafana true))
-  }}
+  {{- $promethusEnabled := or $prometheus.exportMetrics $prometheus.enabled}}
+  {{- $monitoringEnabled := or $promethusEnabled .Values.monitoring.telemetry $prometheus.enabled .Values.grafana }}
+  {{- if $monitoringEnabled }}
   monitoring:
-    {{- if (and ( $prometheus.enabled) (eq $prometheus.enabled true)) }}
+    {{- if $promethusEnabled }}
     prometheus:
+      {{- if $prometheus.enabled }}
       enabled: true
-      {{- if (and ( $prometheus.exportMetrics) (eq $prometheus.exportMetrics true)) }}
+      {{- end}}
+      {{- if $prometheus.exportMetrics }}
       exportMetrics: true
       {{- end}}
-      {{- if (and ( $prometheus.alertManager) (eq $prometheus.alertManager true)) }}
+      {{- if $prometheus.alertManager }}
       alertManager:
         enabled: true
       {{- end}}
@@ -332,18 +333,18 @@ spec:
       volumeMounts:
           {{- toYaml . | nindent 6  }}
       {{- end}}
-      {{- if (and $prometheus.securityContext.runAsNonRoot (eq $prometheus.securityContext.runAsNonRoot true)) }}
+      {{- if $prometheus.securityContext.runAsNonRoot }}
       securityContext:
         runAsNonRoot: true
       {{- end}}
     {{- end }}
 
-    {{- if (and (.Values.monitoring.telemetry) (eq .Values.monitoring.telemetry true)) }}
+    {{- if .Values.monitoring.telemetry }}
     telemetry:
       enabled: true
     {{- end }}
 
-    {{- if (and (.Values.monitoring.grafana) (eq .Values.monitoring.grafana true)) }}
+    {{- if .Values.monitoring.grafana }}
     grafana:
       enabled: true
     {{- end }}

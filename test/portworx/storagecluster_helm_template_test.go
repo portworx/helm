@@ -67,6 +67,16 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestMonitoringWithExportMatrixEnabled",
+			resultFileName: "storagecluster_monitoring_enabled_exportmatrix.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"internalKVDB":"true",
+					"monitoring.prometheus.exportMetrics":"true",
+				},
+			},
+		},
+		{
 			name:           "TestMonitoringConditionByEnablingTelemetry",
 			resultFileName: "storagecluster_monitoring_enable_by_enable_telemetry.yaml",
 			helmOption: &helm.Options{
