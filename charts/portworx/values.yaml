@@ -112,7 +112,7 @@ nodesConfiguration:                           # override certain cluster level c
 #     mgmtInterface:
 #   storage:                                  # Specify storage configuration for the selected nodes, similar to the one specified at cluster level. If some of the config is left empty,
 #                                             # the cluster level storage values are passed to the nodes.
-#   envs:                                     # Specify extra environment variables for the selected nodes. Cluster level environment variables are combined with these and sent to the selected nodes.
+#   env:                                     # Specify extra environment variables for the selected nodes. Cluster level environment variables are combined with these and sent to the selected nodes.
 #                                             # If same variable is present at cluster level, then the node level variable takes precedence.
 #   - name: AWS_CA_BUNDLE
 #     value: "/etc/pwx/objectstore-cert/objectstore.pem"

@@ -29,7 +29,7 @@ spec:
   csi:
     enabled: false
   nodes:
-  - envs:
+  - env:
     - name: AWS_CA_BUNDLE
       value: /etc/pwx/objectstore-cert/objectstore.pem
     - name: AWS_ACCESS_KEY_ID

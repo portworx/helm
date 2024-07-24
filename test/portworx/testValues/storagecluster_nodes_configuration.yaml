@@ -11,7 +11,7 @@ nodesConfiguration:
     devices:
     - /dev/nvme1
     - /dev/nvme2                                                                         
-  envs:                                                           
+  env:                                                           
   - name: AWS_CA_BUNDLE
     value: "/etc/pwx/objectstore-cert/objectstore.pem"
   - name: AWS_ACCESS_KEY_ID
