@@ -1,0 +1,52 @@
+kind: StorageCluster
+apiVersion: core.libopenstorage.org/v1
+metadata:
+  name: "mycluster"
+  namespace: kube-system
+  annotations:
+  labels:
+    heritage: "Helm"
+    release: "my-release"
+    chart: "portworx-3.1.0"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "my-release"
+spec:
+  image: portworx/oci-monitor:3.1.0
+  imagePullPolicy: Always
+
+  kvdb:
+    internal: true
+  storage:
+    useAll: true
+  secretsProvider: k8s
+
+  env:
+  - name: PX_SECRETS_NAMESPACE
+    value: portworx
+
+  stork:
+    enabled: true
+  csi:
+    enabled: false
+  nodes:
+  - envs:
+    - name: AWS_CA_BUNDLE
+      value: /etc/pwx/objectstore-cert/objectstore.pem
+    - name: AWS_ACCESS_KEY_ID
+      valueFrom:
+        secretKeyRef:
+          key: access-key
+          name: aws-creds
+    network:
+      dataInterface: ethX
+      mgmtInterface: ethX
+    runtimeOptions:
+      num_io_threads: "10"
+    selector:
+      labelSelector:
+        matchLabels:
+          custom: node
+    storage:
+      devices:
+      - /dev/nvme1
+      - /dev/nvme2
