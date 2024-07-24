@@ -27,7 +27,6 @@ spec:
   stork:
     enabled: true
     image: openstorage/stork:2.7.0
-    lockImage: true                      
     env:
     - name: PX_TEST_ENV
       value: test_env_autopilot

@@ -1,7 +1,6 @@
 stork:                                
   enabled: true
   storkVersion: 2.7.0                      
-  lockImage: true                              
   args: verbose=true;webhook-controller=true                          
   volumes:                            
   - name: "px-test-volume"
