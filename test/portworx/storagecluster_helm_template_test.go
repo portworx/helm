@@ -59,6 +59,28 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				ValuesFiles: []string{"./testValues/storagecluster_placement.yaml"},
 			},
 		},
+		{
+			name:           "TestCSITopologyEnabled",
+			resultFileName: "storagecluster_csi_topology_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"internalKVDB": "true",
+					"csi.enabled":  "true",
+					"csi.topology.enabled": "true",
+				},
+			},
+		},
+		{
+			name:           "TestCSISnapshotControllerEnabled",
+			resultFileName: "storagecluster_csi_Snapshot_Controller_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"internalKVDB":                  "true",
+					"csi.enabled":                   "true",
+					"csi.installSnapshotController": "true",
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

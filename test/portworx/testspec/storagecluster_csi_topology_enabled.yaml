@@ -26,26 +26,7 @@ spec:
 
   stork:
     enabled: true
-    volumes:
-    - mountPath: /etc/kubernetes
-      name: scheduler-config
-      secret:
-        configMap: stork-config
-    args:
-      webhook-controller: "true"
-      verbose: "true"
-  monitoring:
-    prometheus:
-      enabled: true
-      exportMetrics: true
-      alertManager:
-        enabled: true
-    telemetry:
-      enabled: true
   csi:
     enabled: true
-    topology: 
+    topology:
       enabled: true
-    installSnapshotController: true
-  autopilot:
-    enabled: true
