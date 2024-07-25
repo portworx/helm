@@ -55,7 +55,7 @@ entries:
     appVersion: 3.1.0
     created: "2024-10-30T16:20:49.986612073+05:30"
     description: A Helm chart for installing Portworx on Kubernetes.
-    digest: 630d982316d27542d6a2f137793fa755e366d911d56de531b011ff27ea5f04f5
+    digest: e5a4a890d7ad05a655b14d9a76d4974fc8f102ebe5ccd7dc7c93e7069bb8673a
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/k8s-porx.png
     keywords:
@@ -664,7 +664,7 @@ entries:
     appVersion: 2.7.0
     created: "2024-10-30T16:20:50.300923455+05:30"
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
-    digest: 295a652338c35a57905d3b7eea7f156d8f7a88924cc3b1a2cea84402d35369ac
+    digest: 8989047c6aeddc9c373aad7a9c4394921546bdeb66fde54597f662566c27ecc4
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     keywords:
