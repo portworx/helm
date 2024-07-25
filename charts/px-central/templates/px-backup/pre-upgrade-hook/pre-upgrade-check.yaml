@@ -49,6 +49,9 @@ rules:
   - apiGroups: [""]
     resources: ["persistentvolumes"]
     verbs: ["create", "update", "get", "patch", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -73,7 +76,26 @@ roleRef:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: log-pvc
+  name: pre-upgrade-log-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: pxcentral-pre-upgrade-hook
+    app.kubernetes.io/component: pxcentral-pre-upgrade-hook
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "0"
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: {{ .Values.persistentStorage.storageClassName }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pre-upgrade-dump-pvc
   namespace: {{ .Release.Namespace }}
   labels:
     name: pxcentral-pre-upgrade-hook
@@ -107,12 +129,18 @@ spec:
   template:
     spec:
       initContainers:
-        - name: init-permissions
+        - name: init-log-permissions
           image: busybox
           command: ["sh", "-c", "mkdir -p /logs && chmod -R 777 /logs"]
           volumeMounts:
           - name: log-volume
             mountPath: /logs
+        - name: init-dump-permissions
+          image: busybox
+          command: ["sh", "-c", "mkdir -p /dumps && chmod -R 777 /dumps"]
+          volumeMounts:
+          - name: dump-volume
+            mountPath: /dumps
       containers:
         - name: check-upgrade
           image: {{ printf "%s/%s/%s:%s" .Values.images.preUpgradeHookImage.registry .Values.images.preUpgradeHookImage.repo .Values.images.preUpgradeHookImage.imageName .Values.images.preUpgradeHookImage.tag }}
@@ -151,10 +179,15 @@ spec:
           volumeMounts:
             - name: log-volume
               mountPath: /logs
+            - name: dump-volume
+              mountPath: /dumps
       volumes:
         - name: log-volume
           persistentVolumeClaim:
-            claimName: log-pvc
+            claimName: pre-upgrade-log-pvc
+        - name: dump-volume
+          persistentVolumeClaim:
+            claimName: pre-upgrade-dump-pvc
       restartPolicy: Never
   backoffLimit: 0
   ttlSecondsAfterFinished: 3600  # Retain pod for 1 hour after completion
