@@ -115,7 +115,7 @@ spec:
     {{- if and (ne $kvdbDevice "none") (not (hasPrefix "/" $kvdbDevice)) }}
     kvdbDeviceSpec: {{ $kvdbDevice }}
     {{- end }}
-    {{- if $systemMetadataDevice}}
+    {{- if ne $systemMetadataDevice "none"}}
     systemMetadataDeviceSpec: {{ $systemMetadataDevice }}
     {{- end }}
     {{- if and (ne $journalDevice "none") (not (hasPrefix "/" $journalDevice)) }}
@@ -138,7 +138,7 @@ spec:
     {{- if and (ne $kvdbDevice "none") (not (hasPrefix "/" $kvdbDevice)) }}
     kvdbDeviceSpec: {{ $kvdbDevice }}
     {{- end }}
-    {{- if $systemMetadataDevice}}
+    {{- if ne $systemMetadataDevice "none"}}
     systemMetadataDeviceSpec: {{ $systemMetadataDevice }}
     {{- end }}
     {{- if and (ne $journalDevice "none") (not (hasPrefix "/" $journalDevice)) }}
@@ -177,7 +177,7 @@ spec:
     {{- if and (ne $kvdbDevice "none") (hasPrefix "/" $kvdbDevice) }}
     kvdbDevice: {{ $kvdbDevice }}
     {{- end }}
-    {{- if $systemMetadataDevice}}
+    {{- if ne $systemMetadataDevice "none"}}
     systemMetadataDevice: {{ $systemMetadataDevice }}
     {{- end }}
     {{- if and (ne $journalDevice "none") (or (hasPrefix "/" $journalDevice) (eq "auto" $journalDevice)) }}

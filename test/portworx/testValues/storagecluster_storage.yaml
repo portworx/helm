@@ -1,0 +1,7 @@
+internalKVDB: true
+drives: "/dev/sda;/dev/sdb;/dev/sdc"                          
+journalDevice: "/dev/sdd"
+systemMetadataDevice: "/dev/sde"
+kvdbDevice: "type=node-kvdb"
+cacheDevices: "/dev/one;/dev/two"
+usefileSystemDrive: true            

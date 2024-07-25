@@ -1,0 +1,53 @@
+kind: StorageCluster
+apiVersion: core.libopenstorage.org/v1
+metadata:
+  name: "mycluster"
+  namespace: kube-system
+  annotations:
+    portworx.io/is-aks: "true"
+  labels:
+    heritage: "Helm"
+    release: "my-release"
+    chart: "portworx-3.1.0"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "my-release"
+spec:
+  image: portworx/oci-monitor:3.1.0
+  imagePullPolicy: Always
+
+  kvdb:
+    internal: true
+  cloudStorage:
+    provider: azure
+    deviceSpecs:
+      - type=Premium_LRS,size=150
+    kvdbDeviceSpec: type=node-kvdb
+    systemMetadataDeviceSpec: type=gp2,size=100
+    journalDeviceSpec: type=journal
+    maxStorageNodesPerZone: 1
+    maxStorageNodes: 1
+  secretsProvider: k8s
+
+  env:
+  - name: AZURE_CLIENT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: px-azure
+        key: AZURE_CLIENT_SECRET
+  - name: AZURE_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: px-azure
+        key: AZURE_CLIENT_ID
+  - name: AZURE_TENANT_ID
+    valueFrom:
+      secretKeyRef:
+        name: px-azure
+        key: AZURE_TENANT_ID
+  - name: PX_SECRETS_NAMESPACE
+    value: portworx
+
+  stork:
+    enabled: true
+  csi:
+    enabled: false

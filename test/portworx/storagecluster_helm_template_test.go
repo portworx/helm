@@ -59,6 +59,27 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				ValuesFiles: []string{"./testValues/storagecluster_placement.yaml"},
 			},
 		},
+		{
+			name:           "TestCloudStorage",
+			resultFileName: "storagecluster_cloudstorage.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_cloudstorage.yaml"},
+			},
+		},
+		{
+			name:           "TestCloudStorageAKS",
+			resultFileName: "storagecluster_cloudstorage_aks.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_cloudstorage_aks.yaml"},
+			},
+		},
+		{
+			name:           "TestStorageSpec",
+			resultFileName: "storagecluster_storage.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_storage.yaml"},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
