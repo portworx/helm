@@ -1,26 +1,26 @@
-pxCentralVersion: 2.7.2
+pxCentralVersion: 2.7.3
 modules:
   pxCentral:
-    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:2.7.2-dev"
-    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:2.7.2-dev"
-    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:2.7.2-dev"
-    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:2.7.2-dev"
-    pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:2.7.2-dev"
+    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:2.7.3-dev"
+    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:2.7.3-dev"
+    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:2.7.3-dev"
+    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:2.7.3-dev"
+    pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:2.7.3-dev"
     postgresql: "docker.io/portworx/postgresql:11.19.0-debian-11-r1"
     keycloak: "docker.io/portworx/keycloak:21.1.2"
     keycloakLoginTheme: "docker.io/portworx/sb-keycloak-login-theme:2.7.0"
     busybox: "docker.io/portworx/busybox:1.35.0"
     mysql: "docker.io/portworx/mysql:5.7.44"
   pxBackup:
-    pxBackup: "docker.io/portworx/px-backup-base:2.7.2-dev"
+    pxBackup: "docker.io/portworx/px-backup-base:2.7.3-dev"
     mongodb: "docker.io/portworx/mongodb:5.0.24-debian-11-r20"
     kopiaExecutor: "docker.io/portworx/kopiaexecutor:1.2.13"
     nfsExecutor: "docker.io/portworx/nfsexecutor:1.2.13"
     filesystemCtl: "docker.io/portworx/filesystemctl:1.2.13"
-    pxBackupPrometheusImage: docker.io/portworx/prometheus:v2.48.0
-    pxBackupAlertmanagerImage: docker.io/portworx/alertmanager:v0.26.0
-    pxBackupPrometheusOperatorImage: docker.io/portworx/prometheus-operator:v0.70.0
-    pxBackupPrometheusConfigReloaderImage: docker.io/portworx/prometheus-config-reloader:v0.70.0
+    pxBackupPrometheusImage: "docker.io/portworx/prometheus:v2.48.0"
+    pxBackupAlertmanagerImage: "docker.io/portworx/alertmanager:v0.26.0"
+    pxBackupPrometheusOperatorImage: "docker.io/portworx/prometheus-operator:v0.70.0"
+    pxBackupPrometheusConfigReloaderImage: "docker.io/portworx/prometheus-config-reloader:v0.70.0"
   pxMonitor:
     cortex: "docker.io/portworx/cortex:v1.13.1"
     cassandra: "docker.io/portworx/cassandra:4.0.7-debian-11-r34"
