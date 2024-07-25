@@ -66,7 +66,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				SetValues: map[string]string{
 					"internalKVDB": "true",
 					"csi.enabled":  "true",
-					"csi.topology": "true",
+					"csi.topology.enabled": "true",
 				},
 			},
 		},

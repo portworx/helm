@@ -69,7 +69,8 @@ deployOnMaster:  false                # For POC only
 
 csi: 
   enabled: false                      # Enable CSI
-  topology: false                      # Enable CSI topology feature gate
+  topology: 
+    enabled: false                    # Enable CSI topology feature gate
   installSnapshotController: false    # Enable CSI Snapshot Controller
 
 aut: false                            # Enable AutoPilot

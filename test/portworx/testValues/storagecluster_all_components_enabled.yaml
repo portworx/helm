@@ -10,7 +10,8 @@ storkSpec:
       configMap: stork-config
 csi: 
   enabled: true
-  topology: true
+  topology: 
+    enabled: true
   installSnapshotController: true
 aut: true
 monitoring: true
