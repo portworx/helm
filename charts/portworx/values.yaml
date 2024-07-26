@@ -143,6 +143,15 @@ tolerations:                          # Add tolerations
   #   value: "value"
   #   effect: "NoSchedule|PreferNoSchedule|NoExecute(1.6 only)"
 
+nodeAffinity:
+  # requiredDuringSchedulingIgnoredDuringExecution:
+  #   nodeSelectorTerms:
+  #   - matchExpressions:
+  #     - key: px-schedule
+  #       operator: NotIn
+  #       values:
+  #       - "false"
+
 serviceAccount:
   hook:
     create: true

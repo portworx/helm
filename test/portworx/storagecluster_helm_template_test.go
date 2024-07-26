@@ -53,13 +53,6 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
-			name:           "TestPlacementTolerations",
-			resultFileName: "storagecluster_placement.yaml",
-			helmOption: &helm.Options{
-				ValuesFiles: []string{"./testValues/storagecluster_placement.yaml"},
-			},
-		},
-		{
 			name:           "TestCSITopologyEnabled",
 			resultFileName: "storagecluster_csi_topology_enabled.yaml",
 			helmOption: &helm.Options{
@@ -117,6 +110,20 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			resultFileName: "storagecluster_volumes.yaml",
 			helmOption: &helm.Options{
 				ValuesFiles: []string{"./testValues/storagecluster_volumes.yaml"},
+			},
+		},
+		{
+			name:           "TestPlacementNodeAffinity",
+			resultFileName: "storagecluster_nodeAffinity.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_nodeAffinity.yaml"},
+			},
+		},
+		{
+			name:           "TestPlacementTolerations",
+			resultFileName: "storagecluster_placement.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_placement.yaml"},
 			},
 		},
 	}
