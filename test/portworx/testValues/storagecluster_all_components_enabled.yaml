@@ -1,5 +1,6 @@
 # storagecluster_all_components_enabled.yaml
-stork: true
+stork:
+  enabled: true
 internalKVDB: true
 storkSpec:
   args: "webhook-controller=true;verbose=true"

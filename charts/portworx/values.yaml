@@ -50,13 +50,14 @@ miscArgs: none                        # Miscellaneous arguments that will be pas
 
 disableStorageClass: false            # Instructs Operator to not install the default Portworx StorageClasses.
 
-stork: true                           # Use Stork https://docs.portworx.com/scheduler/kubernetes/stork.html for hyperconvergence.
-storkVersion:                         # Optional: version of Stork. For eg: 2.7.0, when it's empty Portworx operator will pick up
+stork:                                # Use Stork https://docs.portworx.com/scheduler/kubernetes/stork.html for hyperconvergence.
+  enabled: true
+  storkVersion:                       # version of Stork. For eg: 2.7.0, when it's empty Portworx operator will pick up
                                       # version according to Portworx version.
-
-storkSpec:                            # Optional Stork configurations
-  args:                               # Pass arguments to Stork container. Example: verbose='true';webhook-controller='false'
+                                      
+  args:                               # Pass arguments to Stork container. Example: verbose=true;webhook-controller=false
   volumes:                            # Add volumes to Stork container. Refer the top level volumes for schema.
+  env:                                # A list of Kubernetes like environment variables passed to Stork.
 
 customRegistryURL:
 registrySecret:
