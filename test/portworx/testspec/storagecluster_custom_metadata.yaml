@@ -13,6 +13,24 @@ metadata:
 spec:
   image: portworx/oci-monitor:3.1.0
   imagePullPolicy: Always
+  metadata:
+    labels:
+      service/portworx-api:
+          application: "my-app"
+          environment: "testing"
+    annotations:
+      pod/storage:
+          application: "my-app"
+          environment: "testing"
+      service/portworx-api:
+          application: "my-app"
+          environment: "testing"
+      service/portworx-service:
+          application: "my-app"
+          environment: "testing"
+      service/portworx-kvdb-service:
+          application: "my-app"
+          environment: "testing"
 
   kvdb:
     internal: true
@@ -26,20 +44,5 @@ spec:
 
   stork:
     enabled: true
-    
-  monitoring:
-    prometheus:
-      enabled: true
-      retention: "24h"
-      replicas: 1
-    telemetry:
-      enabled: true
-    grafana:
-      enabled: true
   csi:
-    enabled: true
-    topology: 
-      enabled: true
-    installSnapshotController: true
-  autopilot:
-    enabled: true
+    enabled: false

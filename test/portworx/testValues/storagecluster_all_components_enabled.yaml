@@ -1,5 +1,6 @@
 # storagecluster_all_components_enabled.yaml
-stork: true
+stork:
+  enabled: true
 internalKVDB: true
 storkSpec:
   args: "webhook-controller=true;verbose=true"
@@ -8,7 +9,15 @@ storkSpec:
     mountPath: /etc/kubernetes
     secret:
       configMap: stork-config
-csi: true
-aut: true
-monitoring: true
-telemetry: true
+csi: 
+  enabled: true
+  topology: 
+    enabled: true
+  installSnapshotController: true
+autopilot: 
+  enabled: true
+monitoring:
+  prometheus:                         
+    enabled: true                   
+  telemetry: true                   
+  grafana: true      

@@ -1,0 +1,9 @@
+internalKVDB: true
+security: 
+  enabled: false                    
+  auth:
+    guestAccess: Enabled             
+    selfSigned:                      
+      tokenLifetime: "24h"                
+      issuer:    "my-issuer"                  
+      sharedSecret: "px-shared-secret"

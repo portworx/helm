@@ -11,9 +11,9 @@ metadata:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-release"
 spec:
-  image: portworx/oci-monitor:3.1.0
+  image: portworx/oci-monitor:3.0.5
   imagePullPolicy: Always
-
+  autoUpdateComponents: None
   kvdb:
     internal: true
   storage:
@@ -26,20 +26,5 @@ spec:
 
   stork:
     enabled: true
-    
-  monitoring:
-    prometheus:
-      enabled: true
-      retention: "24h"
-      replicas: 1
-    telemetry:
-      enabled: true
-    grafana:
-      enabled: true
   csi:
-    enabled: true
-    topology: 
-      enabled: true
-    installSnapshotController: true
-  autopilot:
-    enabled: true
+    enabled: false
