@@ -147,6 +147,37 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestUpdateStrategyRollingUpdate",
+			resultFileName: "storagecluster_updatestrategy_rollingupdate.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_updatestrategy_rollingupdate.yaml"},
+			},
+		},
+		{
+			name:           "TestUpdateStrategyOndelete",
+			resultFileName: "storagecluster_updatestrategy_ondelete.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"updateStrategy.type":                 "OnDelete",
+					"internalKVDB":                        "true",
+					"updateStrategy.autoUpdateComponents": "Once",
+					"imageVersion":                        "3.0.5",
+				},
+			},
+		},
+		{
+			name:           "TestUpdateStrategyWithInvalidType",
+			resultFileName: "storagecluster_updatestrategy_invalid_type.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"updateStrategy.type":                 "Invalid",
+					"internalKVDB":                        "true",
+					"updateStrategy.autoUpdateComponents": "None",
+					"imageVersion":                        "3.0.5",
+				},
+			},
+		},
+		{
 			name:           "TestSecurityEnabled",
 			resultFileName: "storagecluster_security_enabled.yaml",
 			helmOption: &helm.Options{

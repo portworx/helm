@@ -90,6 +90,26 @@ spec:
   imagePullSecret: {{ $registrySecret }}
   {{- end }}
 
+  {{- if (or (eq .Values.updateStrategy.type "RollingUpdate") (eq .Values.updateStrategy.type "OnDelete")) }}
+  updateStrategy:
+    type: {{ .Values.updateStrategy.type }}
+
+    {{- if eq .Values.updateStrategy.type "RollingUpdate"}}
+    rollingUpdate:
+      {{- if .Values.updateStrategy.maxUnavailable}}
+      maxUnavailable: {{.Values.updateStrategy.maxUnavailable}}
+      {{- end}}
+      {{- if .Values.updateStrategy.minReadySeconds}}
+      minReadySeconds: {{.Values.updateStrategy.minReadySeconds}}
+      {{- end}}
+    {{- end}}
+  {{- end }}
+
+
+  {{- if .Values.updateStrategy.autoUpdateComponents}}
+  autoUpdateComponents: {{.Values.updateStrategy.autoUpdateComponents}}
+  {{- end}}
+
 
   {{- $hasAnnotations := or ($storagePodAnnotations) ($portworxApiServiceAnnotations) ($portworxServiceAnnotations ) ($kvdbServiceAnnotations) }}
   {{- $hasLabels := $portworxApiServiceLabels }}
