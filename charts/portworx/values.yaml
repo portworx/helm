@@ -129,6 +129,8 @@ kvdb:
 volumes:                              # Add volumes to Portworx container. Supported volume types: Host, Secret, ConfigMap
   # - name: objectstore-cert
   #   mountPath: /etc/pwx/objectstore-cert
+  #   mountPropagation: None|HostToContainer|Bidirectional  
+  #   readOnly: true
   #   secret:
   #     secretName: objectstore-cert
   #     items:
