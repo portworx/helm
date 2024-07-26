@@ -126,6 +126,13 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				ValuesFiles: []string{"./testValues/storagecluster_placement.yaml"},
 			},
 		},
+		{
+			name:           "TestNodesConfiguration",
+			resultFileName: "storagecluster_nodes_configuration.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_nodes_configuration.yaml"},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

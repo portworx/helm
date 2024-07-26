@@ -383,6 +383,11 @@ spec:
   {{- end}}
   {{- end}}
 
+  {{- with .Values.nodesConfiguration }}
+  nodes:
+    {{- toYaml . | nindent 2 }}
+  {{- end}}
+
   {{- if .Values.deleteStrategy.type }}
   deleteStrategy:
     type: {{ .Values.deleteStrategy.type }}
