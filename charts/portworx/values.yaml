@@ -62,8 +62,41 @@ customRegistryURL:
 registrySecret:
 licenseSecret:
 
-monitoring: false
-telemetry: false
+monitoring:
+  prometheus:                         
+    enabled: false                     # Enable prometheus
+    exportMetrics: false              # Expose the Portworx metrics to an external or operator deployed Prometheus.
+    alertManager: false               # Enable prometheus alert manager
+    resources:                        # Configure Prometheus resource usage such as memory and CPU usage
+      # requests:
+      #   memory: "64Mi"
+      #   cpu: "250m"
+      # limits:
+      #   memory: "128Mi"
+      #   cpu: "500m"
+    replicas: 1                        # Number of prometheus replicas that will be deployed. Default is 1
+    retention: "24h"                     # Time period for which prometheus retains historical matrics. default is 24h.
+    retentionSize: ""                 # Maximum amount of disk space that Prometheus can use to store historical metrics. Example: "10GiB","50MiB"
+    storage:                          # storage type that Prometheus will use for storing data
+      # volumeClaimTemplate:
+      #   spec:
+      #     storageClassName: px-csi-db
+      #     accessModes: ["ReadWriteOnce"]
+      #     resources:
+      #       requests:
+      #         storage: 2Gi
+      #
+    volumes:                          # Additional volumes for the prometheus statefulSet
+    # - name: additional-volume
+    #   emptyDir: {}
+    volumeMounts:                     # Additional VolumeMounts for the Prometheus StatefulSet
+    # - mountPath: /test
+    #   name: additional-volume
+    securityContext:                  # Enable prometheus container run as a non-root user.
+      runAsNonRoot: false
+  telemetry: false                    # Enable telemetry
+  grafana: false                      # Enable grafana
+
 
 deployOnMaster:  false                # For POC only
 

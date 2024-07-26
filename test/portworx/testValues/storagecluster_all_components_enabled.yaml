@@ -14,5 +14,8 @@ csi:
     enabled: true
   installSnapshotController: true
 aut: true
-monitoring: true
-telemetry: true
+monitoring:
+  prometheus:                         
+    enabled: true                   
+  telemetry: true                   
+  grafana: true      
