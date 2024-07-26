@@ -1,0 +1,13 @@
+stork:                                
+  enabled: true
+  storkVersion: 2.7.0                      
+  args: verbose=true;webhook-controller=true                          
+  volumes:                            
+  - name: "px-test-volume"
+    mountPath: /etc/px-test
+    hostPath:
+      path: /test
+  env:                               
+  - name: PX_TEST_ENV
+    value: "test_env_autopilot"
+internalKVDB: true
