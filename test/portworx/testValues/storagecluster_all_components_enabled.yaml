@@ -14,7 +14,8 @@ csi:
   topology: 
     enabled: true
   installSnapshotController: true
-aut: true
+autopilot: 
+  enabled: true
 monitoring:
   prometheus:                         
     enabled: true                   
