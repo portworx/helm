@@ -28,6 +28,12 @@
   {{- $journalDevice := .Values.journalDevice | default "none" }}
   {{- $miscArgs := include "px.miscArgs" . }}
   {{- $volumesPresent := include "px.volumesPresent" . }}
+  {{- $storagePodAnnotations := .Values.customMetadata.annotations.pod.storage }}
+  {{- $portworxApiServiceAnnotations := .Values.customMetadata.annotations.service.portworxApi }}
+  {{- $portworxServiceAnnotations := .Values.customMetadata.annotations.service.portworxService }}
+  {{- $kvdbServiceAnnotations := .Values.customMetadata.annotations.service.portworxKVDBService }}
+  {{- $portworxApiServiceLabels := .Values.customMetadata.labels.service.portworxApi}}
+
   {{- $prometheus := .Values.monitoring.prometheus}}
   {{- $prometheousRetention := .Values.monitoring.prometheus.retention | default "none"}}
   {{- $prometheousRetentionSize := .Values.monitoring.prometheus.retentionSize | default "none"}}
@@ -82,6 +88,65 @@ spec:
   {{- end }}
   {{- if not (eq $registrySecret "none") }}
   imagePullSecret: {{ $registrySecret }}
+  {{- end }}
+
+
+  {{- $hasAnnotations := or ($storagePodAnnotations) ($portworxApiServiceAnnotations) ($portworxServiceAnnotations ) ($kvdbServiceAnnotations) }}
+  {{- $hasLabels := $portworxApiServiceLabels }}
+  {{- $hasMetadata := or $hasAnnotations $hasLabels }}
+
+  {{- if $hasMetadata}}
+  metadata:
+    {{- if $hasLabels}}
+    labels:
+      {{- if $portworxApiServiceLabels }}
+      service/portworx-api:
+        {{- $labels := $portworxApiServiceLabels | split ";" }}
+        {{- range $key, $val := $labels }}
+        {{- $label := $val | split "=" }}
+          {{ $label._0 | trim }}: {{ $label._1 | trim | quote -}}
+        {{- end }}
+      {{- end }}
+    {{- end}}
+    {{- if $hasAnnotations}}
+    annotations:
+      {{- if $storagePodAnnotations }}
+      pod/storage:
+        {{- $annotations := $storagePodAnnotations | split ";" }}
+        {{- range $key, $val := $annotations }}
+        {{- $annotation := $val | split "=" }}
+          {{ $annotation._0 | trim }}: {{ $annotation._1 | trim | quote -}}
+        {{- end }}
+      {{- end }}
+
+      {{- if $portworxApiServiceAnnotations }}
+      service/portworx-api:
+        {{- $annotations := $portworxApiServiceAnnotations | split ";" }}
+        {{- range $key, $val := $annotations }}
+        {{- $annotation := $val | split "=" }}
+          {{ $annotation._0 | trim }}: {{ $annotation._1 | trim | quote -}}
+        {{- end }}
+      {{- end }}
+
+      {{- if $portworxServiceAnnotations }}
+      service/portworx-service:
+        {{- $annotations := $portworxServiceAnnotations | split ";" }}
+        {{- range $key, $val := $annotations }}
+        {{- $annotation := $val | split "=" }}
+          {{ $annotation._0 | trim }}: {{ $annotation._1 | trim | quote -}}
+        {{- end }}
+      {{- end }}
+
+      {{- if $kvdbServiceAnnotations }}
+      service/portworx-kvdb-service:
+        {{- $annotations := $kvdbServiceAnnotations | split ";" }}
+        {{- range $key, $val := $annotations }}
+        {{- $annotation := $val | split "=" }}
+          {{ $annotation._0 | trim }}: {{ $annotation._1 | trim | quote -}}
+        {{- end }}
+      {{- end }}    
+
+    {{- end}}
   {{- end }}
 
   kvdb:
@@ -370,6 +435,44 @@ spec:
   autopilot:
     enabled: true
   {{- end }}
+
+  {{- if .Values.runtimeOptions }}
+  runtimeOptions:
+  {{- $args := .Values.runtimeOptions | split ";" }}
+  {{- range $key, $val := $args }}
+  {{- $arg := $val | split "=" }}
+    {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
+  {{- end }}
+  {{- end }}
+
+  {{- if .Values.featureGates }}
+  featureGates:
+  {{- $args := .Values.featureGates | split ";" }}
+  {{- range $key, $val := $args }}
+  {{- $arg := $val | split "=" }}
+    {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
+  {{- end }}
+  {{- end }}
+
+  {{- if eq .Values.security.enabled true}}
+  security: 
+    enabled: true
+    auth:
+      {{- if (or (eq .Values.security.auth.guestAccess "Enabled") (eq .Values.security.auth.guestAccess "Disabled") (eq .Values.security.auth.guestAccess "Managed"))}}
+      guestAccess: {{.Values.security.auth.guestAccess}}
+      {{- end}}
+      {{- if and .Values.security.auth.selfSigned.tokenLifetime .Values.security.auth.selfSigned.issuer .Values.security.auth.selfSigned.sharedSecret }}
+      selfSigned:
+        tokenLifetime: {{.Values.security.auth.selfSigned.tokenLifetime}}
+        issuer: {{.Values.security.auth.selfSigned.issuer}}
+        sharedSecret: {{.Values.security.auth.selfSigned.sharedSecret}}
+      {{- end}}
+  {{- end}}
+
+  {{- with .Values.resources }}
+  resources:
+    {{- toYaml . | nindent 4  }}
+  {{- end}}
 
   {{- if or .Values.tolerations .Values.nodeAffinity}}
   placement:

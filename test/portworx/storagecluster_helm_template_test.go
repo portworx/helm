@@ -127,6 +127,54 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestRuntimeOptions",
+			resultFileName: "storagecluster_runtimeOptions.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"runtimeOptions": "num_io_threads=10",
+					"internalKVDB":   "true",
+				},
+			},
+		},
+		{
+			name:           "TestFeatureGates",
+			resultFileName: "storagecluster_featureGates.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"featureGates": "CSI=true",
+					"internalKVDB": "true",
+				},
+			},
+		},
+		{
+			name:           "TestSecurityEnabled",
+			resultFileName: "storagecluster_security_enabled.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_security_enabled.yaml"},
+			},
+		},
+		{
+			name:           "TestSecurityDisabled",
+			resultFileName: "storagecluster_with_default_values.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_security_disabled.yaml"},
+			},
+		},
+		{
+			name:           "TestPortworxContainerResources",
+			resultFileName: "storagecluster_portworx_container_resources.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_portworx_container_resources.yaml"},
+			},
+		},
+		{
+			name:           "TestCustomMetadata",
+			resultFileName: "storagecluster_custom_metadata.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_custom_metadata.yaml"},
+			},
+		},
+		{
 			name:           "TestNodesConfiguration",
 			resultFileName: "storagecluster_nodes_configuration.yaml",
 			helmOption: &helm.Options{
