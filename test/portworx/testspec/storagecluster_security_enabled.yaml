@@ -26,20 +26,13 @@ spec:
 
   stork:
     enabled: true
-    
-  monitoring:
-    prometheus:
-      enabled: true
-      retention: "24h"
-      replicas: 1
-    telemetry:
-      enabled: true
-    grafana:
-      enabled: true
   csi:
+    enabled: false
+  security: 
     enabled: true
-    topology: 
-      enabled: true
-    installSnapshotController: true
-  autopilot:
-    enabled: true
+    auth:
+      guestAccess: Enabled
+      selfSigned:
+        tokenLifetime: 24h
+        issuer: my-issuer
+        sharedSecret: px-shared-secret

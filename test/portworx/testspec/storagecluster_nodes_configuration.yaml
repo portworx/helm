@@ -26,20 +26,27 @@ spec:
 
   stork:
     enabled: true
-    
-  monitoring:
-    prometheus:
-      enabled: true
-      retention: "24h"
-      replicas: 1
-    telemetry:
-      enabled: true
-    grafana:
-      enabled: true
   csi:
-    enabled: true
-    topology: 
-      enabled: true
-    installSnapshotController: true
-  autopilot:
-    enabled: true
+    enabled: false
+  nodes:
+  - env:
+    - name: AWS_CA_BUNDLE
+      value: /etc/pwx/objectstore-cert/objectstore.pem
+    - name: AWS_ACCESS_KEY_ID
+      valueFrom:
+        secretKeyRef:
+          key: access-key
+          name: aws-creds
+    network:
+      dataInterface: ethX
+      mgmtInterface: ethX
+    runtimeOptions:
+      num_io_threads: "10"
+    selector:
+      labelSelector:
+        matchLabels:
+          custom: node
+    storage:
+      devices:
+      - /dev/nvme1
+      - /dev/nvme2

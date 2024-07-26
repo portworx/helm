@@ -28,6 +28,15 @@
   {{- $journalDevice := .Values.journalDevice | default "none" }}
   {{- $miscArgs := include "px.miscArgs" . }}
   {{- $volumesPresent := include "px.volumesPresent" . }}
+  {{- $storagePodAnnotations := .Values.customMetadata.annotations.pod.storage }}
+  {{- $portworxApiServiceAnnotations := .Values.customMetadata.annotations.service.portworxApi }}
+  {{- $portworxServiceAnnotations := .Values.customMetadata.annotations.service.portworxService }}
+  {{- $kvdbServiceAnnotations := .Values.customMetadata.annotations.service.portworxKVDBService }}
+  {{- $portworxApiServiceLabels := .Values.customMetadata.labels.service.portworxApi}}
+
+  {{- $prometheus := .Values.monitoring.prometheus}}
+  {{- $prometheousRetention := .Values.monitoring.prometheus.retention | default "none"}}
+  {{- $prometheousRetentionSize := .Values.monitoring.prometheus.retentionSize | default "none"}}
 
 kind: StorageCluster
 apiVersion: core.libopenstorage.org/v1
@@ -79,6 +88,65 @@ spec:
   {{- end }}
   {{- if not (eq $registrySecret "none") }}
   imagePullSecret: {{ $registrySecret }}
+  {{- end }}
+
+
+  {{- $hasAnnotations := or ($storagePodAnnotations) ($portworxApiServiceAnnotations) ($portworxServiceAnnotations ) ($kvdbServiceAnnotations) }}
+  {{- $hasLabels := $portworxApiServiceLabels }}
+  {{- $hasMetadata := or $hasAnnotations $hasLabels }}
+
+  {{- if $hasMetadata}}
+  metadata:
+    {{- if $hasLabels}}
+    labels:
+      {{- if $portworxApiServiceLabels }}
+      service/portworx-api:
+        {{- $labels := $portworxApiServiceLabels | split ";" }}
+        {{- range $key, $val := $labels }}
+        {{- $label := $val | split "=" }}
+          {{ $label._0 | trim }}: {{ $label._1 | trim | quote -}}
+        {{- end }}
+      {{- end }}
+    {{- end}}
+    {{- if $hasAnnotations}}
+    annotations:
+      {{- if $storagePodAnnotations }}
+      pod/storage:
+        {{- $annotations := $storagePodAnnotations | split ";" }}
+        {{- range $key, $val := $annotations }}
+        {{- $annotation := $val | split "=" }}
+          {{ $annotation._0 | trim }}: {{ $annotation._1 | trim | quote -}}
+        {{- end }}
+      {{- end }}
+
+      {{- if $portworxApiServiceAnnotations }}
+      service/portworx-api:
+        {{- $annotations := $portworxApiServiceAnnotations | split ";" }}
+        {{- range $key, $val := $annotations }}
+        {{- $annotation := $val | split "=" }}
+          {{ $annotation._0 | trim }}: {{ $annotation._1 | trim | quote -}}
+        {{- end }}
+      {{- end }}
+
+      {{- if $portworxServiceAnnotations }}
+      service/portworx-service:
+        {{- $annotations := $portworxServiceAnnotations | split ";" }}
+        {{- range $key, $val := $annotations }}
+        {{- $annotation := $val | split "=" }}
+          {{ $annotation._0 | trim }}: {{ $annotation._1 | trim | quote -}}
+        {{- end }}
+      {{- end }}
+
+      {{- if $kvdbServiceAnnotations }}
+      service/portworx-kvdb-service:
+        {{- $annotations := $kvdbServiceAnnotations | split ";" }}
+        {{- range $key, $val := $annotations }}
+        {{- $annotation := $val | split "=" }}
+          {{ $annotation._0 | trim }}: {{ $annotation._1 | trim | quote -}}
+        {{- end }}
+      {{- end }}    
+
+    {{- end}}
   {{- end }}
 
   kvdb:
@@ -228,18 +296,23 @@ spec:
     value: portworx
 
   stork:
-    {{- if (and (.Values.stork) (eq .Values.stork true))}}
+    {{- if (and (.Values.stork.enabled) (eq .Values.stork.enabled true))}}
     enabled: true
-    {{- if .Values.storkVersion }}
-    image: {{ template "px.getStorkImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.storkVersion }}
+    {{- if .Values.stork.storkVersion }}
+    image: {{ template "px.getStorkImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.stork.storkVersion }}
     {{- end }}
-    {{- with .Values.storkSpec.volumes }}
+
+    {{- with .Values.stork.env }}
+    env:
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.stork.volumes }}
     volumes:
       {{- toYaml . | nindent 4 }}
     {{- end -}}
-    {{- if .Values.storkSpec.args }}
+    {{- if .Values.stork.args }}
     args:
-    {{- $args := .Values.storkSpec.args | split ";" }}
+    {{- $args := .Values.stork.args | split ";" }}
     {{- range $key, $val := $args }}
     {{- $arg := $val | split "=" }}
       {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
@@ -289,24 +362,74 @@ spec:
   {{- end}}
   {{- end }}
 
-  {{- if (or (and (.Values.monitoring) (eq .Values.monitoring true)) (and (.Values.telemetry) (eq .Values.telemetry true) )) }}
+  {{- $promethusEnabled := or $prometheus.exportMetrics $prometheus.enabled}}
+  {{- $monitoringEnabled := or $promethusEnabled .Values.monitoring.telemetry $prometheus.enabled .Values.grafana }}
+  {{- if $monitoringEnabled }}
   monitoring:
-    {{- if (and (.Values.monitoring) (eq .Values.monitoring true)) }}
+    {{- if $promethusEnabled }}
     prometheus:
+      {{- if $prometheus.enabled }}
       enabled: true
+      {{- end}}
+      {{- if $prometheus.exportMetrics }}
       exportMetrics: true
+      {{- end}}
+      {{- if $prometheus.alertManager }}
       alertManager:
         enabled: true
+      {{- end}}
+      {{- if and ($prometheus.enabled) (ge (int $prometheus.replicas) 1) }}
+      replicas: {{ $prometheus.replicas }}
+      {{- end }}
+      {{- if and (ne $prometheousRetention "none") ($prometheus.enabled)}}
+      retention: {{ $prometheousRetention }}
+      {{- end}}
+      {{- if ne $prometheousRetentionSize "none"}}
+      retentionSize: {{ $prometheousRetentionSize }}
+      {{- end}}
+      {{- with $prometheus.resources }}
+      resources:
+        {{- toYaml . | nindent 8  }}
+      {{- end}}
+     {{- with $prometheus.storage }}
+      storage:
+        {{- toYaml . | nindent 8 }}
+      {{- end}}
+      {{- with $prometheus.volumes }}
+      volumes:
+          {{- toYaml . | nindent 6  }}
+      {{- end }}
+      {{- with $prometheus.volumeMounts }}
+      volumeMounts:
+          {{- toYaml . | nindent 6  }}
+      {{- end}}
+      {{- if $prometheus.securityContext.runAsNonRoot }}
+      securityContext:
+        runAsNonRoot: true
+      {{- end}}
     {{- end }}
-    {{- if (and (.Values.telemetry) (eq .Values.telemetry true)) }}
+
+    {{- if .Values.monitoring.telemetry }}
     telemetry:
+      enabled: true
+    {{- end }}
+
+    {{- if .Values.monitoring.grafana }}
+    grafana:
       enabled: true
     {{- end }}
   {{- end }}
 
-  {{- if or (eq .Values.csi true) (eq .Values.csi false) }}
+  {{- if or (eq .Values.csi.enabled true) (eq .Values.csi.enabled false) }}
   csi:
-    enabled: {{ .Values.csi }}
+    enabled: {{ .Values.csi.enabled }}
+    {{- if eq .Values.csi.topology.enabled true}}
+    topology:
+      enabled: true
+    {{- end}}
+    {{- if eq .Values.csi.installSnapshotController true}}
+    installSnapshotController: true
+    {{- end}}
   {{- end }}
 
 
@@ -355,11 +478,60 @@ spec:
   {{- end }}
   {{- end }}
 
-  {{- with .Values.tolerations }}
+  {{- if .Values.runtimeOptions }}
+  runtimeOptions:
+  {{- $args := .Values.runtimeOptions | split ";" }}
+  {{- range $key, $val := $args }}
+  {{- $arg := $val | split "=" }}
+    {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
+  {{- end }}
+  {{- end }}
+
+  {{- if .Values.featureGates }}
+  featureGates:
+  {{- $args := .Values.featureGates | split ";" }}
+  {{- range $key, $val := $args }}
+  {{- $arg := $val | split "=" }}
+    {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
+  {{- end }}
+  {{- end }}
+
+  {{- if eq .Values.security.enabled true}}
+  security: 
+    enabled: true
+    auth:
+      {{- if (or (eq .Values.security.auth.guestAccess "Enabled") (eq .Values.security.auth.guestAccess "Disabled") (eq .Values.security.auth.guestAccess "Managed"))}}
+      guestAccess: {{.Values.security.auth.guestAccess}}
+      {{- end}}
+      {{- if and .Values.security.auth.selfSigned.tokenLifetime .Values.security.auth.selfSigned.issuer .Values.security.auth.selfSigned.sharedSecret }}
+      selfSigned:
+        tokenLifetime: {{.Values.security.auth.selfSigned.tokenLifetime}}
+        issuer: {{.Values.security.auth.selfSigned.issuer}}
+        sharedSecret: {{.Values.security.auth.selfSigned.sharedSecret}}
+      {{- end}}
+  {{- end}}
+
+  {{- with .Values.resources }}
+  resources:
+    {{- toYaml . | nindent 4  }}
+  {{- end}}
+
+  {{- if or .Values.tolerations .Values.nodeAffinity}}
   placement:
+  {{- with .Values.tolerations }}
     tolerations:
       {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- with .Values.nodeAffinity }}
+    nodeAffinity:
+      {{- toYaml . | nindent 5 }}
+  {{- end}}
+  {{- end}}
+
+  {{- with .Values.nodesConfiguration }}
+  nodes:
+    {{- toYaml . | nindent 2 }}
+  {{- end}}
 
   {{- if .Values.deleteStrategy.type }}
   deleteStrategy:
