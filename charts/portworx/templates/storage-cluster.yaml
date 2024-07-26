@@ -28,6 +28,9 @@
   {{- $journalDevice := .Values.journalDevice | default "none" }}
   {{- $miscArgs := include "px.miscArgs" . }}
   {{- $volumesPresent := include "px.volumesPresent" . }}
+  {{- $prometheus := .Values.monitoring.prometheus}}
+  {{- $prometheousRetention := .Values.monitoring.prometheus.retention | default "none"}}
+  {{- $prometheousRetentionSize := .Values.monitoring.prometheus.retentionSize | default "none"}}
 
 kind: StorageCluster
 apiVersion: core.libopenstorage.org/v1
@@ -228,18 +231,23 @@ spec:
     value: portworx
 
   stork:
-    {{- if (and (.Values.stork) (eq .Values.stork true))}}
+    {{- if (and (.Values.stork.enabled) (eq .Values.stork.enabled true))}}
     enabled: true
-    {{- if .Values.storkVersion }}
-    image: {{ template "px.getStorkImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.storkVersion }}
+    {{- if .Values.stork.storkVersion }}
+    image: {{ template "px.getStorkImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.stork.storkVersion }}
     {{- end }}
-    {{- with .Values.storkSpec.volumes }}
+
+    {{- with .Values.stork.env }}
+    env:
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.stork.volumes }}
     volumes:
       {{- toYaml . | nindent 4 }}
     {{- end -}}
-    {{- if .Values.storkSpec.args }}
+    {{- if .Values.stork.args }}
     args:
-    {{- $args := .Values.storkSpec.args | split ";" }}
+    {{- $args := .Values.stork.args | split ";" }}
     {{- range $key, $val := $args }}
     {{- $arg := $val | split "=" }}
       {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
@@ -289,17 +297,60 @@ spec:
   {{- end}}
   {{- end }}
 
-  {{- if (or (and (.Values.monitoring) (eq .Values.monitoring true)) (and (.Values.telemetry) (eq .Values.telemetry true) )) }}
+  {{- $promethusEnabled := or $prometheus.exportMetrics $prometheus.enabled}}
+  {{- $monitoringEnabled := or $promethusEnabled .Values.monitoring.telemetry $prometheus.enabled .Values.grafana }}
+  {{- if $monitoringEnabled }}
   monitoring:
-    {{- if (and (.Values.monitoring) (eq .Values.monitoring true)) }}
+    {{- if $promethusEnabled }}
     prometheus:
+      {{- if $prometheus.enabled }}
       enabled: true
+      {{- end}}
+      {{- if $prometheus.exportMetrics }}
       exportMetrics: true
+      {{- end}}
+      {{- if $prometheus.alertManager }}
       alertManager:
         enabled: true
+      {{- end}}
+      {{- if and ($prometheus.enabled) (ge (int $prometheus.replicas) 1) }}
+      replicas: {{ $prometheus.replicas }}
+      {{- end }}
+      {{- if and (ne $prometheousRetention "none") ($prometheus.enabled)}}
+      retention: {{ $prometheousRetention }}
+      {{- end}}
+      {{- if ne $prometheousRetentionSize "none"}}
+      retentionSize: {{ $prometheousRetentionSize }}
+      {{- end}}
+      {{- with $prometheus.resources }}
+      resources:
+        {{- toYaml . | nindent 8  }}
+      {{- end}}
+     {{- with $prometheus.storage }}
+      storage:
+        {{- toYaml . | nindent 8 }}
+      {{- end}}
+      {{- with $prometheus.volumes }}
+      volumes:
+          {{- toYaml . | nindent 6  }}
+      {{- end }}
+      {{- with $prometheus.volumeMounts }}
+      volumeMounts:
+          {{- toYaml . | nindent 6  }}
+      {{- end}}
+      {{- if $prometheus.securityContext.runAsNonRoot }}
+      securityContext:
+        runAsNonRoot: true
+      {{- end}}
     {{- end }}
-    {{- if (and (.Values.telemetry) (eq .Values.telemetry true)) }}
+
+    {{- if .Values.monitoring.telemetry }}
     telemetry:
+      enabled: true
+    {{- end }}
+
+    {{- if .Values.monitoring.grafana }}
+    grafana:
       enabled: true
     {{- end }}
   {{- end }}

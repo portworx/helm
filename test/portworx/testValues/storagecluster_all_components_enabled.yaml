@@ -1,5 +1,6 @@
 # storagecluster_all_components_enabled.yaml
-stork: true
+stork:
+  enabled: true
 internalKVDB: true
 storkSpec:
   args: "webhook-controller=true;verbose=true"
@@ -14,5 +15,8 @@ csi:
     enabled: true
   installSnapshotController: true
 aut: true
-monitoring: true
-telemetry: true
+monitoring:
+  prometheus:                         
+    enabled: true                   
+  telemetry: true                   
+  grafana: true      

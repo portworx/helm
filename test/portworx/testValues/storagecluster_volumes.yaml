@@ -1,0 +1,8 @@
+volumes:                              
+  - name: test-volume
+    mountPath: /etc/test
+    mountPropagation: Bidirectional  
+    hostPath:
+      path: /test
+    readOnly: true
+internalKVDB: true
