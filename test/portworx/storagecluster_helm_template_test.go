@@ -53,6 +53,73 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestCSITopologyEnabled",
+			resultFileName: "storagecluster_csi_topology_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"internalKVDB":         "true",
+					"csi.enabled":          "true",
+					"csi.topology.enabled": "true",
+				},
+			},
+		},
+		{
+			name:           "TestCSISnapshotControllerEnabled",
+			resultFileName: "storagecluster_csi_Snapshot_Controller_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"internalKVDB":                  "true",
+					"csi.enabled":                   "true",
+					"csi.installSnapshotController": "true",
+				},
+			},
+		},
+		{
+			name:           "TestMonitoringWithAllValues",
+			resultFileName: "storagecluster_monitoring.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_monitoring.yaml"},
+			},
+		},
+		{
+			name:           "TestMonitoringWithExportMatrixEnabled",
+			resultFileName: "storagecluster_monitoring_enabled_exportmatrix.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"internalKVDB":                        "true",
+					"monitoring.prometheus.exportMetrics": "true",
+				},
+			},
+		},
+		{
+			name:           "TestMonitoringConditionByEnablingTelemetry",
+			resultFileName: "storagecluster_monitoring_enable_by_enable_telemetry.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{"monitoring.telemetry": "true", "internalKVDB": "true"},
+			},
+		},
+		{
+			name:           "TestStork",
+			resultFileName: "storagecluster_stork.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_stork.yaml"},
+			},
+		},
+		{
+			name:           "TestVolumes",
+			resultFileName: "storagecluster_volumes.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_volumes.yaml"},
+			},
+		},
+		{
+			name:           "TestPlacementNodeAffinity",
+			resultFileName: "storagecluster_nodeAffinity.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_nodeAffinity.yaml"},
+			},
+		},
+		{
 			name:           "TestPlacementTolerations",
 			resultFileName: "storagecluster_placement.yaml",
 			helmOption: &helm.Options{
@@ -65,7 +132,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
 					"runtimeOptions": "num_io_threads=10",
-					"internalKVDB":"true",
+					"internalKVDB":   "true",
 				},
 			},
 		},
@@ -75,7 +142,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
 					"featureGates": "CSI=true",
-					"internalKVDB":"true",
+					"internalKVDB": "true",
 				},
 			},
 		},
@@ -105,6 +172,13 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			resultFileName: "storagecluster_custom_metadata.yaml",
 			helmOption: &helm.Options{
 				ValuesFiles: []string{"./testValues/storagecluster_custom_metadata.yaml"},
+			},
+		},
+		{
+			name:           "TestNodesConfiguration",
+			resultFileName: "storagecluster_nodes_configuration.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_nodes_configuration.yaml"},
 			},
 		},
 	}

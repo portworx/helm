@@ -3,8 +3,8 @@
 deployOperator: true                    # Deploy the Portworx operator
 deployCluster: true                     # Deploy the Portworx cluster
 
-imageVersion: 3.1.0                  # Version of the PX Image.
-pxOperatorImageVersion: 23.10.2           # Version of the PX operator image.
+imageVersion: 3.1.0                    # Version of the PX Image.
+pxOperatorImageVersion: 23.10.2        # Version of the PX operator image.
 
 openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
 isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
@@ -81,23 +81,63 @@ miscArgs: none                        # Miscellaneous arguments that will be pas
 
 disableStorageClass: false            # Instructs Operator to not install the default Portworx StorageClasses.
 
-stork: true                           # Use Stork https://docs.portworx.com/scheduler/kubernetes/stork.html for hyperconvergence.
-storkVersion:                         # Optional: version of Stork. For eg: 2.7.0, when it's empty Portworx operator will pick up
+stork:                                # Use Stork https://docs.portworx.com/scheduler/kubernetes/stork.html for hyperconvergence.
+  enabled: true
+  storkVersion:                       # version of Stork. For eg: 2.7.0, when it's empty Portworx operator will pick up
                                       # version according to Portworx version.
-
-storkSpec:                            # Optional Stork configurations
-  args:                               # Pass arguments to Stork container. Example: verbose='true';webhook-controller='false'
+                                      
+  args:                               # Pass arguments to Stork container. Example: verbose=true;webhook-controller=false
   volumes:                            # Add volumes to Stork container. Refer the top level volumes for schema.
+  env:                                # A list of Kubernetes like environment variables passed to Stork.
 
 customRegistryURL:
 registrySecret:
 licenseSecret:
 
-monitoring: false
-telemetry: false
+monitoring:
+  prometheus:                         
+    enabled: false                     # Enable prometheus
+    exportMetrics: false              # Expose the Portworx metrics to an external or operator deployed Prometheus.
+    alertManager: false               # Enable prometheus alert manager
+    resources:                        # Configure Prometheus resource usage such as memory and CPU usage
+      # requests:
+      #   memory: "64Mi"
+      #   cpu: "250m"
+      # limits:
+      #   memory: "128Mi"
+      #   cpu: "500m"
+    replicas: 1                        # Number of prometheus replicas that will be deployed. Default is 1
+    retention: "24h"                     # Time period for which prometheus retains historical matrics. default is 24h.
+    retentionSize: ""                 # Maximum amount of disk space that Prometheus can use to store historical metrics. Example: "10GiB","50MiB"
+    storage:                          # storage type that Prometheus will use for storing data
+      # volumeClaimTemplate:
+      #   spec:
+      #     storageClassName: px-csi-db
+      #     accessModes: ["ReadWriteOnce"]
+      #     resources:
+      #       requests:
+      #         storage: 2Gi
+      #
+    volumes:                          # Additional volumes for the prometheus statefulSet
+    # - name: additional-volume
+    #   emptyDir: {}
+    volumeMounts:                     # Additional VolumeMounts for the Prometheus StatefulSet
+    # - mountPath: /test
+    #   name: additional-volume
+    securityContext:                  # Enable prometheus container run as a non-root user.
+      runAsNonRoot: false
+  telemetry: false                    # Enable telemetry
+  grafana: false                      # Enable grafana
+
 
 deployOnMaster:  false                # For POC only
-csi: false                            # Enable CSI
+
+csi: 
+  enabled: false                      # Enable CSI
+  topology: 
+    enabled: false                    # Enable CSI topology feature gate
+  installSnapshotController: false    # Enable CSI Snapshot Controller
+
 aut: false                            # Enable AutoPilot
 
 internalKVDB: false                   # internal KVDB
@@ -120,6 +160,8 @@ kvdb:
 volumes:                              # Add volumes to Portworx container. Supported volume types: Host, Secret, ConfigMap
   # - name: objectstore-cert
   #   mountPath: /etc/pwx/objectstore-cert
+  #   mountPropagation: None|HostToContainer|Bidirectional  
+  #   readOnly: true
   #   secret:
   #     secretName: objectstore-cert
   #     items:
@@ -131,6 +173,38 @@ tolerations:                          # Add tolerations
   #   operator: "Equal|Exists"
   #   value: "value"
   #   effect: "NoSchedule|PreferNoSchedule|NoExecute(1.6 only)"
+
+
+nodeAffinity:
+  # requiredDuringSchedulingIgnoredDuringExecution:
+  #   nodeSelectorTerms:
+  #   - matchExpressions:
+  #     - key: px-schedule
+  #       operator: NotIn
+  #       values:
+  #       - "false"
+
+nodesConfiguration:                           # override certain cluster level configuration for individual or group of nodes.
+# - selector:                                 # Selector for the node(s) to which the configuration in this section will be applied
+#     nodeName:                               # Name of the node to which this configuration will be applied. Node name takes precedence over selector.labelSelector
+#     labelSelector:                          # selector for nodes to which this configuration will be applied.
+#   network:                                  # Specify network configuration for the selected nodes, similar to the one specified at cluster level.
+#                                             # If this network configuration is empty, then cluster level (dataInterface,managementInterface) values are used.
+#     dataInterface:
+#     mgmtInterface:
+#   storage:                                  # Specify storage configuration for the selected nodes, similar to the one specified at cluster level. If some of the config is left empty,
+#                                             # the cluster level storage values are passed to the nodes.
+#   env:                                     # Specify extra environment variables for the selected nodes. Cluster level environment variables are combined with these and sent to the selected nodes.
+#                                             # If same variable is present at cluster level, then the node level variable takes precedence.
+#   - name: AWS_CA_BUNDLE
+#     value: "/etc/pwx/objectstore-cert/objectstore.pem"
+#   - name: AWS_ACCESS_KEY_ID
+#     valueFrom:
+#       secretKeyRef:
+#         name: aws-creds
+#         key: access-key   
+#   runtimeOptions:                           # Specify runtime options for the selected nodes. If specified, cluster level options are ignored and only these runtime options are passed to the nodes.    
+
 
 serviceAccount:
   hook:
