@@ -26,6 +26,8 @@
   {{- $licenseSecret := .Values.licenseSecret | default "none" }}
   {{- $kvdbDevice := .Values.kvdbDevice | default "none" }}
   {{- $journalDevice := .Values.journalDevice | default "none" }}
+  {{- $cacheDevices := .Values.cacheDevices | default "none"}}
+  {{- $systemMetadataDevice:= .Values.systemMetadataDevice | default "none"}}
   {{- $miscArgs := include "px.miscArgs" . }}
   {{- $volumesPresent := include "px.volumesPresent" . }}
   {{- $storagePodAnnotations := .Values.customMetadata.annotations.pod.storage }}
@@ -190,6 +192,9 @@ spec:
 
 {{- if and (ne $drives "none") (not (hasPrefix "/" $drives)) }}
   cloudStorage:
+    {{- if .Values.provider}}
+    provider: {{ .Values.provider }}
+    {{- end}}
     deviceSpecs:
       {{- $driveNames := $drives | split ";" }}
       {{- range $index, $name := $driveNames }}
@@ -198,25 +203,40 @@ spec:
     {{- if and (ne $kvdbDevice "none") (not (hasPrefix "/" $kvdbDevice)) }}
     kvdbDeviceSpec: {{ $kvdbDevice }}
     {{- end }}
+    {{- if ne $systemMetadataDevice "none"}}
+    systemMetadataDeviceSpec: {{ $systemMetadataDevice }}
+    {{- end }}
     {{- if and (ne $journalDevice "none") (not (hasPrefix "/" $journalDevice)) }}
     journalDeviceSpec: {{ $journalDevice }}
     {{- end }}
     {{- if ne (.Values.maxStorageNodesPerZone | int) 0 }}
     maxStorageNodesPerZone: {{ .Values.maxStorageNodesPerZone }}
     {{- end }}
+    {{- if ne (.Values.maxStorageNodes | int) 0 }}
+    maxStorageNodes: {{ .Values.maxStorageNodes }}
+    {{- end }}
 {{- else }}
   {{- if $AKSInstall }}
   cloudStorage:
+    {{- if .Values.provider}}
+    provider: {{ .Values.provider }}
+    {{- end}}
     deviceSpecs:
       - type=Premium_LRS,size=150
     {{- if and (ne $kvdbDevice "none") (not (hasPrefix "/" $kvdbDevice)) }}
     kvdbDeviceSpec: {{ $kvdbDevice }}
+    {{- end }}
+    {{- if ne $systemMetadataDevice "none"}}
+    systemMetadataDeviceSpec: {{ $systemMetadataDevice }}
     {{- end }}
     {{- if and (ne $journalDevice "none") (not (hasPrefix "/" $journalDevice)) }}
     journalDeviceSpec: {{ $journalDevice }}
     {{- end }}
     {{- if gt (.Values.maxStorageNodesPerZone | int) 0 }}
     maxStorageNodesPerZone: {{ .Values.maxStorageNodesPerZone }}
+    {{- end }}
+    {{- if ne (.Values.maxStorageNodes | int) 0 }}
+    maxStorageNodes: {{ .Values.maxStorageNodes }}
     {{- end }}
   {{- else }}
   storage:
@@ -227,6 +247,13 @@ spec:
         - {{ $name }}
         {{- end }}
     {{- end }}
+    {{- if ne $cacheDevices "none"}}
+    cacheDevices:
+      {{- $devices := $cacheDevices | split ";" }}
+        {{- range $index, $device := $devices }}
+        - {{ $device }}
+        {{- end }}
+    {{- end}}
     {{- if or $usefileSystemDrive $deployEnvironmentIKS }}
     forceUseDisks: true
     {{- end }}
@@ -237,6 +264,9 @@ spec:
     {{- end }}
     {{- if and (ne $kvdbDevice "none") (hasPrefix "/" $kvdbDevice) }}
     kvdbDevice: {{ $kvdbDevice }}
+    {{- end }}
+    {{- if ne $systemMetadataDevice "none"}}
+    systemMetadataDevice: {{ $systemMetadataDevice }}
     {{- end }}
     {{- if and (ne $journalDevice "none") (or (hasPrefix "/" $journalDevice) (eq "auto" $journalDevice)) }}
     journalDevice: {{ $journalDevice }}

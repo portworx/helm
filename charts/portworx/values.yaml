@@ -20,8 +20,18 @@ usefileSystemDrive: false             # true/false Instructs PX to use an unmoun
 usedrivesAndPartitions: false         # Defaults to false. Change to true and PX will use unmounted drives and partitions.
 drives: none                          # NOTE: This is a ";" seperated list of drives. For eg: "/dev/sda;/dev/sdb;/dev/sdc" or
                                       # "type=gp2,size=200;type=gp3,size=500". Defaults to use -A switch.
+provider:                             # If we are using cloudstorage, it specifies the cloud provider name, such as: pure, azure, aws, gce, vsphere.
+
 journalDevice:
+cacheDevices:                         # Specifies the list of cache devices Portworx should use. If there are multiple devices they need to be ";" seperated.
+
 maxStorageNodesPerZone: 0             # The maximum number of storage nodes desired per zone, in case of cloud drive provisioning
+
+maxStorageNodes: 0                     # Specifies the maximum number of storage nodes. If this number is reached, and a new node is added, Portworx doesn't provision drives for the new node.
+                                      # Instead, Portworx starts the node as a compute-only node. As a best practice, it is recommended to use the maxStorageNodesPerZone field.
+
+systemMetadataDevice:                 # Indicates the cloud device Portworx uses for metadata. For performance, specify a system metadata device when using Portworx with the internal KVDB.
+
 
 secretType: k8s                       # Defaults to k8s, but can be kvdb/k8s/aws-kms/vault/ibm-kp. It is autopopulated to ibm-kp
                                       # if the environment is IKS.

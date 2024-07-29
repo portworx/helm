@@ -26,7 +26,6 @@ func TestRenderedHelmTemplate(t *testing.T, helmOptions *helm.Options, helmChart
 
 	output := helm.RenderTemplate(t, helmOptions, helmChartPath, "my-release", []string{fmt.Sprintf("templates/%v", renderTemplateFileName)})
 
-	fmt.Printf("------->%s\n",output)
 	var storageCluster interface{}
 	helm.UnmarshalK8SYaml(t, output, &storageCluster)
 
