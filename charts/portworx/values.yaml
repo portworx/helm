@@ -20,7 +20,7 @@ usefileSystemDrive: false             # true/false Instructs PX to use an unmoun
 usedrivesAndPartitions: false         # Defaults to false. Change to true and PX will use unmounted drives and partitions.
 drives: none                          # NOTE: This is a ";" seperated list of drives. For eg: "/dev/sda;/dev/sdb;/dev/sdc" or
                                       # "type=gp2,size=200;type=gp3,size=500". Defaults to use -A switch.
-provider:                             # If we are using cloudtorage Specifies the cloud provider name, such as: pure, azure, aws, gce, vsphere.
+provider:                             # If we are using cloudstorage, it specifies the cloud provider name, such as: pure, azure, aws, gce, vsphere.
 
 journalDevice:
 cacheDevices:                         # Specifies the list of cache devices Portworx should use. If there are multiple devices they need to be ";" seperated.
