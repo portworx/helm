@@ -164,6 +164,15 @@ spec:
                 secretKeyRef:
                   key: mongodb-root-password
                   name: pxc-backup-mongodb
+            - name: MYSQL_STATEFULSET_NAME
+              value: pxcentral-mysql
+            - name: MYSQL_ROOT_USERNAME
+              value: root
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: DB_PASSWORD
+                  name: pxcentral-mysql-secret
             - name: JOB_TIMEOUT_SECONDS
               value: "600"
             - name: MONGODB_IMAGES
