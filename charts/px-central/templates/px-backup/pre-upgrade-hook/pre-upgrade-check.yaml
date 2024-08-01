@@ -123,7 +123,7 @@ metadata:
   annotations:
     "helm.sh/hook": pre-upgrade
     "helm.sh/hook-weight": "0"
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-completed
     labels:
     name: pxcentral-pre-upgrade-hook
     app.kubernetes.io/component: pxcentral-pre-upgrade-hook
@@ -201,4 +201,3 @@ spec:
             claimName: pre-upgrade-dump-pvc
       restartPolicy: Never
   backoffLimit: 0
-  ttlSecondsAfterFinished: 3600  # Retain pod for 1 hour after completion
