@@ -443,10 +443,10 @@ spec:
     rules:
     - alert: ClusterAlert
       annotations:
-        description: {{`The Cluster "{{ $labels.name
-          }}" has failed.`}}
-        summary: Cluster addition failed
-      expr: pxbackup_cluster_status == 5
+        description: {{`The Cluster "{{ $labels.name }}" {{- if eq $value 4.00 }} has failed.  {{- else if eq $value 2.00 }} has turned offline.{{- else }}unknown state.{{- end }} `}}
+        summary: {{`Cluster {{- if eq $value 4.00 }} addition failed {{- else if eq $value 2.00}} turned offline {{- else }}unknown state {{- end }}`}}
+        value: "{{` $value `}}"
+      expr: pxbackup_cluster_status == 5 or pxbackup_cluster_status == 2
       for: 1m
       labels:
         severity: critical
