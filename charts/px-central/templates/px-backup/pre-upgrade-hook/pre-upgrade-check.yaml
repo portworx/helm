@@ -103,7 +103,7 @@ metadata:
     app.kubernetes.io/component: pxcentral-pre-upgrade-hook
   annotations:
     "helm.sh/hook": pre-upgrade
-    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-weight": "1"
     "helm.sh/resource-policy": keep
 spec:
   accessModes:
@@ -122,7 +122,7 @@ metadata:
     app: px-backup
   annotations:
     "helm.sh/hook": pre-upgrade
-    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-weight": "2"
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-completed
     labels:
     name: pxcentral-pre-upgrade-hook
@@ -157,6 +157,8 @@ spec:
               value: {{ .Values.images.mongodbImage.tag }}
             - name: K8S_SERVICE_NAME
               value: pxc-backup-mongodb-headless
+            - name: MONGODB_PORT
+              value: "27017"
             - name: MONGODB_ROOT_USERNAME
               value: root
             - name: MONGODB_ROOT_PASSWORD
