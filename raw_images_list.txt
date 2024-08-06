@@ -7,7 +7,7 @@ docker.io/portworx/postgresql:11.19.0-debian-11-r1
 docker.io/portworx/keycloak:21.1.1
 docker.io/portworx/keycloak-login-theme:2.7.0
 docker.io/portworx/busybox:1.35.0
-docker.io/portworx/mysql:5.7.44
+docker.io/portworx/mysql:8.0.33
 docker.io/portworx/px-backup:2.7.1
 docker.io/portworx/mongodb:5.0.24-debian-11-r0
 docker.io/portworx/kopiaexecutor:1.2.12
