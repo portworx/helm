@@ -51,6 +51,18 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{/*
+HTTP proxy enabled env.
+*/}}
+{{- define "proxy.noProxyEnv" -}}
+{{- if .Values.proxy.httpProxy.noProxy }}
+- name: NO_PROXY
+  value: {{ .Values.proxy.httpProxy.noProxy }}
+- name: no_proxy
+  value: {{ .Values.proxy.httpProxy.noProxy }}
+{{- end }}
+{{- end }}
+
+{{/*
 Create the name of the service account to use
 */}}
 {{- define "px-central.serviceAccountName" -}}

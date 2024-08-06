@@ -4,6 +4,7 @@
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $storkRequired := .Values.storkRequired | default false -}}
 {{- $sslEnabled := .Values.pxmonitor.sslEnabled | default false -}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $pxMonitorEnabled true }}
 kind: ConfigMap
 apiVersion: v1
@@ -165,6 +166,10 @@ spec:
     metadata:
       labels:
         app: pxcentral-grafana
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
     spec:
       affinity:
         nodeAffinity:
@@ -192,10 +197,13 @@ spec:
         - name: pxcentral-grafana
           image: {{ printf "%s/%s/%s:%s" .Values.images.grafanaImage.registry .Values.images.grafanaImage.repo .Values.images.grafanaImage.imageName .Values.images.grafanaImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
-          {{- if .Values.caCertsSecretName }}
+          {{- if or .Values.caCertsSecretName .Values.proxy.httpProxy.noProxy }}
           env:
+          {{- if .Values.caCertsSecretName }}
             - name: SSL_CERT_DIR
               value: /tmp/certs
+          {{- end }}
+          {{- include "proxy.noProxyEnv" . | nindent 10 }}
           {{- end }}
           ports:
           - containerPort: 3000

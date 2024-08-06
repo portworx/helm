@@ -2,6 +2,7 @@
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $pxMonitorEnabled true }}
 {{- if eq $deployDedicatedMonitoringSystem false }}
 apiVersion: v1
@@ -72,6 +73,11 @@ metadata:
     app.kubernetes.io/component: pxcentral-prometheus
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
+  {{- if eq $azureProxyEnabled true }}
+  podMetadata:
+    annotations:
+      kubernetes.azure.com/no-http-proxy-vars: "true"
+  {{- end }}
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -103,13 +109,14 @@ spec:
         secretKeyRef:
           name: pxc-backup-metrics
           key: metrics-token
+    {{- include "proxy.noProxyEnv" . | nindent 4 }}
     image: {{ printf "%s/%s/%s:%s" .Values.images.prometheusImage.registry .Values.images.prometheusImage.repo .Values.images.prometheusImage.imageName .Values.images.prometheusImage.tag }}
     livenessProbe:
       exec:
         command:
         - sh
         - -c
-        - wget http://localhost:9090/-/healthy --header="Authorization:Basic $AUTH_SECRET"
+        - wget {{ if .Values.proxy.httpProxy.noProxy }}--no-proxy{{ end }} http://localhost:9090/-/healthy --header="Authorization:Basic $AUTH_SECRET"
           -qO-
     name: prometheus
     readinessProbe:
@@ -117,14 +124,14 @@ spec:
         command:
         - sh
         - -c
-        - wget http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
+        - wget {{ if .Values.proxy.httpProxy.noProxy }}--no-proxy{{ end }} http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
           -qO-
     startupProbe:
       exec:
         command:
         - sh
         - -c
-        - wget http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
+        - wget {{ if .Values.proxy.httpProxy.noProxy }}--no-proxy{{ end }} http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
           -qO-
     ports:
     - containerPort: 9090
@@ -149,6 +156,7 @@ spec:
         secretKeyRef:
           key: password
           name: pxc-backup-metrics
+    {{- include "proxy.noProxyEnv" . | nindent 4 }}
     ports:
     - containerPort: 8080
       name: reloader-web
@@ -293,6 +301,10 @@ spec:
       app.kubernetes.io/component: pxcentral-prometheus
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         k8s-app: pxcentral-prometheus-operator
         app.kubernetes.io/component: pxcentral-prometheus
@@ -320,6 +332,10 @@ spec:
           image: {{ printf "%s/%s/%s:%s" .Values.images.prometheusOperatorImage.registry .Values.images.prometheusOperatorImage.repo .Values.images.prometheusOperatorImage.imageName .Values.images.prometheusOperatorImage.tag }}
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           name: pxcentral-prometheus-operator
+          {{- if .Values.proxy.httpProxy }}
+          env:
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           ports:
             - containerPort: 8080
               name: http

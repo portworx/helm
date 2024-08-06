@@ -6,6 +6,7 @@
 {{- $metricsPass := (get $metricsSecretData "password" | b64dec) | default (randAlphaNum 12 ) }}
 {{- $metricsToken := (get $metricsSecretData "metrics-token" | b64dec) | default ( printf "admin:%s" $metricsPass | b64enc | quote ) }}
 {{- $metricsBasicAuth := htpasswd "admin" $metricsPass }}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $deployDedicatedMonitoringSystem true }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -115,7 +116,25 @@ spec:
     metadata:
       labels:
         k8s-app: prometheus-operator
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
     spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+              {{- end }}
       containers:
       - args:
           - -namespaces={{ .Release.Namespace }}
@@ -126,6 +145,10 @@ spec:
         ports:
           - containerPort: 8080
             name: http
+        {{- if .Values.proxy.httpProxy.noProxy }}
+        env:
+        {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{- end }}
         {{- if $isOpenshiftCluster }}
         {{- else }}
       securityContext:
@@ -228,9 +251,28 @@ metadata:
    name: px-backup-dashboard-prometheus
    namespace: {{ .Release.Namespace }}
 spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          {{- if .Values.nodeAffinityLabel }}
+          - key: {{ .Values.nodeAffinityLabel }}
+            operator: Exists
+          {{- else }}
+          - key: pxbackup/enabled
+            operator: NotIn
+            values:
+            - "false"
+          {{- end }}
   additionalAlertManagerConfigs:
     key: am-configs.yaml
     name: pxc-backup-metrics
+  {{- if eq $azureProxyEnabled true }}
+  podMetadata:
+    annotations:
+      kubernetes.azure.com/no-http-proxy-vars: "true"
+  {{- end }}
   {{- if .Values.persistentStorage.storageClassName }}
   storage:
     volumeClaimTemplate:
@@ -258,13 +300,14 @@ spec:
         secretKeyRef:
           name: pxc-backup-metrics
           key: metrics-token
+    {{ include "proxy.noProxyEnv" . | nindent 4 }}
     image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupPrometheusImage.registry .Values.images.pxBackupPrometheusImage.repo .Values.images.pxBackupPrometheusImage.imageName .Values.images.pxBackupPrometheusImage.tag }}
     livenessProbe:
       exec:
         command:
         - sh
         - -c
-        - wget http://localhost:9090/-/healthy --header="Authorization:Basic $AUTH_SECRET"
+        - wget {{ if .Values.proxy.httpProxy.noProxy }}--no-proxy{{ end }} http://localhost:9090/-/healthy --header="Authorization:Basic $AUTH_SECRET"
           -qO-
     name: prometheus
     readinessProbe:
@@ -272,14 +315,14 @@ spec:
         command:
         - sh
         - -c
-        - wget http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
+        - wget {{ if .Values.proxy.httpProxy.noProxy }}--no-proxy{{ end }} http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
           -qO-
     startupProbe:
       exec:
         command:
         - sh
         - -c
-        - wget http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
+        - wget {{ if .Values.proxy.httpProxy.noProxy }}--no-proxy{{ end }} http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
           -qO-
     ports:
     - containerPort: 9090
@@ -304,6 +347,7 @@ spec:
         secretKeyRef:
           key: password
           name: pxc-backup-metrics
+    {{ include "proxy.noProxyEnv" . | nindent 4 }}
     ports:
     - containerPort: 8080
       name: reloader-web
@@ -454,7 +498,11 @@ spec:
     - alert: BackupAlert
       annotations:
         description: {{`The Backup "{{ $labels.name 
-          }}" {{- if eq .Labels.schedule_name "" }} {{ else }} part of backup schedule "{{ $labels.schedule_name}}" {{ end }} taken for cluster "{{ $labels.cluster}}" on namespace "{{ $labels.backup_namespace}}" has failed.`}}
+          }}" {{- if eq .Labels.schedule_name "" }} 
+          {{ else }} part of backup schedule "{{ $labels.schedule_name}}" 
+          {{ end }} taken for cluster 
+          "{{ $labels.cluster}}" on namespace 
+          "{{ $labels.backup_namespace}}" has failed.`}}
         summary: Backup failed
       expr: pxbackup_backup_status == 4
       for: 1m
@@ -473,10 +521,31 @@ spec:
 
     - alert: BackupLocationAlert
       annotations:
-        description: {{`The Backup Location "{{ $labels.name
-          }}" has failed.`}}
-        summary: BackupLocation addition failed
+        description: {{`The Backup Location "{{ $labels.name }}" has failed.`}}
+        summary: Backup Location addition failed
       expr: pxbackup_backup_location_status == 4
+      for: 1m
+      labels:
+        severity: critical
+
+    - alert: BackupLocationLimitedAvailabilityAlert
+      annotations:
+        description: {{`The Backup Location "{{ $labels.name }}" has transitioned to a limited availability state.`}}
+        summary: Backup Location status changed to limited availability. KDMP backup will not be allowed.
+      expr: pxbackup_backup_location_status == 5
+      for: 1m
+      labels:
+        severity: critical
+
+    - alert: PartialBackupAlert
+      annotations:
+        description: {{`The Backup "{{ $labels.name }}"
+          {{- if eq .Labels.schedule_name "" }}
+          {{ else }} part of backup schedule "{{ $labels.schedule_name }}"
+          {{ end }} taken for cluster "{{ $labels.cluster }}"on namespace "{{ $labels.backup_namespace}}"
+          was only completed partially.`}}
+        summary: Partial Backup Success
+      expr: pxbackup_backup_status == 8
       for: 1m
       labels:
         severity: critical

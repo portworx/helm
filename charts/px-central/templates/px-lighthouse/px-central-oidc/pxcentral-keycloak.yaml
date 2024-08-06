@@ -3,6 +3,7 @@
 {{- $centralOIDC := .Values.oidc.centralOIDC.enabled | default false -}}
 {{- $operatorToChartUpgrade := .Values.operatorToChartUpgrade | default false -}}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $centralOIDC true }}
 apiVersion: v1
 kind: ServiceAccount
@@ -308,6 +309,10 @@ spec:
   template:
     metadata:
       name: pxcentral-keycloak-postgresql
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         app: postgresql
         role: master
@@ -376,6 +381,7 @@ spec:
               value: "keycloak"
             - name: POSTGRESQL_ENABLE_LDAP
               value: "no"
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
           ports:
             - name: tcp-postgresql
               containerPort: 5432
@@ -459,6 +465,10 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         app.kubernetes.io/component: keycloak
         app.kubernetes.io/name: {{.Release.Name }}
@@ -510,7 +520,15 @@ spec:
               echo 'PostgreSQL OK ✓'
           resources:
             {}
+          {{- if .Values.proxy.httpProxy.noProxy }}
+          env:
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
         - name: px-keycloak-login-theme
+          {{- if .Values.proxy.httpProxy.noProxy }}
+          env:
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakLoginThemeImage.registry .Values.images.keycloakLoginThemeImage.repo .Values.images.keycloakLoginThemeImage.imageName .Values.images.keycloakLoginThemeImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
@@ -566,6 +584,7 @@ spec:
           - name: HELM_CHECKSUM
             value: {{ randAlphaNum 8 | quote }}
           {{- end }}
+          {{- include "proxy.noProxyEnv" . | nindent 10 }}
           volumeMounts:
             - name: sh
               mountPath: /scripts
