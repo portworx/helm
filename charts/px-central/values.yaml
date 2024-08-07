@@ -163,7 +163,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend-private
-    tag: 2.7.2-dev
+    tag: 2.8.0-backup-table-replacement-dev
   pxcentralBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
