@@ -120,6 +120,10 @@ spec:
           requests:
             storage: {{ .Values.persistentStorage.alertManager.storage }}
   {{- end }}
+  {{- with .Values.tolerations }}
+  tolerations:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
 {{- end }}
 ---
 apiVersion: v1
