@@ -24,7 +24,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/portworx-3.1.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/portworx-3.1.0.tgz
     version: 3.1.0
   - apiVersion: v1
     appVersion: 3.0.0
@@ -49,7 +49,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/portworx-3.0.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/portworx-3.0.0.tgz
     version: 3.0.0
   - apiVersion: v1
     appVersion: 2.13.3
@@ -74,7 +74,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/portworx-2.13.3.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/portworx-2.13.3.tgz
     version: 2.13.3
   - apiVersion: v1
     appVersion: 2.12.2
@@ -99,7 +99,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/portworx-2.13.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/portworx-2.13.0.tgz
     version: 2.13.0
   - apiVersion: v1
     appVersion: 2.11.4
@@ -112,7 +112,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/portworx-2.11.4.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/portworx-2.11.4.tgz
     version: 2.11.4
   - apiVersion: v1
     appVersion: 2.10.3
@@ -125,7 +125,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/portworx-2.10.3.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/portworx-2.10.3.tgz
     version: 2.10.3
   - apiVersion: v1
     appVersion: 2.9.1
@@ -138,7 +138,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/portworx-2.9.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/portworx-2.9.1.tgz
     version: 2.9.1
   - apiVersion: v1
     created: "2024-08-12T20:10:07.403498599+05:30"
@@ -150,7 +150,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/portworx-1.0.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/portworx-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v1
     created: "2024-08-12T20:10:07.401791212+05:30"
@@ -162,7 +162,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/portworx-1.0.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/portworx-1.0.0.tgz
     version: 1.0.0
   portworx-daemonSet:
   - apiVersion: v1
@@ -188,7 +188,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/portworx-daemonSet-2.13.5.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/portworx-daemonSet-2.13.5.tgz
     version: 2.13.5
   - apiVersion: v1
     appVersion: 2.12.2
@@ -213,7 +213,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/portworx-daemonSet-2.13.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/portworx-daemonSet-2.13.0.tgz
     version: 2.13.0
   px-backup:
   - apiVersion: v1
@@ -236,7 +236,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-backup-1.2.4.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-backup-1.2.4.tgz
     version: 1.2.4
   - apiVersion: v1
     appVersion: 1.2.3
@@ -258,7 +258,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-backup-1.2.3.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-backup-1.2.3.tgz
     version: 1.2.3
   - apiVersion: v1
     appVersion: 1.2.2
@@ -280,7 +280,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-backup-1.2.2.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-backup-1.2.2.tgz
     version: 1.2.2
   - apiVersion: v1
     appVersion: 1.2.1
@@ -302,7 +302,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-backup-1.2.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-backup-1.2.1.tgz
     version: 1.2.1
   - apiVersion: v1
     appVersion: 1.2.0
@@ -324,7 +324,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-backup-1.2.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-backup-1.2.0.tgz
     version: 1.2.0
   - apiVersion: v1
     appVersion: 1.1.1
@@ -346,7 +346,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-backup-1.1.6.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-backup-1.1.6.tgz
     version: 1.1.6
   - apiVersion: v1
     appVersion: 1.1.0
@@ -368,7 +368,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-backup-1.1.5.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-backup-1.1.5.tgz
     version: 1.1.5
   - apiVersion: v1
     appVersion: 1.1.0
@@ -390,7 +390,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-backup-1.1.4.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-backup-1.1.4.tgz
     version: 1.1.4
   - apiVersion: v1
     appVersion: 1.1.0-rc4
@@ -412,7 +412,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-backup-1.1.3.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-backup-1.1.3.tgz
     version: 1.1.3
   - apiVersion: v1
     appVersion: 1.1.0-rc2
@@ -434,7 +434,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-backup-1.1.2.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-backup-1.1.2.tgz
     version: 1.1.2
   - apiVersion: v1
     appVersion: 1.1.0-rc2
@@ -456,7 +456,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-backup-1.1.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-backup-1.1.1.tgz
     version: 1.1.1
   - apiVersion: v1
     appVersion: 1.1.0-rc1
@@ -478,7 +478,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-backup-1.1.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-backup-1.1.0.tgz
     version: 1.1.0
   - apiVersion: v1
     appVersion: 1.0.2
@@ -500,7 +500,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-backup-1.0.2.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-backup-1.0.2.tgz
     version: 1.0.2
   - apiVersion: v1
     appVersion: 1.0.2
@@ -522,7 +522,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-backup-1.0.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-backup-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v1
     appVersion: 1.0.2
@@ -544,7 +544,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-backup-1.0.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-backup-1.0.0.tgz
     version: 1.0.0
   px-central:
   - apiVersion: v1
@@ -566,7 +566,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.7.3.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.7.3.tgz
     version: 2.7.3
   - apiVersion: v1
     appVersion: 2.7.2-dev
@@ -587,7 +587,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.7.2.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.7.2.tgz
     version: 2.7.2
   - apiVersion: v1
     appVersion: 2.7.1
@@ -608,7 +608,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.7.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.7.1.tgz
     version: 2.7.1
   - apiVersion: v1
     appVersion: 2.7.0-dev
@@ -629,7 +629,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.7.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.7.0.tgz
     version: 2.7.0
   - apiVersion: v1
     appVersion: 2.6.0
@@ -650,7 +650,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.6.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.6.0.tgz
     version: 2.6.0
   - apiVersion: v1
     appVersion: 2.5.1
@@ -671,7 +671,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.5.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.5.1.tgz
     version: 2.5.1
   - apiVersion: v1
     appVersion: 2.5.0
@@ -692,7 +692,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.5.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.5.0.tgz
     version: 2.5.0
   - apiVersion: v1
     appVersion: 2.4.3
@@ -713,7 +713,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.4.3.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.4.3.tgz
     version: 2.4.3
   - apiVersion: v1
     appVersion: 2.4.2
@@ -734,7 +734,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.4.2.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.4.2.tgz
     version: 2.4.2
   - apiVersion: v1
     appVersion: 2.4.1
@@ -755,7 +755,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.4.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.4.1.tgz
     version: 2.4.1
   - apiVersion: v1
     appVersion: 2.4.0
@@ -776,7 +776,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.4.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.4.0.tgz
     version: 2.4.0
   - apiVersion: v1
     appVersion: 2.3.3
@@ -797,7 +797,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.3.3.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.3.3.tgz
     version: 2.3.3
   - apiVersion: v1
     appVersion: 2.3.2
@@ -818,7 +818,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.3.2.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.3.2.tgz
     version: 2.3.2
   - apiVersion: v1
     appVersion: 2.3.1
@@ -839,7 +839,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.3.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.3.1.tgz
     version: 2.3.1
   - apiVersion: v1
     appVersion: 2.3.0
@@ -860,7 +860,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.3.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.3.0.tgz
     version: 2.3.0
   - apiVersion: v1
     appVersion: 2.2.3
@@ -881,7 +881,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.2.3.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.2.3.tgz
     version: 2.2.3
   - apiVersion: v1
     appVersion: 2.2.2
@@ -902,7 +902,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.2.2.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.2.2.tgz
     version: 2.2.2
   - apiVersion: v1
     appVersion: 2.2.1
@@ -923,7 +923,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.2.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.2.1.tgz
     version: 2.2.1
   - apiVersion: v1
     appVersion: 2.2.0
@@ -944,7 +944,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.2.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.2.0.tgz
     version: 2.2.0
   - apiVersion: v1
     appVersion: 2.1.2
@@ -965,7 +965,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.1.2.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.1.2.tgz
     version: 2.1.2
   - apiVersion: v1
     appVersion: 2.1.1
@@ -986,7 +986,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.1.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.1.1.tgz
     version: 2.1.1
   - apiVersion: v1
     appVersion: 2.0.1
@@ -1007,7 +1007,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.0.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.0.1.tgz
     version: 2.0.1
   - apiVersion: v1
     appVersion: 2.0.0
@@ -1028,7 +1028,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-central-2.0.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-central-2.0.0.tgz
     version: 2.0.0
   px-license-server:
   - apiVersion: v1
@@ -1046,7 +1046,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-license-server-1.2.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-license-server-1.2.1.tgz
     version: 1.2.1
   - apiVersion: v1
     appVersion: 1.0.0
@@ -1063,7 +1063,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-license-server-1.2.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-license-server-1.2.0.tgz
     version: 1.2.0
   - apiVersion: v1
     appVersion: 1.0.0
@@ -1080,7 +1080,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-license-server-1.1.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-license-server-1.1.0.tgz
     version: 1.1.0
   - apiVersion: v1
     appVersion: 1.0.1
@@ -1097,7 +1097,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-license-server-1.0.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-license-server-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v1
     appVersion: 1.0.0
@@ -1114,7 +1114,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-license-server-1.0.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-license-server-1.0.0.tgz
     version: 1.0.0
   px-monitor:
   - apiVersion: v1
@@ -1135,7 +1135,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-monitor-1.2.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-monitor-1.2.1.tgz
     version: 1.2.1
   - apiVersion: v1
     appVersion: 1.2.0
@@ -1155,7 +1155,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-monitor-1.2.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-monitor-1.2.0.tgz
     version: 1.2.0
   - apiVersion: v1
     appVersion: 1.1.1
@@ -1175,7 +1175,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-monitor-1.1.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-monitor-1.1.1.tgz
     version: 1.1.1
   - apiVersion: v1
     appVersion: 1.1.0
@@ -1195,6 +1195,6 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.7.3/stable/px-monitor-1.1.0.tgz
+    - https://raw.githubusercontent.com/portworx/helm/PB-7661-new/stable/px-monitor-1.1.0.tgz
     version: 1.1.0
 generated: "2024-08-12T20:10:07.400765177+05:30"
