@@ -175,10 +175,10 @@ images:
     imageName: pxcentral-onprem-ui-lhbackend-private
     tag: 2.7.3-dev
   postInstallSetupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
+    repo: users/ss
     imageName: pxcentral-onprem-post-setup-base
-    tag: 2.7.3-dev
+    tag: pb-7661-new
   keycloakBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
@@ -204,6 +204,11 @@ images:
     repo: portworx
     imageName: mysql
     tag: 8.0.33
+  preUpgradeHookImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
+    repo: users/ss
+    imageName: pxcentral-onprem-pre-upgrade-base
+    tag: pb-7661-new
 
   ## Images required for enabling px-backup
   pxBackupImage:
@@ -305,3 +310,13 @@ images:
     repo: portworx
     imageName: memcached
     tag: 1.6.17-alpine
+
+## Images required for intermediate Mongo upgrades
+mongodbImages:
+  registry: docker.io
+  repo: portworx
+  imageName: mongodb
+  tags: 
+    mongodb5: 5.0.24-debian-11-r20
+    mongodb6: 6.0.13-debian-11-r21
+    mongodb7: 7.0.11-debian-12-r0

@@ -51,6 +51,10 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+          - name: MONGODB_PORT
+            value: "27017"
+          - name: MONGODB_ROOT_USERNAME
+            value: root
           {{- include "proxy.noProxyEnv" . | nindent 10 }}
       {{- if eq $deployDedicatedMonitoringSystem true }}
           - name: DEDICATED_PROMETHEUS
