@@ -279,6 +279,7 @@ spec:
     {{- if ne $dataInterface "none" }}
     dataInterface: {{ $dataInterface }}
     {{- end }}
+    newfield: test
     {{- if ne $managementInterface "none" }}
     mgmtInterface: {{ $managementInterface }}
     {{- end }}

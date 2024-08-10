@@ -172,7 +172,7 @@ spec:
                 type: integer
                 format: int32
                 description: The number of old history to retain to allow rollback. This is a pointer
-                  to distinguish between an explicit zero and not specified. Defaults to 10.
+                  to distinguish between an explicit zero and not specified. Defaults to 10 test.
               featureGates:
                 type: object
                 x-kubernetes-preserve-unknown-fields: true

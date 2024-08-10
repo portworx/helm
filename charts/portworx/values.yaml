@@ -259,3 +259,4 @@ updateStrategy:
 
   autoUpdateComponents:                   # Indicates the update strategy for the component images
                                           # valid values None,Once,Always
+  test: 
