@@ -8,6 +8,23 @@
 {{- $metricsBasicAuth := htpasswd "admin" $metricsPass }}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $deployDedicatedMonitoringSystem true }}
+{{- $storageSize := "5Gi" }}
+{{- $retentionSize := "4096MB" }}
+{{- $prometheus := lookup "monitoring.coreos.com/v1" "Prometheus" .Release.Namespace "px-backup-dashboard-prometheus" }}
+{{- if $prometheus }}
+{{- $storageSize = $prometheus.spec.storage.volumeClaimTemplate.spec.resources.requests.storage }}
+{{- range $prometheus.spec.containers -}}
+  {{- range $arg := .args -}}
+    {{- if hasPrefix "--storage.tsdb.retention.size=" $arg -}}
+      {{- $retentionSize = trimPrefix "--storage.tsdb.retention.size=" $arg -}}
+        {{- if eq $retentionSize "4600MB" -}}
+          {{- $retentionSize = "4096MB" -}}
+        {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- else }}
+{{- end }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -280,14 +297,22 @@ spec:
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         resources:
           requests:
+            {{- if eq .Release.IsInstall true }}
             storage: {{ .Values.persistentStorage.prometheus.storage }}
+            {{- else }}
+            storage: {{ $storageSize }}
+            {{- end }}
   {{- end }}
   containers:
   - args:
     - --web.console.templates=/etc/prometheus/consoles
     - --web.console.libraries=/etc/prometheus/console_libraries
     - --storage.tsdb.retention.time={{ .Values.pxbackup.prometheus.retention }}
+        {{- if eq .Release.IsInstall true }}
     - --storage.tsdb.retention.size={{ .Values.persistentStorage.prometheus.retentionSize }}
+        {{- else }}
+    - --storage.tsdb.retention.size={{ $retentionSize }}
+        {{- end }}
     - --config.file=/etc/prometheus/config_out/prometheus.env.yaml
     - --storage.tsdb.path=/prometheus
     - --web.enable-lifecycle
