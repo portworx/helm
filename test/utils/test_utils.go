@@ -12,8 +12,14 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestRenderedHelmTemplate(t *testing.T, helmOptions *helm.Options, helmChartPath string, renderTemplateFileName string, resultFilePath string) {
+func TestRenderedHelmTemplate(t *testing.T, helmOptions *helm.Options, helmChartPath string, renderTemplateFileName string, resultFilePath string, expectedErrorMsg string) {
 	t.Helper()
+
+	output, err := helm.RenderTemplateE(t, helmOptions, helmChartPath, "my-release", []string{fmt.Sprintf("templates/%v", renderTemplateFileName)})
+	if err != nil {
+		require.ErrorContains(t, err, expectedErrorMsg)
+		return
+	}
 
 	resultFileContent, err := os.ReadFile(resultFilePath)
 	if err != nil {
@@ -23,8 +29,6 @@ func TestRenderedHelmTemplate(t *testing.T, helmOptions *helm.Options, helmChart
 
 	var resultFileData interface{}
 	helm.UnmarshalK8SYaml(t, string(resultFileContent), &resultFileData)
-
-	output := helm.RenderTemplate(t, helmOptions, helmChartPath, "my-release", []string{fmt.Sprintf("templates/%v", renderTemplateFileName)})
 
 	var storageCluster interface{}
 	helm.UnmarshalK8SYaml(t, output, &storageCluster)

@@ -7,7 +7,7 @@ metadata:
   labels:
     heritage: "Helm"
     release: "my-release"
-    chart: "portworx-3.1.0"
+    chart: "portworx-3.1.2"
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-release"
 spec:
@@ -24,9 +24,7 @@ spec:
     cacheDevices:
         - /dev/one
         - /dev/two
-    forceUseDisks: true
     kvdbDevice: /node-kvdb
-    useAll: true
     systemMetadataDevice: /dev/sde
     journalDevice: /dev/sdd
   secretsProvider: k8s
