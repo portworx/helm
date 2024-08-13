@@ -1,6 +1,6 @@
-drives: "/dev/sda;/dev/sdb;/dev/sdc"                          
 journalDevice: "/dev/sdd"
 systemMetadataDevice: "/dev/sde"
 kvdbDevice: "/node-kvdb"
 cacheDevices: "/dev/one;/dev/two"
-usefileSystemDrive: true            
+usefileSystemDrive: false          
+usedrivesAndPartitions: false

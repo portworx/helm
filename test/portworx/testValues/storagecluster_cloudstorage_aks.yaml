@@ -1,4 +1,3 @@
-internalKVDB: true
 AKSInstall: true                     
 provider: azure                           
 journalDevice: "type=journal"

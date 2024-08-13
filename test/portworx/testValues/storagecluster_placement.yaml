@@ -1,4 +1,3 @@
-internalKVDB: true
 tolerations: 
   - key: "key"
     operator: "Equal"

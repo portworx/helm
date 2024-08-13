@@ -42,7 +42,7 @@ serviceType: none                     # Kubernetes service type for services dep
                                       # 'LoadBalancer', 'NodePort' will change all services. To change the types of specific
                                       # services, value can be specified as 'portworx-service:LoadBalancer;portworx-api:ClusterIP'
 
-runtimeOptions:                       # A collection of key-value pairs that overwrites the runtime options.
+runtimeOptions:                       # A collection of key-value pairs that overwrites the runtime options. ex num_io_threads=10;-c=px-cluster
 featureGates:                         # A collection of key-value pairs specifying which Portworx features should be enabled or disabled.
 
 security: 
@@ -91,7 +91,7 @@ miscArgs: none                        # Miscellaneous arguments that will be pas
 
 disableStorageClass: false            # Instructs Operator to not install the default Portworx StorageClasses.
 
-stork:                                # Use Stork https://docs.portworx.com/scheduler/kubernetes/stork.html for hyperconvergence.
+stork:                                # Use Stork https://docs.portworx.com/portworx-backup-on-prem/concepts/stork for hyperconvergence.
   enabled: true
   storkVersion:                       # version of Stork. For eg: 2.7.0, when it's empty Portworx operator will pick up
                                       # version according to Portworx version.
@@ -106,8 +106,8 @@ licenseSecret:
 
 monitoring:
   prometheus:                         
-    enabled: false                     # Enable prometheus
-    exportMetrics: false              # Expose the Portworx metrics to an external or operator deployed Prometheus.
+    enabled: true                     # Enable prometheus
+    exportMetrics: true              # Expose the Portworx metrics to an external or operator deployed Prometheus.
     alertManager: false               # Enable prometheus alert manager
     resources:                        # Configure Prometheus resource usage such as memory and CPU usage
       # requests:
@@ -136,20 +136,20 @@ monitoring:
     #   name: additional-volume
     securityContext:                  # Enable prometheus container run as a non-root user.
       runAsNonRoot: false
-  telemetry: false                    # Enable telemetry
+  telemetry: true                    # Enable telemetry
   grafana: false                      # Enable grafana
 
 
 deployOnMaster:  false                # For POC only
 
 csi: 
-  enabled: false                      # Enable CSI
+  enabled: true                      # Enable CSI
   topology: 
     enabled: false                    # Enable CSI topology feature gate
   installSnapshotController: false    # Enable CSI Snapshot Controller
 
 autopilot: 
-  enabled: false                      # Enable AutoPilot
+  enabled: true                      # Enable AutoPilot
   image: ""                           # Autopilot image
   lockImage: false                    # Enables locking Autopilot to the given image. 
                                       # When set to false, the Portworx Operator will overwrite the Autopilot image to a recommended image for given Portworx version.
@@ -168,7 +168,7 @@ autopilot:
   #   params: ""                        # Pass params to provider. Example: url=http://datadog:9090;auth=foobar
 
 
-internalKVDB: false                   # internal KVDB
+internalKVDB: true                   # internal KVDB
 kvdbDevice: none                      # specify a separate device to store KVDB data, only used when internalKVDB is set to true
 
 etcd:                                 # DEPRECATED: Use kvdb.authSecretName for configuring secure etcd
@@ -182,7 +182,7 @@ consul:                               # DEPRECATED: Use kvdb.authSecretName for 
   token: none                         # ACL token value used for Consul authentication. (example: 398073a8-5091-4d9c-871a-bbbeb030d1f6)
 
 kvdb:
-  authSecretName: none                # Refer https://docs.portworx.com/reference/etcd/#securing-with-certificates-in-kubernetes to
+  authSecretName: none                # Refer https://docs.portworx.com/portworx-enterprise/operations/kvdb-for-portworx/external-kvdb#secure-your-etcd-communication to
                                       # create a kvdb secret and specify the name of the secret here
 
 volumes:                              # Add volumes to Portworx container. Supported volume types: Host, Secret, ConfigMap

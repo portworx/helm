@@ -17,9 +17,15 @@ spec:
   kvdb:
     internal: true
   storage:
+    cacheDevices:
+        - /dev/one
+        - /dev/two
     useAll: true
+    kvdbDevice: /node-kvdb
+    systemMetadataDevice: /dev/sde
+    journalDevice: /dev/sdd
   secretsProvider: k8s
-  
+
   stork:
     enabled: true
   monitoring:
@@ -34,5 +40,3 @@ spec:
     enabled: true
   autopilot:
     enabled: true
-  featureGates:
-    CSI: "true"

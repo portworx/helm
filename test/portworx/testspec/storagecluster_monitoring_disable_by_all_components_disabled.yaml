@@ -22,17 +22,7 @@ spec:
   
   stork:
     enabled: true
-  monitoring:
-    prometheus:
-      enabled: true
-      exportMetrics: true
-      replicas: 1
-      retention: 24h
-    telemetry:
-      enabled: true
   csi:
     enabled: true
   autopilot:
     enabled: true
-  featureGates:
-    CSI: "true"

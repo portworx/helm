@@ -1,4 +1,3 @@
-internalKVDB: true
 nodesConfiguration:
 - selector:
     labelSelector:

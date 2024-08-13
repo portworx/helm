@@ -1,4 +1,3 @@
-internalKVDB: true
 autopilot: 
   enabled: true                      
   image: "portworx/autopilot:1.3.14"                           
