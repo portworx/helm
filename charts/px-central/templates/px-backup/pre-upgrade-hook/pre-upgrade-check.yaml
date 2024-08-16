@@ -77,7 +77,7 @@ roleRef:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: pre-upgrade-log-pvc
+  name: pre-upgrade-data-pvc
   namespace: {{ .Release.Namespace }}
   labels:
     name: pxcentral-pre-upgrade-hook
@@ -92,26 +92,6 @@ spec:
   resources:
     requests:
       storage: 1Gi
-  storageClassName: {{ .Values.persistentStorage.storageClassName }}
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pre-upgrade-dump-pvc
-  namespace: {{ .Release.Namespace }}
-  labels:
-    name: pxcentral-pre-upgrade-hook
-    app.kubernetes.io/component: pxcentral-pre-upgrade-hook
-  annotations:
-    "helm.sh/hook": pre-upgrade
-    "helm.sh/hook-weight": "1"
-    "helm.sh/resource-policy": keep
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 64Gi
   storageClassName: {{ .Values.persistentStorage.storageClassName }}
 ---
 apiVersion: batch/v1
@@ -197,17 +177,12 @@ spec:
                   }
                 }
           volumeMounts:
-            - name: log-volume
-              mountPath: /logs
-            - name: dump-volume
-              mountPath: /dumps
+            - name: data-volume
+              mountPath: /mnt/data
       volumes:
-        - name: log-volume
+        - name: data-volume
           persistentVolumeClaim:
-            claimName: pre-upgrade-log-pvc
-        - name: dump-volume
-          persistentVolumeClaim:
-            claimName: pre-upgrade-dump-pvc
+            claimName: pre-upgrade-data-pvc
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}
