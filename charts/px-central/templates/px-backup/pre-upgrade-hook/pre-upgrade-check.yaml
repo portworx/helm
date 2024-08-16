@@ -128,41 +128,43 @@ metadata:
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-completed
     meta.helm.sh/release-name: {{ .Release.Name }}
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
-    labels:
-    name: pxcentral-pre-upgrade-hook
-    app.kubernetes.io/component: pxcentral-pre-upgrade-hook
 spec:
   template:
     spec:
-      {{- if $isOpenshiftCluster}}
-      {{- else }}
-      securityContext:
-{{ toYaml .Values.securityContext | indent 8 }}
-      {{- end }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-            - matchExpressions:
-              {{- if .Values.nodeAffinityLabel }}
-              - key: {{ .Values.nodeAffinityLabel }}
-                operator: Exists
-              {{- else }}
-              - key: pxbackup/enabled
-                operator: NotIn
-                values:
-                - "false"
-              {{- end }}
+              - matchExpressions:
+                  {{- if .Values.nodeAffinityLabel }}
+                  - key: {{ .Values.nodeAffinityLabel }}
+                    operator: Exists
+                  {{- else }}
+                  - key: pxbackup/enabled
+                    operator: NotIn
+                    values:
+                      - "false"
+                  {{- end }}
       initContainers:
         - name: init-log-permissions
           image: busybox
           command: ["sh", "-c", "mkdir -p /logs && chmod -R 777 /logs"]
+          {{- if $isOpenshiftCluster }}
+          {{- else }}
+          securityContext:
+            {{- toYaml .Values.securityContext | indent 8 }}
+          {{- end }}
           volumeMounts:
             - name: log-volume
               mountPath: /logs
         - name: init-dump-permissions
           image: busybox
           command: ["sh", "-c", "mkdir -p /dumps && chmod -R 777 /dumps"]
+          {{- if $isOpenshiftCluster }}
+          {{- else }}
+          securityContext:
+            {{- toYaml .Values.securityContext | indent 8 }}
+          {{- end }}
           volumeMounts:
             - name: dump-volume
               mountPath: /dumps
@@ -175,7 +177,7 @@ spec:
             - name: STATEFULSET_NAME
               value: pxc-backup-mongodb
             - name: NAMESPACE
-              value: {{ .Release.Namespace }}  
+              value: {{ .Release.Namespace }}
             - name: TARGET_VERSION
               value: {{ .Values.images.mongodbImage.tag }}
             - name: K8S_SERVICE_NAME
@@ -233,6 +235,6 @@ spec:
       restartPolicy: Never
       {{- with .Values.tolerations }}
       tolerations:
-      {{- toYaml . | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
   backoffLimit: 0
