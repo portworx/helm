@@ -1,3 +1,4 @@
+{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -12,16 +13,16 @@ metadata:
 rules:
   - apiGroups: ["apps"]
     resources: ["statefulsets"]
-    verbs: ["get", "list","update"]
+    verbs: ["get", "list", "update"]
   - apiGroups: [""]
     resources: ["secrets"]
-    verbs: ["delete","get", "list", "watch","create","update"]
+    verbs: ["delete", "get", "list", "watch", "create", "update"]
   - apiGroups: [""]
     resources: ["serviceaccounts"]
     verbs: ["get", "list", "watch"]
   - apiGroups: [""]
     resources: ["configmaps"]
-    verbs: ["delete","get", "list", "watch","update","create"]
+    verbs: ["delete", "get", "list", "watch", "update", "create"]
   - apiGroups: [""]
     resources: ["persistentvolumeclaims"]
     verbs: ["get", "create", "delete", "update", "list"]
@@ -36,7 +37,7 @@ rules:
     verbs: ["get", "list"]
   - apiGroups: ["batch"]
     resources: ["jobs", "jobs/status"]
-    verbs: ["get", "create", "delete", "update",  "list", "watch"]
+    verbs: ["get", "create", "delete", "update", "list", "watch"]
   - apiGroups: ["batch"]
     resources: ["cronjobs"]
     verbs: ["get", "create", "delete", "update"]
@@ -127,12 +128,14 @@ metadata:
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-completed
     meta.helm.sh/release-name: {{ .Release.Name }}
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
-    labels:
-    name: pxcentral-pre-upgrade-hook
-    app.kubernetes.io/component: pxcentral-pre-upgrade-hook
 spec:
   template:
     spec:
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -152,14 +155,14 @@ spec:
           image: busybox
           command: ["sh", "-c", "mkdir -p /logs && chmod -R 777 /logs"]
           volumeMounts:
-          - name: log-volume
-            mountPath: /logs
+            - name: log-volume
+              mountPath: /logs
         - name: init-dump-permissions
           image: busybox
           command: ["sh", "-c", "mkdir -p /dumps && chmod -R 777 /dumps"]
           volumeMounts:
-          - name: dump-volume
-            mountPath: /dumps
+            - name: dump-volume
+              mountPath: /dumps
       containers:
         - name: pxbackup-mongodb-upgrade
           image: {{ printf "%s/%s/%s:%s" .Values.images.preUpgradeHookImage.registry .Values.images.preUpgradeHookImage.repo .Values.images.preUpgradeHookImage.imageName .Values.images.preUpgradeHookImage.tag }}
@@ -228,5 +231,5 @@ spec:
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
-      {{- end }} 
+      {{- end }}
   backoffLimit: 0
