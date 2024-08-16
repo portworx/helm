@@ -1,3 +1,4 @@
+{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -127,12 +128,14 @@ metadata:
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-completed
     meta.helm.sh/release-name: {{ .Release.Name }}
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
-    labels:
-    name: pxcentral-pre-upgrade-hook
-    app.kubernetes.io/component: pxcentral-pre-upgrade-hook
 spec:
   template:
     spec:
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -147,19 +150,6 @@ spec:
                 values:
                 - "false"
               {{- end }}
-      initContainers:
-        - name: init-log-permissions
-          image: busybox
-          command: ["sh", "-c", "mkdir -p /logs && chmod -R 777 /logs"]
-          volumeMounts:
-          - name: log-volume
-            mountPath: /logs
-        - name: init-dump-permissions
-          image: busybox
-          command: ["sh", "-c", "mkdir -p /dumps && chmod -R 777 /dumps"]
-          volumeMounts:
-          - name: dump-volume
-            mountPath: /dumps
       containers:
         - name: pxbackup-mongodb-upgrade
           image: {{ printf "%s/%s/%s:%s" .Values.images.preUpgradeHookImage.registry .Values.images.preUpgradeHookImage.repo .Values.images.preUpgradeHookImage.imageName .Values.images.preUpgradeHookImage.tag }}
