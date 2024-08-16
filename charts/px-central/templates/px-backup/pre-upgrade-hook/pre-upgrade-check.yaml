@@ -150,19 +150,6 @@ spec:
                 values:
                 - "false"
               {{- end }}
-      initContainers:
-        - name: init-log-permissions
-          image: busybox
-          command: ["sh", "-c", "mkdir -p /logs && chgrp -R 0 /logs && chmod -R g+rw /logs"]
-          volumeMounts:
-          - name: log-volume
-            mountPath: /logs
-        - name: init-dump-permissions
-          image: busybox
-          command: ["sh", "-c", "mkdir -p /dumps && chgrp -R 0 /dumps && chmod -R g+rw /dumps"]
-          volumeMounts:
-          - name: dump-volume
-            mountPath: /dumps
       containers:
         - name: pxbackup-mongodb-upgrade
           image: {{ printf "%s/%s/%s:%s" .Values.images.preUpgradeHookImage.registry .Values.images.preUpgradeHookImage.repo .Values.images.preUpgradeHookImage.imageName .Values.images.preUpgradeHookImage.tag }}
