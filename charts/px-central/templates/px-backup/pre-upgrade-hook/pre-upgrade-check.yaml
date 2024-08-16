@@ -128,6 +128,9 @@ metadata:
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-completed
     meta.helm.sh/release-name: {{ .Release.Name }}
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+    labels:
+    name: pxcentral-pre-upgrade-hook
+    app.kubernetes.io/component: pxcentral-pre-upgrade-hook
 spec:
   template:
     spec:
