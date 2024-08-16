@@ -13,16 +13,16 @@ metadata:
 rules:
   - apiGroups: ["apps"]
     resources: ["statefulsets"]
-    verbs: ["get", "list", "update"]
+    verbs: ["get", "list","update"]
   - apiGroups: [""]
     resources: ["secrets"]
-    verbs: ["delete", "get", "list", "watch", "create", "update"]
+    verbs: ["delete","get", "list", "watch","create","update"]
   - apiGroups: [""]
     resources: ["serviceaccounts"]
     verbs: ["get", "list", "watch"]
   - apiGroups: [""]
     resources: ["configmaps"]
-    verbs: ["delete", "get", "list", "watch", "update", "create"]
+    verbs: ["delete","get", "list", "watch","update","create"]
   - apiGroups: [""]
     resources: ["persistentvolumeclaims"]
     verbs: ["get", "create", "delete", "update", "list"]
@@ -37,7 +37,7 @@ rules:
     verbs: ["get", "list"]
   - apiGroups: ["batch"]
     resources: ["jobs", "jobs/status"]
-    verbs: ["get", "create", "delete", "update", "list", "watch"]
+    verbs: ["get", "create", "delete", "update",  "list", "watch"]
   - apiGroups: ["batch"]
     resources: ["cronjobs"]
     verbs: ["get", "create", "delete", "update"]
@@ -131,43 +131,38 @@ metadata:
 spec:
   template:
     spec:
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
-              - matchExpressions:
-                  {{- if .Values.nodeAffinityLabel }}
-                  - key: {{ .Values.nodeAffinityLabel }}
-                    operator: Exists
-                  {{- else }}
-                  - key: pxbackup/enabled
-                    operator: NotIn
-                    values:
-                      - "false"
-                  {{- end }}
+            - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+              {{- end }}
       initContainers:
         - name: init-log-permissions
           image: busybox
-          command: ["sh", "-c", "mkdir -p /logs && chmod -R 777 /logs"]
-          {{- if $isOpenshiftCluster }}
-          {{- else }}
-          securityContext:
-            {{- toYaml .Values.securityContext | indent 8 }}
-          {{- end }}
+          command: ["sh", "-c", "mkdir -p /logs && chgrp -R 0 /logs && chmod -R g+rw /logs"]
           volumeMounts:
-            - name: log-volume
-              mountPath: /logs
+          - name: log-volume
+            mountPath: /logs
         - name: init-dump-permissions
           image: busybox
-          command: ["sh", "-c", "mkdir -p /dumps && chmod -R 777 /dumps"]
-          {{- if $isOpenshiftCluster }}
-          {{- else }}
-          securityContext:
-            {{- toYaml .Values.securityContext | indent 8 }}
-          {{- end }}
+          command: ["sh", "-c", "mkdir -p /dumps && chgrp -R 0 /dumps && chmod -R g+rw /dumps"]
           volumeMounts:
-            - name: dump-volume
-              mountPath: /dumps
+          - name: dump-volume
+            mountPath: /dumps
       containers:
         - name: pxbackup-mongodb-upgrade
           image: {{ printf "%s/%s/%s:%s" .Values.images.preUpgradeHookImage.registry .Values.images.preUpgradeHookImage.repo .Values.images.preUpgradeHookImage.imageName .Values.images.preUpgradeHookImage.tag }}
@@ -177,7 +172,7 @@ spec:
             - name: STATEFULSET_NAME
               value: pxc-backup-mongodb
             - name: NAMESPACE
-              value: {{ .Release.Namespace }}
+              value: {{ .Release.Namespace }}  
             - name: TARGET_VERSION
               value: {{ .Values.images.mongodbImage.tag }}
             - name: K8S_SERVICE_NAME
@@ -235,6 +230,6 @@ spec:
       restartPolicy: Never
       {{- with .Values.tolerations }}
       tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
   backoffLimit: 0
