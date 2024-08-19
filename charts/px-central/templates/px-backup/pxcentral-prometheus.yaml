@@ -497,17 +497,20 @@ spec:
 
     - alert: BackupAlert
       annotations:
-        description: {{`The Backup "{{ $labels.name 
-          }}" {{- if eq .Labels.schedule_name "" }} 
-          {{ else }} part of backup schedule "{{ $labels.schedule_name}}" 
-          {{ end }} taken for cluster 
-          "{{ $labels.cluster}}" on namespace 
-          "{{ $labels.backup_namespace}}" has failed.`}}
-        summary: Backup failed
-      expr: pxbackup_backup_status == 4
-      for: 1m
-      labels:
-        severity: critical
+        - alert: BackupAlert
+          annotations:
+            description: |-
+              The Backup "{{ $labels.name }}"
+              {{- if eq $labels.schedule_name "" }}
+              {{ else }} part of backup schedule "{{ $labels.schedule_name }}"
+              {{ end }} taken for cluster "{{ $labels.cluster }}" on namespace "{{ $labels.backup_namespace }}"
+              {{- if eq $value 4.00 }} has failed. {{- else }} is missing from backup location. {{- end }}
+            summary: "{{- if eq $value 4.00 -}} Backup failed {{- else -}} Cloud file missing {{- end }}"
+            value: "{{ $value }}"
+          expr: pxbackup_backup_status == 4 or pxbackup_backup_status == 10
+          for: 1m
+          labels:
+            severity: critical
 
     - alert: RestoreAlert
       annotations:
