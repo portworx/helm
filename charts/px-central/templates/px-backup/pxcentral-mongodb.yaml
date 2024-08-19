@@ -3,6 +3,7 @@
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $mongoCacheSize := int .Values.persistentStorage.mongoCacheSize}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $pxBackupEnabled true }}
 apiVersion: v1
 kind: ConfigMap
@@ -137,6 +138,10 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         app.kubernetes.io/name: {{.Release.Name }}
         app.kubernetes.io/instance: {{.Release.Name }}
@@ -200,6 +205,10 @@ spec:
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
             - /scripts/setup.sh
+          {{- if or (eq $azureProxyEnabled true) (.Values.proxy.httpProxy.noProxy) }}
+          args:
+            - export MONGODB_INITIAL_PRIMARY_HOST=pxc-backup-mongodb-0.$(K8S_SERVICE_NAME) && export MONGODB_ADVERTISED_HOSTNAME=$(MY_POD_NAME).$(K8S_SERVICE_NAME) && /scripts/setup.sh
+          {{- end }}
           env:
             - name: BITNAMI_DEBUG
               value: "false"
@@ -257,6 +266,7 @@ spec:
               value: "no"
             - name: MONGODB_EXTRA_FLAGS
               value: {{ printf "--wiredTigerCacheSizeGB=%d" $mongoCacheSize }}
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
           ports:
             - containerPort: 27017
               name: mongodb
@@ -267,7 +277,7 @@ spec:
               - bash
               - -ec
               - |
-                mongo --disableImplicitSessions $TLS_OPTIONS --eval 'db.adminCommand("ping") && db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'
+                mongo --disableImplicitSessions $TLS_OPTIONS --eval 'db.adminCommand("ping") && db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'            
             failureThreshold: 6
             initialDelaySeconds: 600
             periodSeconds: 10

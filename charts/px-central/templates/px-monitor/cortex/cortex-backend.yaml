@@ -4,6 +4,7 @@
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $storkRequired := .Values.storkRequired | default false -}}
 {{- $sslEnabled := .Values.pxmonitor.sslEnabled | default false -}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $pxMonitorEnabled true }}
 apiVersion: v1
 kind: Secret
@@ -92,6 +93,10 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         app: cassandra
         release: pxcentral-cortex-cassandra
@@ -191,6 +196,7 @@ spec:
               value: "true"
             - name: JVM_EXTRA_OPTS
               value: "-Dcassandra.ignore_corrupted_schema_tables=true"
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
             {{- if .Values.cassandra.jvm.maxHeapSize }}
             - name: MAX_HEAP_SIZE
               value: {{ .Values.cassandra.jvm.maxHeapSize}}

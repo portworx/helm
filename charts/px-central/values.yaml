@@ -44,6 +44,11 @@ oidc:
     clientSecret:
     endpoint:
 
+proxy:
+  azureProxyEnabled: false
+  httpProxy:
+    noProxy: ""
+
 postInstallJob:
   sslEnabled: true
 
@@ -67,6 +72,8 @@ pxbackup:
   prometheusSecretName: ""
   alertmanagerSecretName: ""
   usePxBackupEmailAlertTemplate: true
+  monitorBLHealthFrequency: 210m
+  enableMonitorBLHealth: false
 
 pxlicenseserver:
   enabled: false
@@ -249,7 +256,7 @@ images:
     imageName: grafana
     tag: 9.1.3
   prometheusImage:
-    registry: docker.io
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: prometheus
     tag: v2.35.0
