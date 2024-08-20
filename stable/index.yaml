@@ -572,7 +572,7 @@ entries:
     appVersion: 2.7.2-dev
     created: "2024-08-09T11:07:30.719136097Z"
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
-    digest: f4f92933b6666b6a66a91172619b4c4951714c8c57b087c7a1f16d157f55ced2
+    digest: 322b091801e1593408353badf61bb06a99cb156588f99a9235732f3266a4c1aa
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     keywords:
