@@ -106,8 +106,8 @@ licenseSecret:
 
 monitoring:
   prometheus:                         
-    enabled: true                     # Enable prometheus
-    exportMetrics: true              # Expose the Portworx metrics to an external or operator deployed Prometheus.
+    enabled: false                    # Enable prometheus
+    exportMetrics: false              # Expose the Portworx metrics to an external or operator deployed Prometheus.
     alertManager: false               # Enable prometheus alert manager
     resources:                        # Configure Prometheus resource usage such as memory and CPU usage
       # requests:

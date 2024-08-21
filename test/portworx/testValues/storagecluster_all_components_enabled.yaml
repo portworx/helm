@@ -18,6 +18,7 @@ autopilot:
   enabled: true
 monitoring:
   prometheus:                         
-    enabled: true                   
+    enabled: true 
+    exportMetrics: true                  
   telemetry: true                   
   grafana: true      

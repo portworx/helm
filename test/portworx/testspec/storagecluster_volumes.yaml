@@ -30,11 +30,6 @@ spec:
     name: test-volume
     readOnly: true
   monitoring:
-    prometheus:
-      enabled: true
-      exportMetrics: true
-      replicas: 1
-      retention: 24h
     telemetry:
       enabled: true
   csi:
