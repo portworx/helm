@@ -19,6 +19,7 @@ persistentStorage:
   mongoCacheSize: 4
   keycloakThemeVolumeSize: "5Gi"
   keycloakBackendVolumeSize: "10Gi"
+  preUpgradeHookVolumeSize: "65Gi"
 
 storkRequired: false
 nodeAffinityLabel: ""
@@ -207,7 +208,7 @@ images:
   preUpgradeHookImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: pxcentral-onprem-pre-upgrade-sb
+    imageName: pxcentral-onprem-pre-upgrade-base
     tag: 2.7.3-dev
 
   ## Images required for enabling px-backup
