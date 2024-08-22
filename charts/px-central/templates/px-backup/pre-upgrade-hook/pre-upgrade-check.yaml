@@ -92,8 +92,10 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 170Gi
+      storage: {{ .Values.persistentStorage.preUpgradeHookVolumeSize }}
+  {{- if .Values.persistentStorage.storageClassName }}
   storageClassName: {{ .Values.persistentStorage.storageClassName }}
+  {{- end }}
 ---
 apiVersion: batch/v1
 kind: Job
