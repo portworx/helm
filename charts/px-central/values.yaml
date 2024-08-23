@@ -208,8 +208,8 @@ images:
   preUpgradeHookImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-pre-upgrade
-    tag: 2.7.3
+    imageName: pxcentral-onprem-pre-upgrade-base
+    tag: 2.8.0-dev
   mysqlInitImage:
     registry: docker.io
     repo: portworx
