@@ -92,7 +92,7 @@ spec:
   imagePullSecret: {{ $registrySecret }}
   {{- end }}
 
-  {{- if (or (eq .Values.updateStrategy.type "RollingUpdate") (eq .Values.updateStrategy.type "OnDelete")) }}
+  {{- if (or (eq (toString .Values.updateStrategy.type) "RollingUpdate") (eq (toString .Values.updateStrategy.type) "OnDelete")) }}
   updateStrategy:
     type: {{ .Values.updateStrategy.type }}
 
