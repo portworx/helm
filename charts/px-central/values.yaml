@@ -75,6 +75,8 @@ pxbackup:
   usePxBackupEmailAlertTemplate: true
   monitorBLHealthFrequency: 210m
   enableMonitorBLHealth: false
+  backupDeleteWorker: 5
+  volDeleteWorker: 5
 
 pxlicenseserver:
   enabled: false
