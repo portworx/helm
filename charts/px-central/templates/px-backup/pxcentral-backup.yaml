@@ -211,9 +211,9 @@ spec:
         - name: PX_BACKUP_DEFAULT_ORG
           value: {{ .Values.pxbackup.orgName }}
         - name: BACKUP_DELETE_WORKER
-          value: "{{ .Values.pxbackup.backupDeleteWorker }}"
+          value: "5"
         - name: VOL_DELETE_WORKER
-          value: "{{ .Values.pxbackup.volDeleteWorker }}"
+          value: "5"
         - name: ENABLE_MONITOR_BL_HEALTH
           value: "{{ .Values.pxbackup.enableMonitorBLHealth }}"
         - name: MONITOR_BL_HEALTH_FREQUENCY
