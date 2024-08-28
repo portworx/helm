@@ -142,7 +142,29 @@ spec:
         - name: pxbackup-mongodb-upgrade
           image: {{ printf "%s/%s/%s:%s" .Values.images.preUpgradeHookImage.registry .Values.images.preUpgradeHookImage.repo .Values.images.preUpgradeHookImage.imageName .Values.images.preUpgradeHookImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
-          command: ["python", "/pxcentral-pre-upgrade/pxc-pre-upgrade.py"]
+          command: 
+            - sh
+            - -c
+            - |
+              echo "Starting pre-upgrade-check..."
+
+              # Simulate the main upgrade task or run the actual script
+              (python /pxcentral-pre-upgrade/pxc-pre-upgrade.py) &
+
+              # PID of the background task
+              UPGRADE_PID=$!
+
+              # Monitor pod status
+              while kill -0 $UPGRADE_PID 2> /dev/null; do
+                echo "Checking pod status..."
+                kubectl get pods -n {{ .Release.Namespace }} -l job-name=pre-upgrade-check -o jsonpath='{.items[*].status.phase}'
+                sleep 20
+              done
+
+              # Wait for the upgrade task to complete
+              wait $UPGRADE_PID
+
+              echo "pre-upgrade-check Job completed."
           env:
             - name: MONGODB_STATEFULSET_NAME
               value: pxc-backup-mongodb

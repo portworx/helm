@@ -206,10 +206,10 @@ images:
     imageName: mysql
     tag: 8.0.33
   preUpgradeHookImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
+    repo: users/ss
     imageName: pxcentral-onprem-pre-upgrade-base
-    tag: 2.7.3-dev
+    tag: PB-7912
 
   ## Images required for enabling px-backup
   pxBackupImage:
