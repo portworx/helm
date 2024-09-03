@@ -175,13 +175,13 @@ spec:
             - name: MONGODB_IMAGES
               value: >
                 {
-                  "registry": "{{ .Values.mongodbImages.registry }}",
-                  "repo": "{{ .Values.mongodbImages.repo }}",
-                  "imageName": "{{ .Values.mongodbImages.imageName }}",
+                  "registry": "{{ .Values.images.mongodbImageMap.registry }}",
+                  "repo": "{{ .Values.images.mongodbImageMap.repo }}",
+                  "imageName": "{{ .Values.images.mongodbImageMap.imageName }}",
                   "tags": {
-                    "mongodb5": "{{ .Values.mongodbImages.tags.mongodb5 }}",
-                    "mongodb6": "{{ .Values.mongodbImages.tags.mongodb6 }}",
-                    "mongodb7": "{{ .Values.mongodbImages.tags.mongodb7 }}"
+                    "mongodb5": "{{ .Values.images.mongodbImageMap.tags.mongodb5 }}",
+                    "mongodb6": "{{ .Values.images.mongodbImageMap.tags.mongodb6 }}",
+                    "mongodb7": "{{ .Values.images.mongodbImageMap.tags.mongodb7 }}"
                   }
                 }
             {{- include "proxy.noProxyEnv" . | nindent 10 }}
