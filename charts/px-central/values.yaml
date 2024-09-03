@@ -312,12 +312,12 @@ images:
     imageName: memcached
     tag: 1.6.17-alpine
 
-## Images required for intermediate Mongo upgrades
-mongodbImages:
-  registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-  repo: portworx
-  imageName: mongodb
-  tags: 
-    mongodb5: 5.0.24-debian-11-r20
-    mongodb6: 6.0.13-debian-11-r21
-    mongodb7: 7.0.14-debian-12-r0
+  ## Images required for intermediate Mongo upgrades
+  mongodbImageMap:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
+    imageName: mongodb
+    tags: 
+      mongodb5: 5.0.24-debian-11-r20
+      mongodb6: 6.0.13-debian-11-r21
+      mongodb7: 7.0.14-debian-12-r0
