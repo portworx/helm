@@ -449,7 +449,7 @@ spec:
       expr: pxbackup_cluster_status == 5
       for: 1m
       labels:
-        severity: "{{ .Values.pxbackup.clusterAlert.severity }}"
+        severity: "{{ .Values.pxbackup.alertSeverity.clusterAlert }}"
 
     - alert: BackupAlert
       annotations:
@@ -459,7 +459,7 @@ spec:
       expr: pxbackup_backup_status == 4
       for: 1m
       labels:
-        severity: "{{ .Values.pxbackup.backupAlert.severity }}"
+        severity: "{{ .Values.pxbackup.alertSeverity.backupAlert }}"
 
     - alert: RestoreAlert
       annotations:
@@ -469,7 +469,7 @@ spec:
       expr: pxbackup_restore_status == 4
       for: 1m
       labels:
-        severity: "{{ .Values.pxbackup.restoreAlert.severity }}"
+        severity: "{{ .Values.pxbackup.alertSeverity.restoreAlert }}"
 
     - alert: BackupLocationAlert
       annotations:
@@ -479,4 +479,4 @@ spec:
       expr: pxbackup_backup_location_status == 4
       for: 1m
       labels:
-        severity: "{{ .Values.pxbackup.backupLocationAlert.severity }}"
+        severity: "{{ .Values.pxbackup.alertSeverity.backupLocationAlert }}"
