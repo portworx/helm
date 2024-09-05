@@ -67,6 +67,11 @@ pxbackup:
   prometheusSecretName: ""
   alertmanagerSecretName: ""
   usePxBackupEmailAlertTemplate: true
+  alertSeverity:
+    clusterAlert: critical
+    backupAlert: critical
+    restoreAlert: critical
+    backupLocationAlert: critical
 
 pxlicenseserver:
   enabled: false
