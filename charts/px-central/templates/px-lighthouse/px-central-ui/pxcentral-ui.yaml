@@ -577,7 +577,7 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
-          - configMap:
+        - configMap:
             defaultMode: 420
             name: mysql-config
           name: mysql-config
