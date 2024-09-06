@@ -494,7 +494,7 @@ spec:
       initContainers:
       - name: init-mysql
         image: busybox
-        command: ['sh', '-c', 'mv /var/lib/mysql/lost+found /var/lib/mysql/lostfound 2> /dev/null;']
+        command: ['sh', '-c', 'mv /var/lib/mysql/lost+found /var/lib/mysql/lostfound || true']
         volumeMounts:
         - mountPath: /var/lib/mysql
           name: pxcentral-mysql
