@@ -494,7 +494,7 @@ spec:
       initContainers:
       - name: init-mysql
         image: busybox
-        command: ['sh', '-c', 'mkdir /var/lib/mysql/pxbackup; ls /var/lib/mysql']
+        command: ['sh', '-c', 'mkdir /var/lib/mysql/pxbackup; cp -r /var/lib/mysql/pxcentral /var/lib/mysql/pxbackup/']
         volumeMounts:
         - mountPath: /var/lib/mysql
           name: pxcentral-mysql
