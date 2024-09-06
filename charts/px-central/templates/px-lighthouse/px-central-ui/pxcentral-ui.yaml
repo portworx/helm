@@ -562,6 +562,9 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/mysql
               name: pxcentral-mysql
+            - mountPath: /etc/my.cnf
+              name: mysql-config
+              subPath: my.cnf
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -574,6 +577,10 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+          - configMap:
+            defaultMode: 420
+            name: mysql-config
+          name: mysql-config
 ---
 apiVersion: v1
 kind: Service
@@ -675,3 +682,20 @@ spec:
       targetPort: 8080
       protocol: TCP
 ---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config
+data:
+  my.cnf: |
+    [mysqld]
+    datadir=/var/lib/mysql/pxbackup
+    skip-host-cache
+    skip-name-resolve
+    socket=/var/run/mysqld/mysqld.sock
+    secure-file-priv=/var/lib/mysql-files
+    user=mysql
+    pid-file=/var/run/mysqld/mysqld.pid
+    [client]
+    socket=/var/run/mysqld/mysqld.sock
