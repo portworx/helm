@@ -204,7 +204,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: mysql
-    tag: 8.0.37
+    tag: 8.0.33
   preUpgradeHookImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
