@@ -498,10 +498,6 @@ spec:
           args:
           ports:
             - containerPort: 3306
-          command:
-            - bash
-            - -c
-            - mv /var/lib/mysql/lost+found /var/lib/mysql/lostfound 2> /dev/null; mysqld
           env:
             - name: MYSQL_DATABASE
               valueFrom:
