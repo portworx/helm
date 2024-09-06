@@ -494,7 +494,10 @@ spec:
       initContainers:
       - name: init-mysql
         image: busybox
-        command: ['sh', '-c', 'mkdir -p /var/lib/mysql/pxbackup; ls /var/lib/mysql']
+        command: ['sh', '-c', 'mkdir /var/lib/mysql/pxbackup; ls /var/lib/mysql']
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: pxcentral-mysql
       containers:
         - name: mysql
           image: {{ printf "%s/%s/%s:%s" .Values.images.mysqlImage.registry .Values.images.mysqlImage.repo .Values.images.mysqlImage.imageName .Values.images.mysqlImage.tag }}
