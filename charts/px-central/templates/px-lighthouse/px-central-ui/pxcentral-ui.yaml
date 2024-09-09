@@ -491,6 +491,13 @@ spec:
       securityContext:
 {{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
+      initContainers:
+      - name: init-mysql
+        image: busybox
+        command: ['sh', '-c', 'mv /var/lib/mysql/lost+found /var/lib/mysql/lostfound || true']
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: pxcentral-mysql
       containers:
         - name: mysql
           image: {{ printf "%s/%s/%s:%s" .Values.images.mysqlImage.registry .Values.images.mysqlImage.repo .Values.images.mysqlImage.imageName .Values.images.mysqlImage.tag }}
@@ -498,10 +505,6 @@ spec:
           args:
           ports:
             - containerPort: 3306
-          command:
-            - bash
-            - -c
-            - mv /var/lib/mysql/lost+found /var/lib/mysql/lostfound 2> /dev/null; mysqld
           env:
             - name: MYSQL_DATABASE
               valueFrom:
