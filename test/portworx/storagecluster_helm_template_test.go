@@ -28,7 +28,9 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 		{
 			name:             "Failed: NoEtcdConfigurationProvided",
 			expectedErrorMsg: "A valid ETCD url in the format etcd:http://<your-etcd-endpoint> is required.",
-			helmOption:       &helm.Options{},
+			helmOption: &helm.Options{SetValues: map[string]string{
+				"internalKVDB": "false",
+			}},
 		},
 		{
 			name:           "TestAllComponentsEnabled",
