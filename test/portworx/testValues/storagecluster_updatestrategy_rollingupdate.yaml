@@ -3,5 +3,4 @@ updateStrategy:
   maxUnavailable:  3                     
   minReadySeconds: 30                     
   autoUpdateComponents: Always                 
-internalKVDB: true
 imageVersion: 3.0.5

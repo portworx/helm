@@ -1,4 +1,3 @@
-internalKVDB: true
 drives: "type=gp2,size=200;type=gp3,size=500"                          
 provider: gce                           
 journalDevice: "type=journal"

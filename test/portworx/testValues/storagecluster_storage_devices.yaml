@@ -1,4 +1,3 @@
-internalKVDB: true
 drives: "/dev/sda;/dev/sdb;/dev/sdc"                          
 journalDevice: "/dev/sdd"
 systemMetadataDevice: "/dev/sde"

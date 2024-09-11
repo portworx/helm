@@ -37,10 +37,43 @@ func TestRenderedHelmTemplate(t *testing.T, helmOptions *helm.Options, helmChart
 }
 
 func isYamlMatched(expected, actual interface{}) bool {
-	if !reflect.DeepEqual(expected, actual) {
-		diff := cmp.Diff(expected, actual)
+	// Remove specific chart annotation/label before comparison
+	cleanExpected := removeChartAnnotation(expected)
+	cleanActual := removeChartAnnotation(actual)
+
+	if !reflect.DeepEqual(cleanExpected, cleanActual) {
+		diff := cmp.Diff(cleanExpected, cleanActual)
 		fmt.Printf("Differences found:\n%v", diff)
 		return false
 	}
 	return true
+}
+
+// Helper function to remove "chart" label or annotation with dynamic value
+func removeChartAnnotation(obj interface{}) interface{} {
+	switch obj := obj.(type) {
+	case map[string]interface{}:
+		// Check for metadata.annotations and remove the "chart" annotation
+		if metadata, ok := obj["metadata"].(map[string]interface{}); ok {
+			if annotations, ok := metadata["annotations"].(map[string]interface{}); ok {
+				delete(annotations, "chart")
+			}
+		}
+		// Check for labels and remove the "chart" label
+		if labels, ok := obj["metadata"].(map[string]interface{}); ok {
+			if labels, ok := labels["labels"].(map[string]interface{}); ok {
+				delete(labels, "chart")
+			}
+		}
+		// Recursively clean nested fields
+		for key, value := range obj {
+			obj[key] = removeChartAnnotation(value)
+		}
+	case []interface{}:
+		// Recursively clean annotations in list items
+		for i, value := range obj {
+			obj[i] = removeChartAnnotation(value)
+		}
+	}
+	return obj
 }

@@ -5,4 +5,3 @@ volumes:
     hostPath:
       path: /test
     readOnly: true
-internalKVDB: true

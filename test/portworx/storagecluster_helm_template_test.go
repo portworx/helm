@@ -28,7 +28,9 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 		{
 			name:             "Failed: NoEtcdConfigurationProvided",
 			expectedErrorMsg: "A valid ETCD url in the format etcd:http://<your-etcd-endpoint> is required.",
-			helmOption:       &helm.Options{},
+			helmOption: &helm.Options{SetValues: map[string]string{
+				"internalKVDB": "false",
+			}},
 		},
 		{
 			name:           "TestAllComponentsEnabled",
@@ -63,7 +65,6 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			resultFileName: "storagecluster_csi_topology_enabled.yaml",
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
-					"internalKVDB":         "true",
 					"csi.enabled":          "true",
 					"csi.topology.enabled": "true",
 				},
@@ -74,7 +75,6 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			resultFileName: "storagecluster_csi_Snapshot_Controller_enabled.yaml",
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
-					"internalKVDB":                  "true",
 					"csi.enabled":                   "true",
 					"csi.installSnapshotController": "true",
 				},
@@ -92,16 +92,21 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			resultFileName: "storagecluster_monitoring_enabled_exportmatrix.yaml",
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
-					"internalKVDB":                        "true",
+					"monitoring.prometheus.enabled":       "false",
 					"monitoring.prometheus.exportMetrics": "true",
+					"monitoring.telemetry":                "false",
 				},
 			},
 		},
 		{
-			name:           "TestMonitoringConditionByEnablingTelemetry",
-			resultFileName: "storagecluster_monitoring_enable_by_enable_telemetry.yaml",
+			name:           "TestMonitoringConditionByDisablingAllComponents",
+			resultFileName: "storagecluster_monitoring_disable_by_all_components_disabled.yaml",
 			helmOption: &helm.Options{
-				SetValues: map[string]string{"monitoring.telemetry": "true", "internalKVDB": "true"},
+				SetValues: map[string]string{
+					"monitoring.prometheus.enabled":       "false",
+					"monitoring.prometheus.exportMetrics": "false",
+					"monitoring.telemetry":                "false",
+				},
 			},
 		},
 		{
@@ -165,7 +170,6 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
 					"updateStrategy.type":                 "OnDelete",
-					"internalKVDB":                        "true",
 					"updateStrategy.autoUpdateComponents": "Once",
 					"imageVersion":                        "3.0.5",
 				},
@@ -177,7 +181,6 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
 					"updateStrategy.type":                 "Invalid",
-					"internalKVDB":                        "true",
 					"updateStrategy.autoUpdateComponents": "None",
 					"imageVersion":                        "3.0.5",
 				},

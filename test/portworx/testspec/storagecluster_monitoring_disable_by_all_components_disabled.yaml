@@ -10,23 +10,17 @@ metadata:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-release"
 spec:
-  image: portworx/oci-monitor:3.0.5
+  image: portworx/oci-monitor:3.1.0
   imagePullPolicy: Always
-  updateStrategy:
-    type: OnDelete
-  autoUpdateComponents: Once
 
   kvdb:
     internal: true
   storage:
     useAll: true
   secretsProvider: k8s
-
+  
   stork:
     enabled: true
-  monitoring:
-    telemetry:
-      enabled: true
   csi:
     enabled: true
   autopilot:

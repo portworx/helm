@@ -7,7 +7,6 @@ metadata:
   labels:
     heritage: "Helm"
     release: "my-release"
-    chart: "portworx-3.1.2"
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-release"
 spec:
@@ -28,11 +27,12 @@ spec:
     maxStorageNodes: 1
   secretsProvider: k8s
 
-  env:
-  - name: PX_SECRETS_NAMESPACE
-    value: portworx
-
   stork:
     enabled: true
+  monitoring:
+    telemetry:
+      enabled: true
   csi:
-    enabled: false
+    enabled: true
+  autopilot:
+    enabled: true

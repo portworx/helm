@@ -92,7 +92,7 @@ spec:
   imagePullSecret: {{ $registrySecret }}
   {{- end }}
 
-  {{- if (or (eq .Values.updateStrategy.type "RollingUpdate") (eq .Values.updateStrategy.type "OnDelete")) }}
+  {{- if (or (eq (toString .Values.updateStrategy.type) "RollingUpdate") (eq (toString .Values.updateStrategy.type) "OnDelete")) }}
   updateStrategy:
     type: {{ .Values.updateStrategy.type }}
 
@@ -293,6 +293,9 @@ spec:
     {{- end }}
   {{- end }}
 
+  {{- $isLicenseSecretAdded := ne $licenseSecret "none" }}
+  {{- $shouldRenderEnv := or (ne $envVars "none") .Values.envs $AKSInstall $OKEInstall $isLicenseSecretAdded }}
+  {{- if $shouldRenderEnv }}
   env:
   {{- with .Values.envs }}
     {{- toYaml . | nindent 2 }}
@@ -305,14 +308,14 @@ spec:
     value: {{ $envVariable._1 | trim | quote }}
     {{- end }}
   {{- end }}
-  {{- if ne $licenseSecret "none" }}
+  {{- if $isLicenseSecretAdded }}
   - name: SAAS_ACCOUNT_KEY_STRING
     valueFrom:
       secretKeyRef:
         name: "{{ $licenseSecret }}"
         key: accountKey
   {{- end }}
-  {{- if .Values.AKSInstall }}
+  {{- if $AKSInstall }}
   - name: AZURE_CLIENT_SECRET
     valueFrom:
       secretKeyRef:
@@ -329,7 +332,7 @@ spec:
         name: px-azure
         key: AZURE_TENANT_ID
   {{- end }}
-  {{- if .Values.OKEInstall }}
+  {{- if $OKEInstall }}
   - name: PX_ORACLE_user_ocid
     valueFrom:
       secretKeyRef:
@@ -343,9 +346,8 @@ spec:
   - name: "PX_ORACLE_private_key_path"
     value: "/etc/pwx/oci_key/oci_api_key.pem"
   {{- end }}
-  - name: PX_SECRETS_NAMESPACE
-    value: portworx
-
+  {{- end }}
+  
   stork:
     {{- if (and (.Values.stork.enabled) (eq .Values.stork.enabled true))}}
     enabled: true

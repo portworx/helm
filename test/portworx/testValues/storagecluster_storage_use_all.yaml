@@ -1,4 +1,3 @@
-internalKVDB: true
 journalDevice: "/dev/sdd"
 systemMetadataDevice: "/dev/sde"
 kvdbDevice: "/node-kvdb"

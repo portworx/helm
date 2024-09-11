@@ -1,4 +1,3 @@
-internalKVDB: true
 security: 
   enabled: false                    
   auth:

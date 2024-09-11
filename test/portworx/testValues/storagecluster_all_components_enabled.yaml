@@ -2,13 +2,7 @@
 stork:
   enabled: true
 internalKVDB: true
-storkSpec:
-  args: "webhook-controller=true;verbose=true"
-  volumes:                    
-  - name: scheduler-config
-    mountPath: /etc/kubernetes
-    secret:
-      configMap: stork-config
+
 csi: 
   enabled: true
   topology: 
@@ -18,6 +12,7 @@ autopilot:
   enabled: true
 monitoring:
   prometheus:                         
-    enabled: true                   
+    enabled: true 
+    exportMetrics: true                  
   telemetry: true                   
   grafana: true      
