@@ -17,7 +17,13 @@ spec:
   kvdb:
     internal: true
   storage:
+    cacheDevices:
+        - /dev/one
+        - /dev/two
     useAll: true
+    kvdbDevice: /node-kvdb
+    systemMetadataDevice: /dev/sde
+    journalDevice: /dev/sdd
   secretsProvider: k8s
 
   env:
@@ -27,6 +33,4 @@ spec:
   stork:
     enabled: true
   csi:
-    enabled: true
-    topology:
-      enabled: true
+    enabled: false
