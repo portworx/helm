@@ -7,6 +7,7 @@ metadata:
     app.kubernetes.io/component: pxcentral-frontend
 {{- include "px-central.labels" . | nindent 4 }}
 data:
+  API_TIMEOUT: "90"
   APP_KEY: base64:J1RH3W4+CILq3/eac9zqYbAMzeptqCJgR9KcWRdhtHw=
   BASE_ROOT_PATH: /
   DB_PORT: "3306"
