@@ -171,7 +171,6 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				SetValues: map[string]string{
 					"updateStrategy.type":                 "OnDelete",
 					"updateStrategy.autoUpdateComponents": "Once",
-					"imageVersion":                        "3.0.5",
 				},
 			},
 		},
@@ -182,7 +181,6 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				SetValues: map[string]string{
 					"updateStrategy.type":                 "Invalid",
 					"updateStrategy.autoUpdateComponents": "None",
-					"imageVersion":                        "3.0.5",
 				},
 			},
 		},

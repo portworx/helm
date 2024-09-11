@@ -43,6 +43,9 @@ spec:
             type: object
             description: The desired behavior of the storage cluster.
             properties:
+              priorityClassName:
+                type: string
+                description: Priority class name that the operator will pass to the portworx storage pods to be scheduled accordingly.
               metadata:
                 type: object
                 description: Metadata contains metadata for different storage cluster components.
