@@ -2,5 +2,5 @@ updateStrategy:
   type:    RollingUpdate                             
   maxUnavailable:  3                     
   minReadySeconds: 30                     
-  autoUpdateComponents: Always                 
-imageVersion: 3.0.5
+  autoUpdateComponents: Always
+  
