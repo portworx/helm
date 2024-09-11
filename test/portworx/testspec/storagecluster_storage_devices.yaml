@@ -23,9 +23,7 @@ spec:
     cacheDevices:
         - /dev/one
         - /dev/two
-    forceUseDisks: true
     kvdbDevice: /node-kvdb
-    useAll: true
     systemMetadataDevice: /dev/sde
     journalDevice: /dev/sdd
   secretsProvider: k8s

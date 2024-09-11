@@ -20,10 +20,16 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 	require.NoError(t, err)
 
 	testCases := []struct {
-		name           string
-		helmOption     *helm.Options
-		resultFileName string
+		name             string
+		helmOption       *helm.Options
+		resultFileName   string
+		expectedErrorMsg string
 	}{
+		{
+			name:             "Failed: NoEtcdConfigurationProvided",
+			expectedErrorMsg: "A valid ETCD url in the format etcd:http://<your-etcd-endpoint> is required.",
+			helmOption:       &helm.Options{},
+		},
 		{
 			name:           "TestAllComponentsEnabled",
 			resultFileName: "storagecluster_all_compenents_enabled.yaml",
@@ -235,10 +241,31 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
-			name:           "TestStorageSpec",
-			resultFileName: "storagecluster_storage.yaml",
+			name:           "TestStorageSpecDevices",
+			resultFileName: "storagecluster_storage_devices.yaml",
 			helmOption: &helm.Options{
-				ValuesFiles: []string{"./testValues/storagecluster_storage.yaml"},
+				ValuesFiles: []string{"./testValues/storagecluster_storage_devices.yaml"},
+			},
+		},
+		{
+			name:           "TestStorageSpecWithUseAll",
+			resultFileName: "storagecluster_storage_use_all.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_storage_use_all.yaml"},
+			},
+		},
+		{
+			name:           "TestStorageSpecWithUseAll",
+			resultFileName: "storagecluster_storage_use_all.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_storage_use_partitions.yaml"},
+			},
+		},
+		{
+			name:           "TestStorageSpecWithUsePartitions",
+			resultFileName: "storagecluster_storage_use_partitions.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_storage_use_partitions.yaml"},
 			},
 		},
 	}
@@ -251,7 +278,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			t.Parallel()
 			resultFilePath, err := filepath.Abs(filepath.Join("testspec/", testCase.resultFileName))
 			require.NoError(t, err)
-			test_utils.TestRenderedHelmTemplate(t, testCase.helmOption, helmChartPath, templateFileName, resultFilePath)
+			test_utils.TestRenderedHelmTemplate(t, testCase.helmOption, helmChartPath, templateFileName, resultFilePath, testCase.expectedErrorMsg)
 		})
 	}
 }
