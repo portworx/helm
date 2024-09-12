@@ -14,15 +14,17 @@ spec:
   imagePullPolicy: Always
 
   kvdb:
-    internal: false
-    endpoints:
-      - etcd:https://127.0.0.1:2379
-      - etcd:https://127.0.0.1:2379
-      - etcd:https://127.0.0.1:2379
+    internal: true
   storage:
+    cacheDevices:
+        - /dev/one
+        - /dev/two
     useAll: true
+    kvdbDevice: /node-kvdb
+    systemMetadataDevice: /dev/sde
+    journalDevice: /dev/sdd
   secretsProvider: k8s
-  
+
   stork:
     enabled: true
   monitoring:

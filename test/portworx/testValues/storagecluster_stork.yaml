@@ -10,4 +10,4 @@ stork:
   env:                               
   - name: PX_TEST_ENV
     value: "test_env_autopilot"
-internalKVDB: true
+    

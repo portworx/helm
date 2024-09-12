@@ -14,20 +14,13 @@ spec:
   imagePullPolicy: Always
 
   kvdb:
-    internal: false
-    endpoints:
-      - etcd:https://127.0.0.1:2379
-      - etcd:https://127.0.0.1:2379
-      - etcd:https://127.0.0.1:2379
+    internal: true
   storage:
     useAll: true
   secretsProvider: k8s
   
   stork:
     enabled: true
-  monitoring:
-    telemetry:
-      enabled: true
   csi:
     enabled: true
   autopilot:

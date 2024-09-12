@@ -1,4 +1,3 @@
-internalKVDB: true
 nodeAffinity:
   requiredDuringSchedulingIgnoredDuringExecution:
     nodeSelectorTerms:

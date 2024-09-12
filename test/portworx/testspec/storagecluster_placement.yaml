@@ -7,11 +7,10 @@ metadata:
   labels:
     heritage: "Helm"
     release: "my-release"
-    chart: "portworx-3.1.0"
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-release"
 spec:
-  image: portworx/oci-monitor:3.1.0
+  image: portworx/oci-monitor:3.1.4
   imagePullPolicy: Always
 
   kvdb:
@@ -19,22 +18,23 @@ spec:
   storage:
     useAll: true
   secretsProvider: k8s
-
-  env:
-  - name: PX_SECRETS_NAMESPACE
-    value: portworx
-
+  
   stork:
     enabled: true
+  monitoring:
+    telemetry:
+      enabled: true
   csi:
-    enabled: false
+    enabled: true
+  autopilot:
+    enabled: true
   placement:
     tolerations:
-      - key: "key"
-        operator: "Equal"
-        value: "test-storage-node-1"
-        effect: "NoSchedule"
-      - key: "key"
-        operator: "Exists"
-        value: "test-storage-node-2"
-        effect: "PreferNoSchedule"
+    - effect: NoSchedule
+      key: key
+      operator: Equal
+      value: test-storage-node-1
+    - effect: PreferNoSchedule
+      key: key
+      operator: Exists
+      value: test-storage-node-2

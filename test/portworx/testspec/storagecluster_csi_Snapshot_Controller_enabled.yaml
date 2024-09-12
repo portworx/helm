@@ -7,11 +7,10 @@ metadata:
   labels:
     heritage: "Helm"
     release: "my-release"
-    chart: "portworx-3.1.0"
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-release"
 spec:
-  image: portworx/oci-monitor:3.1.0
+  image: portworx/oci-monitor:3.1.4
   imagePullPolicy: Always
 
   kvdb:
@@ -19,13 +18,14 @@ spec:
   storage:
     useAll: true
   secretsProvider: k8s
-
-  env:
-  - name: PX_SECRETS_NAMESPACE
-    value: portworx
-
+  
   stork:
     enabled: true
+  monitoring:
+    telemetry:
+      enabled: true
   csi:
     enabled: true
     installSnapshotController: true
+  autopilot:
+    enabled: true

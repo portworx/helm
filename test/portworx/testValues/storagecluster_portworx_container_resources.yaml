@@ -1,4 +1,3 @@
-internalKVDB: true
 resources:                       
   requests:
     memory: "64Mi"
