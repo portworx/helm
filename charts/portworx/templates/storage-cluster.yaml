@@ -172,7 +172,7 @@ spec:
   {{- end }}
 
   kvdb:
-  {{- if eq $internalKVDB true }}
+  {{- if and (eq $internalKVDB true) (empty $etcdEndPoints) }}
     internal: true
   {{- else }}
     internal: false
