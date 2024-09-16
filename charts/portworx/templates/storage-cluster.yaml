@@ -477,12 +477,14 @@ spec:
   {{- if or (eq .Values.csi.enabled true) (eq .Values.csi.enabled false) }}
   csi:
     enabled: {{ .Values.csi.enabled }}
-    {{- if and ($csiEnabled) (eq .Values.csi.topology.enabled true) }}
+    {{- if $csiEnabled}}
+    {{- if eq .Values.csi.topology.enabled true }}
     topology:
       enabled: true
     {{- end}}
-    {{- if and ($csiEnabled) (eq .Values.csi.installSnapshotController true) }}
+    {{- if eq .Values.csi.installSnapshotController true }}
     installSnapshotController: true
+    {{- end}}
     {{- end}}
   {{- end }}
 
