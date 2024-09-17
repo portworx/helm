@@ -81,6 +81,17 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestCSIDisabled",
+			resultFileName: "storagecluster_csi_disabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"csi.enabled":                   "false",
+					"csi.installSnapshotController": "true",
+					"csi.topology.enabled":          "true",
+				},
+			},
+		},
+		{
 			name:           "TestMonitoringWithAllValues",
 			resultFileName: "storagecluster_monitoring.yaml",
 			helmOption: &helm.Options{

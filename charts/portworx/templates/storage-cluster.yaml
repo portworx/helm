@@ -172,7 +172,7 @@ spec:
   {{- end }}
 
   kvdb:
-  {{- if eq $internalKVDB true }}
+  {{- if and (eq $internalKVDB true) (empty $etcdEndPoints) }}
     internal: true
   {{- else }}
     internal: false
@@ -473,15 +473,18 @@ spec:
     {{- end }}
   {{- end }}
 
+  {{- $csiEnabled := eq .Values.csi.enabled true }}
   {{- if or (eq .Values.csi.enabled true) (eq .Values.csi.enabled false) }}
   csi:
     enabled: {{ .Values.csi.enabled }}
-    {{- if eq .Values.csi.topology.enabled true}}
+    {{- if $csiEnabled}}
+    {{- if eq .Values.csi.topology.enabled true }}
     topology:
       enabled: true
     {{- end}}
-    {{- if eq .Values.csi.installSnapshotController true}}
+    {{- if eq .Values.csi.installSnapshotController true }}
     installSnapshotController: true
+    {{- end}}
     {{- end}}
   {{- end }}
 
