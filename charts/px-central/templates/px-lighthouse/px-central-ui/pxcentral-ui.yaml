@@ -493,8 +493,8 @@ spec:
       {{- end }}
       initContainers:
       - name: init-mysql
-        image: busybox
-        command: ['sh', '-c', 'chmod 700 /var/lib/mysql/lost+found || true']
+        image: {{ printf "%s/%s/%s:%s" .Values.images.mysqlInitImage.registry .Values.images.mysqlInitImage.repo .Values.images.mysqlInitImage.imageName .Values.images.mysqlInitImage.tag }}
+        command: ['sh', '-c', 'rmdir /var/lib/mysql/lost+found || true']
         volumeMounts:
         - mountPath: /var/lib/mysql
           name: pxcentral-mysql

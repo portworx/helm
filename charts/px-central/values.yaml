@@ -212,6 +212,11 @@ images:
     repo: portworx
     imageName: pxcentral-onprem-pre-upgrade-base
     tag: 2.8.0-dev
+  mysqlInitImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
+    imageName: busybox
+    tag: 1.35.0
 
   ## Images required for enabling px-backup
   pxBackupImage:
