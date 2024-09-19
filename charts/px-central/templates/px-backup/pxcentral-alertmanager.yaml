@@ -192,9 +192,9 @@ stringData:
                 class="pb-16"
                 style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
                 Critical Alert: 
-                {{ if eq .Value 5.00 }}Cluster Disconnected
-                {{ else if eq .Value 2.00 }}Cluster Offline
-                {{ else }}unknown
+                {{ if eq .Annotations.value "5" }}Cluster Disconnected
+                {{ else if eq .Annotations.value "2" }}Cluster Offline
+                {{ else }}unknown (value: {{ .Annotations.value }})
                 {{ end }}
             </div>
             <div
@@ -233,9 +233,10 @@ stringData:
                 style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
                 Critical Alert: 
                 {{ if eq .Labels.alertname "PartialBackupAlert" }}Backup was only partially completed
-                {{ else if and (eq .Labels.alertname "BackupAlert")  (eq .Annotations.value 4.00) }}Backup Failed
-                {{ else if and (eq .Labels.alertname "BackupAlert") (eq .Annotations.value 10.00) }}Backup Missing
-                {{ else }}Unknown{{ end }}
+                {{ else if and (eq .Labels.alertname "BackupAlert")  (eq .Annotations.value "4") }}Backup Failed
+                {{ else if and (eq .Labels.alertname "BackupAlert") (eq .Annotations.value "10") }}Backup Missing
+                {{ else }}Unknown (value: {{ .Annotations.value }})
+                {{ end }}
             </div>
             <div
                 class="pb-16"
