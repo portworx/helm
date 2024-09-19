@@ -514,7 +514,7 @@ spec:
       annotations:
         description: {{`The Cluster "{{ $labels.name }}" {{- if eq $value 4.00 }} has failed.  {{- else if eq $value 2.00 }} has turned offline.{{- else }}unknown state.{{- end }} `}}
         summary: {{`Cluster {{- if eq $value 4.00 }} addition failed {{- else if eq $value 2.00}} turned offline {{- else }}unknown state {{- end }}`}}
-        value: "{{` $value `}}"
+        value: "{{`{{ $value }}`}}"
       expr: pxbackup_cluster_status == 5 or pxbackup_cluster_status == 2
       for: 1m
       labels:
@@ -529,7 +529,7 @@ spec:
           {{ end }} taken for cluster "{{ $labels.cluster }}" on namespace "{{ $labels.backup_namespace }}"
           {{- if eq $value 4.00 }} has failed. {{- else }} is missing from backup location. {{- end }} `}}
         summary: "{{` {{- if eq $value 4.00 -}} Backup failed {{- else -}} Cloud file missing {{- end }} `}}"
-        value: "{{` $value `}}"
+        value: "{{`{{ $value }}`}}"
       expr: pxbackup_backup_status == 4 or pxbackup_backup_status == 10
       for: 1m
       labels:
