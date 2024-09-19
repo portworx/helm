@@ -493,7 +493,7 @@ spec:
       {{- end }}
       initContainers:
       - name: init-mysql
-        image: busybox
+        image: {{ printf "%s/%s/%s:%s" .Values.images.mysqlInitImage.registry .Values.images.mysqlInitImage.repo .Values.images.mysqlInitImage.imageName .Values.images.mysqlInitImage.tag }}
         command: ['sh', '-c', 'rmdir /var/lib/mysql/lost+found || true']
         volumeMounts:
         - mountPath: /var/lib/mysql
