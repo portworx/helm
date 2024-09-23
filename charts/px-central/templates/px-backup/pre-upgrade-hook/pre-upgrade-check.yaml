@@ -3,6 +3,33 @@
 {{- if and .Release.IsUpgrade (empty .Values.helmTimeout) }}
 {{ fail "ERROR You must pass the --timeout argument during Helm upgrade. Helm default timeout is 5m, and this timeout must be explicitly set in the command." }}
 {{- end }}
+
+{{- if .Release.IsUpgrade }}
+  {{- $sts := lookup "apps/v1" "StatefulSet" .Release.Namespace "pxc-backup-mongodb" -}}
+  {{- if $sts }}
+
+    # Construct the expected image from values.yaml
+    {{- $expectedImage := printf "%s/%s/%s:%s" .Values.images.mongodbImage.registry .Values.images.mongodbImage.repo .Values.images.mongodbImage.imageName .Values.images.mongodbImage.tag -}}
+    
+    {{- range $container := $sts.spec.template.spec.containers }}
+      {{- if ne $container.image $expectedImage }}
+        # Image does not match, check for ready replicas
+        {{- $readyReplicas := $sts.status.readyReplicas | default 0 -}}
+        
+        {{- if lt $readyReplicas 3 }}
+          {{ fail (printf "ERROR Ready replicas expected = 3, received = %d" $readyReplicas) }}
+        {{- else }}
+          # Image mismatch, but ready replicas are sufficient
+        {{- end }}
+      {{- else }}
+        # Images match
+      {{- end }}
+    {{- end }}
+  {{- else }}
+    # StatefulSet not found.
+  {{- end }}
+{{- end }}
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
