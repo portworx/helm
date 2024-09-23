@@ -1,5 +1,6 @@
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $deployDedicatedMonitoringSystem true }}
 apiVersion: monitoring.coreos.com/v1
 kind: Alertmanager
@@ -7,7 +8,26 @@ metadata:
   name: px-backup-alertmanager
   namespace: {{ .Release.Namespace }}
 spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          {{- if .Values.nodeAffinityLabel }}
+          - key: {{ .Values.nodeAffinityLabel }}
+            operator: Exists
+          {{- else }}
+          - key: pxbackup/enabled
+            operator: NotIn
+            values:
+            - "false"
+          {{- end }}
   configSecret: px-backup-alertmanager-custom-config
+  {{- if eq $azureProxyEnabled true }}
+  podMetadata:
+    annotations:
+      kubernetes.azure.com/no-http-proxy-vars: "true"
+  {{- end }}
   alertmanagerConfigSelector:
     matchLabels:
       app: px-backup-alert-configs
@@ -38,6 +58,7 @@ spec:
             secretKeyRef:
               name: pxc-backup-metrics
               key: metrics-token
+        {{ include "proxy.noProxyEnv" . | nindent 8 }}
         - name: POD_IP
           valueFrom:
             fieldRef:
@@ -66,6 +87,7 @@ spec:
           secretKeyRef:
             key: password
             name: pxc-backup-metrics
+      {{ include "proxy.noProxyEnv" . | nindent 6 }}
       name: config-reloader
       ports:
       - containerPort: 8080
@@ -98,6 +120,10 @@ spec:
           requests:
             storage: {{ .Values.persistentStorage.alertManager.storage }}
   {{- end }}
+  {{- with .Values.tolerations }}
+  tolerations:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
 {{- end }}
 ---
 apiVersion: v1
@@ -113,7 +139,7 @@ stringData:
     - name: "null"
     templates: [ "/etc/alertmanager/config/*.tmpl" ]
   pxc_template.tmpl: |
-    {{`<!DOCTYPE html>
+   {{` <!DOCTYPE html>
     <html>
       <head>
           <title>Portworx-Backup Email</title>
@@ -196,11 +222,14 @@ stringData:
               </div>
               </li>
             </ul>
-            {{- else if eq .Labels.alertname "BackupAlert" }}
+            {{- else if or (eq .Labels.alertname "BackupAlert") (eq .Labels.alertname "PartialBackupAlert") }}
             <div
                 class="pb-16"
                 style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
-                Critical Alert: Backup Failed
+                Critical Alert: 
+                {{ if eq .Labels.alertname "PartialBackupAlert" }}Backup was only partially completed
+                {{ else if eq .Labels.alertname "BackupAlert" }}Backup Failed
+                {{else}}unknown{{ end }}
             </div>
             <div
                 class="pb-16"
@@ -280,11 +309,14 @@ stringData:
               </div>
               </li>
             </ul>
-            {{- else if eq .Labels.alertname "BackupLocationAlert" }}
+            {{- else if or (eq .Labels.alertname "BackupLocationAlert") (eq .Labels.alertname "BackupLocationLimitedAvailabilityAlert") }}
             <div
                 class="pb-16"
-                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
-                Critical Alert: Backup Location Disconnected
+                style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: 
+                {{if eq .Labels.alertname "BackupLocationAlert"}}Backup Location Disconnected
+                {{else if eq .Labels.alertname "BackupLocationLimitedAvailabilityAlert"}}Backup Location state changed to limited availability
+                {{ else }}unknown{{ end }}
             </div>
             <div
                 class="pb-16"
@@ -306,7 +338,9 @@ stringData:
               <li>
               <div style="display: flex">
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
-                <div>{{ .Labels.error_reason }}</div> 
+                <div>
+                  {{ .Labels.error_reason }}
+                </div> 
                 </div>
               </li>
               <li> 

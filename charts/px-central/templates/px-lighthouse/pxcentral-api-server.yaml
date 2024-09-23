@@ -1,5 +1,6 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -117,6 +118,10 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         app: pxcentral-apiserver
         app.kubernetes.io/component: pxcentral-apiserver
@@ -146,6 +151,7 @@ spec:
           - name: SSL_CERT_DIR
             value: /tmp/certs
           {{- end }}
+          {{- include "proxy.noProxyEnv" . | nindent 10 }}
         readinessProbe:
           httpGet:
             path: /v1/ping

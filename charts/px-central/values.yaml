@@ -12,8 +12,8 @@ persistentStorage:
   ingester:
     storage: 2Gi
   prometheus:
-    storage: 5Gi
-    retentionSize: 4600MB
+    storage: 64Gi
+    retentionSize: 51200MB
   mysqlVolumeSize: "100Gi"
   mongodbVolumeSize: "64Gi"
   mongoCacheSize: 4
@@ -44,6 +44,11 @@ oidc:
     clientSecret:
     endpoint:
 
+proxy:
+  azureProxyEnabled: false
+  httpProxy:
+    noProxy: ""
+
 postInstallJob:
   sslEnabled: true
 
@@ -67,6 +72,8 @@ pxbackup:
   prometheusSecretName: ""
   alertmanagerSecretName: ""
   usePxBackupEmailAlertTemplate: true
+  monitorBLHealthFrequency: 210m
+  enableMonitorBLHealth: false
 
 pxlicenseserver:
   enabled: false
@@ -151,27 +158,27 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 2.7.1
+    tag: 2.7.2
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 2.7.1
+    tag: 2.7.2
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 2.7.1
+    tag: 2.7.2
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 2.7.1
+    tag: 2.7.2
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 2.7.1
+    tag: 2.7.2
   keycloakBackendImage:
     registry: docker.io
     repo: portworx
@@ -181,7 +188,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: keycloak
-    tag: 21.1.1
+    tag: 21.1.2
   keycloakLoginThemeImage:
     registry: docker.io
     repo: portworx
@@ -203,12 +210,12 @@ images:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 2.7.1
+    tag: 2.7.2
   mongodbImage:
     registry: docker.io
     repo: portworx
     imageName: mongodb
-    tag: 5.0.24-debian-11-r0
+    tag: 5.0.24-debian-11-r20
 
   ## Images required for enabling px-license-server
   licenseServerImage:

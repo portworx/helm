@@ -4,6 +4,7 @@
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $storkRequired := .Values.storkRequired | default false -}}
 {{- $sslEnabled := .Values.pxmonitor.sslEnabled | default false -}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $pxMonitorEnabled true }}
 apiVersion: v1
 kind: Service
@@ -92,6 +93,10 @@ spec:
       app.kubernetes.io/managed-by: {{.Release.Service }}
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         app: pxcentral-memcached-index-read
         app.kubernetes.io/component: pxcentral-memcached-index-read
@@ -144,12 +149,20 @@ spec:
             port: memcache
           initialDelaySeconds: 5
           timeoutSeconds: 1
+        {{- if .Values.proxy.httpProxy.noProxy }}
+        env:
+        {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{- end }}
       - name: metrics
         image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedMetricsImage.registry .Values.images.memcachedMetricsImage.repo .Values.images.memcachedMetricsImage.imageName .Values.images.memcachedMetricsImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         ports:
         - name: metrics
           containerPort: 9150
+        {{- if .Values.proxy.httpProxy.noProxy }}
+        env:
+        {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -176,6 +189,10 @@ spec:
       app.kubernetes.io/managed-by: {{.Release.Service }}
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         app: pxcentral-memcached-index-write
         app.kubernetes.io/component: pxcentral-memcached-index-write
@@ -228,12 +245,20 @@ spec:
             port: memcache
           initialDelaySeconds: 5
           timeoutSeconds: 1
+        {{- if .Values.proxy.httpProxy.noProxy }}
+        env:
+        {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{- end }}
       - name: metrics
         image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedMetricsImage.registry .Values.images.memcachedMetricsImage.repo .Values.images.memcachedMetricsImage.imageName .Values.images.memcachedMetricsImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         ports:
         - name: metrics
           containerPort: 9150
+        {{- if .Values.proxy.httpProxy }}
+        env:
+        {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -260,6 +285,10 @@ spec:
       app.kubernetes.io/managed-by: {{.Release.Service }}
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         app: pxcentral-memcached
         app.kubernetes.io/component: pxcentral-memcached
@@ -311,12 +340,20 @@ spec:
             port: memcache
           initialDelaySeconds: 5
           timeoutSeconds: 1
+        {{- if .Values.proxy.httpProxy }}
+        env:
+        {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{- end }}
       - name: metrics
         image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedMetricsImage.registry .Values.images.memcachedMetricsImage.repo .Values.images.memcachedMetricsImage.imageName .Values.images.memcachedMetricsImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         ports:
         - name: metrics
           containerPort: 9150
+        {{- if .Values.proxy.httpProxy }}
+        env:
+        {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -346,6 +383,10 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         app.kubernetes.io/component: pxcentral-cortex-consul
         cortex: consul
@@ -427,6 +468,7 @@ spec:
               value: "8300"
             - name: CONSUL_SERF_LAN_PORT_NUMBER
               value: "8301"
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
             {{- if .Values.pxmonitor.consulBindInterface }}
             - name: CONSUL_BIND_INTERFACE
               value: {{ .Values.pxmonitor.consulBindInterface }}

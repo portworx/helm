@@ -3,6 +3,7 @@
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $nfsEnabled := .Values.pxbackup.nfs.enabled | default false }}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -145,6 +146,10 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         run: pxcentral-backend
         app.kubernetes.io/component: pxcentral-backend
@@ -199,6 +204,7 @@ spec:
                 secretKeyRef:
                   key: credential
                   name: px-central-admin
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
           envFrom:
             - configMapRef:
                 name: pxcentral-ui-configmap
@@ -237,6 +243,7 @@ spec:
                 secretKeyRef:
                   name: pxcentral-mysql-secret
                   key: DB_PASSWORD
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -299,6 +306,10 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         run: pxcentral-frontend
         app.kubernetes.io/component: pxcentral-frontend
@@ -349,6 +360,7 @@ spec:
                 secretKeyRef:
                   name: pxcentral-mysql-secret
                   key: DB_PASSWORD
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -443,6 +455,10 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      {{- if eq $azureProxyEnabled true }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
       labels:
         run: pxcentral-mysql
         app.kubernetes.io/component: pxcentral-mysql
@@ -503,6 +519,7 @@ spec:
               value: pxcentral-mysql
             - name: SERVICE_TAGS
               value: dev
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
           livenessProbe:
             exec:
               command:
