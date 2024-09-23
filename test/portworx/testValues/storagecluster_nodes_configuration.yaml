@@ -1,0 +1,22 @@
+nodesConfiguration:
+- selector:
+    labelSelector:
+      matchLabels:
+        custom: "node"                 
+  network:                                                                             
+    dataInterface: ethX
+    mgmtInterface: ethX
+  storage:
+    devices:
+    - /dev/nvme1
+    - /dev/nvme2                                                                         
+  env:                                                           
+  - name: AWS_CA_BUNDLE
+    value: "/etc/pwx/objectstore-cert/objectstore.pem"
+  - name: AWS_ACCESS_KEY_ID
+    valueFrom:
+      secretKeyRef:
+        name: aws-creds
+        key: access-key   
+  runtimeOptions: 
+    num_io_threads: "10"

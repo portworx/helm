@@ -1,0 +1,63 @@
+kind: StorageCluster
+apiVersion: core.libopenstorage.org/v1
+metadata:
+  name: "mycluster"
+  namespace: kube-system
+  annotations:
+  labels:
+    heritage: "Helm"
+    release: "my-release"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "my-release"
+spec:
+  image: portworx/oci-monitor:3.1.4
+  imagePullPolicy: Always
+
+  kvdb:
+    internal: true
+  storage:
+    useAll: true
+  secretsProvider: k8s
+  
+  stork:
+    enabled: true
+  monitoring:
+    prometheus:
+      enabled: true
+      exportMetrics: true
+      alertManager:
+        enabled: true
+      replicas: 5
+      retention: 24h
+      retentionSize: 10GiB
+      resources:
+        limits:
+          cpu: 500m
+          memory: 128Mi
+        requests:
+          cpu: 250m
+          memory: 64Mi
+      storage:
+        volumeClaimTemplate:
+          spec:
+            accessModes:
+            - ReadWriteOnce
+            resources:
+              requests:
+                storage: 2Gi
+            storageClassName: px-csi-db
+      volumes:
+      - hostPath:
+          path: /mountdata
+        name: additional-volume
+      volumeMounts:
+      - mountPath: /data/prometheus
+        name: additional-volume
+    telemetry:
+      enabled: true
+    grafana:
+      enabled: true
+  csi:
+    enabled: true
+  autopilot:
+    enabled: true

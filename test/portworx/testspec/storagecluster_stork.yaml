@@ -1,0 +1,42 @@
+kind: StorageCluster
+apiVersion: core.libopenstorage.org/v1
+metadata:
+  name: "mycluster"
+  namespace: kube-system
+  annotations:
+  labels:
+    heritage: "Helm"
+    release: "my-release"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "my-release"
+spec:
+  image: portworx/oci-monitor:3.1.4
+  imagePullPolicy: Always
+
+  kvdb:
+    internal: true
+  storage:
+    useAll: true
+  secretsProvider: k8s
+  
+  stork:
+    enabled: true
+    image: openstorage/stork:2.7.0
+    env:
+    - name: PX_TEST_ENV
+      value: test_env_autopilot
+    volumes:
+    - hostPath:
+        path: /test
+      mountPath: /etc/px-test
+      name: px-test-volume
+    args:
+      verbose: "true"
+      webhook-controller: "true"
+  monitoring:
+    telemetry:
+      enabled: true
+  csi:
+    enabled: true
+  autopilot:
+    enabled: true

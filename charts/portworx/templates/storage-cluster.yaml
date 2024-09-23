@@ -26,8 +26,19 @@
   {{- $licenseSecret := .Values.licenseSecret | default "none" }}
   {{- $kvdbDevice := .Values.kvdbDevice | default "none" }}
   {{- $journalDevice := .Values.journalDevice | default "none" }}
+  {{- $cacheDevices := .Values.cacheDevices | default "none"}}
+  {{- $systemMetadataDevice:= .Values.systemMetadataDevice | default "none"}}
   {{- $miscArgs := include "px.miscArgs" . }}
   {{- $volumesPresent := include "px.volumesPresent" . }}
+  {{- $storagePodAnnotations := .Values.customMetadata.annotations.pod.storage }}
+  {{- $portworxApiServiceAnnotations := .Values.customMetadata.annotations.service.portworxApi }}
+  {{- $portworxServiceAnnotations := .Values.customMetadata.annotations.service.portworxService }}
+  {{- $kvdbServiceAnnotations := .Values.customMetadata.annotations.service.portworxKVDBService }}
+  {{- $portworxApiServiceLabels := .Values.customMetadata.labels.service.portworxApi}}
+
+  {{- $prometheus := .Values.monitoring.prometheus}}
+  {{- $prometheousRetention := .Values.monitoring.prometheus.retention | default "none"}}
+  {{- $prometheousRetentionSize := .Values.monitoring.prometheus.retentionSize | default "none"}}
 
 kind: StorageCluster
 apiVersion: core.libopenstorage.org/v1
@@ -81,8 +92,87 @@ spec:
   imagePullSecret: {{ $registrySecret }}
   {{- end }}
 
+  {{- if (or (eq (toString .Values.updateStrategy.type) "RollingUpdate") (eq (toString .Values.updateStrategy.type) "OnDelete")) }}
+  updateStrategy:
+    type: {{ .Values.updateStrategy.type }}
+
+    {{- if eq .Values.updateStrategy.type "RollingUpdate"}}
+    rollingUpdate:
+      {{- if .Values.updateStrategy.maxUnavailable}}
+      maxUnavailable: {{.Values.updateStrategy.maxUnavailable}}
+      {{- end}}
+      {{- if .Values.updateStrategy.minReadySeconds}}
+      minReadySeconds: {{.Values.updateStrategy.minReadySeconds}}
+      {{- end}}
+    {{- end}}
+  {{- end }}
+
+
+  {{- if .Values.updateStrategy.autoUpdateComponents}}
+  autoUpdateComponents: {{.Values.updateStrategy.autoUpdateComponents}}
+  {{- end}}
+
+
+  {{- $hasAnnotations := or ($storagePodAnnotations) ($portworxApiServiceAnnotations) ($portworxServiceAnnotations ) ($kvdbServiceAnnotations) }}
+  {{- $hasLabels := $portworxApiServiceLabels }}
+  {{- $hasMetadata := or $hasAnnotations $hasLabels }}
+
+  {{- if $hasMetadata}}
+  metadata:
+    {{- if $hasLabels}}
+    labels:
+      {{- if $portworxApiServiceLabels }}
+      service/portworx-api:
+        {{- $labels := $portworxApiServiceLabels | split ";" }}
+        {{- range $key, $val := $labels }}
+        {{- $label := $val | split "=" }}
+          {{ $label._0 | trim }}: {{ $label._1 | trim | quote -}}
+        {{- end }}
+      {{- end }}
+    {{- end}}
+    {{- if $hasAnnotations}}
+    annotations:
+      {{- if $storagePodAnnotations }}
+      pod/storage:
+        {{- $annotations := $storagePodAnnotations | split ";" }}
+        {{- range $key, $val := $annotations }}
+        {{- $annotation := $val | split "=" }}
+          {{ $annotation._0 | trim }}: {{ $annotation._1 | trim | quote -}}
+        {{- end }}
+      {{- end }}
+
+      {{- if $portworxApiServiceAnnotations }}
+      service/portworx-api:
+        {{- $annotations := $portworxApiServiceAnnotations | split ";" }}
+        {{- range $key, $val := $annotations }}
+        {{- $annotation := $val | split "=" }}
+          {{ $annotation._0 | trim }}: {{ $annotation._1 | trim | quote -}}
+        {{- end }}
+      {{- end }}
+
+      {{- if $portworxServiceAnnotations }}
+      service/portworx-service:
+        {{- $annotations := $portworxServiceAnnotations | split ";" }}
+        {{- range $key, $val := $annotations }}
+        {{- $annotation := $val | split "=" }}
+          {{ $annotation._0 | trim }}: {{ $annotation._1 | trim | quote -}}
+        {{- end }}
+      {{- end }}
+
+      {{- if $kvdbServiceAnnotations }}
+      service/portworx-kvdb-service:
+        {{- $annotations := $kvdbServiceAnnotations | split ";" }}
+        {{- range $key, $val := $annotations }}
+        {{- $annotation := $val | split "=" }}
+          {{ $annotation._0 | trim }}: {{ $annotation._1 | trim | quote -}}
+        {{- end }}
+      {{- end }}    
+
+    {{- end}}
+  {{- end }}
+
   kvdb:
-  {{- if eq $internalKVDB true }}
+  {{- if and (eq $internalKVDB true) (empty $etcdEndPoints) }}
     internal: true
   {{- else }}
     internal: false
@@ -102,6 +192,9 @@ spec:
 
 {{- if and (ne $drives "none") (not (hasPrefix "/" $drives)) }}
   cloudStorage:
+    {{- if .Values.provider}}
+    provider: {{ .Values.provider }}
+    {{- end}}
     deviceSpecs:
       {{- $driveNames := $drives | split ";" }}
       {{- range $index, $name := $driveNames }}
@@ -110,25 +203,40 @@ spec:
     {{- if and (ne $kvdbDevice "none") (not (hasPrefix "/" $kvdbDevice)) }}
     kvdbDeviceSpec: {{ $kvdbDevice }}
     {{- end }}
+    {{- if ne $systemMetadataDevice "none"}}
+    systemMetadataDeviceSpec: {{ $systemMetadataDevice }}
+    {{- end }}
     {{- if and (ne $journalDevice "none") (not (hasPrefix "/" $journalDevice)) }}
     journalDeviceSpec: {{ $journalDevice }}
     {{- end }}
     {{- if ne (.Values.maxStorageNodesPerZone | int) 0 }}
     maxStorageNodesPerZone: {{ .Values.maxStorageNodesPerZone }}
     {{- end }}
+    {{- if ne (.Values.maxStorageNodes | int) 0 }}
+    maxStorageNodes: {{ .Values.maxStorageNodes }}
+    {{- end }}
 {{- else }}
   {{- if $AKSInstall }}
   cloudStorage:
+    {{- if .Values.provider}}
+    provider: {{ .Values.provider }}
+    {{- end}}
     deviceSpecs:
       - type=Premium_LRS,size=150
     {{- if and (ne $kvdbDevice "none") (not (hasPrefix "/" $kvdbDevice)) }}
     kvdbDeviceSpec: {{ $kvdbDevice }}
+    {{- end }}
+    {{- if ne $systemMetadataDevice "none"}}
+    systemMetadataDeviceSpec: {{ $systemMetadataDevice }}
     {{- end }}
     {{- if and (ne $journalDevice "none") (not (hasPrefix "/" $journalDevice)) }}
     journalDeviceSpec: {{ $journalDevice }}
     {{- end }}
     {{- if gt (.Values.maxStorageNodesPerZone | int) 0 }}
     maxStorageNodesPerZone: {{ .Values.maxStorageNodesPerZone }}
+    {{- end }}
+    {{- if ne (.Values.maxStorageNodes | int) 0 }}
+    maxStorageNodes: {{ .Values.maxStorageNodes }}
     {{- end }}
   {{- else }}
   storage:
@@ -139,16 +247,27 @@ spec:
         - {{ $name }}
         {{- end }}
     {{- end }}
+    {{- if ne $cacheDevices "none"}}
+    cacheDevices:
+      {{- $devices := $cacheDevices | split ";" }}
+        {{- range $index, $device := $devices }}
+        - {{ $device }}
+        {{- end }}
+    {{- end}}
     {{- if or $usefileSystemDrive $deployEnvironmentIKS }}
     forceUseDisks: true
     {{- end }}
     {{- if eq $usedrivesAndPartitions true }}
     useAllWithPartitions: true
-    {{- else }}
+    {{- end}}
+    {{- if and (eq $usedrivesAndPartitions false) (eq $drives "none")}}
     useAll: true
     {{- end }}
     {{- if and (ne $kvdbDevice "none") (hasPrefix "/" $kvdbDevice) }}
     kvdbDevice: {{ $kvdbDevice }}
+    {{- end }}
+    {{- if ne $systemMetadataDevice "none"}}
+    systemMetadataDevice: {{ $systemMetadataDevice }}
     {{- end }}
     {{- if and (ne $journalDevice "none") (or (hasPrefix "/" $journalDevice) (eq "auto" $journalDevice)) }}
     journalDevice: {{ $journalDevice }}
@@ -174,6 +293,9 @@ spec:
     {{- end }}
   {{- end }}
 
+  {{- $isLicenseSecretAdded := ne $licenseSecret "none" }}
+  {{- $shouldRenderEnv := or (ne $envVars "none") .Values.envs $AKSInstall $OKEInstall $isLicenseSecretAdded }}
+  {{- if $shouldRenderEnv }}
   env:
   {{- with .Values.envs }}
     {{- toYaml . | nindent 2 }}
@@ -186,14 +308,14 @@ spec:
     value: {{ $envVariable._1 | trim | quote }}
     {{- end }}
   {{- end }}
-  {{- if ne $licenseSecret "none" }}
+  {{- if $isLicenseSecretAdded }}
   - name: SAAS_ACCOUNT_KEY_STRING
     valueFrom:
       secretKeyRef:
         name: "{{ $licenseSecret }}"
         key: accountKey
   {{- end }}
-  {{- if .Values.AKSInstall }}
+  {{- if $AKSInstall }}
   - name: AZURE_CLIENT_SECRET
     valueFrom:
       secretKeyRef:
@@ -210,7 +332,7 @@ spec:
         name: px-azure
         key: AZURE_TENANT_ID
   {{- end }}
-  {{- if .Values.OKEInstall }}
+  {{- if $OKEInstall }}
   - name: PX_ORACLE_user_ocid
     valueFrom:
       secretKeyRef:
@@ -224,22 +346,26 @@ spec:
   - name: "PX_ORACLE_private_key_path"
     value: "/etc/pwx/oci_key/oci_api_key.pem"
   {{- end }}
-  - name: PX_SECRETS_NAMESPACE
-    value: portworx
-
+  {{- end }}
+  
   stork:
-    {{- if (and (.Values.stork) (eq .Values.stork true))}}
+    {{- if (and (.Values.stork.enabled) (eq .Values.stork.enabled true))}}
     enabled: true
-    {{- if .Values.storkVersion }}
-    image: {{ template "px.getStorkImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.storkVersion }}
+    {{- if .Values.stork.storkVersion }}
+    image: {{ template "px.getStorkImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.stork.storkVersion }}
     {{- end }}
-    {{- with .Values.storkSpec.volumes }}
+
+    {{- with .Values.stork.env }}
+    env:
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+    {{- with .Values.stork.volumes }}
     volumes:
       {{- toYaml . | nindent 4 }}
     {{- end -}}
-    {{- if .Values.storkSpec.args }}
+    {{- if .Values.stork.args }}
     args:
-    {{- $args := .Values.storkSpec.args | split ";" }}
+    {{- $args := .Values.stork.args | split ";" }}
     {{- range $key, $val := $args }}
     {{- $arg := $val | split "=" }}
       {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
@@ -289,35 +415,179 @@ spec:
   {{- end}}
   {{- end }}
 
-  {{- if (or (and (.Values.monitoring) (eq .Values.monitoring true)) (and (.Values.telemetry) (eq .Values.telemetry true) )) }}
+  {{- $promethusEnabled := or $prometheus.exportMetrics $prometheus.enabled}}
+  {{- $monitoringEnabled := or $promethusEnabled .Values.monitoring.telemetry $prometheus.enabled .Values.grafana }}
+  {{- if $monitoringEnabled }}
   monitoring:
-    {{- if (and (.Values.monitoring) (eq .Values.monitoring true)) }}
+    {{- if $promethusEnabled }}
     prometheus:
+      {{- if $prometheus.enabled }}
       enabled: true
+      {{- end}}
+      {{- if $prometheus.exportMetrics }}
       exportMetrics: true
+      {{- end}}
+      {{- if $prometheus.alertManager }}
       alertManager:
         enabled: true
+      {{- end}}
+      {{- if and ($prometheus.enabled) (ge (int $prometheus.replicas) 1) }}
+      replicas: {{ $prometheus.replicas }}
+      {{- end }}
+      {{- if and (ne $prometheousRetention "none") ($prometheus.enabled)}}
+      retention: {{ $prometheousRetention }}
+      {{- end}}
+      {{- if ne $prometheousRetentionSize "none"}}
+      retentionSize: {{ $prometheousRetentionSize }}
+      {{- end}}
+      {{- with $prometheus.resources }}
+      resources:
+        {{- toYaml . | nindent 8  }}
+      {{- end}}
+     {{- with $prometheus.storage }}
+      storage:
+        {{- toYaml . | nindent 8 }}
+      {{- end}}
+      {{- with $prometheus.volumes }}
+      volumes:
+          {{- toYaml . | nindent 6  }}
+      {{- end }}
+      {{- with $prometheus.volumeMounts }}
+      volumeMounts:
+          {{- toYaml . | nindent 6  }}
+      {{- end}}
+      {{- if $prometheus.securityContext.runAsNonRoot }}
+      securityContext:
+        runAsNonRoot: true
+      {{- end}}
     {{- end }}
-    {{- if (and (.Values.telemetry) (eq .Values.telemetry true)) }}
+
+    {{- if .Values.monitoring.telemetry }}
     telemetry:
       enabled: true
     {{- end }}
+
+    {{- if .Values.monitoring.grafana }}
+    grafana:
+      enabled: true
+    {{- end }}
   {{- end }}
 
-  {{- if or (eq .Values.csi true) (eq .Values.csi false) }}
+  {{- $csiEnabled := eq .Values.csi.enabled true }}
+  {{- if or (eq .Values.csi.enabled true) (eq .Values.csi.enabled false) }}
   csi:
-    enabled: {{ .Values.csi }}
+    enabled: {{ .Values.csi.enabled }}
+    {{- if $csiEnabled}}
+    {{- if eq .Values.csi.topology.enabled true }}
+    topology:
+      enabled: true
+    {{- end}}
+    {{- if eq .Values.csi.installSnapshotController true }}
+    installSnapshotController: true
+    {{- end}}
+    {{- end}}
   {{- end }}
-  {{- if (and (.Values.aut) (eq .Values.aut true))}}
+
+
+  {{- if (and (.Values.autopilot.enabled) (eq .Values.autopilot.enabled true))}}
   autopilot:
     enabled: true
+    {{- if ne .Values.autopilot.image ""}}
+    image: {{.Values.autopilot.image}}
+    {{- end }}
+    {{- if eq .Values.autopilot.lockImage true}}
+    lockImage: true
+    {{- end }}
+    {{- if .Values.autopilot.args }}
+    args:
+    {{- $args := .Values.autopilot.args | split ";" }}
+    {{- range $key, $val := $args }}
+    {{- $arg := $val | split "=" }}
+      {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
+    {{- end }}
+    {{- end }}
+    {{- with .Values.autopilot.env }}
+    env:
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
+
+    {{- with .Values.autopilot.volumes }}
+    volumes:
+      {{- toYaml . | nindent 4}}
+    {{- end }}
+    {{- with .Values.autopilot.providers }}
+    providers:
+    {{- range . }}
+    - name: "{{ .name }}"
+      type: "{{ .type }}"
+      params:
+        {{- $params := splitList ";" .params }}
+        {{- range $params }}
+        {{- $pair := splitList "=" . }}
+        {{- if eq (len $pair) 2 }}
+        {{- $key := index $pair 0 }}
+        {{- $value := index $pair 1 }}
+        {{ $key }}: "{{ $value }}"
+        {{- end }}
+        {{- end }}
+    {{- end }}
+  {{- end }}
   {{- end }}
 
-  {{- with .Values.tolerations }}
+  {{- if .Values.runtimeOptions }}
+  runtimeOptions:
+  {{- $args := .Values.runtimeOptions | split ";" }}
+  {{- range $key, $val := $args }}
+  {{- $arg := $val | split "=" }}
+    {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
+  {{- end }}
+  {{- end }}
+
+  {{- if .Values.featureGates }}
+  featureGates:
+  {{- $args := .Values.featureGates | split ";" }}
+  {{- range $key, $val := $args }}
+  {{- $arg := $val | split "=" }}
+    {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
+  {{- end }}
+  {{- end }}
+
+  {{- if eq .Values.security.enabled true}}
+  security: 
+    enabled: true
+    auth:
+      {{- if (or (eq .Values.security.auth.guestAccess "Enabled") (eq .Values.security.auth.guestAccess "Disabled") (eq .Values.security.auth.guestAccess "Managed"))}}
+      guestAccess: {{.Values.security.auth.guestAccess}}
+      {{- end}}
+      {{- if and .Values.security.auth.selfSigned.tokenLifetime .Values.security.auth.selfSigned.issuer .Values.security.auth.selfSigned.sharedSecret }}
+      selfSigned:
+        tokenLifetime: {{.Values.security.auth.selfSigned.tokenLifetime}}
+        issuer: {{.Values.security.auth.selfSigned.issuer}}
+        sharedSecret: {{.Values.security.auth.selfSigned.sharedSecret}}
+      {{- end}}
+  {{- end}}
+
+  {{- with .Values.resources }}
+  resources:
+    {{- toYaml . | nindent 4  }}
+  {{- end}}
+
+  {{- if or .Values.tolerations .Values.nodeAffinity}}
   placement:
+  {{- with .Values.tolerations }}
     tolerations:
       {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- with .Values.nodeAffinity }}
+    nodeAffinity:
+      {{- toYaml . | nindent 5 }}
+  {{- end}}
+  {{- end}}
+
+  {{- with .Values.nodesConfiguration }}
+  nodes:
+    {{- toYaml . | nindent 2 }}
+  {{- end}}
 
   {{- if .Values.deleteStrategy.type }}
   deleteStrategy:

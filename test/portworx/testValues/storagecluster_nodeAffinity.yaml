@@ -1,0 +1,8 @@
+nodeAffinity:
+  requiredDuringSchedulingIgnoredDuringExecution:
+    nodeSelectorTerms:
+    - matchExpressions:
+      - key: px-schedule
+        operator: NotIn
+        values:
+        - "false"
