@@ -43,7 +43,11 @@ Use `helm rollback` to rollback to Daemonset install is not supported, if there 
 To install the chart with the release name `my-release` run the following commands substituting relevant values for your setup:
 
 ##### NOTE:
-`etcdEndPoint` is a required field. The chart installation would not proceed unless this option is provided.
+Upgrading from previous versions to 4.0.0 is not backward compatible. Please review the values configuration for the latest release.
+
+`internalKVDB` is set to `true` by default. Portworx would by default use internal kvdb.
+
+To use an external KVDB, you can provide the `etcdEndPoint`
 If the etcd cluster being used is a secured etcd (SSL/TLS) then please follow instructions to create a kubernetes secret with the certs. https://docs.portworx.com/scheduler/kubernetes/etcd-certs-using-secrets.html#create-kubernetes-secret
 
 
@@ -52,7 +56,7 @@ If the etcd cluster being used is a secured etcd (SSL/TLS) then please follow in
 For eg:
 ```
 git clone https://github.com/portworx/helm.git
-helm install --debug --name my-release --set etcdEndPoint=etcd:http://192.168.70.90:2379,clusterName=$(uuidgen) ./helm/charts/portworx/
+helm install --debug --name my-release --set clusterName=$(uuidgen) ./helm/charts/portworx/
 ```
 
 ## Configuration
@@ -61,8 +65,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 
 | Parameter | Description | Default
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| `imageVersion` | Version of the PX image | 3.1.0 |
-| `pxOperatorImageVersion` | Version of the PX operator image | 23.10.2 |
+| `imageVersion` | Version of the PX image | 3.1.4 |
+| `pxOperatorImageVersion` | Version of the PX operator image | 24.1.1 |
 | `openshiftInstall` | Installing on Openshift? | false |
 | `pksInstall` | Installing on Pivotal Container service? | false |
 | `EKSInstall` | Installing EKS (Amazon Elastic Container service) | false |
