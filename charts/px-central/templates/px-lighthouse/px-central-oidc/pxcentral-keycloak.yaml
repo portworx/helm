@@ -4,6 +4,19 @@
 {{- $operatorToChartUpgrade := .Values.operatorToChartUpgrade | default false -}}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+{{- $keycloakSecret := (lookup "v1" "Secret" .Release.Namespace "pxcentral-keycloak-postgresql") | default dict }}
+{{- $keycloakSecretData := (get $keycloakSecret "data") | default dict }}
+# Function to check if a value is empty or not
+{{- define "nonEmptyOrDefault" -}}
+  {{- if and (not (empty .)) (ne . "") -}}
+    {{- . -}}
+  {{- else -}}
+    {{- randAlpha 9 -}}
+  {{- end -}}
+{{- end }}
+# Check for existing secret values, if not present, use values from values.yaml, and if empty, generate random password
+{{- $postgresqlPassword := (get $keycloakSecretData "postgresql-password" | b64dec | default (.Values.oidc.centralOIDC.keyCloakBackendPassword | include "nonEmptyOrDefault")) }}
+
 {{- if eq $centralOIDC true }}
 apiVersion: v1
 kind: ServiceAccount
@@ -38,7 +51,7 @@ metadata:
 type: Opaque
 stringData:
   postgresql-username: {{ .Values.oidc.centralOIDC.keyCloakBackendUserName | quote}}
-  postgresql-password: {{ .Values.oidc.centralOIDC.keyCloakBackendPassword | quote}}
+  postgresql-password: {{ $postgresqlPassword | quote}}
 ---
 apiVersion: v1
 kind: Secret

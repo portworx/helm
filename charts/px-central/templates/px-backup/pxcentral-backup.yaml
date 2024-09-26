@@ -229,6 +229,11 @@ spec:
           value: "36160"
         - name: AIRGAP_REPORTING_PERIOD
           value: "90"
+        - name: MongoDB_Password
+          valueFrom:
+            secretKeyRef:
+              name: pxc-backup-mongodb
+              key: mongodb-password
         {{- include "proxy.noProxyEnv" . | nindent 8 }}
         {{- if .Values.caCertsSecretName }}
         - name: SSL_CERT_DIR
@@ -263,7 +268,7 @@ spec:
         command:
         - /px-backup
         - start
-        - --datastoreEndpoints=mongodb://pxbackup:Password1@pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017/?authSource=px-backup&replicaSet=rs0
+        - --datastoreEndpoints=mongodb://pxbackup:$(MongoDB_Password)@pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017/?authSource=px-backup&replicaSet=rs0
         - --mongo-migration={{.Values.pxbackup.mongoMigration}}
       {{- if .Values.caCertsSecretName }}
       volumes:

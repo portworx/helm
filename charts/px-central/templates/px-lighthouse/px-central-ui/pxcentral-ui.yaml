@@ -4,6 +4,19 @@
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $nfsEnabled := .Values.pxbackup.nfs.enabled | default false }}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+{{- $mysqlSecret := (lookup "v1" "Secret" .Release.Namespace "pxcentral-mysql-secret") | default dict }}
+{{- $mysqlSecretData := (get $mysqlSecret "data") | default dict }}
+# Function to check if a value is empty or not
+{{- define "nonEmptyOrDefault" -}}
+  {{- if and (not (empty .)) (ne . "") -}}
+    {{- . -}}
+  {{- else -}}
+    {{- randAlpha 9 -}}
+  {{- end -}}
+{{- end }}
+
+{{- $mysqlRootPassword := (get $mysqlSecretData "DB_PASSWORD" | b64dec | default (.Values.pxcentralDBPassword | include "nonEmptyOrDefault")) }}
+
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -413,7 +426,7 @@ metadata:
 type: Opaque
 stringData:
   DB_USERNAME: "root"
-  DB_PASSWORD: {{ .Values.pxcentralDBPassword | quote}}
+  DB_PASSWORD: {{ $mysqlRootPassword | quote}}
 ---
 {{- if eq $externalPersistentStorageEnabled true }}
 apiVersion: v1
