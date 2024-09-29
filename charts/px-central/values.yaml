@@ -215,7 +215,11 @@ images:
     repo: portworx
     imageName: pxcentral-onprem-pre-upgrade-base
     tag: 2.8.0-dev
-
+  preUpgradeHookPasswordImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-local
+    repo: users/aks
+    imageName: pxcentral-onprem-pre-upgrade-base-password
+    tag: master
   ## Images required for enabling px-backup
   pxBackupImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote

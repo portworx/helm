@@ -204,3 +204,106 @@ spec:
       {{- toYaml . | nindent 8 }}
       {{- end }} 
   backoffLimit: 0
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pre-upgrade-password-set
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: pxcentral-pre-upgrade-hook
+    app.kubernetes.io/component: pxcentral-pre-upgrade-hook
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "3"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-completed
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  template:  
+    {{- if eq $azureProxyEnabled true }}
+    metadata:
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+    {{- end }}
+    spec:
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+              {{- end }}
+      containers:
+        - name: pxbackup-password-set
+          image: {{ printf "%s/%s/%s:%s" .Values.images.preUpgradeHookPasswordImage.registry .Values.images.preUpgradeHookPasswordImage.repo .Values.images.preUpgradeHookPasswordImage.imageName .Values.images.preUpgradeHookPasswordImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          command: ["python", "/pxcentral-pre-upgrade-password-reset/pxc-pre-upgrade-password-randomize.py"]
+          env:
+            - name: MONGODB_STATEFULSET_NAME
+              value: pxc-backup-mongodb
+            - name: MONGODB_PORT
+              value: "27017"
+            - name: NAMESPACE
+              value: {{ .Release.Namespace }}  
+            - name: MONGODB_SERVICE_NAME
+              value: pxc-backup-mongodb-headless
+            - name: MONGODB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb-root-password
+                  name: pxc-backup-mongodb
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb-password
+                  name: pxc-backup-mongodb
+            - name: MONGODB_ROOT_PASSWORD_HELM
+              value: {{ .Values.mongodb.mongodbRootPassword }}
+            - name: MONGODB_PASSWORD_HELM
+              value: {{ .Values.mongodb.mongodbPassword }}
+            - name: MYSQL_STATEFULSET_NAME
+              value: pxcentral-mysql
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: DB_PASSWORD
+                  name: pxcentral-mysql-secret
+            - name: MYSQL_PASSWORD_HELM
+              value: {{ .Values.pxcentralDBPassword }}
+            - name: PSQL_STATEFULSET_NAME
+              value: pxcentral-keycloak-postgresql
+            - name: PSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: postgresql-password
+                  name: pxcentral-keycloak-postgresql
+            - name: PSQL_PASSWORD_HELM
+              value: {{ .Values.oidc.centralOIDC.keyCloakBackendPassword }}
+            {{- include "proxy.noProxyEnv" . | nindent 10 }}
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      restartPolicy: Never
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
+  backoffLimit: 0
+
+
