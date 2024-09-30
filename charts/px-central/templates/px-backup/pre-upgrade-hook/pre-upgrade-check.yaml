@@ -1,5 +1,9 @@
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+{{- if and .Release.IsUpgrade (empty .Values.helmTimeout) }}
+{{ fail "ERROR You must pass the --timeout argument in the Helm upgrade command and set the helmTimeout variable to explicitly set the value (default 5m)." }}
+{{- end }}
+
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
