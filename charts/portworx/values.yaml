@@ -258,4 +258,4 @@ updateStrategy:
                                           # where the size of the pod batch is specified through the spec.updateStrategy.rollingUpdate.maxUnavailable flag.
 
   autoUpdateComponents:                   # Indicates the update strategy for the component images
-                                          # valid values None,Once,Always
+                                          # valid values None,Once,Always 
