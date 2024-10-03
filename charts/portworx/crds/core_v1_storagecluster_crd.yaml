@@ -180,6 +180,9 @@ spec:
                 type: object
                 x-kubernetes-preserve-unknown-fields: true
                 description: This is a map of feature names to string values.
+              test-sync-field:
+                type: string
+                description: This is test PR for crd-sync workflow
               runtimeOptions:
                 type: object
                 x-kubernetes-preserve-unknown-fields: true
