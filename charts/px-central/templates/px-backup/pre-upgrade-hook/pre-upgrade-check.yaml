@@ -14,7 +14,7 @@
         {{- $readyReplicas := $sts.status.readyReplicas | default 0 -}}
 
         {{- if lt $readyReplicas 3 }}
-          {{ fail (printf "ERROR MongoDB ready replicas expected = 3, received = %d" $readyReplicas. Please refer to the documentation to bring up all 3 pods.) }}
+          {{ fail (printf "ERROR MongoDB ready replicas expected = 3, received = %d. Please refer to the documentation to bring up all 3 pods." $readyReplicas) }}
         {{- else }}
           # Image mismatch, but ready replicas are sufficient
         {{- end }}
