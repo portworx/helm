@@ -159,27 +159,27 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 2.7.2
+    tag: 2.7.3
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 2.7.2
+    tag: 2.7.3
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 2.7.2
+    tag: 2.7.3
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 2.7.2
+    tag: 2.7.3
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 2.7.2
+    tag: 2.7.3
   keycloakBackendImage:
     registry: docker.io
     repo: portworx
@@ -206,12 +206,12 @@ images:
     imageName: mysql
     tag: 8.0.37
   preUpgradeHookImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-pre-upgrade-base
-    tag: 2.7.3-dev
+    imageName: pxcentral-onprem-pre-upgrade
+    tag: 2.7.3
   mysqlInitImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: busybox
     tag: 1.35.0
@@ -221,7 +221,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 2.7.2
+    tag: 2.7.3
   mongodbImage:
     registry: docker.io
     repo: portworx
@@ -319,7 +319,7 @@ images:
 
   ## Images required for intermediate Mongo upgrades
   mongodbImageMap:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: mongodb
     tags: 
