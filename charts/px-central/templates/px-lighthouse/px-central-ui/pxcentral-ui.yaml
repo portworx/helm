@@ -491,12 +491,18 @@ spec:
       securityContext:
 {{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
+      initContainers:
+      - name: init-mysql
+        image: {{ printf "%s/%s/%s:%s" .Values.images.mysqlInitImage.registry .Values.images.mysqlInitImage.repo .Values.images.mysqlInitImage.imageName .Values.images.mysqlInitImage.tag }}
+        command: ['sh', '-c', 'rmdir /var/lib/mysql/lost+found || true']
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: pxcentral-mysql
       containers:
         - name: mysql
           image: {{ printf "%s/%s/%s:%s" .Values.images.mysqlImage.registry .Values.images.mysqlImage.repo .Values.images.mysqlImage.imageName .Values.images.mysqlImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
-            - "--ignore-db-dir=lost+found"
           ports:
             - containerPort: 3306
           env:
