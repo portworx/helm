@@ -506,24 +506,6 @@ spec:
 {{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
       initContainers:
-        - name: wait-for-postgresql
-          image: "{{ .Values.images.keycloakInitContainerImage.registry }}/{{ .Values.images.keycloakInitContainerImage.repo }}/{{ .Values.images.keycloakInitContainerImage.imageName }}:{{ .Values.images.keycloakInitContainerImage.tag }}"
-          imagePullPolicy: {{ .Values.images.pullPolicy }}
-          command:
-            - sh
-            - -c
-            - |
-              until printf "." && nc -z -w 2 pxcentral-keycloak-postgresql 5432; do
-                  sleep 2;
-              done;
-
-              echo 'PostgreSQL OK ✓'
-          resources:
-            {}
-          {{- if .Values.proxy.httpProxy.noProxy }}
-          env:
-          {{ include "proxy.noProxyEnv" . | nindent 10 }}
-          {{- end }}
         - name: px-keycloak-login-theme
           {{- if .Values.proxy.httpProxy.noProxy }}
           env:

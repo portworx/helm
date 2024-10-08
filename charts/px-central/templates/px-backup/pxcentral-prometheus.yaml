@@ -244,7 +244,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - name: web
+    - name: http-web
       port: 9090
       protocol: TCP
       targetPort: 9090
@@ -351,7 +351,7 @@ spec:
           -qO-
     ports:
     - containerPort: 9090
-      name: web
+      name: http-web
       protocol: TCP
   - args:
     - --listen-address=:8080
@@ -491,7 +491,7 @@ spec:
       regex: (pxbackup_backup_duration_seconds|pxbackup_backup_resource_count|pxbackup_backup_schedule_status|pxbackup_backup_size_bytes|pxbackup_backup_volume_count|pxbackup_backuplocation_metrics|pxbackup_cloudcred_metrics|pxbackup_schedpolicy_metrics|pxbackup_restore_duration_seconds|pxbackup_restore_resource_count|pxbackup_restore_size_bytes|pxbackup_restore_volume_count)
       sourceLabels:
       - __name__
-    port: rest-api
+    port: http-rest-api
     targetPort: 10001
   namespaceSelector:
     any: true

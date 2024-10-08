@@ -15,6 +15,7 @@ metadata:
 data:
   default.conf: |
     proxy_send_timeout 300s;
+    proxy_http_version 1.1;
     proxy_read_timeout 300s;
     fastcgi_send_timeout 300s;
     fastcgi_read_timeout 300s;
@@ -168,46 +169,6 @@ spec:
                 values:
                 - "false"
               {{- end }}
-      initContainers:
-        - name: init-mysql-db
-          image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralBackendImage.registry .Values.images.pxcentralBackendImage.repo .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
-          imagePullPolicy: {{ .Values.images.pullPolicy }}
-          command:
-            - bash
-            - -c
-            - cd /var/www/html && ./install.sh
-          env:
-            - name: DB_INIT_TIMEOUT
-              value: "300"
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: DB_PASSWORD
-                  name: pxcentral-mysql-secret
-            - name: DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  key: DB_USERNAME
-                  name: pxcentral-mysql-secret
-            - name: OIDC_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: pxc-backup-secret
-                  key: OIDC_CLIENT_ID
-            - name: OIDC_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: pxc-backup-secret
-                  key: OIDC_CLIENT_SECRET
-            - name: KEYCLOAK_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: credential
-                  name: px-central-admin
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
-          envFrom:
-            - configMapRef:
-                name: pxcentral-ui-configmap
       containers:
         - name: pxcentral-backend
           image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralBackendImage.registry .Values.images.pxcentralBackendImage.repo .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
@@ -621,7 +582,7 @@ spec:
   selector:
     run: pxcentral-backend
   ports:
-    - name: port
+    - name: http-port
       port: 80
       targetPort: 8080
       protocol: TCP

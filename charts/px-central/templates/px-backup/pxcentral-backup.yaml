@@ -155,7 +155,7 @@ spec:
   - protocol: TCP
     port: 10001
     targetPort: 10001
-    name: rest-api
+    name: http-rest-api
   selector:
     app: px-backup
   type: ClusterIP
