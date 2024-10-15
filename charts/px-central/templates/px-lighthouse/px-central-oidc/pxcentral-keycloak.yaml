@@ -506,24 +506,6 @@ spec:
 {{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
       initContainers:
-        - name: wait-for-postgresql
-          image: "{{ .Values.images.keycloakInitContainerImage.registry }}/{{ .Values.images.keycloakInitContainerImage.repo }}/{{ .Values.images.keycloakInitContainerImage.imageName }}:{{ .Values.images.keycloakInitContainerImage.tag }}"
-          imagePullPolicy: {{ .Values.images.pullPolicy }}
-          command:
-            - sh
-            - -c
-            - |
-              until printf "." && nc -z -w 2 pxcentral-keycloak-postgresql 5432; do
-                  sleep 2;
-              done;
-
-              echo 'PostgreSQL OK ✓'
-          resources:
-            {}
-          {{- if .Values.proxy.httpProxy.noProxy }}
-          env:
-          {{ include "proxy.noProxyEnv" . | nindent 10 }}
-          {{- end }}
         - name: px-keycloak-login-theme
           {{- if .Values.proxy.httpProxy.noProxy }}
           env:
@@ -546,7 +528,17 @@ spec:
           image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakFrontendImage.registry .Values.images.keycloakFrontendImage.repo .Values.images.keycloakFrontendImage.imageName .Values.images.keycloakFrontendImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
-            - /scripts/keycloak.sh
+            - sh
+            - -c
+            - |
+              echo "Waiting for PostgreSQL to be ready..."
+              while ! echo > /dev/tcp/pxcentral-keycloak-postgresql/5432; do
+                printf "."
+                sleep 2
+              done
+              echo "PostgreSQL is up - starting Keycloak"
+              
+              /scripts/keycloak.sh
           env:
           - name: KC_HOSTNAME_STRICT
             value: "false"

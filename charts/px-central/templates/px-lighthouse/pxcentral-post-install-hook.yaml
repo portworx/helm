@@ -15,6 +15,9 @@ metadata:
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
   template:
+    metadata:
+      annotations:
+        proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": true }'
     spec:
       affinity:
         nodeAffinity:

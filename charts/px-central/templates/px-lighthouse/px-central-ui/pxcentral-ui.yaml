@@ -15,6 +15,7 @@ metadata:
 data:
   default.conf: |
     proxy_send_timeout 300s;
+    proxy_http_version 1.1;
     proxy_read_timeout 300s;
     fastcgi_send_timeout 300s;
     fastcgi_read_timeout 300s;
@@ -63,7 +64,7 @@ data:
         proxy_cache_bypass  $http_upgrade;
         proxy_set_header Upgrade           $http_upgrade;
         proxy_set_header Connection        "upgrade";
-        proxy_set_header Host              $host;
+        proxy_set_header Host              "pxcentral-backend";
         proxy_set_header X-Real-IP         $proxy_protocol_addr;
         proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $myscheme;
@@ -79,7 +80,7 @@ data:
         proxy_cache_bypass  $http_upgrade;
         proxy_set_header Upgrade           $http_upgrade;
         proxy_set_header Connection        "upgrade";
-        proxy_set_header Host              $host;
+        proxy_set_header Host              "pxcentral-keycloak-http";
         proxy_set_header X-Real-IP         $proxy_protocol_addr;
         proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $myscheme;
@@ -168,46 +169,6 @@ spec:
                 values:
                 - "false"
               {{- end }}
-      initContainers:
-        - name: init-mysql-db
-          image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralBackendImage.registry .Values.images.pxcentralBackendImage.repo .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
-          imagePullPolicy: {{ .Values.images.pullPolicy }}
-          command:
-            - bash
-            - -c
-            - cd /var/www/html && ./install.sh
-          env:
-            - name: DB_INIT_TIMEOUT
-              value: "300"
-            - name: DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: DB_PASSWORD
-                  name: pxcentral-mysql-secret
-            - name: DB_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  key: DB_USERNAME
-                  name: pxcentral-mysql-secret
-            - name: OIDC_CLIENT_ID
-              valueFrom:
-                secretKeyRef:
-                  name: pxc-backup-secret
-                  key: OIDC_CLIENT_ID
-            - name: OIDC_CLIENT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: pxc-backup-secret
-                  key: OIDC_CLIENT_SECRET
-            - name: KEYCLOAK_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: credential
-                  name: px-central-admin
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
-          envFrom:
-            - configMapRef:
-                name: pxcentral-ui-configmap
       containers:
         - name: pxcentral-backend
           image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralBackendImage.registry .Values.images.pxcentralBackendImage.repo .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
@@ -228,6 +189,12 @@ spec:
             initialDelaySeconds: 15
             timeoutSeconds: 1
             periodSeconds: 60
+          args:
+          - -c
+          - |
+            cd /var/www/html && ./install.sh && exec apache2-foreground
+          command:
+          - /bin/bash
           envFrom:
             - configMapRef:
                 name: pxcentral-ui-configmap
@@ -264,6 +231,18 @@ spec:
                 secretKeyRef:
                   key: credential
                   name: px-central-admin
+            - name: DB_INIT_TIMEOUT
+              value: "300"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: DB_PASSWORD
+                  name: pxcentral-mysql-secret
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: DB_USERNAME
+                  name: pxcentral-mysql-secret
           resources: {}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -621,7 +600,7 @@ spec:
   selector:
     run: pxcentral-backend
   ports:
-    - name: port
+    - name: http-port
       port: 80
       targetPort: 8080
       protocol: TCP
