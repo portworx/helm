@@ -35,7 +35,7 @@ oidc:
   centralOIDC:
     enabled: true
     defaultUsername: admin
-    defaultPassword: admin
+    defaultPassword: ""
     defaultEmail: admin@portworx.com
     keyCloakBackendUserName: keycloak
     keyCloakBackendPassword: ""
@@ -92,7 +92,7 @@ pxlicenseserver:
   mainNodeIP: ""
   backupNodeIP: ""
   adminUserName: admin
-  adminUserPassword: Adm1n!Ur
+  adminUserPassword: ""
 
 pxmonitor:
   enabled: false
@@ -135,7 +135,7 @@ cassandra:
 installCRDs: false
 clusterDomain: "cluster.local"
 cassandraUsername: cassandra
-cassandraPassword: cassandra
+cassandraPassword: ""
 
 operatorToChartUpgrade: false
 

@@ -85,3 +85,37 @@ Usage:
         {{- tpl (.value | toYaml) .context }}
     {{- end }}
 {{- end -}}
+
+{{/*
+Check if the password is defined in values.yaml. If not, check existing Secret. If not, generate a random password.
+*/}}
+{{- define "getOrGeneratePassword" -}}
+{{- if .Values.oidc.centralOIDC.defaultPassword | default "" | not -}}
+  {{- if not (get .Values "generatedPassword") -}}
+    {{- $secret := lookup "v1" "Secret" .Release.Namespace "pxcentral-keycloak-http" -}}
+    {{- if $secret -}}
+      {{- if $secret.data.password -}}
+        {{- $_ := set .Values "generatedPassword" ($secret.data.password | b64dec) -}}
+      {{- else -}}
+        {{- $_ := set .Values "generatedPassword" (randAlphaNum 8) -}}
+      {{- end -}}
+    {{- else -}}
+      {{- $_ := set .Values "generatedPassword" (randAlphaNum 8) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- .Values.generatedPassword -}}
+{{- else -}}
+  {{- .Values.oidc.centralOIDC.defaultPassword -}}
+{{- end -}}
+{{- end -}}
+{{/*
+Function to check if a value is empty or not
+*/}}
+{{- define "nonEmptyOrDefault" -}}
+  {{- if and (not (empty .)) (ne . "") -}}
+    {{- . -}}
+  {{- else -}}
+    {{- randAlpha 9 -}}
+  {{- end -}}
+{{- end }}
+

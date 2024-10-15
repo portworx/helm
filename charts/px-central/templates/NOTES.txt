@@ -48,7 +48,7 @@ To access PX-Central/PX-Backup UI please refer:  https://backup.docs.portworx.co
 Login with the following credentials:
 
     Username: {{ .Values.oidc.centralOIDC.defaultUsername }}
-    Password: {{ .Values.oidc.centralOIDC.defaultPassword }}
+    Password: {{ include "default.password" . }}
 {{- end }}
 
 For more information: https://github.com/portworx/helm/blob/master/charts/px-central/README.md

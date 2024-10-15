@@ -498,7 +498,6 @@ Parameter | Description | Default
 `oidc.centralOIDC` | PX-Central OIDC | `""`
 `oidc.centralOIDC.enabled` | PX-Central OIDC | `true`
 `oidc.centralOIDC.defaultUsername` | PX-Central OIDC username | `admin`
-`oidc.centralOIDC.defaultPassword` | PX-Central OIDC admin user password | `admin`
 `oidc.centralOIDC.defaultEmail` | PX-Central OIDC admin user email | `admin@portworx.com`
 `oidc.centralOIDC.keyCloakBackendUserName` | Keycloak backend store username | `keycloak`
 `oidc.centralOIDC.keyCloakBackendPassword` | Keycloak backend store password | `keycloak`

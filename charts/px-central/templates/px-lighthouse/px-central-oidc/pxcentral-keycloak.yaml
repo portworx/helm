@@ -6,14 +6,7 @@
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- $keycloakSecret := (lookup "v1" "Secret" .Release.Namespace "pxcentral-keycloak-postgresql") | default dict }}
 {{- $keycloakSecretData := (get $keycloakSecret "data") | default dict }}
-# Function to check if a value is empty or not
-{{- define "nonEmptyOrDefault" -}}
-  {{- if and (not (empty .)) (ne . "") -}}
-    {{- . -}}
-  {{- else -}}
-    {{- randAlpha 9 -}}
-  {{- end -}}
-{{- end }}
+
 # Check for existing secret values, if not present, use values from values.yaml, and if empty, generate random password
 {{- $postgresqlPassword := (get $keycloakSecretData "postgresql-password" | b64dec | default (.Values.oidc.centralOIDC.keyCloakBackendPassword | include "nonEmptyOrDefault")) }}
 
@@ -63,7 +56,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 type: Opaque
 stringData:
-  password: {{ .Values.oidc.centralOIDC.defaultPassword | quote}}
+  password: {{ include "default.password" .  | quote}}
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -570,7 +563,10 @@ spec:
           - name: KEYCLOAK_ADMIN
             value: {{ .Values.oidc.centralOIDC.defaultUsername }}
           - name: KEYCLOAK_ADMIN_PASSWORD
-            value: {{ .Values.oidc.centralOIDC.defaultPassword }}
+            valueFrom:
+              secretKeyRef:
+                name: pxcentral-keycloak-http
+                key: password
           - name: KC_HTTP_RELATIVE_PATH
             value: /auth
           - name: KC_DB

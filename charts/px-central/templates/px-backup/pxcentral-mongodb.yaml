@@ -6,14 +6,6 @@
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- $mongoDBSecret := (lookup "v1" "Secret" .Release.Namespace "pxc-backup-mongodb") | default dict }}
 {{- $mongoDBSecretData := (get $mongoDBSecret "data") | default dict }}
-# Function to check if a value is empty or not
-{{- define "nonEmptyOrDefault" -}}
-  {{- if and (not (empty .)) (ne . "") -}}
-    {{- . -}}
-  {{- else -}}
-    {{- randAlpha 9 -}}
-  {{- end -}}
-{{- end }}
 # Check for existing secret values, if not present, use values from values.yaml, and if empty, generate random password
 {{- $mongoDBRootPassword := (get $mongoDBSecretData "mongodb-root-password" | b64dec | default (.Values.mongodb.mongodbRootPassword | include "nonEmptyOrDefault")) }}
 {{- $mongoDBPassword := (get $mongoDBSecretData "mongodb-password" | b64dec | default (.Values.mongodb.mongodbPassword | include "nonEmptyOrDefault")) }}
