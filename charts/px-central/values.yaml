@@ -52,6 +52,9 @@ proxy:
 postInstallJob:
   sslEnabled: true
 
+istio:
+  enabled: false
+
 pxbackup:
   enabled: false
   orgName: default
