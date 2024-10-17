@@ -1,0 +1,47 @@
+{{- $istioEnabled := .Values.istio.enabled | default false }}
+{{- if eq $istioEnabled true }}
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: pxcentral-gateway
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - '*'
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+---
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: pxcentral-peer-authentication
+  namespace: {{ .Release.Namespace }}
+spec:
+  mtls:
+    mode: STRICT
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: pxcentral-virtualservice
+  namespace: {{ .Release.Namespace }}
+spec:
+  gateways:
+  - pxcentral-gateway
+  hosts:
+  - '*'
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: px-central-ui.{{ .Release.Namespace }}.svc.cluster.local
+        port:
+          number: 80
+{{- end -}}

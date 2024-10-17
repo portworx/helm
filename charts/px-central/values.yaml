@@ -53,6 +53,9 @@ proxy:
 postInstallJob:
   sslEnabled: true
 
+istio:
+  enabled: false
+
 pxbackup:
   enabled: false
   orgName: default
@@ -168,8 +171,8 @@ images:
     imageName: pxcentral-onprem-ui-frontend-private
     tag: 2.8.0-dev
   pxcentralBackendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
+    repo: kthiruvenkadasamy
     imageName: pxcentral-onprem-ui-backend-private
     tag: 2.8.0-dev
   pxcentralMiddlewareImage:
@@ -188,8 +191,8 @@ images:
     imageName: postgresql
     tag: 11.19.0-debian-11-r1
   keycloakFrontendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
+    repo: kthiruvenkadasamy
     imageName: keycloak
     tag: 25.0.2
   keycloakLoginThemeImage:

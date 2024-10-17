@@ -16,11 +16,12 @@ metadata:
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
   template:
-    {{- if eq $azureProxyEnabled true }}
     metadata:
       annotations:
+      {{- if eq $azureProxyEnabled true }}
         kubernetes.azure.com/no-http-proxy-vars: "true"
-    {{- end }}
+      {{- end }}
+        proxy.istio.io/config: '{ "holdApplicationUntilProxyStarts": true }'
     spec:
       affinity:
         nodeAffinity:
