@@ -285,3 +285,23 @@ Generate a random token for storage provisioning
 {{- end }}
 {{- $result }}
 {{- end }}
+
+{{- define "px.imagePullSecret" }}
+{{- with .Values.customRegistryCreds }}
+{{- if and .username .password }}
+{{- $decodedUsername := b64dec .username | trim }}
+{{- $decodedPassword := b64dec .password | trim }}
+{{- $auth := printf "%s:%s" $decodedUsername $decodedPassword | b64enc }}  
+{{- $dockerConfig := printf "{\"auths\":{\"%s\":{\"username\":\"%s\",\"password\":\"%s\",\"auth\":\"%s\"}}}" $.Values.customRegistryURL $decodedUsername $decodedPassword $auth }}
+{{- $dockerConfig | b64enc }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- define "px.getCustomRegistrySecretName" -}}
+{{- if .Values.customRegistryURL -}}
+    {{- printf "custom-registry-creds"  -}}
+{{- else -}}
+    {{- printf "none" -}}
+{{- end -}}
+{{- end -}}

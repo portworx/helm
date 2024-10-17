@@ -279,6 +279,20 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				ValuesFiles: []string{"./testValues/storagecluster_storage_use_partitions.yaml"},
 			},
 		},
+		{
+			name:           "TestVsphere",
+			resultFileName: "storagecluster_vsphere_cloudrive.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_vsphere_cloudrive.yaml"},
+			},
+		},
+		{
+			name:           "TestPureFACD",
+			resultFileName: "storagecluster_pure_cloudrive.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_pure_cloudrive.yaml"},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

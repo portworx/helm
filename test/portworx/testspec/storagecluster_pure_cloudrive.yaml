@@ -12,14 +12,16 @@ metadata:
 spec:
   image: portworx/oci-monitor:3.1.4
   imagePullPolicy: Always
-  customImageRegistry: docker.io/customregistry-test:latest
-  imagePullSecret: custom-registry-creds
 
   kvdb:
     internal: true
-  storage:
-    useAll: true
+  cloudStorage:
+    deviceSpecs:
+      - size=150
   secretsProvider: k8s
+  env:
+  - name: PURE_FLASHARRAY_SAN_TYPE
+    value: 'ISCSI'
   
   stork:
     enabled: true

@@ -1,0 +1,12 @@
+{{- $AirGappedInstallImages := .Values.AirGappedInstall.pxVersionsYamlFileData | default "none" }}
+{{- if ne $AirGappedInstallImages "none"}}
+apiVersion: v1
+kind: ConfigMap
+data:
+  versions.yaml:
+  {{- with $AirGappedInstallImages }}
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+metadata:
+  name: px-versions
+{{- end }}

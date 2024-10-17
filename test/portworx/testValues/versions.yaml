@@ -1,0 +1,20 @@
+version: 3.1.4
+components:
+  stork: docker.io/customregistry-test/stork:24.3.2
+  autopilot: docker.io/customregistry-test/autopilot:1.3.15
+  csiNodeDriverRegistrar: docker.io/customregistry-test/csi-node-driver-registrar:v2.9.0
+  csiProvisioner: docker.io/customregistry-test/csi-provisioner:v3.6.1
+  csiResizer: docker.io/customregistry-test/csi-resizer:v1.9.1
+  csiSnapshotter: docker.io/customregistry-test/csi-snapshotter:v8.0.1
+  csiSnapshotController: docker.io/customregistry-test/snapshot-controller:v6.3.1
+  prometheus: docker.io/customregistry-test/prometheus:v2.48.1
+  prometheusOperator: docker.io/customregistry-test/prometheus-operator:v0.70.0
+  prometheusConfigReloader: docker.io/customregistry-test/prometheus-config-reloader:v0.70.0
+  alertManager: docker.io/customregistry-test/alertmanager:v0.26.0
+  telemetry: docker.io/customregistry-test/ccm-go:1.2.2
+  pxLibUpdate: docker.io/customregistry-test/px-lib:pxfslibs-3.1.2.0-mver12-update
+  metricsCollector: docker.io/customregistry-test/realtime-metrics:1.0.29
+  telemetryProxy: docker.io/customregistry-test/telemetry-envoy:1.1.16
+  logUploader: docker.io/customregistry-test/log-upload:px-1.1.8
+  dynamicPlugin: docker.io/customregistry-test/portworx-dynamic-plugin:1.1.1
+  dynamicPluginProxy: docker.io/customregistry-test/nginx-unprivileged:1.25

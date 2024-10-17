@@ -1,0 +1,52 @@
+kind: StorageCluster
+apiVersion: core.libopenstorage.org/v1
+metadata:
+  name: "mycluster"
+  namespace: kube-system
+  annotations:
+  labels:
+    heritage: "Helm"
+    release: "my-release"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "my-release"
+spec:
+  image: portworx/oci-monitor:3.1.4
+  imagePullPolicy: Always
+
+  kvdb:
+    internal: true
+  cloudStorage:
+    deviceSpecs:
+      - type=thin,size=150
+  secretsProvider: k8s
+  env:
+  - name: VSPHERE_INSECURE
+    value: 'true'
+  - name: VSPHERE_USER
+    valueFrom:
+      secretKeyRef: 
+        name: px-vsphere-secret
+        key: VSPHERE_USER
+  - name: VSPHERE_PASSWORD
+    valueFrom:
+      secretKeyRef: 
+        name: px-vsphere-secret
+        key: VSPHERE_PASSWORD
+  - name: VSPHERE_VCENTER
+    value: abc.test.vcenter.com
+  - name: VSPHERE_VCENTER_PORT
+    value: "443"
+  - name: VSPHERE_DATASTORE_PREFIX
+    value: TS-Test-DEV-DS
+  - name: VSPHERE_INSTALL_MODE
+    value: shared
+  
+  stork:
+    enabled: true
+  monitoring:
+    telemetry:
+      enabled: true
+  csi:
+    enabled: true
+  autopilot:
+    enabled: true
