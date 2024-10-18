@@ -14,6 +14,8 @@ persistentStorage:
   prometheus:
     storage: 64Gi
     retentionSize: 51200MB
+  logCollector:
+    storage: 100Gi
   mysqlVolumeSize: "100Gi"
   mongodbVolumeSize: "64Gi"
   mongoCacheSize: 4

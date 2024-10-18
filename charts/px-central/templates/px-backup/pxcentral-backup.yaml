@@ -3,6 +3,7 @@
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $nfsEnabled := .Values.pxbackup.nfs.enabled | default false }}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+{{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- if eq $pxBackupEnabled true }}
 apiVersion: v1
 kind: ServiceAccount
@@ -254,12 +255,14 @@ spec:
           initialDelaySeconds: {{ .Values.pxbackup.livenessProbeInitialDelay }}
           timeoutSeconds: 1
           periodSeconds: 60
-        {{- if .Values.caCertsSecretName }}  
         volumeMounts:
+        {{- if .Values.caCertsSecretName }}  
           - mountPath: /tmp/certs
             readOnly: true
             name: ssl-cert-dir
         {{- end }}
+          - name: pxc-log-data
+            mountPath: /logs
         command:
         - /px-backup
         - start
@@ -288,5 +291,34 @@ spec:
       securityContext:
 {{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
+      volumes:
+        - name: pxc-log-data
+          {{- if eq $externalPersistentStorageEnabled true }}
+          persistentVolumeClaim:
+            claimName: pxc-log-data
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+
 ---
+{{- if eq $externalPersistentStorageEnabled true }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pxc-log-data
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistentStorage.logCollector.storage }}
+  {{- if .Values.persistentStorage.storageClassName }}
+  storageClassName: {{ .Values.persistentStorage.storageClassName }}
+  {{- end }}
+{{- end }}
+
 {{- end -}}
