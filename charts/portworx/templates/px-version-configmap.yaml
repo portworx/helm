@@ -9,4 +9,5 @@ data:
   {{- end }}
 metadata:
   name: px-versions
+  namespace: {{ template "px.getDeploymentNamespace" . }}
 {{- end }}
