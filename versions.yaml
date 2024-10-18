@@ -38,4 +38,4 @@ modules:
     memcached: "docker.io/portworx/memcached:1.6.17-alpine"
     pxOperator: "docker.io/portworx/px-operator:1.10.5"
   pxLicenseServer:
-    pxEls: "docker.io/portworx/px-els:2.3.2"
+    pxEls: "docker.io/portworx/px-els:2.8.0"
