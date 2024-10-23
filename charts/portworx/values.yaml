@@ -15,7 +15,8 @@ AKSInstall: false                      # installation on AKS
 OKEInstall: false                      # installation on OKE
 
 AirGappedInstall:                      # installation on air-gapped
-  pxVersionsYamlFileData: |-
+  pxVersionsYamlFileData: |-           # px-versions yaml file data
+
 etcdEndPoint:                         # The ETCD endpoint. Should be in the format etcd:http://<your-etcd-endpoint>:2379. If there are multiple etcd endpoints they need to be ";" seperated.
                                       # the default value is empty since it requires to be explicity set using either the --set option of -f values.yaml.
 clusterName: mycluster                # This is the default. please change it to your cluster name.
@@ -23,17 +24,17 @@ usefileSystemDrive: false             # true/false Instructs PX to use an unmoun
 usedrivesAndPartitions: false         # Defaults to false. Change to true and PX will use unmounted drives and partitions.
 drives: none                          # NOTE: This is a ";" seperated list of drives. For eg: "/dev/sda;/dev/sdb;/dev/sdc" or
                                       # "type=gp2,size=200;type=gp3,size=500". Defaults to use -A switch.
-provider:                             # If we are using cloudstorage, it specifies the cloud provider secrets, such as: pure, azure, aws, gce, vsphere.
+provider:                             # If we are using cloudstorage, it creates required secrets for azure, vasphere and pure clouddrive installations
   azure:
-    clientId: 
-    clientSecret:
-    tenantId:
+    clientId:                         # azure clientId (base64 encoded)          
+    clientSecret:                     # azure client secret (base64 encoded)
+    tenantId:                         # azure tenantId (base64 encoded)
   vsphere:
-    vsphereUsername: 
-    vspherePassword: 
-    vcenterEndpoint: 
-    vcenterPort: 443 
-    vcenterDatastorePrefix:  
+    vsphereUsername:                  # vsphere username (base64 encoded)
+    vspherePassword:                  # vsphere password (base64 encoded)
+    vcenterEndpoint:                  # vcenter endpoint
+    vcenterPort: 443                  # vcenter port
+    vcenterDatastorePrefix:           # vcenter datastore prefix
   pure:
     pureJsonFileData: |-
 
