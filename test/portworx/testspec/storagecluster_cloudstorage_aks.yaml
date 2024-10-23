@@ -17,7 +17,6 @@ spec:
   kvdb:
     internal: true
   cloudStorage:
-    provider: azure
     deviceSpecs:
       - type=Premium_LRS,size=150
     kvdbDeviceSpec: type=node-kvdb

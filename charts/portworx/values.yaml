@@ -24,6 +24,10 @@ usedrivesAndPartitions: false         # Defaults to false. Change to true and PX
 drives: none                          # NOTE: This is a ";" seperated list of drives. For eg: "/dev/sda;/dev/sdb;/dev/sdc" or
                                       # "type=gp2,size=200;type=gp3,size=500". Defaults to use -A switch.
 provider:                             # If we are using cloudstorage, it specifies the cloud provider secrets, such as: pure, azure, aws, gce, vsphere.
+  azure:
+    clientId: 
+    clientSecret:
+    tenantId:
   vsphere:
     vsphereUsername: 
     vspherePassword: 

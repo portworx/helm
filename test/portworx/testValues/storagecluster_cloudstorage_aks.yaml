@@ -1,5 +1,9 @@
 AKSInstall: true                     
-provider: azure                           
+provider: 
+  azure:
+    clientId: dGVzdGNsaWVudGlkCg==
+    clientSecret: dGVzdGNsaWVudHNlY3JldAo=
+    tenantId: dGVzdHRlbmFudGlkCg==                        
 journalDevice: "type=journal"
 maxStorageNodesPerZone: 1             
 maxStorageNodes: 1              

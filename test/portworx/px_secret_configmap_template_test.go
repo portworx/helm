@@ -126,3 +126,41 @@ func TestPxVersionsConfigmapHelmTemplate(t *testing.T) {
 		})
 	}
 }
+
+func TestPxAzureConfigmapHelmTemplate(t *testing.T) {
+
+	t.Parallel()
+
+	// Path to the helm chart we will test
+	helmChartPath, err := filepath.Abs("../../charts/portworx/")
+	// name of template that we want to test
+	templateFileName := "px-azure-secret.yaml"
+	require.NoError(t, err)
+
+	testCases := []struct {
+		name             string
+		helmOption       *helm.Options
+		resultFileName   string
+		expectedErrorMsg string
+	}{
+		{
+			name:           "TestPxAzureSecret",
+			resultFileName: "px_azure_secret.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_cloudstorage_aks.yaml"},
+			},
+		},
+	}
+
+	for _, testCase := range testCases {
+
+		testCase := testCase
+
+		t.Run(testCase.name, func(t *testing.T) {
+			t.Parallel()
+			resultFilePath, err := filepath.Abs(filepath.Join("testspec/", testCase.resultFileName))
+			require.NoError(t, err)
+			test_utils.TestRenderedHelmTemplate(t, testCase.helmOption, helmChartPath, templateFileName, resultFilePath, testCase.expectedErrorMsg)
+		})
+	}
+}
