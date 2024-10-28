@@ -118,7 +118,7 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-apiserver" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
@@ -151,7 +151,9 @@ spec:
           - name: SSL_CERT_DIR
             value: /tmp/certs
           {{- end }}
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-apiserver" .Values.proxy.includeNoProxyList) }}
           {{- include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
         readinessProbe:
           httpGet:
             path: /v1/ping

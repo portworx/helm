@@ -140,7 +140,7 @@ metadata:
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
 spec:
   template:  
-    {{- if eq $azureProxyEnabled true }}
+    {{- if and (eq $azureProxyEnabled true) (not (has "pre-upgrade-check" .Values.proxy.excludeAzureProxyList)) }}
     metadata:
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
@@ -211,7 +211,9 @@ spec:
                     "mongodb7": "{{ .Values.images.mongodbImageMap.tags.mongodb7 }}"
                   }
                 }
-            {{- include "proxy.noProxyEnv" . | nindent 10 }}
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "pre-upgrade-check" .Values.proxy.includeNoProxyList) }}
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- end }}
           volumeMounts:
             - name: data-volume
               mountPath: /mnt/data

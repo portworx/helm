@@ -27,7 +27,7 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-license-server" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
@@ -64,7 +64,9 @@ spec:
             - containerPort: 7070
           {{- if .Values.proxy.httpProxy.noProxy }}
           env:
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-license-server" .Values.proxy.includeNoProxyList) }}
           {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           {{- end }}
           livenessProbe:
             periodSeconds: 120
