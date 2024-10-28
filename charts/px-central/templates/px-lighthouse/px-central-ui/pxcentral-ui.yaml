@@ -146,7 +146,7 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-backend" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
@@ -204,7 +204,9 @@ spec:
                 secretKeyRef:
                   key: credential
                   name: px-central-admin
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-backend" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- end }}
           envFrom:
             - configMapRef:
                 name: pxcentral-ui-configmap
@@ -243,7 +245,9 @@ spec:
                 secretKeyRef:
                   name: pxcentral-mysql-secret
                   key: DB_PASSWORD
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-backend" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- end }}
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -306,7 +310,7 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-frontend" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
@@ -360,7 +364,9 @@ spec:
                 secretKeyRef:
                   name: pxcentral-mysql-secret
                   key: DB_PASSWORD
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-frontend" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- end }}
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -455,7 +461,7 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-mysql" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
@@ -525,7 +531,9 @@ spec:
               value: pxcentral-mysql
             - name: SERVICE_TAGS
               value: dev
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-mysql" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- end }}
           livenessProbe:
             exec:
               command:

@@ -23,7 +23,7 @@ spec:
             - "false"
           {{- end }}
   configSecret: px-backup-alertmanager-custom-config
-  {{- if eq $azureProxyEnabled true }}
+  {{- if and (eq $azureProxyEnabled true) (not (has "px-backup-alertmanager" .Values.proxy.excludeAzureProxyList)) }}
   podMetadata:
     annotations:
       kubernetes.azure.com/no-http-proxy-vars: "true"
@@ -58,7 +58,9 @@ spec:
             secretKeyRef:
               name: pxc-backup-metrics
               key: metrics-token
+        {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList) }}
         {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{- end }}
         - name: POD_IP
           valueFrom:
             fieldRef:
@@ -87,7 +89,9 @@ spec:
           secretKeyRef:
             key: password
             name: pxc-backup-metrics
+      {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList) }}
       {{ include "proxy.noProxyEnv" . | nindent 6 }}
+      {{- end }}
       name: config-reloader
       ports:
       - containerPort: 8080

@@ -47,6 +47,51 @@ oidc:
 
 proxy:
   azureProxyEnabled: false
+  ## excludeAzureProxyList: List of services to exclude from Azure proxy configuration (annotations)
+  
+  
+  # excludeAzureProxyList:
+  # - px-backup-alertmanager
+  # - px-backup
+  # - pxc-backup-mongodb
+  # - prometheus-operator
+  # - px-backup-dashboard-prometheus
+  # - pre-upgrade-check
+  # - pxcentral-apiserver
+  # - pxcentral-post-install-hook
+  # - pxcentral-keycloak-postgresql
+  # - pxcentral-keycloak
+  # - pxcentral-lh-middleware
+  # - pxcentral-backend
+  # - pxcentral-frontend
+  # - pxcentral-mysql
+
+  # Example for using set command
+  # --set "proxy.excludeAzureProxyList[0]=px-backup","proxy.excludeAzureProxyList[1]=pxcentral-mysql"
+  excludeAzureProxyList: []
+
+  ## includeNoProxyList: List of services to include in the noProxy configuration.
+  # when this list is empty, noProxy is set to all services
+  
+  # includeNoProxyList: 
+  # - px-backup-alertmanager
+  # - px-backup
+  # - pxc-backup-mongodb
+  # - prometheus-operator
+  # - px-backup-dashboard-prometheus
+  # - pre-upgrade-check
+  # - pxcentral-apiserver
+  # - pxcentral-post-install-hook
+  # - pxcentral-keycloak-postgresql
+  # - pxcentral-keycloak
+  # - pxcentral-lh-middleware
+  # - pxcentral-backend
+  # - pxcentral-frontend
+  # - pxcentral-mysql
+
+  # Example for using set command
+  # --set "proxy.includeNoProxyList[0]=px-backup"
+  includeNoProxyList: []
   httpProxy:
     noProxy: ""
 

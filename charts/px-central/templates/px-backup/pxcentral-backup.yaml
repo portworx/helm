@@ -186,7 +186,7 @@ spec:
     metadata:
       labels:
         app: px-backup
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "px-backup" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
@@ -229,7 +229,9 @@ spec:
           value: "36160"
         - name: AIRGAP_REPORTING_PERIOD
           value: "90"
+        {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup" .Values.proxy.includeNoProxyList) }}
         {{- include "proxy.noProxyEnv" . | nindent 8 }}
+        {{- end }}
         {{- if .Values.caCertsSecretName }}
         - name: SSL_CERT_DIR
           value: /tmp/certs
