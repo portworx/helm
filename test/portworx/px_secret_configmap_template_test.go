@@ -150,6 +150,13 @@ func TestPxAzureConfigmapHelmTemplate(t *testing.T) {
 				ValuesFiles: []string{"./testValues/storagecluster_cloudstorage_aks.yaml"},
 			},
 		},
+		{
+			name:           "TestPxAzureManagedSecret",
+			resultFileName: "px_azure_managed_secret.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_cloudstorage_managed_aks.yaml"},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

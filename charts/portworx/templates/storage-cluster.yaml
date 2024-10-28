@@ -325,21 +325,25 @@ spec:
         key: accountKey
   {{- end }}
   {{- if $AKSInstall }}
+  {{- if .Values.provider.azure.clientSecret}}
   - name: AZURE_CLIENT_SECRET
     valueFrom:
       secretKeyRef:
         name: px-azure
         key: AZURE_CLIENT_SECRET
+  {{- end }}
   - name: AZURE_CLIENT_ID
     valueFrom:
       secretKeyRef:
         name: px-azure
         key: AZURE_CLIENT_ID
+  {{- if .Values.provider.azure.tenantId }}
   - name: AZURE_TENANT_ID
     valueFrom:
       secretKeyRef:
         name: px-azure
         key: AZURE_TENANT_ID
+  {{- end }}
   {{- end }}
   {{- if $OKEInstall }}
   - name: PX_ORACLE_user_ocid

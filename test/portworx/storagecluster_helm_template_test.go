@@ -252,6 +252,13 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestCloudStorageManagedAKS",
+			resultFileName: "storagecluster_cloudstorage_managed_aks.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_cloudstorage_managed_aks.yaml"},
+			},
+		},
+		{
 			name:           "TestStorageSpecDevices",
 			resultFileName: "storagecluster_storage_devices.yaml",
 			helmOption: &helm.Options{
