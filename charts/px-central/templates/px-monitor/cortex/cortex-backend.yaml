@@ -93,7 +93,7 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-cortex-cassandra" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
@@ -196,7 +196,9 @@ spec:
               value: "true"
             - name: JVM_EXTRA_OPTS
               value: "-Dcassandra.ignore_corrupted_schema_tables=true"
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-cassandra" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- end }}
             {{- if .Values.cassandra.jvm.maxHeapSize }}
             - name: MAX_HEAP_SIZE
               value: {{ .Values.cassandra.jvm.maxHeapSize}}

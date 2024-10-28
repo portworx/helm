@@ -16,7 +16,7 @@ metadata:
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
   template:
-    {{- if eq $azureProxyEnabled true }}
+    {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-post-install-hook" .Values.proxy.excludeAzureProxyList)) }}
     metadata:
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
@@ -57,7 +57,9 @@ spec:
             valueFrom:
               fieldRef:
                 fieldPath: metadata.namespace
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-post-install-hook" .Values.proxy.includeNoProxyList) }}
           {{- include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
       {{- if eq $deployDedicatedMonitoringSystem true }}
           - name: DEDICATED_PROMETHEUS
             value: "true"

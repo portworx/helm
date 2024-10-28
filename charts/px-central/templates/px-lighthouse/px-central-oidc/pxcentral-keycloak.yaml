@@ -309,7 +309,7 @@ spec:
   template:
     metadata:
       name: pxcentral-keycloak-postgresql
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-keycloak-postgresql" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
@@ -381,7 +381,9 @@ spec:
               value: "keycloak"
             - name: POSTGRESQL_ENABLE_LDAP
               value: "no"
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-keycloak-postgresql" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- end }}
           ports:
             - name: tcp-postgresql
               containerPort: 5432
@@ -465,7 +467,7 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-keycloak" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
@@ -522,12 +524,16 @@ spec:
             {}
           {{- if .Values.proxy.httpProxy.noProxy }}
           env:
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-keycloak" .Values.proxy.includeNoProxyList) }}
           {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           {{- end }}
         - name: px-keycloak-login-theme
           {{- if .Values.proxy.httpProxy.noProxy }}
           env:
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-keycloak" .Values.proxy.includeNoProxyList) }}
           {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           {{- end }}
           image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakLoginThemeImage.registry .Values.images.keycloakLoginThemeImage.repo .Values.images.keycloakLoginThemeImage.imageName .Values.images.keycloakLoginThemeImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
@@ -584,7 +590,9 @@ spec:
           - name: HELM_CHECKSUM
             value: {{ randAlphaNum 8 | quote }}
           {{- end }}
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-keycloak" .Values.proxy.includeNoProxyList) }}
           {{- include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           volumeMounts:
             - name: sh
               mountPath: /scripts

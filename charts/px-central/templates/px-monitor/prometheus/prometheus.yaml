@@ -73,7 +73,7 @@ metadata:
     app.kubernetes.io/component: pxcentral-prometheus
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
-  {{- if eq $azureProxyEnabled true }}
+  {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-prometheus" .Values.proxy.excludeAzureProxyList)) }}
   podMetadata:
     annotations:
       kubernetes.azure.com/no-http-proxy-vars: "true"
@@ -109,7 +109,9 @@ spec:
         secretKeyRef:
           name: pxc-backup-metrics
           key: metrics-token
+    {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-prometheus" .Values.proxy.includeNoProxyList) }}
     {{- include "proxy.noProxyEnv" . | nindent 4 }}
+    {{- end }}
     image: {{ printf "%s/%s/%s:%s" .Values.images.prometheusImage.registry .Values.images.prometheusImage.repo .Values.images.prometheusImage.imageName .Values.images.prometheusImage.tag }}
     livenessProbe:
       exec:
@@ -156,7 +158,9 @@ spec:
         secretKeyRef:
           key: password
           name: pxc-backup-metrics
+    {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-prometheus" .Values.proxy.includeNoProxyList) }}
     {{- include "proxy.noProxyEnv" . | nindent 4 }}
+    {{- end }}
     ports:
     - containerPort: 8080
       name: reloader-web
@@ -301,7 +305,7 @@ spec:
       app.kubernetes.io/component: pxcentral-prometheus
   template:
     metadata:
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-prometheus-operator" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
@@ -334,7 +338,9 @@ spec:
           name: pxcentral-prometheus-operator
           {{- if .Values.proxy.httpProxy }}
           env:
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-prometheus-operator" .Values.proxy.includeNoProxyList) }}
           {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           {{- end }}
           ports:
             - containerPort: 8080
