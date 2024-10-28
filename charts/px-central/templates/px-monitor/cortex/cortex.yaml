@@ -396,7 +396,7 @@ spec:
         target: configs
         release: pxcentral-cortex
       annotations:
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-cortex-configs" .Values.proxy.excludeAzureProxyList)) }}
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
         prometheus.io/port: http-metrics
@@ -429,7 +429,9 @@ spec:
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           {{- if .Values.proxy.httpProxy }}
           env:
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-configs" .Values.proxy.includeNoProxyList) }}
           {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           {{- end }}
           args:
             - "-target=configs"
@@ -495,7 +497,7 @@ spec:
       annotations:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-cortex-distributor" .Values.proxy.excludeAzureProxyList)) }}
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
     spec:
@@ -546,7 +548,9 @@ spec:
         - name: cortex
           {{- if .Values.proxy.httpProxy }}
           env:
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-distributor" .Values.proxy.includeNoProxyList) }}
           {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           {{- end }}
           image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
@@ -616,7 +620,7 @@ spec:
       annotations:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: ""
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-cortex-nginx" .Values.proxy.excludeAzureProxyList)) }}
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
     spec:
@@ -686,7 +690,9 @@ spec:
             initialDelaySeconds: 10
           {{- if .Values.proxy.httpProxy }}
           env:
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-nginx" .Values.proxy.includeNoProxyList) }}
           {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           {{- end }}
         - name: dnsmasq
           image: {{ printf "%s/%s/%s:%s" .Values.images.dnsmasqImage.registry .Values.images.dnsmasqImage.repo .Values.images.dnsmasqImage.imageName .Values.images.dnsmasqImage.tag }}
@@ -698,7 +704,9 @@ spec:
             - --append-search-domains
           {{- if .Values.proxy.httpProxy }}
           env:
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-nginx" .Values.proxy.includeNoProxyList) }}
           {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
@@ -740,7 +748,7 @@ spec:
       annotations:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-cortex-querier" .Values.proxy.excludeAzureProxyList)) }}
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
     spec:
@@ -819,7 +827,9 @@ spec:
             initialDelaySeconds: 45
           {{- if .Values.proxy.httpProxy }}
           env:
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-querier" .Values.proxy.includeNoProxyList) }}
           {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
@@ -863,7 +873,7 @@ spec:
       annotations:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-cortex-query-frontend" .Values.proxy.excludeAzureProxyList)) }}
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
     spec:
@@ -939,7 +949,9 @@ spec:
             initialDelaySeconds: 45
           {{- if .Values.proxy.httpProxy }}
           env:
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-query-frontend" .Values.proxy.includeNoProxyList) }}
           {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
@@ -981,7 +993,7 @@ spec:
       annotations:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-cortex-ruler" .Values.proxy.excludeAzureProxyList)) }}
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
     spec:
@@ -1039,7 +1051,9 @@ spec:
             initialDelaySeconds: 45
           {{- if .Values.proxy.httpProxy }}
           env:
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-ruler" .Values.proxy.includeNoProxyList) }}
           {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
@@ -1083,7 +1097,7 @@ spec:
       annotations:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-cortex-table-manager" .Values.proxy.excludeAzureProxyList)) }}
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
     spec:
@@ -1137,7 +1151,9 @@ spec:
             initialDelaySeconds: 45
           {{- if .Values.proxy.httpProxy }}
           env:
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-table-manager" .Values.proxy.includeNoProxyList) }}
           {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
@@ -1192,7 +1208,7 @@ spec:
       annotations:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-cortex-alertmanager" .Values.proxy.excludeAzureProxyList)) }}
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
     spec:
@@ -1250,7 +1266,9 @@ spec:
                 fieldRef:
                   apiVersion: v1
                   fieldPath: status.podIP
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-alertmanager" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- end }}
           volumeMounts:
             - name: config
               mountPath: /etc/cortex
@@ -1315,7 +1333,7 @@ spec:
         target: ingester
         release: pxcentral-cortex
       annotations:
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-cortex-ingester" .Values.proxy.excludeAzureProxyList)) }}
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
         prometheus.io/port: http-metrics
@@ -1410,7 +1428,9 @@ spec:
             timeoutSeconds: 1
           {{- if .Values.proxy.httpProxy }}
           env:
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-ingester" .Values.proxy.includeNoProxyList) }}
           {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
           {{- end }}
       {{- with .Values.tolerations }}
       tolerations:

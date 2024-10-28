@@ -138,7 +138,7 @@ spec:
     type: RollingUpdate
   template:
     metadata:
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxc-backup-mongodb" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
@@ -266,7 +266,9 @@ spec:
               value: "no"
             - name: MONGODB_EXTRA_FLAGS
               value: {{ printf "--wiredTigerCacheSizeGB=%d" $mongoCacheSize }}
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxc-backup-mongodb" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- end }}
           ports:
             - containerPort: 27017
               name: mongodb

@@ -133,7 +133,7 @@ spec:
     metadata:
       labels:
         k8s-app: prometheus-operator
-      {{- if eq $azureProxyEnabled true }}
+      {{- if and (eq $azureProxyEnabled true) (not (has "prometheus-operator" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
@@ -164,7 +164,9 @@ spec:
             name: http
         {{- if .Values.proxy.httpProxy.noProxy }}
         env:
+        {{- if or (empty .Values.proxy.includeNoProxyList) (has "prometheus-operator" .Values.proxy.includeNoProxyList) }}
         {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{- end }}
         {{- end }}
         {{- if $isOpenshiftCluster }}
         {{- else }}
@@ -285,7 +287,7 @@ spec:
   additionalAlertManagerConfigs:
     key: am-configs.yaml
     name: pxc-backup-metrics
-  {{- if eq $azureProxyEnabled true }}
+  {{- if and (eq $azureProxyEnabled true) (not (has "px-backup-dashboard-prometheus" .Values.proxy.excludeAzureProxyList)) }}
   podMetadata:
     annotations:
       kubernetes.azure.com/no-http-proxy-vars: "true"
@@ -325,7 +327,9 @@ spec:
         secretKeyRef:
           name: pxc-backup-metrics
           key: metrics-token
+    {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-dashboard-prometheus" .Values.proxy.includeNoProxyList) }}
     {{ include "proxy.noProxyEnv" . | nindent 4 }}
+    {{- end }}
     image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupPrometheusImage.registry .Values.images.pxBackupPrometheusImage.repo .Values.images.pxBackupPrometheusImage.imageName .Values.images.pxBackupPrometheusImage.tag }}
     livenessProbe:
       exec:
@@ -372,7 +376,9 @@ spec:
         secretKeyRef:
           key: password
           name: pxc-backup-metrics
+    {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-dashboard-prometheus" .Values.proxy.includeNoProxyList) }}
     {{ include "proxy.noProxyEnv" . | nindent 4 }}
+    {{- end }}
     ports:
     - containerPort: 8080
       name: reloader-web
