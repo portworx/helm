@@ -80,6 +80,16 @@ spec:
                       cpu:
                         type: string
                         description: Requested cpu for the storage pod.
+                  limits:
+                    type: object
+                    description: Limits describes the maximum amount of compute resources allowed for the storage pod.
+                    properties:
+                      memory:
+                        type: string
+                        description: Maximum memory for the storage pod.
+                      cpu:
+                        type: string
+                        description: Maximum cpu for the storage pod.
               image:
                 type: string
                 description: Docker image of the storage driver.
@@ -332,6 +342,30 @@ spec:
                     description: Authentication secret is the name of Kubernetes secret containing
                       information to authenticate with the external KVDB. It could have the username/password
                       for basic auth, certificate information or an ACL token.
+                  resources:
+                    type: object
+                    description: Specifies the compute resource requirements for the kvdb pod.
+                    properties:
+                      requests:
+                        type: object
+                        description: Requested resources for the kvdb pod.
+                        properties:
+                          memory:
+                            type: string
+                            description: Requested memory for the kvdb pod.
+                          cpu:
+                            type: string
+                            description: Requested cpu for the kvdb pod.
+                      limits:
+                        type: object
+                        description: Limits describes the maximum amount of compute resources allowed for the kvdb pod.
+                        properties:
+                          memory:
+                            type: string
+                            description: Maximum memory for the kvdb pod.
+                          cpu:
+                            type: string
+                            description: Maximum cpu for the kvdb pod.
               storage:
                 type: object
                 description: Details of the storage used by the storage driver.
@@ -3448,6 +3482,304 @@ spec:
                       enabled:
                         type: boolean
                         description: Flag indicating whether CSI topology feature gate is enabled.
+                  placement:
+                    type: object
+                    description: Describes placement configuration for the CSI sidecar pods.
+                    properties:
+                      nodeAffinity:
+                        type: object
+                        description: Describes node affinity scheduling rules for the CSI sidecar pods.
+                          This is exactly the same object as Kubernetes node affinity for pods.
+                        properties:
+                          requiredDuringSchedulingIgnoredDuringExecution:
+                            type: object
+                            properties:
+                              nodeSelectorTerms:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    matchExpressions:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          key:
+                                            type: string
+                                          operator:
+                                            type: string
+                                          values:
+                                            type: array
+                                            items:
+                                              type: string
+                                        required:
+                                        - key
+                                        - operator
+                                    matchFields:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          key:
+                                            type: string
+                                          operator:
+                                            type: string
+                                          values:
+                                            type: array
+                                            items:
+                                              type: string
+                                        required:
+                                        - key
+                                        - operator
+                            required:
+                            - nodeSelectorTerms
+                          preferredDuringSchedulingIgnoredDuringExecution:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                weight:
+                                  type: integer
+                                preference:
+                                  type: object
+                                  properties:
+                                    matchExpressions:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          key:
+                                            type: string
+                                          operator:
+                                            type: string
+                                          values:
+                                            type: array
+                                            items:
+                                              type: string
+                                        required:
+                                        - key
+                                        - operator
+                                    matchFields:
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          key:
+                                            type: string
+                                          operator:
+                                            type: string
+                                          values:
+                                            type: array
+                                            items:
+                                              type: string
+                                        required:
+                                        - key
+                                        - operator
+                              required:
+                              - preference
+                              - weight
+                      tolerations:
+                        type: array
+                        description: Tolerations for the CSI sidecar pods.
+                          The pod with this toleration attached will tolerate any taint that matches the
+                          triple <key,value,effect> using the matching operator <operator>.
+                        items:
+                          type: object
+                          properties:
+                            effect:
+                              type: string
+                              description: Effect indicates the taint effect to match. Empty means match
+                                all taint effects. When specified, allowed values are NoSchedule,
+                                PreferNoSchedule and NoExecute.
+                            key:
+                              type: string
+                              description: Key is the taint key that the toleration applies to. Empty means
+                                match all taint keys. If the key is empty, operator must be Exists; this
+                                combination means to match all values and all keys.
+                            operator:
+                              type: string
+                              description: "Operator represents a key's relationship to the value. Valid
+                                operators are Exists and Equal. Defaults to Equal. Exists is equivalent to
+                                wildcard for value, so that a pod can tolerate all taints of a particular category."
+                            value:
+                              type: string
+                              description: Value is the taint value the toleration matches to. If the operator
+                                is Exists, the value should be empty, otherwise just a regular string.
+                            tolerationSeconds:
+                              type: integer
+                              description: TolerationSeconds represents the period of time the toleration
+                                (which must be of effect NoExecute, otherwise this field is ignored) tolerates
+                                the taint. By default, it is not set, which means tolerate the taint forever
+                                (do not evict). Zero and negative values will be treated as 0 (evict
+                                immediately) by the system.
+                  nodeDriverRegistrar:
+                    type: object
+                    description: Defines configuration for the CSI node driver registrar.
+                    properties:
+                      resources:
+                        type: object
+                        description: Specifies the resource requirements for the csi node driver registar container.
+                        properties:
+                          requests:
+                            type: object
+                            description: Requested resources for the csi node driver registrar container.
+                            properties:
+                              memory:
+                                type: string
+                                description: Requested memory for the csi node driver registrar container.
+                              cpu:
+                                type: string
+                                description: Requested cpu for the csi node driver registrar container.
+                          limits:
+                            type: object
+                            description: Limits describes the maximum amount of resources allowed for the csi node driver registrar container.
+                            properties:
+                              memory:
+                                type: string
+                                description: Maximum memory for the csi node driver registrar container.
+                              cpu:
+                                type: string
+                                description: Maximum cpu for the csi node driver registrar container.
+                  externalProvisioner:
+                    type: object
+                    description: Defines configuration for the CSI provisioner.
+                    properties:
+                      resources:
+                        type: object
+                        description: Specifies the resource requirements for the csi provisioner container.
+                        properties:
+                          requests:
+                            type: object
+                            description: Requested resources for the csi provisioner container.
+                            properties:
+                              memory:
+                                type: string
+                                description: Requested memory for the csi provisioner container.
+                              cpu:
+                                type: string
+                                description: Requested cpu for the csi provisioner container.
+                          limits:
+                            type: object
+                            description: Limits describes the maximum amount of resources allowed for the csi provisioner container.
+                            properties:
+                              memory:
+                                type: string
+                                description: Maximum memory for the csi provisioner container.
+                              cpu:
+                                type: string
+                                description: Maximum cpu for the csi provisioner container.
+                  snapshotter:
+                    type: object
+                    description: Defines configuration for the CSI snapshotter.
+                    properties:
+                      resources:
+                        type: object
+                        description: Specifies the resource requirements for the csi snapshotter container.
+                        properties:
+                          requests:
+                            type: object
+                            description: Requested resources for the csi snapshotter container.
+                            properties:
+                              memory:
+                                type: string
+                                description: Requested memory for the csi snapshotter container.
+                              cpu:
+                                type: string
+                                description: Requested cpu for the csi snapshotter container.
+                          limits:
+                            type: object
+                            description: Limits describes the maximum amount of resources allowed for the csi snapshotter container.
+                            properties:
+                              memory:
+                                type: string
+                                description: Maximum memory for the csi snapshotter container.
+                              cpu:
+                                type: string
+                                description: Maximum cpu for the csi snapshotter container.
+                  resizer:
+                    type: object
+                    description: Defines configuration for the CSI resizer.
+                    properties:
+                      resources:
+                        type: object
+                        description: Specifies the resource requirements for the csi resizer container.
+                        properties:
+                          requests:
+                            type: object
+                            description: Requested resources for the csi resizer container.
+                            properties:
+                              memory:
+                                type: string
+                                description: Requested memory for the csi resizer container.
+                              cpu:
+                                type: string
+                                description: Requested cpu for the csi resizer container.
+                          limits:
+                            type: object
+                            description: Limits describes the maximum amount of resources allowed for the csi resizer container.
+                            properties:
+                              memory:
+                                type: string
+                                description: Maximum memory for the csi resizer container.
+                              cpu:
+                                type: string
+                                description: Maximum cpu for the csi resizer container.
+                  snapshotController:
+                    type: object
+                    description: Defines configuration for the CSI snapshot controller.
+                    properties:
+                      resources:
+                        type: object
+                        description: Specifies the resource requirements for the csi snapshot controller container.
+                        properties:
+                          requests:
+                            type: object
+                            description: Requested resources for the csi snapshot controller container.
+                            properties:
+                              memory:
+                                type: string
+                                description: Requested memory for the csi snapshot controller container.
+                              cpu:
+                                type: string
+                                description: Requested cpu for the csi snapshot controller container.
+                          limits:
+                            type: object
+                            description: Limits describes the maximum amount of resources allowed for the csi snapshot controller container.
+                            properties:
+                              memory:
+                                type: string
+                                description: Maximum memory for the csi snapshot controller container.
+                              cpu:
+                                type: string
+                                description: Maximum cpu for the csi snapshot controller container.
+              portworxApi:
+                type: object
+                description: Contains a spec to configure the Portworx API component.
+                properties:
+                  resources:
+                    type: object
+                    description: Specifies the compute resource requirements for the portworx api container.
+                    properties:
+                      requests:
+                        type: object
+                        description: Requested resources for the portworx api container.
+                        properties:
+                          memory:
+                            type: string
+                            description: Requested memory for the portworx api container.
+                          cpu:
+                            type: string
+                            description: Requested cpu for the portworx api container.
+                      limits:
+                        type: object
+                        description: Limits describes the maximum amount of compute resources allowed for the portworx api container.
+                        properties:
+                          memory:
+                            type: string
+                            description: Maximum memory for the portworx api container.
+                          cpu:
+                            type: string
+                            description: Maximum cpu for the portworx api container.
               env:
                 type: array
                 description: List of environment variables used by the driver. This is an array of Kubernetes
