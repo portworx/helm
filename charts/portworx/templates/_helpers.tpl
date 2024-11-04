@@ -224,7 +224,7 @@ Generate a random token for storage provisioning
 {{- define "px.getDeploymentNamespace" -}}
 {{- if (.Release.Namespace) -}}
     {{- if (eq "default" .Release.Namespace) -}}
-        {{- printf "kube-system"  -}}
+        {{- printf "portworx"  -}}
     {{- else -}}
         {{- printf "%s" .Release.Namespace -}}
     {{- end -}}
