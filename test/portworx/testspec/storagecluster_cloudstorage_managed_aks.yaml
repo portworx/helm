@@ -4,6 +4,7 @@ metadata:
   name: "mycluster"
   namespace: portworx
   annotations:
+    portworx.io/is-aks: "true"
   labels:
     heritage: "Helm"
     release: "my-release"
@@ -12,19 +13,26 @@ metadata:
 spec:
   image: portworx/oci-monitor:3.1.4
   imagePullPolicy: Always
-  updateStrategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 3
-      minReadySeconds: 30
-  autoUpdateComponents: Always
 
   kvdb:
     internal: true
-  storage:
-    useAll: true
+  cloudStorage:
+    deviceSpecs:
+      - type=Premium_LRS,size=150
+    kvdbDeviceSpec: type=node-kvdb
+    systemMetadataDeviceSpec: type=gp2,size=100
+    journalDeviceSpec: type=journal
+    maxStorageNodesPerZone: 1
+    maxStorageNodes: 1
   secretsProvider: k8s
-  
+
+  env:
+  - name: AZURE_CLIENT_ID
+    valueFrom:
+      secretKeyRef:
+        name: px-azure
+        key: AZURE_CLIENT_ID
+
   stork:
     enabled: true
   monitoring:

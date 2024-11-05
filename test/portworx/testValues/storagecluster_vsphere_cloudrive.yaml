@@ -1,0 +1,7 @@
+provider:                            
+  vsphere:
+    vsphereUsername: dGVzdEBwdXJlc3RvcmFnZS5jb20K
+    vspherePassword: dGVzdCNAMTIzCg==
+    vcenterEndpoint: "abc.test.vcenter.com"
+    vcenterPort: 443 
+    vcenterDatastorePrefix:  "TS-Test-DEV-DS"

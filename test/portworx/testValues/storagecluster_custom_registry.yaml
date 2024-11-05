@@ -1,2 +1,4 @@
 customRegistryURL: "docker.io/customregistry-test:latest"
-registrySecret: "customregistry-test-creds-sec"
+customRegistryCreds: 
+  username: dGVzdAo=
+  password: dGVzdAo=

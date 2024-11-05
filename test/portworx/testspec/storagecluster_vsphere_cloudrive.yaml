@@ -16,17 +16,31 @@ spec:
   kvdb:
     internal: true
   cloudStorage:
-    provider: gce
     deviceSpecs:
-      - type=gp2,size=200
-      - type=gp3,size=500
-    systemMetadataDeviceSpec: type=gp2,size=100
-    journalDeviceSpec: type=journal
-    kvdbDeviceSpec: type=node-kvdb
-    maxStorageNodesPerZone: 1
-    maxStorageNodes: 1
+      - type=thin,size=150
   secretsProvider: k8s
-
+  env:
+  - name: VSPHERE_INSECURE
+    value: 'true'
+  - name: VSPHERE_USER
+    valueFrom:
+      secretKeyRef: 
+        name: px-vsphere-secret
+        key: VSPHERE_USER
+  - name: VSPHERE_PASSWORD
+    valueFrom:
+      secretKeyRef: 
+        name: px-vsphere-secret
+        key: VSPHERE_PASSWORD
+  - name: VSPHERE_VCENTER
+    value: abc.test.vcenter.com
+  - name: VSPHERE_VCENTER_PORT
+    value: "443"
+  - name: VSPHERE_DATASTORE_PREFIX
+    value: TS-Test-DEV-DS
+  - name: VSPHERE_INSTALL_MODE
+    value: shared
+  
   stork:
     enabled: true
   monitoring:

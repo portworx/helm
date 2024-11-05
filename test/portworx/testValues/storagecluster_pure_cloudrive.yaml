@@ -1,0 +1,18 @@
+provider:     
+  pure:                       
+      pureJsonFileData: |-
+        {
+        "FlashArrays": [
+          {
+            "MgmtEndPoint": "99.13.57.111",
+            "APIToken": "331dsad4c-8091-7701-00sdsaf-1ce2asadsad"
+            }
+        ],
+        "FlashBlades": [
+          {
+            "MgmtEndPoint": "99.9.1.240",
+            "APIToken": "T-sadsfds-e585-42ba-808a-sadssdsa",
+            "NFSEndPoint": "99.13.42.13"
+          }
+        ]
+        }
