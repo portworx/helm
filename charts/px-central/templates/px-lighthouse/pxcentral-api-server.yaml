@@ -43,8 +43,7 @@ roleRef:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name | quote }}
-  namespace: {{ .Release.Namespace }}
+  name: {{ printf "%s-%s" .Release.Name .Release.Namespace | quote }}
   labels:
     app.kubernetes.io/component: pxcentral-apiserver
 {{- include "px-central.labels" . | nindent 4 }}
@@ -59,8 +58,7 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: {{ .Release.Name | quote }}
-  namespace: {{ .Release.Namespace }}
+  name: {{ printf "%s-%s" .Release.Name .Release.Namespace | quote }}
   labels:
     app.kubernetes.io/component: pxcentral-apiserver
 {{- include "px-central.labels" . | nindent 4 }}
@@ -70,7 +68,7 @@ subjects:
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: {{ .Release.Name | quote }}
+  name: {{ printf "%s-%s" .Release.Name .Release.Namespace | quote }}
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: v1

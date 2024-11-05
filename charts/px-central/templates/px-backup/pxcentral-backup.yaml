@@ -16,8 +16,7 @@ metadata:
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: px-backup-cluster-role
-  namespace: {{ .Release.Namespace }}
+  name: px-backup-cluster-role-{{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
 {{- include "px-central.labels" . | nindent 4 }}
@@ -46,8 +45,7 @@ rules:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: px-backup-cluster-role-binding
-  namespace: {{ .Release.Namespace }}
+  name: px-backup-cluster-role-binding-{{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-apiserver
 {{- include "px-central.labels" . | nindent 4 }}
@@ -57,7 +55,7 @@ subjects:
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
-  name: px-backup-cluster-role
+  name: px-backup-cluster-role-{{ .Release.Namespace }}
   apiGroup: rbac.authorization.k8s.io
 ---
 kind: Role
