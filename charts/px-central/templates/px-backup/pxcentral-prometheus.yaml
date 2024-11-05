@@ -28,8 +28,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: pxc-prometheus-operator
-  namespace: {{ .Release.Namespace }}
+  name: pxc-prometheus-operator-{{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
 {{- include "px-central.labels" . | nindent 4 }}
@@ -40,13 +39,12 @@ subjects:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: pxc-prometheus-operator
+  name: pxc-prometheus-operator-{{ .Release.Namespace }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: pxc-prometheus-operator
-  namespace: {{ .Release.Namespace }}
+  name: pxc-prometheus-operator-{{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
 {{- include "px-central.labels" . | nindent 4 }}
@@ -187,8 +185,7 @@ spec:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: px-backup-dashboard-prometheus
-  namespace: {{ .Release.Namespace }}
+  name: px-backup-dashboard-prometheus-{{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
 {{- include "px-central.labels" . | nindent 4 }}
@@ -219,15 +216,14 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: px-backup-dashboard-prometheus
-  namespace: {{ .Release.Namespace }}
+  name: px-backup-dashboard-prometheus-{{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
 {{- include "px-central.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: px-backup-dashboard-prometheus
+  name: px-backup-dashboard-prometheus-{{ .Release.Namespace }}
 subjects:
 - kind: ServiceAccount
   name: px-backup-dashboard-prometheus

@@ -27,8 +27,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: pxcentral-prometheus
-  namespace: {{ .Release.Namespace }}
+  name: pxcentral-prometheus-{{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-prometheus
 {{- include "px-central.labels" . | nindent 4 }}
@@ -50,15 +49,14 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: pxcentral-prometheus
-  namespace: {{ .Release.Namespace }}
+  name: pxcentral-prometheus-{{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-prometheus
 {{- include "px-central.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: pxcentral-prometheus
+  name: pxcentral-prometheus-{{ .Release.Namespace }}
 subjects:
   - kind: ServiceAccount
     name: pxcentral-prometheus
@@ -207,8 +205,7 @@ spec:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: pxcentral-prometheus-operator
-  namespace: {{ .Release.Namespace }}
+  name: pxcentral-prometheus-operator-{{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-prometheus
 {{- include "px-central.labels" . | nindent 4 }}
@@ -269,15 +266,14 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: pxcentral-prometheus-operator
-  namespace: {{ .Release.Namespace }}
+  name: pxcentral-prometheus-operator-{{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-prometheus
 {{- include "px-central.labels" . | nindent 4 }}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: pxcentral-prometheus-operator
+  name: pxcentral-prometheus-operator-{{ .Release.Namespace }}
 subjects:
   - kind: ServiceAccount
     name: pxcentral-prometheus-operator
