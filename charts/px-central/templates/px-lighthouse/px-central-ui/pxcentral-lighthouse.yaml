@@ -117,6 +117,9 @@ spec:
       {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-lh-middleware" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- else if has "px-backup" .Values.proxy.excludeAzureProxyList }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "false"
       {{- end }}
       labels:
         run: pxcentral-lh-middleware
