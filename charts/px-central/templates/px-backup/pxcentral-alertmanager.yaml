@@ -27,6 +27,10 @@ spec:
   podMetadata:
     annotations:
       kubernetes.azure.com/no-http-proxy-vars: "true"
+  {{- else if has "px-backup-alertmanager" .Values.proxy.excludeAzureProxyList }}
+  podMetadata:
+    annotations:
+      kubernetes.azure.com/no-http-proxy-vars: "false"
   {{- end }}
   alertmanagerConfigSelector:
     matchLabels:

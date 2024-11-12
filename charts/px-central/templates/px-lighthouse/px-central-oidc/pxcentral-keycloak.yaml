@@ -312,6 +312,9 @@ spec:
       {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-keycloak-postgresql" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- else if has "pxcentral-keycloak-postgresql" .Values.proxy.excludeAzureProxyList }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "false"
       {{- end }}
       labels:
         app: postgresql
@@ -470,6 +473,9 @@ spec:
       {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-keycloak" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- else if has "pxcentral-keycloak" .Values.proxy.excludeAzureProxyList }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "false"
       {{- end }}
       labels:
         app.kubernetes.io/component: keycloak
