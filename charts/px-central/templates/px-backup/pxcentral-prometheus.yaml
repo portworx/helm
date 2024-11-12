@@ -136,6 +136,9 @@ spec:
       {{- if and (eq $azureProxyEnabled true) (not (has "prometheus-operator" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- else if has "prometheus-operator" .Values.proxy.excludeAzureProxyList }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "false"
       {{- end }}
     spec:
       affinity:
@@ -291,6 +294,10 @@ spec:
   podMetadata:
     annotations:
       kubernetes.azure.com/no-http-proxy-vars: "true"
+  {{- else if has "px-backup-dashboard-prometheus" .Values.proxy.excludeAzureProxyList }}
+  podMetadata:
+    annotations:
+      kubernetes.azure.com/no-http-proxy-vars: "false"
   {{- end }}
   {{- if .Values.persistentStorage.storageClassName }}
   storage:
@@ -336,7 +343,7 @@ spec:
         command:
         - sh
         - -c
-        - wget {{ if .Values.proxy.httpProxy.noProxy }}--no-proxy{{ end }} http://localhost:9090/-/healthy --header="Authorization:Basic $AUTH_SECRET"
+        - wget {{ if .Values.proxy.httpProxy.noProxy }}--proxy=off{{ end }} http://localhost:9090/-/healthy --header="Authorization:Basic $AUTH_SECRET"
           -qO-
     name: prometheus
     readinessProbe:
@@ -344,14 +351,14 @@ spec:
         command:
         - sh
         - -c
-        - wget {{ if .Values.proxy.httpProxy.noProxy }}--no-proxy{{ end }} http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
+        - wget {{ if .Values.proxy.httpProxy.noProxy }}--proxy=off{{ end }} http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
           -qO-
     startupProbe:
       exec:
         command:
         - sh
         - -c
-        - wget {{ if .Values.proxy.httpProxy.noProxy }}--no-proxy{{ end }} http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
+        - wget {{ if .Values.proxy.httpProxy.noProxy }}--proxy=off{{ end }} http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
           -qO-
     ports:
     - containerPort: 9090
