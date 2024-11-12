@@ -189,6 +189,9 @@ spec:
       {{- if and (eq $azureProxyEnabled true) (not (has "px-backup" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- else if has "px-backup" .Values.proxy.excludeAzureProxyList }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "false"
       {{- end }}
     spec:
       affinity:
