@@ -1,4 +1,4 @@
-pxCentralVersion: 2.8.0
+pxCentralVersion: unmigration
 modules:
   pxCentral:
     pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:2.8.0-dev"
