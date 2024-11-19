@@ -206,7 +206,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-api-base
-    tag: 2.8.0-dev
+    tag: 2.8.1-dev
   pxcentralFrontendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
@@ -226,7 +226,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-post-setup-base
-    tag: 2.8.0-dev
+    tag: 2.8.1-dev
   keycloakBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
@@ -256,7 +256,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-pre-upgrade-base
-    tag: 2.8.0-dev
+    tag: 2.8.1-dev
   mysqlInitImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
