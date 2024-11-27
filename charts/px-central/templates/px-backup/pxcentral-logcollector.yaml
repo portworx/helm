@@ -1,0 +1,168 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+{{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
+{{- if eq $pxBackupEnabled true }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pxc-backup-logcollector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxc-backup-logcollector
+{{- include "px-central.labels" . | nindent 4 }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pxc-backup-logcollector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxc-backup-logcollector
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+- apiGroups: ["*"]
+  resources: ["*"]
+  verbs: ["*"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pxc-backup-logcollector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxc-backup-logcollector
+{{- include "px-central.labels" . | nindent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: pxc-backup-logcollector
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: pxc-backup-logcollector
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pxc-backup-logcollector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxc-backup-logcollector
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app: pxc-backup-logcollector
+      app.kubernetes.io/component: pxc-backup-logcollector
+  replicas: 1
+  revisionHistoryLimit: 0
+  minReadySeconds: 0
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxc-backup-logcollector" .Values.proxy.excludeAzureProxyList)) }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
+      labels:
+        app: pxc-backup-logcollector
+        app.kubernetes.io/component: pxc-backup-logcollector
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+              {{- end }}
+      containers:
+      - name: pxc-backup-logcollector
+        image: {{ printf "%s/%s/%s:%s" .Values.images.logCollectorImage.registry .Values.images.logCollectorImage.repo .Values.images.logCollectorImage.imageName .Values.images.logCollectorImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        env:
+          - name: PXC_NAMESPACE
+            value: {{ .Release.Namespace }}
+          {{- if .Values.caCertsSecretName }}
+          - name: SSL_CERT_DIR
+            value: /tmp/certs
+          {{- end }}
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxc-backup-logcollector" .Values.proxy.includeNoProxyList) }}
+          {{- include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
+        volumeMounts:
+        {{- if .Values.caCertsSecretName }}
+          - mountPath: /tmp/certs
+            readOnly: true
+            name: ssl-cert-dir
+        {{- end }}
+          - name: pxc-backup-log-data
+            mountPath: /logs
+        command:
+        - /logcollector
+        - collect
+        {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      volumes:
+        {{- if .Values.caCertsSecretName }}
+        - name: ssl-cert-dir
+          secret:
+            defaultMode: 420
+            secretName: "{{ .Values.caCertsSecretName }}"
+        {{- end }}
+        - name: pxc-backup-log-data
+          {{- if eq $externalPersistentStorageEnabled true }}
+          persistentVolumeClaim:
+            claimName: pxc-backup-logcollector-pvc
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+      serviceAccountName: pxc-backup-logcollector
+      restartPolicy: Always
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+{{- if eq $externalPersistentStorageEnabled true }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pxc-backup-logcollector-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxc-backup-logcollector
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistentStorage.logCollector.storage }}
+  {{- if .Values.persistentStorage.storageClassName }}
+  storageClassName: {{ .Values.persistentStorage.storageClassName }}
+  {{- end }}
+{{- end }}
+{{ end }}

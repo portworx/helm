@@ -14,6 +14,8 @@ persistentStorage:
   prometheus:
     storage: 64Gi
     retentionSize: 51200MB
+  logCollector:
+    storage: 100Gi
   mysqlVolumeSize: "100Gi"
   mongodbVolumeSize: "64Gi"
   mongoCacheSize: 4
@@ -226,6 +228,11 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-post-setup-base
+    tag: 2.8.0-dev
+  logCollectorImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
+    repo: kthiruvenkadasamy
+    imageName: logcollector
     tag: 2.8.0-dev
   keycloakBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
