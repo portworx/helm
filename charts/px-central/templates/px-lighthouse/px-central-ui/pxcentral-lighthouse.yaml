@@ -1,6 +1,12 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $prometheusEndpoint := "" }}
+{{- $alertmanagerEndpoint := "" }}
+{{- $prometheusSecretName := "" }}
+{{- $alertmanagerSecretName := "" }}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- if eq $pxBackupEnabled true }}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $prometheusEndpoint := "http://px-backup-dashboard-prometheus:9090" }}
 {{- $alertmanagerEndpoint := "http://alertmanager-operated:9093" }}
@@ -25,6 +31,7 @@
 {{- $alertmanagerSecretName = .Values.pxbackup.alertmanagerSecretName | required ".Values.pxbackup.alertmanagerSecretName is required for fetching the tls certificate."}}
 {{- end }}
 
+{{- end }}
 {{- end }}
 apiVersion: v1
 kind: ServiceAccount
@@ -160,10 +167,12 @@ spec:
           - name: QUERY_ACTIVITY_TIMELINE_FROM_MONGO_DB
             value: "false"        
           {{- end }}
+          {{- if eq $pxBackupEnabled true }}
           - name: PROMETHEUS_ENDPOINT
             value: {{ $prometheusEndpoint }}
           - name: ALERTMANAGER_ENDPOINT
             value: {{ $alertmanagerEndpoint }}
+          {{- end }}
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-lh-middleware" .Values.proxy.includeNoProxyList) }}
           {{- include "proxy.noProxyEnv" . | nindent 10 }}
           {{- end }}
