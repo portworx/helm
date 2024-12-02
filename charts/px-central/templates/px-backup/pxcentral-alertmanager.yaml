@@ -1,3 +1,5 @@
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- if eq $pxBackupEnabled true }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
@@ -374,3 +376,4 @@ stringData:
           </div>
       </body>
     </html>`}}
+{{- end -}}
