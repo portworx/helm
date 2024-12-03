@@ -8,10 +8,10 @@
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- if eq $pxBackupEnabled true }}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
-{{- $prometheusEndpoint := "http://px-backup-dashboard-prometheus:9090" }}
-{{- $alertmanagerEndpoint := "http://alertmanager-operated:9093" }}
-{{- $prometheusSecretName := "pxc-backup-metrics" }}
-{{- $alertmanagerSecretName := "pxc-backup-metrics" }}
+{{- $prometheusEndpoint = "http://px-backup-dashboard-prometheus:9090" }}
+{{- $alertmanagerEndpoint = "http://alertmanager-operated:9093" }}
+{{- $prometheusSecretName = "pxc-backup-metrics" }}
+{{- $alertmanagerSecretName = "pxc-backup-metrics" }}
 
 {{- if not (eq $deployDedicatedMonitoringSystem true) }}
 
