@@ -1,7 +1,6 @@
-{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
-{{- if eq $pxBackupEnabled true }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 
 {{- if .Release.IsUpgrade }}
   {{- $sts := lookup "apps/v1" "StatefulSet" .Release.Namespace "pxc-backup-mongodb" -}}
@@ -175,15 +174,14 @@ spec:
                 - "false"
               {{- end }}
       containers:
-        - name: pxbackup-mongodb-upgrade
+        - name: pxc-pre-upgrade
           image: {{ printf "%s/%s/%s:%s" .Values.images.preUpgradeHookImage.registry .Values.images.preUpgradeHookImage.repo .Values.images.preUpgradeHookImage.imageName .Values.images.preUpgradeHookImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: ["python", "/pxcentral-pre-upgrade/pxc-pre-upgrade.py"]
           env:
+            {{- if eq $pxBackupEnabled true }} 
             - name: MONGODB_STATEFULSET_NAME
               value: pxc-backup-mongodb
-            - name: NAMESPACE
-              value: {{ .Release.Namespace }}  
             - name: MONGODB_TARGET_VERSION
               value: {{ .Values.images.mongodbImage.tag }}
             - name: MONGODB_SERVICE_NAME
@@ -197,17 +195,7 @@ spec:
                 secretKeyRef:
                   key: mongodb-root-password
                   name: pxc-backup-mongodb
-            - name: MYSQL_STATEFULSET_NAME
-              value: pxcentral-mysql
-            - name: MYSQL_ROOT_USERNAME
-              value: root
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: DB_PASSWORD
-                  name: pxcentral-mysql-secret
-            - name: JOB_TIMEOUT_SECONDS
-              value: "600"
+                  optional: true
             - name: MONGODB_IMAGES
               value: >
                 {
@@ -220,6 +208,22 @@ spec:
                     "mongodb7": "{{ .Values.images.mongodbImageMap.tags.mongodb7 }}"
                   }
                 }
+            {{- end }}
+            - name: NAMESPACE
+              value: {{ .Release.Namespace }} 
+            - name: MYSQL_STATEFULSET_NAME
+              value: pxcentral-mysql
+            - name: MYSQL_ROOT_USERNAME
+              value: root
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: DB_PASSWORD
+                  name: pxcentral-mysql-secret
+            - name: JOB_TIMEOUT_SECONDS
+              value: "600"
+            - name: PX_BACKUP_ENABLED
+              value: "{{ $pxBackupEnabled }}"
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pre-upgrade-check" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.noProxyEnv" . | nindent 12 }}
             {{- end }}
@@ -242,4 +246,3 @@ spec:
       {{- toYaml . | nindent 8 }}
       {{- end }} 
   backoffLimit: 0
-{{- end }}
