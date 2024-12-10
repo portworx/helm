@@ -176,6 +176,13 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestUpdateStrategyRollingUpdateWithNonDisruption",
+			resultFileName: "storagecluster_updatestrategy_rollingupdate_non_disruption.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_updatestrategy_rollingupdate_non_disruption.yaml"},
+			},
+		},
+		{
 			name:           "TestUpdateStrategyOndelete",
 			resultFileName: "storagecluster_updatestrategy_ondelete.yaml",
 			helmOption: &helm.Options{

@@ -76,10 +76,10 @@ spec:
                     properties:
                       memory:
                         type: string
-                        description: Requested memory for the storage pod.
+                        description: Specifies the memory that the Portworx container requests; for example, "4Gi"
                       cpu:
                         type: string
-                        description: Requested cpu for the storage pod.
+                        description: Specifies the cpu that the Portworx container requests; for example, `"4000m"`
                   limits:
                     type: object
                     description: Limits describes the maximum amount of compute resources allowed for the storage pod.
@@ -92,23 +92,19 @@ spec:
                         description: Maximum cpu for the storage pod.
               image:
                 type: string
-                description: Docker image of the storage driver.
+                description: Specifies the Portworx monitor image.
               version:
                 type: string
                 description: Version of the storage driver. This field is read-only.
               imagePullPolicy:
                 type: string
-                description: Image pull policy. One of Always, Never, IfNotPresent. Defaults to Always.
+                description: Specifies the image pull policy for all the images deployed by the operator. The possible values can be `Always` or `IfNotPresent`. Default value is `Always`.
               imagePullSecret:
                 type: string
-                description: Image pull secret is a reference to secret in the same namespace as the
-                  StorageCluster. It is used for pulling all images used by the StorageCluster.
+                description: If Portworx pulls images from a secure repository, you can use this field to pass it the name of the secret. Note that the secret should be in the same namespace as the `StorageCluster` object.
               customImageRegistry:
                 type: string
-                description: >-
-                  Custom container image registry server that will be used instead of
-                  index.docker.io to download Docker images. This may include the repository as well.
-                  (Example: myregistry.net:5443 or myregistry.com/myrepository)
+                description: The custom container registry server Portworx uses to fetch the Docker images. You may include the repository as well.
               preserveFullCustomImageRegistry:
                 type: boolean
                 description: >-
@@ -119,7 +115,7 @@ spec:
                   `example.io/public/portworx/oci-monitor`. Defaults to false
               secretsProvider:
                 type: string
-                description: Secrets provider is the name of secret provider that driver will connect to.
+                description: The name of the secrets provider Portworx uses to store your credentials. To use features like cloud snapshots or volume encryption, you must configure a secret store provider. Refer to the [Secret store management page](/portworx-enterprise/operations/key-management)for more details.
               startPort:
                 type: integer
                 format: int32
@@ -127,15 +123,14 @@ spec:
                 description: Start port is the starting port in the range of ports used by the cluster.
               autoUpdateComponents:
                 type: string
-                description: A strategy to determine how component versions are to be updated automatically.
+                description: Indicates the update strategy for the component images (such as Stork, Autopilot, Prometheus, and so on). Portworx supports the following auto update strategies for the component images:<br/> <ul><li>`None`- Updates the component images only when the Portworx image changes in `StorageCluster.spec.image`.</li><li>`Once`- Updates the component images once even if the Portworx image does not change. This is useful when the component images on the manifest server change due to bug fixes.</li><li>`Always`- Regularly checks for the updates on the manifest server, and updates the component images if required.</li> </ul>
               updateStrategy:
                 type: object
                 description: An update strategy to replace existing StorageCluster pods with new pods.
                 properties:
                   type:
                     type: string
-                    description: Type of storage cluster update. Can be RollingUpdate or OnDelete.
-                      Default is RollingUpdate.
+                    description: Indicates the update strategy. Currently, Portworx supports the following update strategies- `RollingUpdate` and `OnDelete`. Default value is `RollingUpdate`.
                     enum:
                     - RollingUpdate
                     - OnDelete
@@ -144,10 +139,7 @@ spec:
                     description: Spec to control the desired behavior of storage cluster rolling update.
                     properties:
                       minReadySeconds:
-                        description: Minimum number of seconds for which a newly created Portworx pod
-                          should be ready without any of its container crashing for it to
-                          be considered available. Defaults to 0 (pod will be considered available
-                          as soon as it is ready).
+                        description: During rolling updates, this flag will wait for all pods to be ready for at least `minReadySeconds` before updating the next batch of pods, where the size of the pod batch is specified through the `spec.updateStrategy.rollingUpdate.maxUnavailable` flag. Default value is `1`.
                         format: int32
                         type: integer
                       maxUnavailable:
@@ -164,9 +156,19 @@ spec:
                           their place. Once the new pods are available, it then proceeds onto other
                           StorageCluster pods, thus ensuring that at least 70% of original number of
                           StorageCluster pods are available at all times during the update.
+                      disruption:
+                        type: object
+                        description: >-
+                          The default behavior is non-disruptive upgrades. This setting disables the default
+                          non-disruptive upgrades and reverts to the previous behavior of upgrading nodes in
+                          parallel without worrying about disruption.
+                        properties:
+                          allow:
+                            type: boolean
+                            description: Flag indicates whether updates are non-disruptive or disruptive.
               deleteStrategy:
                 type: object
-                description: Delete strategy to uninstall and wipe the storage cluster.
+                description: Indicates what happens when the Portworx `StorageCluster` object is deleted. By default, there is no delete strategy, which means only the Kubernetes components deployed by the operator are removed. The Portworx `systemd` service continues to run, and the Kubernetes applications using the Portworx volumes are not affected. Portworx supports the following delete strategies. <br/> - `Uninstall` - Removes all Portworx components from the system and leaves the devices and KVDB intact. <br/> - `UninstallAndWipe` - Removes all Portworx components from the system and wipes the devices and metadata from KVDB.
                 properties:
                   type:
                     type: string
@@ -189,20 +191,18 @@ spec:
               featureGates:
                 type: object
                 x-kubernetes-preserve-unknown-fields: true
-                description: This is a map of feature names to string values.
+                description: A collection of key-value pairs specifying which Portworx features should be enabled or disabled.
               runtimeOptions:
                 type: object
                 x-kubernetes-preserve-unknown-fields: true
-                description: This is map of any runtime options that need to be sent to the storage
-                  driver. The value is a string.
+                description: A collection of key-value pairs that overwrites the runtime options.
               placement:
                 type: object
                 description: Describes placement configuration for the storage cluster pods.
                 properties:
                   nodeAffinity:
                     type: object
-                    description: Describes node affinity scheduling rules for the storage cluster pods.
-                      This is exactly the same object as Kubernetes node affinity for pods.
+                    description: Use this field to restrict Portwox on certain nodes. It works similarly to the [Kubernetes node affinity](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L2692) feature.
                     properties:
                       requiredDuringSchedulingIgnoredDuringExecution:
                         type: object
@@ -293,9 +293,7 @@ spec:
                           - weight
                   tolerations:
                     type: array
-                    description: Tolerations for all the pods deployed by the StorageCluster controller.
-                      The pod with this toleration attached will tolerate any taint that matches the
-                      triple <key,value,effect> using the matching operator <operator>.
+                    description: Specifies a list of tolerations that will be applied to Portworx pods so that they can run on nodes with matching taints.
                     items:
                       type: object
                       properties:
@@ -331,17 +329,15 @@ spec:
                 properties:
                   internal:
                     type: boolean
-                    description: Flag indicating whether to use internal KVDB or an external KVDB.
+                    description: Specifies if Portworx starts with the [internal KVDB](/portworx-enterprise/operations/kvdb-for-portworx/internal-kvdb). Default value is `true`.
                   endpoints:
                     type: array
-                    description: If using external KVDB, this is the list of KVDB endpoints.
+                    description: A list of endpoints for your external key-value database like ETCD. This field takes precedence over the spec.kvdb.internal field. That is, if you specify the endpoints, Portworx ignores the spec.kvdb.internal field and it uses the external KVDB.A list of endpoints for your external key-value database like ETCD. This field takes precedence over the `spec.kvdb.internal field`. That is, if you specify the endpoints, Portworx ignores the `spec.kvdb.internal` field and it uses the external KVDB.
                     items:
                       type: string
                   authSecret:
                     type: string
-                    description: Authentication secret is the name of Kubernetes secret containing
-                      information to authenticate with the external KVDB. It could have the username/password
-                      for basic auth, certificate information or an ACL token.
+                    description: Indicates the name of the secret Portworx uses to authenticate against your KVDB. The secret must be placed in the same namespace as the `StorageCluster` object. The secret should provide the following information. <br/> - `username` (optional) <br/> - `password` (optional) <br/> - `kvdb-ca.crt` (the CA certificate) <br/> - `kvdb.key` (certificate key) <br/> - `kvdb.crt` (etcd certificate) <br/> - `acl-token` (optional) <br/>For example, create a directory called etcd-secrets, copy the files into it and create a secret with `kubectl -n kube-system create secret generic px-kvdb-auth --from-file=etcd-secrets/`
                   resources:
                     type: object
                     description: Specifies the compute resource requirements for the kvdb pod.
@@ -368,56 +364,53 @@ spec:
                             description: Maximum cpu for the kvdb pod.
               storage:
                 type: object
-                description: Details of the storage used by the storage driver.
+                description: Specify storage configuration for the selected nodes, similar to the one [specified at cluster level](#storage-configuration). If some of the config is left empty, the cluster level storage values are passed to the nodes. If you don't want to use a cluster level value and set the field to empty, then explicitly set an empty value for it so no value is passed to the nodes. For instance, set `spec.nodes[0].storage.kvdbDevice:""`, to prevent using the KVDB device for the selected nodes.
                 properties:
                   useAll:
                     type: boolean
-                    description: Use all available, unformatted, unpartitioned devices. This will be
-                      ignored if spec.storage.devices is not empty.
+                    description: If set to `true`, Portworx uses all available, unformatted, and unpartitioned devices. Default value is `true`.
                   useAllWithPartitions:
                     type: boolean
-                    description: Use all available unformatted devices. This will be
-                      ignored if spec.storage.devices is not empty.
+                    description: If set to `true`, Portworx uses all the available and unformatted devices. Default value is `false`.
                   forceUseDisks:
                     type: boolean
-                    description: Flag indicating to use the devices even if there is file system present
-                      on it. Note that the devices may be wiped before using.
+                    description: If set to `true`, Portworx uses a device even if there's a file system on it. Note that Portworx may wipe the drive before using it. Default value is `false`.
                   devices:
                     type: array
-                    description: List of devices to be used by the storage driver.
+                    description: Specifies the list of devices Portworx should use.
                     items:
                       type: string
                   cacheDevices:
                     type: array
-                    description: List of cache devices to be used by the storage driver.
+                    description: Specifies the list of cache devices Portworx should use.
                     items:
                       type: string
                   journalDevice:
                     type: string
-                    description: Device used for journaling.
+                    description: Specifies the device Portworx uses for journaling.
                   systemMetadataDevice:
                     type: string
-                    description: Device that will be used to store system metadata by the driver.
+                    description: Indicates the device Portworx uses to store metadata. For better performance, specify a system metadata device when using Portworx with the internal KVDB.
                   kvdbDevice:
                     type: string
-                    description: Device used for internal KVDB.
+                    description: Specifies the device Portworx uses to store internal KVDB data.
               cloudStorage:
                 type: object
                 description: Details of storage used in cloud environment.
                 properties:
                   provider:
                     type: string
-                    description: Cloud provider name.
+                    description: Specifies the cloud provider name. Example - azure, aws, gce, vsphere.
                   maxStorageNodes:
                     type: integer
                     format: int32
                     minimum: 0
-                    description: Maximum nodes that will have storage in the cluster.
+                    description: Specifies the maximum number of storage nodes. If this number is reached, and a new node is added, Portworx doesn't provision drives for the new node. Instead, Portworx starts the node as a compute-only node. As a best practice, it is recommended to use the `maxStorageNodesPerZone` field.
                   maxStorageNodesPerZone:
                     type: integer
                     format: int32
                     minimum: 0
-                    description: Maximum nodes in every zone that will have storage in the cluster.
+                    description: Indicates the maximum number of storage nodes per zone. If this number is reached, and a new node is added to the zone, Portworx doesn't provision drives for the new node. Instead, Portworx starts the node as a compute-only node.
                   maxStorageNodesPerZonePerNodeGroup:
                     type: integer
                     format: int32
@@ -472,51 +465,46 @@ spec:
                           description: Additional options required to provision the drive in cloud.
                   journalDeviceSpec:
                     type: string
-                    description: Device spec for the journal device.
+                    description: Specifies the cloud device Portworx uses for journaling.
                   systemMetadataDeviceSpec:
                     type: string
-                    description: Device spec for the metadata device. This device will be used to store
-                      system metadata by the driver.
+                    description: Indicates the cloud device Portworx uses for metadata. For performance, specify a system metadata device when using Portworx with the internal KVDB.
                   kvdbDeviceSpec:
                     type: string
-                    description: Device spec for internal KVDB device.
+                    description: Specifies the cloud device Portworx uses for an internal KVDB.
               network:
                 type: object
-                description: Contains network information that is needed by the storage driver.
+                description: Specify network configuration for the selected nodes, similar to the one [specified at cluster level](#network-configuration). If this network configuration is empty, then cluster level values are used.
                 properties:
                   dataInterface:
                     type: string
-                    description: Name of the network interface used by the storage driver for data traffic.
+                    description: Specifies the network interface Portworx uses for data traffic.
                   mgmtInterface:
                     type: string
-                    description: Name of the network interface used by the storage driver for management traffic.
+                    description: Indicates the network interface Portworx uses for control plane traffic.
               stork:
                 type: object
                 description: Contains STORK related spec.
                 properties:
                   enabled:
                     type: boolean
-                    description: Flag indicating whether STORK needs to be enabled.
+                    description: Enables or disables Stork at any given time. Default value is `true`.
                   lockImage:
                     type: boolean
-                    description: Flag indicating if the STORK image needs to be locked to the given image.
-                      If the image is not locked, it can be updated by the storage driver during upgrades.
+                    description: Enables locking Stork to the given image. When set to false, the Portworx Operator will overwrite the Stork image to a recommended image for given Portworx version. Default value is `false`.
                   image:
                     type: string
-                    description: Docker image of the STORK container.
+                    description: Specifies the Stork image.
                   hostNetwork:
                     type: boolean
                     description: Flag indicating if Stork pods should run in host network.
                   args:
                     type: object
                     x-kubernetes-preserve-unknown-fields: true
-                    description: >-
-                      It is map of arguments given to STORK. Example: driver: pxd
+                    description: A collection of key-value pairs that overrides the default Stork arguments or adds new arguments.
                   env:
                     type: array
-                    description: List of environment variables used by STORK. This is an array of
-                      Kubernetes EnvVar where the value can be given directly or from a source like field,
-                      config map or secret.
+                    description: A list of [Kubernetes like environment variables](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L1826) passed to Stork.
                     items:
                       type: object
                       properties:
@@ -563,6 +551,7 @@ spec:
                                   type: boolean
                   volumes:
                     type: array
+                    description: A list of volumes passed to Stork pods. The schema is similar to the [top-level volumes](#volume-configuration).
                     items:
                       type: object
                       properties:
@@ -760,24 +749,20 @@ spec:
                 properties:
                   enabled:
                     type: boolean
-                    description: Flag indicating whether autopilot needs to be enabled.
+                    description: Enables or disables Autopilot at any given time. Default value is `false`.
                   lockImage:
                     type: boolean
-                    description: Flag indicating if the autopilot image needs to be locked to the given image.
-                      If the image is not locked, it can be updated by the storage driver during upgrades.
+                    description: Enables locking Autopilot to the given image. When set to false, the Portworx Operator will overwrite the Autopilot image to a recommended image for given Portworx version. Default value is `false`.
                   image:
                     type: string
-                    description: Docker image of the autopilot container.
+                    description: Specifies the Autopilot image.
                   args:
                     type: object
                     x-kubernetes-preserve-unknown-fields: true
-                    description: >-
-                      It is a map of arguments provided to autopilot. Example: log-level: debug
+                    description: A collection of key-value pairs that overrides the default Autopilot arguments or adds new arguments.
                   env:
                     type: array
-                    description: List of environment variables used by autopilot. This is an array of
-                      Kubernetes EnvVar where the value can be given directly or from a source like field,
-                      config map or secret.
+                    description: A list of [Kubernetes like environment variables](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L1826) passed to Autopilot.
                     items:
                       type: object
                       properties:
@@ -824,6 +809,7 @@ spec:
                                   type: boolean
                   volumes:
                     type: array
+                    description: A list of volumes passed to Autopilot pods. The schema is similar to the [top-level volumes](#volume-configuration).
                     items:
                       type: object
                       properties:
@@ -930,7 +916,7 @@ spec:
                                               type: integer
                   providers:
                     type: array
-                    description: List of input data providers to autopilot.
+                    description: List of data providers for Autopilot.
                     items:
                       type: object
                       properties:
@@ -982,7 +968,7 @@ spec:
                     properties:
                       resources:
                         type: object
-                        description: Define resources requests and limits for single Pods.
+                        description: Provides the ability to configure Prometheus resource usage such as memory and CPU usage. Default limits - `CPU 1, memory 800M, and ephemeral storage 5G`
                         properties:
                           limits:
                             additionalProperties:
@@ -1134,11 +1120,10 @@ spec:
                         type: object
                       exportMetrics:
                         type: boolean
-                        description: If this flag is enabled it will expose the storage cluster metrics to Prometheus.
+                        description: Expose the Portworx metrics to an external or operator deployed Prometheus. Default value is `false`.
                       enabled:
                         type: boolean
-                        description: Flag indicating whether Prometheus stack needs to be enabled and deployed
-                          by the Storage operator.
+                        description: Enables or disables a Prometheus cluster. Default value is `false`.
                       remoteWriteEndpoint:
                         type: string
                         description: Specifies the remote write endpoint for Prometheus.
@@ -1148,15 +1133,13 @@ spec:
                         properties:
                           enabled:
                             type: boolean
-                            description: Flag indicating whether AlertManager needs to be enabled and deployed
-                              by the Storage operator.
+                            description: Enables or disables Prometheus Alertmanager.
                       replicas:
-                        description: Total number of non-terminated pods targeted by this
-                          Prometheus deployment (their labels match the selector).
+                        description: Specifies the number of Prometheus replicas that will be deployed. Default value is `1`.
                         format: int32
                         type: integer
                       retention:
-                        description: Time duration Prometheus shall retain data for. Default
+                        description: Specifies the time period for which Prometheus retains historical metrics. Default
                           is '24h' if retentionSize is not set, and must match the regular
                           expression `[0-9]+(ms|s|m|h|d|w|y)` (milliseconds seconds minutes
                           hours days weeks years).
@@ -1167,7 +1150,7 @@ spec:
                         pattern: (^0|([0-9]*[.])?[0-9]+((K|M|G|T|E|P)i?)?B)$
                         type: string
                       storage:
-                        description: Storage spec to specify how storage shall be used.
+                        description: Specifies the storage type that Prometheus will use for storing data. If you set the storage type to PVCs, do not set the `runAsGroup` or `fsGroup` option for the `spec.monitoring.prometheus.securityContext` flag.
                         properties:
                           disableMountSubPath:
                             description: 'Deprecated: subPath usage will be disabled by default
@@ -1815,9 +1798,7 @@ spec:
                             type: object
                         type: object
                       volumes:
-                        description: Volumes allows configuration of additional volumes on
-                          the output StatefulSet definition. Volumes specified will be appended
-                          to other volumes that are generated as a result of StorageSpec objects.
+                        description: Specifies additional volumes to the output Prometheus StatefulSet. These specified volumes will be appended to other volumes generated as a result of the `spec.monitoring.prometheus.storage` spec.
                         items:
                           description: Volume represents a named volume in a pod that may
                             be accessed by any container in the pod.
@@ -3375,10 +3356,7 @@ spec:
                           type: object
                         type: array
                       volumeMounts:
-                        description: VolumeMounts allows configuration of additional VolumeMounts
-                          on the output StatefulSet definition. VolumeMounts specified will
-                          be appended to other VolumeMounts in the prometheus container, that
-                          are generated as a result of StorageSpec objects.
+                        description: Specifies additional VolumeMounts on the output Prometheus StatefulSet definition. These specified VolumeMounts specified will be appended to other VolumeMounts in the Prometheus container generated as a result of `spec.monitoring.prometheus.storage` spec.
                         items:
                           description: VolumeMount describes a mounting of a Volume within
                             a container.
@@ -3422,8 +3400,7 @@ spec:
                     properties:
                       enabled:
                         type: boolean
-                        description: Flag indicating whether Grafana stack needs to be enabled and deployed
-                          by the Storage operator.
+                        description: Enables or disables a Grafana instance with Portworx dashboards. Default value is `false`.
                   telemetry:
                     type: object
                     description: Contains telemetry configuration for the storage cluster.
@@ -3439,42 +3416,41 @@ spec:
                         description: Docker image of the log-upload-service container.
               security:
                 type: object
-                description: Contains security configuration for the storage cluster.
+                description: An object for specifying PX-Security configurations. Refer to the [Operator Security page](/portworx-enterprise/operations/operate-kubernetes/authorization/enable) for more details.
                 properties:
                   enabled:
                     type: boolean
-                    description: Flag indicating whether security features need to be enabled for the storage cluster.
+                    description: Enables or disables Security at any given time. Default value is `false`.
                   auth:
                     type: object
                     description: Authorization configurations for a RBAC enabled storage cluster
                     properties:
                       guestAccess:
                         type: string
-                        description: Defines the access mode of a guest user
+                        description: Determines how the guest role will be updated in your cluster. The options are Enabled, Disabled, or Managed. Managed will cause the operator to ignore updating the system.guest role. Enabled and Disabled will allow or disable guest role access, respectively. Default value is `Enabled`.
                       selfSigned:
                         type: object
                         description: Configuration for self signed authentication
                         properties:
                           issuer:
                             type: string
-                            description: Token issuer for the tokens used to connect with storage cluster.
+                            description: The issuer name to be used when configuring PX-Security. This field maps to the `PORTWORX_AUTH_JWT_ISSUER` environment variable in the Portworx Daemonset. Default value is `operator.portworx.io`.
                           tokenLifetime:
                             type: string
-                            description: Lifetime of auto-generated RBAC tokens to access the storage cluster.
+                            description: The length operator-generated tokens will be alive until being refreshed. Default value is `24h`.
                           sharedSecret:
                             type: string
-                            description: Shared secret is the name of the Kubernetes secret containing the shared key
-                              used for signing RBAC tokens. The secret has to be present in the StorageCluster namespace.
+                            description: The Kubernetes secret name for retrieving and storing your shared secret. This field can be used to add a pre-existing shared secret or for customizing which secret name the operator will use for its auto-generated shared secret key. This field maps to the `PORTWORX_AUTH_JWT_SHAREDSECRET` environment variable in the Portworx Daemonset. Default value is `px-shared-secret`.
               csi:
                 type: object
                 description: Contains CSI configuration for the storage cluster.
                 properties:
                   enabled:
                     type: boolean
-                    description: Flag indicating whether CSI needs to be installed for the storage cluster.
+                    description: Flag indicating whether CSI needs to be installed for the storage cluster. Default value is `true`.
                   installSnapshotController:
                     type: boolean
-                    description: Flag indicating whether CSI Snapshot Controller needs to be installed for the storage cluster.
+                    description: Flag indicating whether CSI Snapshot Controller needs to be installed for the storage cluster. Default value is `false`.
                   topology:
                     type: object
                     description: Contains CSI topology configurations.
@@ -3782,8 +3758,7 @@ spec:
                             description: Maximum cpu for the portworx api container.
               env:
                 type: array
-                description: List of environment variables used by the driver. This is an array of Kubernetes
-                  EnvVar where the value can be given directly or from a source like field, config map or secret.
+                description: A list of [Kubernetes like environment variables](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L1826). Similar to how environment variables are provided in Kubernetes, you can directly provide values to Portworx or import them from a source like a Secret, ConfigMap, etc.
                 items:
                   type: object
                   properties:
@@ -3835,14 +3810,19 @@ spec:
                   properties:
                     name:
                       type: string
+                      description: Unique name for the volume.
                     readOnly:
                       type: boolean
+                      description: Volume is mounted read-only if true, read-write otherwise. Default value is `false`.
                     mountPath:
                       type: string
+                      description: Path within the Portworx container at which the volume should be mounted. Must not contain the ':' character.
                     mountPropagation:
                       type: string
+                      description: Determines how mounts are propagated from the host to container and the other way around.
                     hostPath:
                       type: object
+                      description: Specifies the location and type of the mounted volume. This is similar to the VolumeSource schema of a Kubernetes pod volume.
                       properties:
                         path:
                           type: string
@@ -3850,6 +3830,7 @@ spec:
                           type: string
                     secret:
                       type: object
+                      description: Specifies the location and type of the mounted volume. This is similar to the VolumeSource schema of a Kubernetes pod volume.
                       properties:
                         secretName:
                           type: string
@@ -3870,6 +3851,7 @@ spec:
                                 type: integer
                     configMap:
                       type: object
+                      description: Specifies the location and type of the mounted volume. This is similar to the VolumeSource schema of a Kubernetes pod volume.
                       properties:
                         name:
                           type: string
@@ -3944,20 +3926,14 @@ spec:
                   properties:
                     selector:
                       type: object
-                      description: Configuration in this node block is applied to nodes based on this selector.
-                        Use either nodeName of labelSelector, not both. If nodeName is used, labelSelector will
-                        be ignored.
+                      description: Selector for the node(s) to which the configuration in this section will be applied.
                       properties:
                         nodeName:
                           type: string
-                          description: Name of the Kubernetes node that is to be selected. If present then the
-                            labelSelector is ignored even if the node with the given name is absent and the
-                            labelSelector matches another node.
+                          description: Name of the node to which this configuration will be applied. Node name takes precedence over `selector.labelSelector`.
                         labelSelector:
                           type: object
-                          description: It is a label query over all the nodes. The result of matchLabels and
-                            matchExpressions is ANDed. An empty label selector matches all nodes. A null
-                            label selector matches no objects.
+                          description: The [Kubernetes style label selector](https://github.com/kubernetes/apimachinery/blob/master/pkg/apis/meta/v1/types.go) for nodes to which this configuration will be applied.
                           properties:
                             matchLabels:
                               type: object
@@ -3987,7 +3963,7 @@ spec:
                                       type: string
                     storage:
                       type: object
-                      description: Details of the storage used by the storage driver.
+                      description: Specify storage configuration for the selected nodes, similar to the one [specified at cluster level](#storage-configuration). If some of the config is left empty, the cluster level storage values are passed to the nodes. If you don't want to use a cluster level value and set the field to empty, then explicitly set an empty value for it so no value is passed to the nodes. For instance, set `spec.nodes[0].storage.kvdbDevice:""`, to prevent using the KVDB device for the selected nodes.
                       properties:
                         useAll:
                           type: boolean
@@ -4003,23 +3979,23 @@ spec:
                             on it. Note that the devices may be wiped before using.
                         devices:
                           type: array
-                          description: List of devices to be used by the storage driver.
+                          description: Specifies the list of devices Portworx should use.
                           items:
                             type: string
                         cacheDevices:
                           type: array
-                          description: List of cache devices to be used by the storage driver.
+                          description: Specifies the list of cache devices Portworx should use.
                           items:
                             type: string
                         journalDevice:
                           type: string
-                          description: Device used for journaling.
+                          description: Specifies the device Portworx uses for journaling.
                         systemMetadataDevice:
                           type: string
-                          description: Device that will be used to store system metadata by the driver.
+                          description: Indicates the device Portworx uses to store metadata. For better performance, specify a system metadata device when using Portworx with the internal KVDB.
                         kvdbDevice:
                           type: string
-                          description: Device used for internal KVDB.
+                          description: Specifies the device Portworx uses to store internal KVDB data.
                     cloudStorage:
                       type: object
                       description: Details of storage used in cloud environment.
@@ -4035,14 +4011,14 @@ spec:
                             type: string
                         journalDeviceSpec:
                           type: string
-                          description: Device spec for the journal device.
+                          description: Specifies the cloud device Portworx uses for journaling.
                         systemMetadataDeviceSpec:
                           type: string
                           description: Device spec for the metadata device. This device will be used to store
                             system metadata by the driver.
                         kvdbDeviceSpec:
                           type: string
-                          description: Device spec for internal KVDB device.
+                          description: Specifies the cloud device Portworx uses for an internal KVDB.
                         maxStorageNodesPerZonePerNodeGroup:
                           type: integer
                           format: int32
@@ -4051,11 +4027,11 @@ spec:
                             in the cluster.
                     network:
                       type: object
-                      description: Contains network information that is needed by the storage driver.
+                      description: Specify network configuration for the selected nodes, similar to the one [specified at cluster level](#network-configuration). If this network configuration is empty, then cluster level values are used.
                       properties:
                         dataInterface:
                           type: string
-                          description: Name of the network interface used by the storage driver for data traffic.
+                          description: Specifies the network interface Portworx uses for data traffic.
                         mgmtInterface:
                           type: string
                           description: Name of the network interface used by the storage driver for

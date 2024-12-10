@@ -38,8 +38,8 @@ func TestRenderedHelmTemplate(t *testing.T, helmOptions *helm.Options, helmChart
 
 func isYamlMatched(expected, actual interface{}) bool {
 	// Remove specific chart annotation/label before comparison
-	cleanExpected := removeChartAnnotation(expected)
-	cleanActual := removeChartAnnotation(actual)
+	cleanExpected := removeDynamicFields(expected)
+	cleanActual := removeDynamicFields(actual)
 
 	if !reflect.DeepEqual(cleanExpected, cleanActual) {
 		diff := cmp.Diff(cleanExpected, cleanActual)
@@ -50,7 +50,7 @@ func isYamlMatched(expected, actual interface{}) bool {
 }
 
 // Helper function to remove "chart" label or annotation with dynamic value
-func removeChartAnnotation(obj interface{}) interface{} {
+func removeDynamicFields(obj interface{}) interface{} {
 	switch obj := obj.(type) {
 	case map[string]interface{}:
 		// Check for metadata.annotations and remove the "chart" annotation
@@ -65,14 +65,18 @@ func removeChartAnnotation(obj interface{}) interface{} {
 				delete(labels, "chart")
 			}
 		}
+
+		// Remove the "image" field if present
+		delete(obj, "image")
+
 		// Recursively clean nested fields
 		for key, value := range obj {
-			obj[key] = removeChartAnnotation(value)
+			obj[key] = removeDynamicFields(value)
 		}
 	case []interface{}:
 		// Recursively clean annotations in list items
 		for i, value := range obj {
-			obj[i] = removeChartAnnotation(value)
+			obj[i] = removeDynamicFields(value)
 		}
 	}
 	return obj

@@ -104,6 +104,10 @@ spec:
       {{- if .Values.updateStrategy.minReadySeconds}}
       minReadySeconds: {{.Values.updateStrategy.minReadySeconds}}
       {{- end}}
+      {{- if .Values.updateStrategy.disruption.allow}}
+      disruption:
+        allow: true
+      {{- end}}
     {{- end}}
   {{- end }}
 
