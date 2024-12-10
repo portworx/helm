@@ -66,9 +66,6 @@ func removeDynamicFields(obj interface{}) interface{} {
 			}
 		}
 
-		// Remove the "image" field if present
-		delete(obj, "image")
-
 		// Recursively clean nested fields
 		for key, value := range obj {
 			obj[key] = removeDynamicFields(value)
