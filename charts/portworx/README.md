@@ -65,8 +65,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 
 | Parameter | Description | Default
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| `imageVersion` | Version of the PX image | 3.1.4 |
-| `pxOperatorImageVersion` | Version of the PX operator image | 24.1.1 |
+| `imageVersion` | Version of the PX image | 3.1.7 |
+| `pxOperatorImageVersion` | Version of the PX operator image | 24.2.0 |
 | `openshiftInstall` | Installing on Openshift? | false |
 | `pksInstall` | Installing on Pivotal Container service? | false |
 | `EKSInstall` | Installing EKS (Amazon Elastic Container service) | false |
