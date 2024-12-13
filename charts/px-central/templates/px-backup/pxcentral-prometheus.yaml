@@ -138,9 +138,6 @@ spec:
       {{- if and (eq $azureProxyEnabled true) (not (has "prometheus-operator" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
-      {{- else if has "prometheus-operator" .Values.proxy.excludeAzureProxyList }}
-      annotations:
-        kubernetes.azure.com/no-http-proxy-vars: "false"
       {{- end }}
     spec:
       affinity:
@@ -296,10 +293,6 @@ spec:
   podMetadata:
     annotations:
       kubernetes.azure.com/no-http-proxy-vars: "true"
-  {{- else if has "px-backup-dashboard-prometheus" .Values.proxy.excludeAzureProxyList }}
-  podMetadata:
-    annotations:
-      kubernetes.azure.com/no-http-proxy-vars: "false"
   {{- end }}
   {{- if .Values.persistentStorage.storageClassName }}
   storage:

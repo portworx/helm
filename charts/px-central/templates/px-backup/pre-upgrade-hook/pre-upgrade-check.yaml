@@ -148,10 +148,6 @@ spec:
     metadata:
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
-    {{- else if has "pre-upgrade-check" .Values.proxy.excludeAzureProxyList }}
-    metadata:
-      annotations:
-        kubernetes.azure.com/no-http-proxy-vars: "false"
     {{- end }}
     spec:
       {{- if $isOpenshiftCluster}}

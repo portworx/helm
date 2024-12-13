@@ -149,9 +149,6 @@ spec:
       {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-backend" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
-      {{- else if has "pxcentral-backend" .Values.proxy.excludeAzureProxyList }}
-      annotations:
-        kubernetes.azure.com/no-http-proxy-vars: "false"
       {{- end }}
       labels:
         run: pxcentral-backend
@@ -316,9 +313,6 @@ spec:
       {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-frontend" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
-      {{- else if has "pxcentral-frontend" .Values.proxy.excludeAzureProxyList }}
-      annotations:
-        kubernetes.azure.com/no-http-proxy-vars: "false"
       {{- end }}
       labels:
         run: pxcentral-frontend
@@ -470,9 +464,6 @@ spec:
       {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-mysql" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
-      {{- else if has "pxcentral-mysql" .Values.proxy.excludeAzureProxyList }}
-      annotations:
-        kubernetes.azure.com/no-http-proxy-vars: "false"
       {{- end }}
       labels:
         run: pxcentral-mysql
