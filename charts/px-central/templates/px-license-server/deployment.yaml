@@ -30,9 +30,6 @@ spec:
       {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-license-server" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
-      {{- else if has "pxcentral-license-server" .Values.proxy.excludeAzureProxyList }}
-      annotations:
-        kubernetes.azure.com/no-http-proxy-vars: "false"
       {{- end }}
       labels:
         app.kubernetes.io/component: pxcentral-license-server

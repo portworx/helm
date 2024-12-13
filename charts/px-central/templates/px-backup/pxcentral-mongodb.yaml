@@ -141,9 +141,6 @@ spec:
       {{- if and (eq $azureProxyEnabled true) (not (has "pxc-backup-mongodb" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
-      {{- else if has "pxc-backup-mongodb" .Values.proxy.excludeAzureProxyList }}
-      annotations:
-        kubernetes.azure.com/no-http-proxy-vars: "false"
       {{- end }}
       labels:
         app.kubernetes.io/name: {{.Release.Name }}
