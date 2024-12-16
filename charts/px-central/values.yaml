@@ -20,6 +20,7 @@ persistentStorage:
   keycloakThemeVolumeSize: "5Gi"
   keycloakBackendVolumeSize: "10Gi"
   preUpgradeHookVolumeSize: "65Gi"
+  preInstallHookVolumeSize: "2Gi"
 
 storkRequired: false
 nodeAffinityLabel: ""
@@ -257,6 +258,11 @@ images:
     repo: portworx
     imageName: pxcentral-onprem-pre-upgrade-base
     tag: 2.8.1-dev
+  preInstallHookImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
+    repo: mkoppal
+    imageName: pxcentral-onprem-pre-install-base
+    tag: mkoppal-test
   mysqlInitImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
