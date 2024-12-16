@@ -76,6 +76,12 @@ metadata:
     {{- if (lookup "apps/v1" "DaemonSet" "kube-system" "portworx") }}
     portworx.io/migration-approved: "false"
     {{- end }}
+    {{- if eq .Values.nonDisruptivek8sUpgrade true }}
+    portworx.io/disable-non-disruptive-upgrade: "false"
+    {{- end }}
+    {{- if eq .Values.skipHealthChecks true }}
+    portworx.io/health-check: "skip"
+    {{- end }}
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
