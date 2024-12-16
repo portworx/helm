@@ -286,6 +286,16 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				ValuesFiles: []string{"./testValues/storagecluster_storage_use_partitions.yaml"},
 			},
 		},
+		{
+			name:           "TestNonDisruptiveUpgradeAndHealthChecksAnnotation",
+			resultFileName: "storagecluster_non_disruptive_and_health_cheks_hannotation.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"nonDisruptivek8sUpgrade": "true",
+					"skipHealthChecks": "true",
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
