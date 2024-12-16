@@ -68,6 +68,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `imageVersion` | Version of the PX image | 3.1.7 |
 | `pxOperatorImageVersion` | Version of the PX operator image | 24.2.0 |
 | `openshiftInstall` | Installing on Openshift? | false |
+| `nonDisruptivek8sUpgrade` | Used to disable or enable smart and parallel kubetnetes node upgrades. By default, S&P upgrades are disabled. To enable them, set this to true | false |
+| `skipHealthChecks` | Used to skip health checks. By default, health checks are enabled. Set this to true to disable health checks | false | 
 | `pksInstall` | Installing on Pivotal Container service? | false |
 | `EKSInstall` | Installing EKS (Amazon Elastic Container service) | false |
 | `AKSInstall` | Installing on AKS (Azure Kubernetes service) | false |
@@ -151,6 +153,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `updateStrategy.type` | Specifies the update strategy for the Portworx cluster. Supported values: RollingUpdate, OnDelete | "" |
 | `updateStrategy.maxUnavailable` | Maximum number of nodes that can be unavailable during a rolling update | 1 |
 | `updateStrategy.minReadySeconds` | Minimum number of seconds that a pod should be ready before the next batch of pods is updated during a rolling update | 1 |
+| `updateStrategy.disruption.allow` | Specifies enable or disable smart and parallel upgrade. Smart upgrade is disabled by default, with maxUnavailable set to 1. Enable it by allow to false and configuring maxUnavailable in the StorageCluster. | None |
 | `updateStrategy.autoUpdateComponents` | Specifies the update strategy for the component images. Valid values: None, Once, Always | None |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
