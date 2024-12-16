@@ -2,7 +2,7 @@ kind: StorageCluster
 apiVersion: core.libopenstorage.org/v1
 metadata:
   name: "mycluster"
-  namespace: kube-system
+  namespace: portworx
   annotations:
   labels:
     heritage: "Helm"
@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-release"
 spec:
-  image: portworx/oci-monitor:3.1.7
+  image: portworx/oci-monitor:3.2.1
   imagePullPolicy: Always
   metadata:
     labels:
