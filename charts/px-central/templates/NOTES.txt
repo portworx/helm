@@ -15,7 +15,7 @@ Wait for job "pxcentral-post-install-hook" status to be in "Completed" state.
 
 {{- if eq .Release.IsInstall false }}
 
-PVC "pre-upgrade-data-pvc" is created in {{ .Release.Namespace }} with database dumps for MongoDB and MySQL. Use it to restore the initial state in case of Upgrade failure, else delete it on success.
+PVC "pre-upgrade-data-pvc" is created in {{ .Release.Namespace }} with database dumps for MongoDB(in case ".pxbackup.enabled" is set to true) and MySQL. Use it to restore the initial state in case of Upgrade failure, else delete it on success.
 
 {{- end}}
 
