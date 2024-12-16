@@ -6,6 +6,7 @@ modules:
     pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:2.8.2-dev"
     pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:2.8.2-dev"
     pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:2.8.2-dev"
+    pxcentralOnpremPreInstall: "docker.io/portworx/pxcentral-onprem-pre-install-base:2.8.2-dev"
     pxcentralOnpremPreUpgrade: "docker.io/portworx/pxcentral-onprem-pre-upgrade-base:2.8.2-dev"
     postgresql: "docker.io/portworx/postgresql:11.19.0-debian-11-r1"
     keycloak: "docker.io/portworx/keycloak:25.0.2"
