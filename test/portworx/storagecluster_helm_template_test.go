@@ -288,7 +288,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 		},
 		{
 			name:           "TestNonDisruptiveUpgradeAndHealthChecksAnnotation",
-			resultFileName: "storagecluster_non_disruptive_and_health_cheks_hannotation.yaml",
+			resultFileName: "storagecluster_non_disruptive_and_health_cheks_annotation.yaml",
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
 					"nonDisruptivek8sUpgrade": "true",
