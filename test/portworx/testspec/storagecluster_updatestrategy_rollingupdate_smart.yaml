@@ -1,0 +1,38 @@
+kind: StorageCluster
+apiVersion: core.libopenstorage.org/v1
+metadata:
+  name: "mycluster"
+  namespace: kube-system
+  annotations:
+  labels:
+    heritage: "Helm"
+    release: "my-release"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "my-release"
+spec:
+  image: portworx/oci-monitor:3.1.7
+  imagePullPolicy: Always
+  updateStrategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 3
+      minReadySeconds: 30
+      disruption: 
+        allow: false
+  autoUpdateComponents: Always
+
+  kvdb:
+    internal: true
+  storage:
+    useAll: true
+  secretsProvider: k8s
+  
+  stork:
+    enabled: true
+  monitoring:
+    telemetry:
+      enabled: true
+  csi:
+    enabled: true
+  autopilot:
+    enabled: true

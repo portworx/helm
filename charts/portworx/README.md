@@ -153,7 +153,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `updateStrategy.type` | Specifies the update strategy for the Portworx cluster. Supported values: RollingUpdate, OnDelete | "" |
 | `updateStrategy.maxUnavailable` | Maximum number of nodes that can be unavailable during a rolling update | 1 |
 | `updateStrategy.minReadySeconds` | Minimum number of seconds that a pod should be ready before the next batch of pods is updated during a rolling update | 1 |
-| `updateStrategy.disruption.allow` | Specifies enable or disable smart and parallel upgrade. Smart upgrade is disabled by default, with maxUnavailable set to 1. Enable it by allow to false and configuring maxUnavailable in the StorageCluster. | None |
+| `updateStrategy.disruption.allow` | This field is used to enable smart and parallel upgrade. Smart upgrade is disabled by default, Enable it by setting to false. we can use the `maxUnavailable` field to control the maximum number of Portworx nodes that can be upgraded at a time | None |
 | `updateStrategy.autoUpdateComponents` | Specifies the update strategy for the component images. Valid values: None, Once, Always | None |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
