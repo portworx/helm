@@ -17,6 +17,8 @@ spec:
     rollingUpdate:
       maxUnavailable: 3
       minReadySeconds: 30
+      disruption: 
+        allow: false
   autoUpdateComponents: Always
 
   kvdb:
