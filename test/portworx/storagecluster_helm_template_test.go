@@ -176,10 +176,10 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
-			name:           "TestUpdateStrategyRollingUpdateWithNonDisruption",
-			resultFileName: "storagecluster_updatestrategy_rollingupdate_non_disruption.yaml",
+			name:           "TestUpdateStrategyRollingSmartUpdate",
+			resultFileName: "storagecluster_updatestrategy_rollingupdate_smart.yaml",
 			helmOption: &helm.Options{
-				ValuesFiles: []string{"./testValues/storagecluster_updatestrategy_rollingupdate_non_disruption.yaml"},
+				ValuesFiles: []string{"./testValues/storagecluster_updatestrategy_rollingupdate_smart.yaml"},
 			},
 		},
 		{
@@ -288,11 +288,11 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 		},
 		{
 			name:           "TestNonDisruptiveUpgradeAndHealthChecksAnnotation",
-			resultFileName: "storagecluster_non_disruptive_and_health_cheks_hannotation.yaml",
+			resultFileName: "storagecluster_non_disruptive_and_health_cheks_annotation.yaml",
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
 					"nonDisruptivek8sUpgrade": "true",
-					"skipHealthChecks": "true",
+					"skipHealthChecks":        "true",
 				},
 			},
 		},
