@@ -176,6 +176,13 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestUpdateStrategyRollingSmartUpdate",
+			resultFileName: "storagecluster_updatestrategy_rollingupdate_smart.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_updatestrategy_rollingupdate_smart.yaml"},
+			},
+		},
+		{
 			name:           "TestUpdateStrategyOndelete",
 			resultFileName: "storagecluster_updatestrategy_ondelete.yaml",
 			helmOption: &helm.Options{
@@ -285,7 +292,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
 					"nonDisruptivek8sUpgrade": "true",
-					"skipHealthChecks": "true",
+					"skipHealthChecks":        "true",
 				},
 			},
 		},

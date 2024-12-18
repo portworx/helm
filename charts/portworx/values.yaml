@@ -10,7 +10,7 @@ openshiftInstall: false                 # Defaults to false for installing Portw
 isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
                                         # Used to disable or enable smart and parallel kubetnetes node upgrades.
 nonDisruptivek8sUpgrade: false          # By default, S&P upgrades are disabled. To enable them, set this to true
-skipHealthChecks:                       # Used to skip health checks. By default, health checks are enabled. Set this to true to disable health checks
+skipHealthChecks: false                 # Used to skip health checks. By default, health checks are enabled. Set this to true to disable health checks
 
 pksInstall: false                       # installation on PKS (Pivotal Container Service)
 EKSInstall: false                     # installation on EKS.
@@ -258,8 +258,13 @@ updateStrategy:
 
   # maxUnavailable and minReadySeconds applicable only on selecting type RollingUpdate
   disruption: 
+<<<<<<< HEAD
     allow:                                # This field is used to enable smart and parallel upgrade. Smart upgrade is disabled by default, with maxUnavailable set to 1
                                           # Enable it by setting allow to false and configuring maxUnavailable
+=======
+    allow: true                           # This field is used to enable smart and parallel upgrade. Smart upgrade is disabled by default,
+                                          # Enable it by setting to false. we can use the `maxUnavailable` field to control the maximum number of Portworx nodes that can be upgraded at a time.
+>>>>>>> f716a64b1bf61b5aa9e3c563c07cef210b03aeae
 
   maxUnavailable:                         # Similarly to how Kubernetes rolling update strategies work, this field specifies how many nodes can be down at any given time.
   minReadySeconds:                        # During rolling updates, this flag will wait for all pods to be ready for at least minReadySeconds before updating the next batch of pods,

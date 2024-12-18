@@ -18,7 +18,7 @@ spec:
       maxUnavailable: 3
       minReadySeconds: 30
       disruption: 
-        allow: true
+        allow: false
   autoUpdateComponents: Always
 
   kvdb:

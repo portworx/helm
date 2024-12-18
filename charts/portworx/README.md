@@ -65,8 +65,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 
 | Parameter | Description | Default
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| `imageVersion` | Version of the PX image | 3.1.4 |
-| `pxOperatorImageVersion` | Version of the PX operator image | 24.1.1 |
+| `imageVersion` | Version of the PX image | 3.1.7 |
+| `pxOperatorImageVersion` | Version of the PX operator image | 24.2.0 |
 | `openshiftInstall` | Installing on Openshift? | false |
 | `nonDisruptivek8sUpgrade` | Used to disable or enable smart and parallel kubetnetes node upgrades. By default, S&P upgrades are disabled. To enable them, set this to true | false |
 | `skipHealthChecks` | Used to skip health checks. By default, health checks are enabled. Set this to true to disable health checks | false | 
@@ -153,7 +153,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `updateStrategy.type` | Specifies the update strategy for the Portworx cluster. Supported values: RollingUpdate, OnDelete | "" |
 | `updateStrategy.maxUnavailable` | Maximum number of nodes that can be unavailable during a rolling update | 1 |
 | `updateStrategy.minReadySeconds` | Minimum number of seconds that a pod should be ready before the next batch of pods is updated during a rolling update | 1 |
-| `updateStrategy.disruption.allow` | Specifies enable or disable smart and parallel upgrade. Smart upgrade is disabled by default, with maxUnavailable set to 1. Enable it by allow to false and configuring maxUnavailable in the StorageCluster. | None |
+| `updateStrategy.disruption.allow` | This field is used to enable smart and parallel upgrade. Smart upgrade is disabled by default, Enable it by setting to false. we can use the `maxUnavailable` field to control the maximum number of Portworx nodes that can be upgraded at a time | None |
 | `updateStrategy.autoUpdateComponents` | Specifies the update strategy for the component images. Valid values: None, Once, Always | None |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,

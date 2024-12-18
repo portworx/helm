@@ -1,3 +1,5 @@
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- if eq $pxBackupEnabled true }}
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
@@ -581,3 +583,4 @@ spec:
       for: 1m
       labels:
         severity: critical
+{{- end -}}
