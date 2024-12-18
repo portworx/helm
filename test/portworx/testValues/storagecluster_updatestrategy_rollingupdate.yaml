@@ -3,6 +3,4 @@ updateStrategy:
   maxUnavailable:  3                     
   minReadySeconds: 30                     
   autoUpdateComponents: Always
-  disruption:
-    allow: true
   
