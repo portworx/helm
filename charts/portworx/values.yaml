@@ -258,7 +258,7 @@ updateStrategy:
 
   # maxUnavailable and minReadySeconds applicable only on selecting type RollingUpdate
   disruption: 
-    allow:                                # This field is used to enable smart and parallel upgrade. Smart upgrade is disabled by default,
+    allow: true                           # This field is used to enable smart and parallel upgrade. Smart upgrade is disabled by default,
                                           # Enable it by setting to false. we can use the `maxUnavailable` field to control the maximum number of Portworx nodes that can be upgraded at a time.
 
   maxUnavailable:                         # Similarly to how Kubernetes rolling update strategies work, this field specifies how many nodes can be down at any given time.
