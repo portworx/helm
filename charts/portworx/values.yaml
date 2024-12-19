@@ -10,7 +10,7 @@ openshiftInstall: false                 # Defaults to false for installing Portw
 isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
                                         # Used to disable or enable smart and parallel kubetnetes node upgrades.
 nonDisruptivek8sUpgrade: false          # By default, S&P upgrades are disabled. To enable them, set this to true
-skipHealthChecks:                       # Used to skip health checks. By default, health checks are enabled. Set this to true to disable health checks
+skipHealthChecks: false                 # Used to skip health checks. By default, health checks are enabled. Set this to true to disable health checks
 
 pksInstall: false                       # installation on PKS (Pivotal Container Service)
 EKSInstall: false                     # installation on EKS.
