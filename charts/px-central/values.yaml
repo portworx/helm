@@ -256,12 +256,12 @@ images:
   preInstallHookImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: pxcentral-onprem-pre-install-base
+    imageName: pxcentral-onprem-base
     tag: 2.8.2-dev
   preUpgradeHookImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: pxcentral-onprem-pre-upgrade-base
+    imageName: pxcentral-onprem-base
     tag: 2.8.2-dev
   mysqlInitImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
