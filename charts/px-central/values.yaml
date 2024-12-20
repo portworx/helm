@@ -254,10 +254,10 @@ images:
     imageName: mysql
     tag: 8.0.37
   preInstallHookImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
+    repo: mkoppal
     imageName: pxcentral-onprem-pre-install-base
-    tag: 2.8.2-dev
+    tag: mkoppal-sc-testt
   preUpgradeHookImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
@@ -379,3 +379,41 @@ images:
       mongodb5: 5.0.24-debian-11-r20
       mongodb6: 6.0.13-debian-11-r21
       mongodb7: 7.0.14-debian-12-r0
+
+computedImages:
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/pxcentral-onprem-api-base:2.8.2-dev
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/pxcentral-onprem-ui-frontend-private:2.8.2-dev
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/pxcentral-onprem-ui-backend-private:2.8.2-dev
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/pxcentral-onprem-ui-lhbackend-private:2.8.2-dev
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/pxcentral-onprem-post-setup-base:2.8.2-dev
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/postgresql:11.19.0-debian-11-r1
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/keycloak:25.0.2
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/sb-keycloak-login-theme:2.8.0
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/busybox:1.35.0
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/mysql:8.0.37
+  - pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/mkoppal/pxcentral-onprem-pre-install-base:mkoppal-sc-testt
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/pxcentral-onprem-pre-upgrade-base:2.8.2-dev
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/busybox:1.35.0
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/px-backup-base:2.8.2-dev
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/mongodb:7.0.14-debian-12-r0
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/px-els:2.8.0
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/cortex:v1.13.1
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/cassandra:4.0.7-debian-11-r34
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/nginx:1.23.3-alpine-slim
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/consul:1.14.4-debian-11-r4
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/go-dnsmasq:release-1.0.7-v3
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/grafana:9.1.3
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/prometheus:v2.35.0
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/prometheus:v2.53.0
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/alertmanager:v0.26.0
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/prometheus-operator:v0.75.0
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/prometheus-config-reloader:v0.75.0
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/prometheus-config-reloader:v0.56.3
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/prometheus-operator:v0.56.3
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/memcached-exporter:v0.10.0
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/memcached:1.6.17-alpine
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/memcached:1.6.17-alpine
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/mongodb:5.0.24-debian-11-r20
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/mongodb:6.0.13-debian-11-r21
+  - pure-artifactory.dev.purestorage.com/px-docker-remote/portworx/mongodb:7.0.14-debian-12-r0
+
