@@ -116,7 +116,7 @@ metadata:
     app.kubernetes.io/component: pxcentral-pre-upgrade-hook
   annotations:
     "helm.sh/hook": pre-upgrade
-    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-weight": "1"
     "helm.sh/resource-policy": keep
 spec:
   accessModes:
