@@ -279,7 +279,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: mongodb
-    tag: 7.0.14-debian-12-r0
+    tag: 7.0.15-debian-12-r2
 
   ## Images required for enabling px-license-server
   licenseServerImage:
@@ -328,22 +328,22 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: prometheus
-    tag: v2.53.0
+    tag: v3.0.1
   pxBackupAlertmanagerImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: alertmanager
-    tag: v0.26.0
+    tag: v0.27.0
   pxBackupPrometheusOperatorImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: prometheus-operator
-    tag: v0.75.0
+    tag: v0.78.2
   pxBackupPrometheusConfigReloaderImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: prometheus-config-reloader
-    tag: v0.75.0
+    tag: v0.78.2
   prometheusConfigReloadrImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
@@ -378,4 +378,4 @@ images:
     tags: 
       mongodb5: 5.0.24-debian-11-r20
       mongodb6: 6.0.13-debian-11-r21
-      mongodb7: 7.0.14-debian-12-r0
+      mongodb7: 7.0.15-debian-12-r2
