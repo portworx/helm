@@ -90,7 +90,7 @@ metadata:
     app.kubernetes.io/component: pxcentral-pre-install-hook
   annotations:
     "helm.sh/hook": pre-install
-    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-weight": "1"
     "helm.sh/resource-policy": keep
 spec:
   accessModes:
@@ -166,6 +166,79 @@ spec:
         - name: data-volume
           persistentVolumeClaim:
             claimName: pre-install-data-pvc
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      restartPolicy: Never
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+  backoffLimit: 0
+---
+# Pre Flight check job
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: preflight-check
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: pxcentral-preflight-check-hook
+    app.kubernetes.io/component: pxcentral-preflight-check-hook
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-completed
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  template:
+    spec:
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+                  - key: {{ .Values.nodeAffinityLabel }}
+                    operator: Exists
+              {{- else }}
+                  - key: pxbackup/enabled
+                    operator: NotIn
+                    values:
+                      - "false"
+              {{- end }}
+      containers:
+        - name: pxbackup-pre-flight-checker
+          image: {{ printf "%s/%s/%s:%s" .Values.images.preInstallHookImage.registry .Values.images.preInstallHookImage.repo .Values.images.preInstallHookImage.imageName .Values.images.preInstallHookImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          command: [ "/pxcentral-hook/bin/pxcentral-hook" ]
+          args: [ "--hook=preflight-check" ]
+          env:
+            - name: NAMESPACE
+              value: {{ .Release.Namespace }}
+            - name: STORAGE_CLASS
+              value: {{ .Values.persistentStorage.storageClassName }}
+            - name: IMAGES
+              {{- with .Values.images }}
+              value: |
+              {{- toJson . | nindent 16 }}
+              {{- end }}
+            - name: PX_BACKUP_ENABLED
+              value: {{ .Values.pxbackup.enabled | default false | quote }}
+            - name: PX_MONITOR_ENABLED
+              value: {{ .Values.pxmonitor.enabled | default false | quote }}
+            - name: PX_LICENSE_SERVER_ENABLED
+              value: {{ .Values.pxlicenseserver.enabled | default false | quote }}
+          volumeMounts: []
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}

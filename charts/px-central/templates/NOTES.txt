@@ -52,5 +52,6 @@ Login with the following credentials:
 {{- end }}
 
 For more information: https://github.com/portworx/helm/blob/master/charts/px-central/README.md
+For more information on network pre-requisites: https://docs.portworx.com/portworx-backup-on-prem/install/install-prereq/nw-prereqs.html
 
 --------------------------------------------------
