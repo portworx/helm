@@ -147,7 +147,8 @@ spec:
         - name: pxbackup-pre-install-check
           image: {{ printf "%s/%s/%s:%s" .Values.images.preInstallHookImage.registry .Values.images.preInstallHookImage.repo .Values.images.preInstallHookImage.imageName .Values.images.preInstallHookImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
-          command: ["/pxcentral-pre-install-hook/bin/pre-install-hook"]
+          command: ["/pxcentral-hook/bin/pxcentral-hook"]
+          args: ["--hook=pre-install"]
           env:
             - name: NAMESPACE
               value: {{ .Release.Namespace }}

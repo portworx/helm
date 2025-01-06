@@ -49,8 +49,7 @@ oidc:
 proxy:
   azureProxyEnabled: false
   ## excludeAzureProxyList: List of services to exclude from Azure proxy configuration (annotations)
-  
-  
+
   # excludeAzureProxyList:
   # - px-backup-alertmanager
   # - px-backup
@@ -73,8 +72,8 @@ proxy:
 
   ## includeNoProxyList: List of services to include in the noProxy configuration.
   # when this list is empty, noProxy is set to all services
-  
-  # includeNoProxyList: 
+
+  # includeNoProxyList:
   # - px-backup-alertmanager
   # - px-backup
   # - pxc-backup-mongodb
@@ -256,12 +255,12 @@ images:
   preInstallHookImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: pxcentral-onprem-pre-install-base
+    imageName: pxcentral-onprem-hook-base
     tag: 2.8.2-dev
   preUpgradeHookImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: pxcentral-onprem-pre-upgrade-base
+    imageName: pxcentral-onprem-hook-base
     tag: 2.8.2-dev
   mysqlInitImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -375,7 +374,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: mongodb
-    tags: 
+    tags:
       mongodb5: 5.0.24-debian-11-r20
       mongodb6: 6.0.13-debian-11-r21
       mongodb7: 7.0.15-debian-12-r2
