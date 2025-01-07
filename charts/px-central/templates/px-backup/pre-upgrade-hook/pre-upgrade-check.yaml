@@ -171,7 +171,7 @@ spec:
               {{- end }}
       containers:
         - name: pxc-pre-upgrade
-          image: {{ printf "%s/%s/%s:%s" .Values.images.preUpgradeHookImage.registry .Values.images.preUpgradeHookImage.repo .Values.images.preUpgradeHookImage.imageName .Values.images.preUpgradeHookImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" .Values.images.preSetupHookImage.registry .Values.images.preSetupHookImage.repo .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: ["/pxcentral-hook/bin/pxcentral-hook"]
           args: ["--hook=pre-upgrade"]
@@ -179,6 +179,8 @@ spec:
             {{- if eq $pxBackupEnabled true }} 
             - name: MONGODB_STATEFULSET_NAME
               value: pxc-backup-mongodb
+            - name: TARGET_PXBACKUP_VERSION
+              value: "{{ .Values.pxbackup.version }}"
             - name: MONGODB_TARGET_VERSION
               value: {{ .Values.images.mongodbImage.tag }}
             - name: MONGODB_SERVICE_NAME

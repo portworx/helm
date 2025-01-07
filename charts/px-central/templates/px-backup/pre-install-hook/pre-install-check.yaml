@@ -145,7 +145,7 @@ spec:
               {{- end }}
       containers:
         - name: pxbackup-pre-install-check
-          image: {{ printf "%s/%s/%s:%s" .Values.images.preInstallHookImage.registry .Values.images.preInstallHookImage.repo .Values.images.preInstallHookImage.imageName .Values.images.preInstallHookImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" .Values.images.preSetupHookImage.registry .Values.images.preSetupHookImage.repo .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: ["/pxcentral-hook/bin/pxcentral-hook"]
           args: ["--hook=pre-install"]
