@@ -11,7 +11,7 @@ modules:
     keycloak: "docker.io/portworx/keycloak:25.0.2"
     keycloakLoginTheme: "docker.io/portworx/sb-keycloak-login-theme:2.8.0"
     busybox: "docker.io/portworx/busybox:1.35.0"
-    mysql: "docker.io/portworx/mysql:8.0.37"
+    mysql: "docker.io/portworx/mysql:8.0.40"
   pxBackup:
     pxBackup: "docker.io/portworx/px-backup-base:2.8.2-dev"
     mongodb: "docker.io/portworx/mongodb:7.0.15-debian-12-r2"
