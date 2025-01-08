@@ -196,6 +196,11 @@ metadata:
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
 spec:
   template:
+    {{- if and (eq $azureProxyEnabled true) (not (has "preflight-check" .Values.proxy.excludeAzureProxyList)) }}
+    metadata:
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+    {{- end }}
     spec:
       {{- if $isOpenshiftCluster}}
       {{- else }}
@@ -218,13 +223,18 @@ spec:
               {{- end }}
       containers:
         - name: pxbackup-pre-flight-checker
-          image: {{ printf "%s/%s/%s:%s" .Values.images.preInstallHookImage.registry .Values.images.preInstallHookImage.repo .Values.images.preInstallHookImage.imageName .Values.images.preInstallHookImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" .Values.images.preSetupHookImage.registry .Values.images.preSetupHookImage.repo .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: [ "/pxcentral-hook/bin/pxcentral-hook" ]
           args: [ "--hook=preflight-check" ]
           env:
             - name: NAMESPACE
               value: {{ .Release.Namespace }}
+            - name: JOB_TIMEOUT_SECONDS
+              value: "600"
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "preflight-check" .Values.proxy.includeNoProxyList) }}
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- end }}
             - name: STORAGE_CLASS
               value: {{ .Values.persistentStorage.storageClassName }}
             - name: IMAGES
