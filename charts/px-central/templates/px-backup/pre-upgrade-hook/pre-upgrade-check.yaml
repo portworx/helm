@@ -116,7 +116,7 @@ metadata:
     app.kubernetes.io/component: pxcentral-pre-upgrade-hook
   annotations:
     "helm.sh/hook": pre-upgrade
-    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-weight": "4"
     "helm.sh/resource-policy": keep
 spec:
   accessModes:
@@ -138,7 +138,7 @@ metadata:
     app.kubernetes.io/component: pxcentral-pre-upgrade-hook
   annotations:
     "helm.sh/hook": pre-upgrade
-    "helm.sh/hook-weight": "2"
+    "helm.sh/hook-weight": "6"
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-completed
     meta.helm.sh/release-name: {{ .Release.Name }}
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
