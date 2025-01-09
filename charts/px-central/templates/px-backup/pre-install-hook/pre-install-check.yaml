@@ -4,7 +4,43 @@
 {{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 
-
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: px-backup-pre-setup-clusterrole
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-pre-setup-hook
+    app.kubernetes.io/component: pxcentral-pre-setup-hook
+rules:
+  - apiGroups: [ "storage.k8s.io" ]
+    resources: [ "storageclasses" ]
+    verbs: [ "get", "list", "watch" ]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: px-backup-pre-setup-clusterrolebinding
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-pre-setup-hook
+    app.kubernetes.io/component: pxcentral-pre-setup-hook
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: px-backup-pre-setup-clusterrole
+  apiGroup: rbac.authorization.k8s.io
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -12,6 +48,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   annotations:
     "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "2"
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
   labels:
     name: pxcentral-pre-install-hook
@@ -67,6 +104,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
   annotations:
     "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "3"
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
   labels:
     name: pxcentral-pre-install-hook
@@ -90,7 +128,7 @@ metadata:
     app.kubernetes.io/component: pxcentral-pre-install-hook
   annotations:
     "helm.sh/hook": pre-install
-    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-weight": "4"
     "helm.sh/resource-policy": keep
 spec:
   accessModes:
@@ -112,7 +150,7 @@ metadata:
     app.kubernetes.io/component: pxcentral-pre-install-hook
   annotations:
     "helm.sh/hook": pre-install
-    "helm.sh/hook-weight": "2"
+    "helm.sh/hook-weight": "6"
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-completed
     meta.helm.sh/release-name: {{ .Release.Name }}
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
@@ -190,7 +228,7 @@ metadata:
     app.kubernetes.io/component: pxcentral-preflight-check-hook
   annotations:
     "helm.sh/hook": pre-install,pre-upgrade
-    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-weight": "5"
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-completed
     meta.helm.sh/release-name: {{ .Release.Name }}
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
@@ -248,6 +286,8 @@ spec:
               value: {{ .Values.pxmonitor.enabled | default false | quote }}
             - name: PX_LICENSE_SERVER_ENABLED
               value: {{ .Values.pxlicenseserver.enabled | default false | quote }}
+            - name: DOCREGISTRY_SECRET_NAME
+              value: {{ .Values.images.pullSecrets | first }}
           volumeMounts: []
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
