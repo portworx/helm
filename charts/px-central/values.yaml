@@ -98,6 +98,8 @@ proxy:
 postInstallJob:
   sslEnabled: true
 
+isUpgrade: false
+
 pxbackup:
   enabled: false
   orgName: default
