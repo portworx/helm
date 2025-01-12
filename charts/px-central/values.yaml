@@ -99,6 +99,7 @@ postInstallJob:
   sslEnabled: true
 
 isUpgrade: false
+isOpenshift: false
 
 pxbackup:
   enabled: false
