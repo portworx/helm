@@ -1,6 +1,8 @@
-{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+
+{{- if or .Release.IsUpgrade .Values.isUpgrade }}
 
 {{- if .Release.IsUpgrade }}
   {{- $sts := lookup "apps/v1" "StatefulSet" .Release.Namespace "pxc-backup-mongodb" -}}
@@ -245,3 +247,4 @@ spec:
       {{- toYaml . | nindent 8 }}
       {{- end }} 
   backoffLimit: 0
+{{- end }}
