@@ -1,7 +1,7 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
-{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $mongoCacheSize := int .Values.persistentStorage.mongoCacheSize}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $pxBackupEnabled true }}

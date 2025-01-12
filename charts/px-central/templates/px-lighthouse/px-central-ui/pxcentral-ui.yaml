@@ -1,7 +1,7 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
-{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $nfsEnabled := .Values.pxbackup.nfs.enabled | default false }}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 apiVersion: v1

@@ -2,7 +2,7 @@
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $centralOIDC := .Values.oidc.centralOIDC.enabled | default false -}}
 {{- $operatorToChartUpgrade := .Values.operatorToChartUpgrade | default false -}}
-{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $centralOIDC true }}
 apiVersion: v1

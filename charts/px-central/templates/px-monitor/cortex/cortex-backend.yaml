@@ -1,6 +1,6 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
-{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $storkRequired := .Values.storkRequired | default false -}}
 {{- $sslEnabled := .Values.pxmonitor.sslEnabled | default false -}}
