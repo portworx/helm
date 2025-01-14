@@ -13,6 +13,6 @@ keywords:
 name: px-central
 sources:
 - https://github.com/portworx/helm/tree/master/charts/px-central
-version: 2.8.1
-appVersion: 2.8.1
+version: 2.8.2
+appVersion: 2.8.2
 name: px-central
