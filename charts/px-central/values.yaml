@@ -159,27 +159,27 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 2.7.3
+    tag: 2.7.4
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 2.7.3
+    tag: 2.7.4
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 2.7.3
+    tag: 2.7.4
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 2.7.3
+    tag: 2.7.4
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 2.7.3
+    tag: 2.7.4
   keycloakBackendImage:
     registry: docker.io
     repo: portworx
@@ -209,7 +209,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-pre-upgrade
-    tag: 2.7.3
+    tag: 2.7.4
   mysqlInitImage:
     registry: docker.io
     repo: portworx
@@ -221,7 +221,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 2.7.3
+    tag: 2.7.4
   mongodbImage:
     registry: docker.io
     repo: portworx
