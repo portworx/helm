@@ -158,6 +158,8 @@ spec:
           env:
             - name: NAMESPACE
               value: {{ .Release.Namespace }}
+            - name: STORAGE_CLASS
+              value: {{ .Values.persistentStorage.storageClassName }}
             - name: MINIMUM_KUBERNETES_VERSION
               value: "{{ $minimumKubernetesVersion }}"
             - name: JOB_TIMEOUT_SECONDS
