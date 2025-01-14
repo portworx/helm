@@ -124,7 +124,7 @@ pxbackup:
   enableMonitorBLHealth: false
   backupDeleteWorker: 5
   volDeleteWorker: 5
-  version: 2.8.2
+  version: 2.8.3
 
 pxlicenseserver:
   enabled: false
@@ -209,31 +209,31 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-api-base
-    tag: 2.8.2-dev
+    tag: 2.8.3-dev
     module: pxCentral
   pxcentralFrontendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend-private
-    tag: 2.8.2-dev
+    tag: 2.8.3-dev
     module: pxCentral
   pxcentralBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-backend-private
-    tag: 2.8.2-dev
+    tag: 2.8.3-dev
     module: pxCentral
   pxcentralMiddlewareImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend-private
-    tag: 2.8.2-dev
+    tag: 2.8.3-dev
     module: pxCentral
   postInstallSetupImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-post-setup-base
-    tag: 2.8.2-dev
+    tag: 2.8.3-dev
     module: pxCentral
   keycloakBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -269,7 +269,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-hook-base
-    tag: 2.8.2-dev
+    tag: 2.8.3-dev
     module: pxCentral
   mysqlInitImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -283,7 +283,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: px-backup-base
-    tag: 2.8.2-dev
+    tag: 2.8.3-dev
     module: pxBackup
   mongodbImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
