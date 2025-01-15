@@ -181,6 +181,8 @@ spec:
             {{- if eq $pxBackupEnabled true }} 
             - name: MONGODB_STATEFULSET_NAME
               value: pxc-backup-mongodb
+            - name: SKIP_VALIDATIONS
+              value: {{ .Values.pxbackup.skipValidations | default false | quote }}
             - name: TARGET_PXBACKUP_VERSION
               value: "{{ .Values.pxbackup.version }}"
             - name: MONGODB_TARGET_VERSION
