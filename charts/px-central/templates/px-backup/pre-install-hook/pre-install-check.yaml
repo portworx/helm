@@ -164,6 +164,8 @@ spec:
               value: "{{ $minimumKubernetesVersion }}"
             - name: JOB_TIMEOUT_SECONDS
               value: "600"
+            - name: TARGET_PXBACKUP_VERSION
+              value: "{{ .Values.pxbackup.version }}"
             - name: SKIP_VALIDATIONS
               value: {{ .Values.pxbackup.skipValidations | default false | quote }}
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pre-install-check" .Values.proxy.includeNoProxyList) }}
