@@ -18,7 +18,11 @@ Wait for job "pxcentral-post-install-hook" status to be in "Completed" state.
 PVC "pre-upgrade-data-pvc" is created in {{ .Release.Namespace }} with database dumps for MongoDB(in case ".pxbackup.enabled" is set to true) and MySQL. Use it to restore the initial state in case of Upgrade failure, else delete it on success.
 
 {{- end}}
-
+{{- if eq .Values.pxbackup.skipValidations true }}
+{{ printf "\n\033[31mWARNING: px-backup validations are being skipped, since skipValidations flag is set to true.\033[0m\n" }}
+{{- else}}
+{{ "\n" -}}
+{{- end}}
 ----------------------------
 Features Summary:
 ----------------------------
