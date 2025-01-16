@@ -45,7 +45,7 @@ metadata:
 rules:
   - apiGroups: ["apps"]
     resources: ["statefulsets"]
-    verbs: ["get", "list","update"]
+    verbs: ["get", "list", "update", "delete", "create"]
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["delete","get", "list", "watch","create","update"]
@@ -60,7 +60,7 @@ rules:
     verbs: ["get", "create", "delete", "update", "list"]
   - apiGroups: [""]
     resources: ["pods"]
-    verbs: ["get", "list"]
+    verbs: ["get", "list", "delete"]
   - apiGroups: [""]
     resources: ["pods/log"]
     verbs: ["get", "list"]
@@ -226,6 +226,30 @@ spec:
                 secretKeyRef:
                   key: DB_PASSWORD
                   name: pxcentral-mysql-secret
+            - name: POSTGRES_STATEFULSET_NAME
+              value: pxcentral-keycloak-postgresql
+            - name: POSTGRES_CONTAINER_NAME
+              value: pxcentral-keycloak-postgresql
+            - name: POSTGRES_TARGET_IMAGE
+              value: {{ printf "%s/%s/%s:%s" .Values.images.keycloakBackendImage.registry .Values.images.keycloakBackendImage.repo .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
+            - name: POSTGRESQL_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_VOLUME_DIR
+              value: "/bitnami/postgresql"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-keycloak-postgresql
+                  key: postgresql-username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-keycloak-postgresql
+                  key: postgresql-password
+            - name: POSTGRES_DB
+              value: "keycloak"
+            - name: POSTGRES_PVC_NAME
+              value: pxcentral-keycloak-data-postgres16
             - name: JOB_TIMEOUT_SECONDS
               value: "600"
             - name: PX_BACKUP_ENABLED
