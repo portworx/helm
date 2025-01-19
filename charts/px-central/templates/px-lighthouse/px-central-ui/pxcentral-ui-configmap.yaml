@@ -12,18 +12,7 @@ data:
   BASE_ROOT_PATH: /
   DB_PORT: "3306"
   DB_DATABASE: pxcentral
-  FRONTEND_ENABLED_MODULES:
-      {{- $modules := list "COMPANY" "LH" "USERS" "SSO" }}
-      {{- if .Values.pxbackup.enabled }}
-      {{- $modules = append $modules "PXBACKUP" }}
-      {{- end }}
-      {{- if .Values.pxmonitor.enabled }}
-      {{- $modules = append $modules "PXMETRICS" }}
-      {{- end }}
-      {{- if .Values.pxlicenseserver.enabled }}
-      {{- $modules = append $modules "PXLICENSE" }}
-      {{- end }}
-      {{- join "," $modules | indent 1}}
+  FRONTEND_ENABLED_MODULES: COMPANY,LH,USERS,SSO
   PX_BACKUP_ENDPOINT: "px-backup:10002"
   PX_BACKUP_ORGID: "{{ .Values.pxbackup.orgName }}"
   PX_STATUS_ENDPOINT: "http://pxcentral-apiserver:10006"
