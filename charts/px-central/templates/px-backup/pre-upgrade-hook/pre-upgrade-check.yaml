@@ -1,6 +1,7 @@
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $minimumKubernetesVersion := "1.30.0"}}
 
 {{- if or .Release.IsUpgrade .Values.isUpgrade }}
 
@@ -193,6 +194,8 @@ spec:
               value: "27017"
             - name: MONGODB_ROOT_USERNAME
               value: root
+            - name: MINIMUM_KUBERNETES_VERSION
+              value: "{{ $minimumKubernetesVersion }}"
             - name: MONGODB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
