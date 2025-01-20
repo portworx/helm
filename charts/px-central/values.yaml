@@ -100,6 +100,7 @@ postInstallJob:
 
 isUpgrade: false
 isOpenshift: false
+isArgoCD: false
 
 pxbackup:
   enabled: false
