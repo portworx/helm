@@ -1,0 +1,61 @@
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
+
+{{ if not .Values.isArgoCD }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pre-rollback-check
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: pxcentral-pre-install-hook
+    app.kubernetes.io/component: pxcentral-pre-install-hook
+  annotations:
+    "helm.sh/hook": pre-rollback
+    "helm.sh/hook-delete-policy": hook-succeeded
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  template:
+    spec:
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+                  - key: {{ .Values.nodeAffinityLabel }}
+                    operator: Exists
+              {{- else }}
+                  - key: pxbackup/enabled
+                    operator: NotIn
+                    values:
+                      - "false"
+              {{- end }}
+      containers:
+        - name: pxbackup-pre-rollback-check
+          image: {{ printf "%s/%s/%s:%s" .Values.images.preSetupHookImage.registry .Values.images.preSetupHookImage.repo .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              echo "Rollback is not supported due to potential data inconsistency risks. Please contact support."
+              exit 1
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      restartPolicy: Never
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+  backoffLimit: 0
+{{- end }}
