@@ -1,5 +1,6 @@
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $minimumKubernetesVersion := "1.30.0"}}
+{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- if eq $pxBackupEnabled true }}
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
@@ -164,6 +165,17 @@ spec:
               value: {{ .Release.Namespace }}
             - name: STORAGE_CLASS
               value: {{ .Values.persistentStorage.storageClassName }}
+            - name: PX_BACKUP_ENABLED
+              value: {{ .Values.pxbackup.enabled | default false | quote }}
+            - name: PX_MONITOR_ENABLED
+              value: {{ .Values.pxmonitor.enabled | default false | quote }}
+        {{- if eq $deployDedicatedMonitoringSystem true }}
+            - name: DEDICATED_PROMETHEUS
+              value: "true"
+        {{- else }}
+            - name: DEDICATED_PROMETHEUS
+              value: "false"
+        {{- end }}
             - name: MINIMUM_KUBERNETES_VERSION
               value: "{{ $minimumKubernetesVersion }}"
             - name: JOB_TIMEOUT_SECONDS
