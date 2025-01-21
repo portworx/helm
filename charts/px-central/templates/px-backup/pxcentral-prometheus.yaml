@@ -3,11 +3,6 @@
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
-{{- $metricsSecret := (lookup "v1" "Secret" .Release.Namespace "pxc-backup-metrics") | default dict }}
-{{- $metricsSecretData := (get $metricsSecret "data") | default dict }}
-{{- $metricsPass := (get $metricsSecretData "password" | b64dec) | default (randAlphaNum 12 ) }}
-{{- $metricsToken := (get $metricsSecretData "metrics-token" | b64dec) | default ( printf "admin:%s" $metricsPass | b64enc | quote ) }}
-{{- $metricsBasicAuth := htpasswd "admin" $metricsPass }}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $deployDedicatedMonitoringSystem true }}
 {{- $storageSize := "5Gi" }}
@@ -423,48 +418,6 @@ spec:
   {{- with .Values.tolerations }}
   tolerations:
   {{- toYaml . | nindent 4 }}
-  {{- end }}
-{{- end}}
-
-{{- if (or (eq $deployDedicatedMonitoringSystem true) (eq $pxMonitorEnabled true))}}
----
-apiVersion: v1
-kind: Secret
-metadata:
-  labels:
-    app.kubernetes.io/component: pxc-backup-metrics
-{{- include "px-central.labels" . | nindent 4 }}
-  name: pxc-backup-metrics
-  namespace: {{ .Release.Namespace }}
-type: Opaque
-stringData:
-  metrics-token: {{ $metricsToken }}
-  username: admin
-  password: {{ $metricsPass }}
-  web-config-custom.yaml: |
-    basic_auth_users:
-      admin: {{ (split ":" $metricsBasicAuth)._1 }}
-  {{- if eq $deployDedicatedMonitoringSystem true }}
-  am-configs.yaml: |
-    - path_prefix: /
-      scheme: http
-      kubernetes_sd_configs:
-      - role: endpoints
-        namespaces:
-          names:
-          - {{ .Release.Namespace }}
-      basic_auth:
-        username: admin
-        password: {{ $metricsPass }}
-      relabel_configs:
-      - action: keep
-        source_labels:
-        - __meta_kubernetes_service_name
-        regex: alertmanager-operated
-      - action: keep
-        source_labels:
-        - __meta_kubernetes_endpoint_port_name
-        regex: web
   {{- end }}
 {{- end}}
 

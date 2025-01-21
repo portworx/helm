@@ -1,5 +1,6 @@
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $minimumKubernetesVersion := "1.30.0"}}
 
@@ -258,6 +259,15 @@ spec:
               value: "600"
             - name: PX_BACKUP_ENABLED
               value: "{{ $pxBackupEnabled }}"
+            - name: PX_MONITOR_ENABLED
+              value: {{ .Values.pxmonitor.enabled | default false | quote }}
+        {{- if eq $deployDedicatedMonitoringSystem true }}
+            - name: DEDICATED_PROMETHEUS
+              value: "true"
+        {{- else }}
+            - name: DEDICATED_PROMETHEUS
+              value: "false"
+        {{- end }}
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pre-upgrade-check" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.noProxyEnv" . | nindent 12 }}
             {{- end }}
