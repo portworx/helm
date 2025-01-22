@@ -96,7 +96,11 @@ metadata:
     app.kubernetes.io/component: pxcentral-pre-install-hook
   annotations:
     "helm.sh/hook": pre-install
+    {{- if .Values.isArgoCD }}
     "helm.sh/hook-weight": "6"
+    {{- else }}
+    "helm.sh/hook-weight": "5"
+    {{- end }}
     "helm.sh/resource-policy": keep
 spec:
   accessModes:
