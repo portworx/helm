@@ -204,8 +204,7 @@ securityContext:
 tolerations: []
 
 images:
-  pullSecrets:
-    - docregistry-secret
+  pullSecrets: []
   pullPolicy: Always
 
   pxcentralApiServerImage:
