@@ -58,4 +58,16 @@ Login with the following credentials:
 For more information: https://github.com/portworx/helm/blob/master/charts/px-central/README.md
 For more information on network pre-requisites: https://docs.portworx.com/portworx-backup-on-prem/install/install-prereq/nw-prereqs.html
 
+{{- if .Release.IsInstall }}
 --------------------------------------------------
+View Pre-Install Report:
+--------------------------------------------------
+To view the Pre-Install Report, run:
+{{- else }}
+--------------------------------------------------
+View Pre-Upgrade Report:
+--------------------------------------------------
+To view the Pre-Upgrade Report, run:
+{{- end }}
+
+    kubectl get cm px-central-report -n {{ .Release.Namespace }} -o go-template='{{ printf "{{ index .data \"report-%s\" }}" .Values.pxbackup.version }}'
