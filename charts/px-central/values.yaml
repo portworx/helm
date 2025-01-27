@@ -1,6 +1,6 @@
 persistentStorage:
   enabled: true
-  storageClassName:
+  storageClassName: px-db
   cassandra:
     storage: 64Gi
   grafana:
@@ -98,12 +98,12 @@ proxy:
 postInstallJob:
   sslEnabled: true
 
-isUpgrade: false
-isOpenshift: false
-isArgoCD: false
+isUpgrade: true
+isOpenshift: true
+isArgoCD: true
 
 pxbackup:
-  enabled: false
+  enabled: true
   orgName: default
   callHome: true
   mongoMigration: complete
