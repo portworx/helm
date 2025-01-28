@@ -290,6 +290,14 @@ def restore_volume(volume_name, snapshot_id):
 # --------------------------------------------------------------------------------
 # Main logic
 # --------------------------------------------------------------------------------
+def check_backup_ready(data):
+    """
+    Check if the JSON file has isBackupReady_for_PXDLocalSnapshotRestore set to True.
+    """
+    backup_ready = data.get("backup_info", {}).get("isBackupReady_for_PXDLocalSnapshotRestore")
+    if backup_ready is not True:
+        logger.error("Localsnapshot restore is not possible as isBackupReady_for_PXDLocalSnapshotRestore is not set to True in the given backup json file.")
+        sys.exit(1)
 
 def process_volume(volume_obj):
     """
@@ -380,6 +388,8 @@ def main(input_file):
     if not isinstance(data, dict):
         logger.error("Top-level JSON is not a dictionary.")
         return 1
+    # Check if the backup is ready
+    check_backup_ready(data)
 
     backup_info = data.get("backup_info", {})
     if not isinstance(backup_info, dict):
@@ -496,4 +506,3 @@ if __name__ == "__main__":
     input_file = sys.argv[1]
     exit_code = main(input_file)
     sys.exit(exit_code)
-
