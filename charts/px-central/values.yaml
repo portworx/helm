@@ -206,6 +206,7 @@ tolerations: []
 images:
   pullSecrets: []
   pullPolicy: Always
+  insecureRegistry: false
 
   pxcentralApiServerImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
