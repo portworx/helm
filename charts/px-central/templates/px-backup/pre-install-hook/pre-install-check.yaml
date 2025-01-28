@@ -279,6 +279,8 @@ spec:
               value: {{ .Values.pxlicenseserver.enabled | default false | quote }}
             - name: DOCREGISTRY_SECRET_NAME
               value: {{ .Values.images.pullSecrets | first }}
+            - name: INSECURE_REGISTRY
+              value: {{ .Values.images.insecureRegistry | default false | quote }}
           volumeMounts: []
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
