@@ -46,7 +46,7 @@ metadata:
 rules:
   - apiGroups: ["apps"]
     resources: ["statefulsets"]
-    verbs: ["get", "list", "update", "delete", "create"]
+    verbs: ["get", "list", "update", "delete", "create", "patch"]
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["delete","get", "list", "watch","create","update"]
