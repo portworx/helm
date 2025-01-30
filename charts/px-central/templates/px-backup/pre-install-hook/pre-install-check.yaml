@@ -1,7 +1,8 @@
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $minimumKubernetesVersion := "1.30.0"}}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
-{{- if eq $pxBackupEnabled true }}
+{{- if or $pxBackupEnabled $pxMonitorEnabled }}
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 
@@ -208,6 +209,7 @@ spec:
   backoffLimit: 0
 {{- end }}
 ---
+{{- if eq $pxBackupEnabled true }}
 # Pre Flight check job
 apiVersion: batch/v1
 kind: Job
@@ -294,8 +296,7 @@ spec:
       {{- toYaml . | nindent 8 }}
       {{- end }}
   backoffLimit: 0
-
-
+  {{- end}}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
