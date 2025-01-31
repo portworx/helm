@@ -97,6 +97,8 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    kubernetes.azure.com/no-http-proxy-vars: "true"
   name: pxcentral-apiserver
   namespace: {{ .Release.Namespace }}
   labels:
