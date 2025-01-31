@@ -85,6 +85,8 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
       labels:
         run: pxcentral-lh-middleware
         app.kubernetes.io/component: pxcentral-lh-middleware
