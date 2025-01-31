@@ -97,8 +97,6 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  annotations:
-    kubernetes.azure.com/no-http-proxy-vars: "true"
   name: pxcentral-apiserver
   namespace: {{ .Release.Namespace }}
   labels:
@@ -119,6 +117,8 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
       labels:
         app: pxcentral-apiserver
         app.kubernetes.io/component: pxcentral-apiserver
