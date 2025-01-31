@@ -144,6 +144,8 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
       labels:
         run: pxcentral-backend
         app.kubernetes.io/component: pxcentral-backend
@@ -298,6 +300,8 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
       labels:
         run: pxcentral-frontend
         app.kubernetes.io/component: pxcentral-frontend
