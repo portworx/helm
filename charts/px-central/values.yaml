@@ -269,10 +269,10 @@ images:
     tag: 8.0.40
     module: pxCentral
   preSetupHookImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
-    repo: mkoppal
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
     imageName: pxcentral-onprem-hook-base
-    tag: pb-9662
+    tag: 2.8.3-dev
     module: pxCentral
   mysqlInitImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
