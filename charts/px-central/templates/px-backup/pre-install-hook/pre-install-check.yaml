@@ -283,6 +283,8 @@ spec:
               value: {{ .Values.images.pullSecrets | first }}
             - name: INSECURE_REGISTRY
               value: {{ .Values.images.insecureRegistry | default false | quote }}
+            - name: SKIP_VALIDATIONS
+              value: {{ .Values.pxbackup.skipValidations | default false | quote }}
           volumeMounts: []
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
