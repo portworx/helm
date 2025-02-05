@@ -210,9 +210,9 @@ spec:
             - name: MONGODB_IMAGES
               value: >
                 {
-                  "registry": "{{ .Values.images.mongodbImageMap.registry }}",
-                  "repo": "{{ .Values.images.mongodbImageMap.repo }}",
-                  "imageName": "{{ .Values.images.mongodbImageMap.imageName }}",
+                  "registry": "{{ .Values.images.mongodbImage.registry }}",
+                  "repo": "{{ .Values.images.mongodbImage.repo }}",
+                  "imageName": "{{ .Values.images.mongodbImage.imageName }}",
                   "tags": {
                     "mongodb5": "{{ .Values.images.mongodbImageMap.tags.mongodb5 }}",
                     "mongodb6": "{{ .Values.images.mongodbImageMap.tags.mongodb6 }}",
