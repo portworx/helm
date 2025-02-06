@@ -130,11 +130,14 @@ metadata:
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
 spec:
   template:
-    {{- if and (eq $azureProxyEnabled true) (not (has "pre-install-check" .Values.proxy.excludeAzureProxyList)) }}
     metadata:
       annotations:
-        kubernetes.azure.com/no-http-proxy-vars: "true"
-    {{- end }}
+        config.alpha.linkerd.io/proxy-enable-native-sidecar: "true"
+    # {{- if and (eq $azureProxyEnabled true) (not (has "pre-install-check" .Values.proxy.excludeAzureProxyList)) }}
+    # metadata:
+    #   annotations:
+    #     kubernetes.azure.com/no-http-proxy-vars: "true"
+    # {{- end }}
     spec:
       {{- if $isOpenshiftCluster}}
       {{- else }}
