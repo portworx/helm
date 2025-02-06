@@ -262,17 +262,17 @@ spec:
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: [ "/pxcentral-hook/bin/pxcentral-hook" ]
           args: [ "--hook=preflight-check" ]
-          lifecycle:
-            preStop:
-              exec:
-                command: ["/bin/sh", "-c", "curl -X POST http://localhost:4191/shutdown"]
+          # lifecycle:
+          #   preStop:
+          #     exec:
+          #       command: ["/bin/sh", "-c", "curl -X POST http://localhost:4191/shutdown"]
           env:
             - name: NAMESPACE
               value: {{ .Release.Namespace }}
             - name: JOB_TIMEOUT_SECONDS
               value: "600"
-            - name: LINKERD2_PROXY_SHUTDOWN_ENDPOINT_ENABLED  # ✅ Enables shutdown API
-              value: "true"
+            # - name: LINKERD2_PROXY_SHUTDOWN_ENDPOINT_ENABLED  # ✅ Enables shutdown API
+            #   value: "true"
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "preflight-check" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.noProxyEnv" . | nindent 12 }}
             {{- end }}
