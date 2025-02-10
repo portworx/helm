@@ -130,9 +130,9 @@ metadata:
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
 spec:
   template:
-    metadata:
-      annotations:
-        config.alpha.linkerd.io/proxy-enable-native-sidecar: "true"
+    # metadata:
+    #   annotations:
+    #     config.alpha.linkerd.io/proxy-enable-native-sidecar: "true"
     # {{- if and (eq $azureProxyEnabled true) (not (has "pre-install-check" .Values.proxy.excludeAzureProxyList)) }}
     # metadata:
     #   annotations:
@@ -231,9 +231,9 @@ metadata:
     config.alpha.linkerd.io/proxy-enable-native-sidecar: "true"  # ✅ Enables native sidecar shutdown behavior in K8s 1.29+
 spec:
   template:
-    metadata:
-      annotations:
-        config.alpha.linkerd.io/proxy-enable-native-sidecar: "true"
+    # metadata:
+    #   annotations:
+    #     config.alpha.linkerd.io/proxy-enable-native-sidecar: "true"
     # {{- if and (eq $azureProxyEnabled true) (not (has "preflight-check" .Values.proxy.excludeAzureProxyList)) }}
     # metadata:
     #   annotations:
