@@ -63,6 +63,8 @@ spec:
         {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList) }}
         {{ include "proxy.noProxyEnv" . | nindent 8 }}
         {{- end }}
+        - name: ISTIO_ENABLED
+          value: {{ .Values.istio.enabled | default false | quote }}
         - name: POD_IP
           valueFrom:
             fieldRef:

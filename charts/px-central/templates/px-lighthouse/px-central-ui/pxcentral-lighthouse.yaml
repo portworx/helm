@@ -152,6 +152,8 @@ spec:
             value: "100"
           - name: K8S_BURST
             value: "100"
+          - name: ISTIO_ENABLED
+            value: {{ .Values.istio.enabled | default false | quote }}
           - name: PX_NAMESPACE
             valueFrom:
               fieldRef:

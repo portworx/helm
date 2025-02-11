@@ -212,6 +212,8 @@ spec:
           env:
             - name: BITNAMI_DEBUG
               value: "false"
+            - name: ISTIO_ENABLED
+              value: {{ .Values.istio.enabled | default false | quote }}
             - name: MY_POD_IP
               valueFrom:
                 fieldRef:

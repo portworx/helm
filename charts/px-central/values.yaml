@@ -98,6 +98,9 @@ proxy:
 postInstallJob:
   sslEnabled: true
 
+istio:
+  enabled: false
+
 isUpgrade: false
 isOpenshift: false
 isArgoCD: false
@@ -224,7 +227,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-backend-private
-    tag: 2.8.3-dev
+    tag: PB-9480-dev
     module: pxCentral
   pxcentralMiddlewareImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -245,8 +248,8 @@ images:
     tag: 16.6.0-debian-12-r2
     module: pxCentral
   keycloakFrontendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
+    repo: kthiruvenkadasamy
     imageName: keycloak
     tag: 25.0.2
     module: pxCentral
@@ -269,10 +272,10 @@ images:
     tag: 8.0.40
     module: pxCentral
   preSetupHookImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
+    repo: kthiruvenkadasamy
     imageName: pxcentral-onprem-hook-base
-    tag: 2.8.3-dev
+    tag: 2.9.0-dev
     module: pxCentral
   mysqlInitImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote

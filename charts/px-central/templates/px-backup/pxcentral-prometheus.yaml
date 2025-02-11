@@ -159,8 +159,10 @@ spec:
         ports:
           - containerPort: 8080
             name: http
-        {{- if .Values.proxy.httpProxy.noProxy }}
         env:
+        - name: ISTIO_ENABLED
+          value: {{ .Values.istio.enabled | default false | quote }}
+        {{- if .Values.proxy.httpProxy.noProxy }}
         {{- if or (empty .Values.proxy.includeNoProxyList) (has "prometheus-operator" .Values.proxy.includeNoProxyList) }}
         {{ include "proxy.noProxyEnv" . | nindent 8 }}
         {{- end }}
@@ -243,7 +245,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - name: web
+    - name: http-web
       port: 9090
       protocol: TCP
       targetPort: 9090
@@ -284,11 +286,18 @@ spec:
   additionalAlertManagerConfigs:
     key: am-configs.yaml
     name: pxc-backup-metrics
-  {{- if and (eq $azureProxyEnabled true) (not (has "px-backup-dashboard-prometheus" .Values.proxy.excludeAzureProxyList)) }}
   podMetadata:
     annotations:
+  {{- if and (eq $azureProxyEnabled true) (not (has "px-backup-dashboard-prometheus" .Values.proxy.excludeAzureProxyList)) }}
       kubernetes.azure.com/no-http-proxy-vars: "true"
   {{- end }}
+  {{- if .Values.istio.enabled }}
+      proxy.istio.io/config: |
+        proxyMetadata:
+          OUTPUT_CERTS: /etc/istio-output-certs
+      sidecar.istio.io/userVolumeMount: '[{"name": "istio-certs", "mountPath": "/etc/istio-output-certs"}]'
+      traffic.sidecar.istio.io/includeOutboundIPRanges: ""
+  {{- end}}
   {{- if .Values.persistentStorage.storageClassName }}
   storage:
     volumeClaimTemplate:
@@ -324,6 +333,8 @@ spec:
         secretKeyRef:
           name: pxc-backup-metrics
           key: metrics-token
+    - name: ISTIO_ENABLED
+      value: {{ .Values.istio.enabled | default false | quote }}
     {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-dashboard-prometheus" .Values.proxy.includeNoProxyList) }}
     {{ include "proxy.noProxyEnv" . | nindent 4 }}
     {{- end }}
@@ -352,7 +363,7 @@ spec:
           -qO-
     ports:
     - containerPort: 9090
-      name: web
+      name: http-web
       protocol: TCP
   - args:
     - --listen-address=:8080
@@ -394,11 +405,20 @@ spec:
       name: web-config-custom
       readOnly: true
       subPath: web-config-custom.yaml
+  {{- if .Values.istio.enabled }}
+    - mountPath: /etc/prom-certs/
+      name: istio-certs
+  {{- end}}
   volumes:
     - name: web-config-custom
       secret:
         defaultMode: 420
         secretName: pxc-backup-metrics
+  {{- if .Values.istio.enabled }}
+    - emptyDir:
+        medium: Memory
+      name: istio-certs
+  {{- end}}
   replicas: {{ .Values.pxbackup.prometheus.replicas }}
   evaluationInterval: 30s
   scrapeInterval: 30s
@@ -452,7 +472,15 @@ spec:
       regex: (pxbackup_backup_duration_seconds|pxbackup_backup_resource_count|pxbackup_backup_schedule_status|pxbackup_backup_size_bytes|pxbackup_backup_volume_count|pxbackup_backuplocation_metrics|pxbackup_cloudcred_metrics|pxbackup_schedpolicy_metrics|pxbackup_restore_duration_seconds|pxbackup_restore_resource_count|pxbackup_restore_size_bytes|pxbackup_restore_volume_count)
       sourceLabels:
       - __name__
-    port: rest-api
+    port: http-rest-api
+    {{- if .Values.istio.enabled }}
+    scheme: https
+    tlsConfig:
+      caFile: /etc/prom-certs/root-cert.pem
+      certFile: /etc/prom-certs/cert-chain.pem
+      insecureSkipVerify: true
+      keyFile: /etc/prom-certs/key.pem
+    {{- end }}
     targetPort: 10001
   namespaceSelector:
     any: true

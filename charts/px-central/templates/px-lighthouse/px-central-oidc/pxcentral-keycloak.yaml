@@ -361,6 +361,8 @@ spec:
           env:
             - name: BITNAMI_DEBUG
               value: "false"
+            - name: ISTIO_ENABLED
+              value: {{ .Values.istio.enabled | default false | quote }}
             - name: POSTGRESQL_PORT_NUMBER
               value: "5432"
             - name: POSTGRESQL_VOLUME_DIR
@@ -508,26 +510,6 @@ spec:
 {{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
       initContainers:
-        - name: wait-for-postgresql
-          image: "{{ .Values.images.keycloakInitContainerImage.registry }}/{{ .Values.images.keycloakInitContainerImage.repo }}/{{ .Values.images.keycloakInitContainerImage.imageName }}:{{ .Values.images.keycloakInitContainerImage.tag }}"
-          imagePullPolicy: {{ .Values.images.pullPolicy }}
-          command:
-            - sh
-            - -c
-            - |
-              until printf "." && nc -z -w 2 pxcentral-keycloak-postgresql 5432; do
-                  sleep 2;
-              done;
-
-              echo 'PostgreSQL OK ✓'
-          resources:
-            {}
-          {{- if .Values.proxy.httpProxy.noProxy }}
-          env:
-          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-keycloak" .Values.proxy.includeNoProxyList) }}
-          {{ include "proxy.noProxyEnv" . | nindent 10 }}
-          {{- end }}
-          {{- end }}
         - name: px-keycloak-login-theme
           {{- if .Values.proxy.httpProxy.noProxy }}
           env:
@@ -552,8 +534,19 @@ spec:
           image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakFrontendImage.registry .Values.images.keycloakFrontendImage.repo .Values.images.keycloakFrontendImage.imageName .Values.images.keycloakFrontendImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
-            - /scripts/keycloak.sh
+            - sh
+            - -c
+            - |
+              until printf "." && nc -z -w 2 pxcentral-keycloak-postgresql 5432; do
+                  sleep 2;
+              done;
+
+              echo 'PostgreSQL OK ✓'
+              
+              /scripts/keycloak.sh
           env:
+          - name: ISTIO_ENABLED
+            value: {{ .Values.istio.enabled | default false | quote }}
           - name: KC_HOSTNAME_STRICT
             value: "false"
           - name: KC_HOSTNAME_STRICT_HTTPS

@@ -220,6 +220,8 @@ spec:
                   }
                 }
             {{- end }}
+            - name: ISTIO_ENABLED
+              value: {{ .Values.istio.enabled | default false | quote }}
             - name: NAMESPACE
               value: {{ .Release.Namespace }} 
             - name: MYSQL_STATEFULSET_NAME

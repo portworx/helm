@@ -177,6 +177,8 @@ spec:
             - name: DEDICATED_PROMETHEUS
               value: "false"
         {{- end }}
+            - name: ISTIO_ENABLED
+              value: {{ .Values.istio.enabled | default false | quote }}
             - name: MINIMUM_KUBERNETES_VERSION
               value: "{{ $minimumKubernetesVersion }}"
             - name: JOB_TIMEOUT_SECONDS
