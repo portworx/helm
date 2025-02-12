@@ -1,0 +1,342 @@
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
+{{- $minimumKubernetesVersion := "1.30.0"}}
+{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
+{{- if or $pxBackupEnabled $pxMonitorEnabled }}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+
+{{- if not .Values.isUpgrade }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: px-backup-pre-install-role
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "2"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-pre-install-hook
+    app.kubernetes.io/component: pxcentral-pre-install-hook
+rules:
+  - apiGroups: ["apps"]
+    resources: ["statefulsets"]
+    verbs: ["get", "list","update"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["delete","get", "list", "watch","create","update"]
+  - apiGroups: [""]
+    resources: ["serviceaccounts"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["delete","get", "list", "watch","update","create"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "create", "delete", "update", "list"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list"]
+  - apiGroups: ["batch"]
+    resources: ["jobs", "jobs/status"]
+    verbs: ["get", "create", "delete", "update",  "list", "watch"]
+  - apiGroups: ["batch"]
+    resources: ["cronjobs"]
+    verbs: ["get", "create", "delete", "update"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list"]
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["create", "update", "get", "patch", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["create", "update", "get", "patch", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+  - apiGroups: [""]
+    resources: ["resourcequotas"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: px-backup-pre-install-rolebinding
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "3"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-pre-install-hook
+    app.kubernetes.io/component: pxcentral-pre-install-hook
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: px-backup-pre-install-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pre-install-data-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: pxcentral-pre-install-hook
+    app.kubernetes.io/component: pxcentral-pre-install-hook
+  annotations:
+    "helm.sh/hook": pre-install
+    {{- if .Values.isArgoCD }}
+    "helm.sh/hook-weight": "6"
+    {{- else }}
+    "helm.sh/hook-weight": "5"
+    {{- end }}
+    "helm.sh/resource-policy": keep
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistentStorage.preInstallHookVolumeSize }}
+  {{- if .Values.persistentStorage.storageClassName }}
+  storageClassName: {{ .Values.persistentStorage.storageClassName }}
+  {{- end }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pre-install-check
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: pxcentral-pre-install-hook
+    app.kubernetes.io/component: pxcentral-pre-install-hook
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "6"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-completed
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  template:
+    {{- if and (eq $azureProxyEnabled true) (not (has "pre-install-check" .Values.proxy.excludeAzureProxyList)) }}
+    metadata:
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+    {{- end }}
+    spec:
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+                  - key: {{ .Values.nodeAffinityLabel }}
+                    operator: Exists
+              {{- else }}
+                  - key: pxbackup/enabled
+                    operator: NotIn
+                    values:
+                      - "false"
+              {{- end }}
+      containers:
+        - name: pxbackup-pre-install-check
+          image: {{ printf "%s/%s/%s:%s" .Values.images.preSetupHookImage.registry .Values.images.preSetupHookImage.repo .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          command: ["/pxcentral-hook/bin/pxcentral-hook"]
+          args: ["--hook=pre-install"]
+          env:
+            - name: NAMESPACE
+              value: {{ .Release.Namespace }}
+            - name: STORAGE_CLASS
+              value: {{ .Values.persistentStorage.storageClassName }}
+            - name: PX_BACKUP_ENABLED
+              value: {{ .Values.pxbackup.enabled | default false | quote }}
+            - name: PX_MONITOR_ENABLED
+              value: {{ .Values.pxmonitor.enabled | default false | quote }}
+        {{- if eq $deployDedicatedMonitoringSystem true }}
+            - name: DEDICATED_PROMETHEUS
+              value: "true"
+        {{- else }}
+            - name: DEDICATED_PROMETHEUS
+              value: "false"
+        {{- end }}
+            - name: MINIMUM_KUBERNETES_VERSION
+              value: "{{ $minimumKubernetesVersion }}"
+            - name: JOB_TIMEOUT_SECONDS
+              value: "600"
+            - name: TARGET_PXBACKUP_VERSION
+              value: "{{ .Values.pxbackup.version }}"
+            - name: SKIP_VALIDATIONS
+              value: {{ .Values.pxbackup.skipValidations | default false | quote }}
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "pre-install-check" .Values.proxy.includeNoProxyList) }}
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - name: data-volume
+              mountPath: /mnt/data
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: pre-install-data-pvc
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      restartPolicy: Never
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+  backoffLimit: 0
+{{- end }}
+---
+{{- if eq $pxBackupEnabled true }}
+# Pre Flight check job
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: preflight-check
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: pxcentral-preflight-check-hook
+    app.kubernetes.io/component: pxcentral-preflight-check-hook
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "4"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-completed
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  template:
+    {{- if and (eq $azureProxyEnabled true) (not (has "preflight-check" .Values.proxy.excludeAzureProxyList)) }}
+    metadata:
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+    {{- end }}
+    spec:
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+                  - key: {{ .Values.nodeAffinityLabel }}
+                    operator: Exists
+              {{- else }}
+                  - key: pxbackup/enabled
+                    operator: NotIn
+                    values:
+                      - "false"
+              {{- end }}
+      containers:
+        - name: pxbackup-pre-flight-checker
+          image: {{ printf "%s/%s/%s:%s" .Values.images.preSetupHookImage.registry .Values.images.preSetupHookImage.repo .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          command: [ "/pxcentral-hook/bin/pxcentral-hook" ]
+          args: [ "--hook=preflight-check" ]
+          env:
+            - name: NAMESPACE
+              value: {{ .Release.Namespace }}
+            - name: JOB_TIMEOUT_SECONDS
+              value: "600"
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "preflight-check" .Values.proxy.includeNoProxyList) }}
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- end }}
+            - name: STORAGE_CLASS
+              value: {{ .Values.persistentStorage.storageClassName }}
+            - name: IMAGES
+              {{- with .Values.images }}
+              value: |
+              {{- toJson . | nindent 16 }}
+              {{- end }}
+            - name: PX_BACKUP_ENABLED
+              value: {{ .Values.pxbackup.enabled | default false | quote }}
+            - name: PX_MONITOR_ENABLED
+              value: {{ .Values.pxmonitor.enabled | default false | quote }}
+            - name: PX_LICENSE_SERVER_ENABLED
+              value: {{ .Values.pxlicenseserver.enabled | default false | quote }}
+            - name: DOCREGISTRY_SECRET_NAME
+              value: {{ .Values.images.pullSecrets | first }}
+            - name: INSECURE_REGISTRY
+              value: {{ .Values.images.insecureRegistry | default false | quote }}
+            - name: SKIP_VALIDATIONS
+              value: {{ .Values.pxbackup.skipValidations | default false | quote }}
+          volumeMounts: []
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      restartPolicy: Never
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+  backoffLimit: 0
+  {{- end}}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: px-backup-pre-setup-clusterrole
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-pre-setup-hook
+    app.kubernetes.io/component: pxcentral-pre-setup-hook
+rules:
+  - apiGroups: [ "storage.k8s.io" ]
+    resources: [ "storageclasses" ]
+    verbs: [ "get", "list", "watch" ]
+  - apiGroups: [ "" ]
+    resources: [ "namespaces" ]
+    verbs: [ "get" ]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: px-backup-pre-setup-clusterrolebinding
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-pre-setup-hook
+    app.kubernetes.io/component: pxcentral-pre-setup-hook
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: px-backup-pre-setup-clusterrole
+  apiGroup: rbac.authorization.k8s.io
+
+{{- end }}

@@ -1,5 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
-{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 apiVersion: batch/v1
@@ -68,10 +68,10 @@ spec:
             value: "false"
       {{- end }}
           - name: DEPLOYMENT_TYPE
-            {{- if eq .Release.IsInstall true }}
-            value: "install"
-            {{- else }}
+            {{- if or .Release.IsUpgrade .Values.isUpgrade }}
             value: "upgrade"
+            {{- else }}
+            value: "install"
             {{- end }}
         command: ["python", "-u", "/pxcentral-post-install/pxc-post-setup.py"]
       {{- if .Values.images.pullSecrets }}

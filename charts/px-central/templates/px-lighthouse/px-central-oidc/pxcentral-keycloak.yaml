@@ -2,7 +2,7 @@
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $centralOIDC := .Values.oidc.centralOIDC.enabled | default false -}}
 {{- $operatorToChartUpgrade := .Values.operatorToChartUpgrade | default false -}}
-{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $centralOIDC true }}
 apiVersion: v1
@@ -415,7 +415,7 @@ spec:
           volumeMounts:
             - name: dshm
               mountPath: /dev/shm
-            - name: pxcentral-keycloak-data
+            - name: pxcentral-keycloak-data-postgres16
               mountPath: /bitnami/postgresql
       {{- with .Values.tolerations }}
       tolerations:
@@ -427,13 +427,13 @@ spec:
             medium: Memory
             sizeLimit: 1Gi
         {{- if eq $externalPersistentStorageEnabled false }}
-        - name: pxcentral-keycloak-data
+        - name: pxcentral-keycloak-data-postgres16
           emptyDir: {}
         {{- end }}
   {{- if eq $externalPersistentStorageEnabled true }}
   volumeClaimTemplates:
     - metadata:
-        name: pxcentral-keycloak-data
+        name: pxcentral-keycloak-data-postgres16
       spec:
         accessModes:
           - "ReadWriteOnce"
