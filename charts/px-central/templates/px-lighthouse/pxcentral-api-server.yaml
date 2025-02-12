@@ -1,5 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
-{{- $isOpenshiftCluster := .Capabilities.APIVersions.Has "apps.openshift.io/v1" -}}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 apiVersion: v1
 kind: ServiceAccount

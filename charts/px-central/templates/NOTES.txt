@@ -15,10 +15,14 @@ Wait for job "pxcentral-post-install-hook" status to be in "Completed" state.
 
 {{- if eq .Release.IsInstall false }}
 
-PVC "pre-upgrade-data-pvc" is created in {{ .Release.Namespace }} with database dumps for MongoDB(in case ".pxbackup.enabled" is set to true) and MySQL. Use it to restore the initial state in case of Upgrade failure, else delete it on success.
+PVC "pre-upgrade-data-pvc" is created in {{ .Release.Namespace }} with database dumps for MongoDB(in case ".pxbackup.enabled" is set to true), PostgreSQL (for Keycloak) and MySQL. Use it to restore the initial state in case of Upgrade failure, else delete it on success.
 
 {{- end}}
-
+{{- if eq .Values.pxbackup.skipValidations true }}
+{{ printf "\n\033[31mWARNING: px-backup validations are being skipped, since skipValidations flag is set to true.\033[0m\n" }}
+{{- else}}
+{{ "\n" -}}
+{{- end}}
 ----------------------------
 Features Summary:
 ----------------------------
@@ -52,5 +56,20 @@ Login with the following credentials:
 {{- end }}
 
 For more information: https://github.com/portworx/helm/blob/master/charts/px-central/README.md
+{{- if eq .Values.pxbackup.enabled true }}
+For more information on network pre-requisites: https://docs.portworx.com/portworx-backup-on-prem/install/install-prereq/nw-prereqs.html
 
+{{- if .Release.IsInstall }}
 --------------------------------------------------
+View Pre-Install Report:
+--------------------------------------------------
+To view the Pre-Install Report, run:
+{{- else }}
+--------------------------------------------------
+View Pre-Upgrade Report:
+--------------------------------------------------
+To view the Pre-Upgrade Report, run:
+{{- end }}
+
+    kubectl get cm px-central-report -n {{ .Release.Namespace }} -o go-template='{{ printf "{{ index .data \"report-%s\" }}" .Values.pxbackup.version }}'
+{{- end }}
