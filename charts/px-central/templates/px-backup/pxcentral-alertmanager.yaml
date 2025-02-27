@@ -60,6 +60,7 @@ spec:
             secretKeyRef:
               name: pxc-backup-metrics
               key: metrics-token
+        {{- include "serviceMesh.env" . | nindent 8 }}
         {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList) }}
         {{ include "proxy.noProxyEnv" . | nindent 8 }}
         {{- end }}

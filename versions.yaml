@@ -8,7 +8,7 @@ modules:
     pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:2.9.0-dev"
     pxcentralOnpremPreSetup: "docker.io/portworx/pxcentral-onprem-hook-base:2.9.0-dev"
     postgresql: "docker.io/portworx/postgresql:16.6.0-debian-12-r2"
-    keycloak: "docker.io/portworx/keycloak:25.0.2"
+    keycloak: "docker.io/portworx/keycloak:25.0.2_v2"
     keycloakLoginTheme: "docker.io/portworx/keycloak-login-theme:2.8.0"
     busybox: "docker.io/portworx/busybox:1.35.0"
     mysql: "docker.io/portworx/mysql:8.0.40"
