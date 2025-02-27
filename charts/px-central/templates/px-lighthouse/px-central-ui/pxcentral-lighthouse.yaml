@@ -152,6 +152,7 @@ spec:
             value: "100"
           - name: K8S_BURST
             value: "100"
+        {{- include "serviceMesh.env" . | nindent 10 }}
           - name: PX_NAMESPACE
             valueFrom:
               fieldRef:
