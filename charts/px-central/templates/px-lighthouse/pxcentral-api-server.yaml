@@ -86,11 +86,11 @@ spec:
   selector:
     app: pxcentral-apiserver
   ports:
-    - name: pxcentral-grpc
+    - name: grpc-pxcentral
       protocol: TCP
       port: 10005
       targetPort: 10005
-    - name: pxcentral-rest
+    - name: http-pxc-rest
       protocol: TCP
       port: 10006
       targetPort: 10006
@@ -147,6 +147,7 @@ spec:
         env:
           - name: PXC_NAMESPACE
             value: {{ .Release.Namespace }}
+        {{- include "serviceMesh.env" . | nindent 10 }}
           {{- if .Values.caCertsSecretName }}
           - name: SSL_CERT_DIR
             value: /tmp/certs
@@ -162,9 +163,9 @@ spec:
           timeoutSeconds: 120
           periodSeconds: 20
         ports:
-          - name: pxcentral-grpc
+          - name: grpc-pxcentral
             containerPort: 10005
-          - name: pxcentral-rest
+          - name: http-pxc-rest
             containerPort: 10006
         {{- if .Values.caCertsSecretName }}
         volumeMounts:

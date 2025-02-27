@@ -98,6 +98,12 @@ proxy:
 postInstallJob:
   sslEnabled: true
 
+istio:
+  enabled: false
+
+linkerd:
+  enabled: false
+
 isUpgrade: false
 isOpenshift: false
 isArgoCD: false
