@@ -177,6 +177,7 @@ spec:
             - name: DEDICATED_PROMETHEUS
               value: "false"
         {{- end }}
+          {{- include "serviceMesh.env" . | nindent 12 }}
             - name: MINIMUM_KUBERNETES_VERSION
               value: "{{ $minimumKubernetesVersion }}"
             - name: JOB_TIMEOUT_SECONDS
