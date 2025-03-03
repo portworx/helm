@@ -157,7 +157,7 @@ spec:
               {{- end }}
       containers:
         - name: pxbackup-pre-install-check
-          image: {{ printf "%s/%s/%s:%s" .Values.images.preSetupHookImage.registry .Values.images.preSetupHookImage.repo .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          image: "pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/kgarg/pxcentral-onprem-hook-base:read-from-pref"
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: ["/pxcentral-hook/bin/pxcentral-hook"]
           args: ["--hook=pre-install"]
@@ -255,7 +255,7 @@ spec:
               {{- end }}
       containers:
         - name: pxbackup-pre-flight-checker
-          image: {{ printf "%s/%s/%s:%s" .Values.images.preSetupHookImage.registry .Values.images.preSetupHookImage.repo .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          image: "pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/kgarg/pxcentral-onprem-hook-base:read-from-pref"
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: [ "/pxcentral-hook/bin/pxcentral-hook" ]
           args: [ "--hook=preflight-check" ]
