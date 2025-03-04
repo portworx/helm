@@ -179,7 +179,7 @@ spec:
               {{- end }}
       containers:
         - name: pxc-pre-upgrade
-          image: "pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/kgarg/pxcentral-onprem-hook-base:read-from-pref"
+          image: "pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/kgarg/pxcentral-onprem-hook-base:remove-nil-return"
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: ["/pxcentral-hook/bin/pxcentral-hook"]
           args: ["--hook=pre-upgrade"]

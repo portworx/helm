@@ -38,7 +38,7 @@ spec:
               {{- end }}
       containers:
         - name: pxbackup-pre-rollback-check
-          image: "pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/kgarg/pxcentral-onprem-hook-base:read-from-pref"
+          image: "pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/kgarg/pxcentral-onprem-hook-base:remove-nil-return"
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
             - sh
