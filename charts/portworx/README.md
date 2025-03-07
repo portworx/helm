@@ -65,8 +65,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 
 | Parameter | Description | Default
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| `imageVersion` | Version of the PX image | 3.2.1.1 |
-| `pxOperatorImageVersion` | Version of the PX operator image | 24.2.1 |
+| `imageVersion` | Version of the PX image | 3.2.2 |
+| `pxOperatorImageVersion` | Version of the PX operator image | 24.2.3 |
 | `openshiftInstall` | Installing on Openshift? | false |
 | `nonDisruptivek8sUpgrade` | Used to disable or enable smart and parallel kubetnetes node upgrades. By default, S&P upgrades are disabled. To enable them, set this to true | false |
 | `skipHealthChecks` | Used to skip health checks. By default, health checks are enabled. Set this to true to disable health checks | false | 
