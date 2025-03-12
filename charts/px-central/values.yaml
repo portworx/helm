@@ -26,7 +26,6 @@ storkRequired: false
 nodeAffinityLabel: ""
 podAntiAffinity: false
 
-pxcentralDBPassword: Password1
 caCertsSecretName: ""
 
 oidc:
@@ -36,7 +35,6 @@ oidc:
     defaultPassword: admin
     defaultEmail: admin@portworx.com
     keyCloakBackendUserName: keycloak
-    keyCloakBackendPassword: keycloak
     clientId: "pxcentral"
     updateAdminProfile: true
 
@@ -134,6 +132,7 @@ pxbackup:
   volDeleteWorker: 5
   version: 2.9.0
   skipValidations: false
+  encryptMongoDB: false
 
 pxlicenseserver:
   enabled: false
@@ -275,10 +274,10 @@ images:
     tag: 8.0.40
     module: pxCentral
   preSetupHookImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
+    repo: mkoppal
     imageName: pxcentral-onprem-hook-base
-    tag: 2.9.0-dev
+    tag: pb-9641
     module: pxCentral
   mysqlInitImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote

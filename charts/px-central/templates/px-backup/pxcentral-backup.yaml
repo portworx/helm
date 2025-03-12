@@ -207,6 +207,11 @@ spec:
               {{- end }}
       containers:
       - env:
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: mongodb-password
+              name: pxc-backup-mongodb
         - name: PX_BACKUP_NAMESPACE
           valueFrom:
             fieldRef:
@@ -266,7 +271,7 @@ spec:
         command:
         - /px-backup
         - start
-        - --datastoreEndpoints=mongodb://pxbackup:Password1@pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017/?authSource=px-backup&replicaSet=rs0
+        - --datastoreEndpoints=mongodb://pxbackup:$(PASSWORD)@pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017/?authSource=px-backup&replicaSet=rs0
         - --mongo-migration={{.Values.pxbackup.mongoMigration}}
       {{- if .Values.caCertsSecretName }}
       volumes:
