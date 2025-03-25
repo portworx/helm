@@ -132,7 +132,7 @@ pxbackup:
   volDeleteWorker: 5
   version: 2.9.0
   skipValidations: false
-  encryptMongoDB: false
+  encryptMongoDB: true
 
 pxlicenseserver:
   enabled: false
