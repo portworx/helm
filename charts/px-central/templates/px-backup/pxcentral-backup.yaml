@@ -228,6 +228,8 @@ spec:
           value: {{ .Values.pxbackup.monitorBLHealthFrequency }}
         - name: PX_BACKUP_DEFAULT_DATASTORE
           value: mongodb
+        - name: ENABLE_MONGO_ENCRYPTION
+          value: "{{ .Values.pxbackup.enableMongoEncryption }}"
         - name: USE_PX_BACKUP_EMAIL_ALERT_TEMPLATE
           value: "{{ .Values.pxbackup.usePxBackupEmailAlertTemplate }}"
         - name: SOFT_LICENSING_PERIOD
