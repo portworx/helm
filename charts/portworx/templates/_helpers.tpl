@@ -226,7 +226,11 @@ Generate a random token for storage provisioning
     {{- if (eq "default" .Release.Namespace) -}}
         {{- printf "portworx"  -}}
     {{- else -}}
-        {{- printf "%s" .Release.Namespace -}}
+        {{- if (.Values.namespaceOverride) -}}
+            {{- printf "%s" .Values.namespaceOverride -}}
+        {{- else -}}
+            {{- printf "%s" .Release.Namespace -}}
+        {{- end -}}
     {{- end -}}
 {{- end -}}
 {{- end -}}
