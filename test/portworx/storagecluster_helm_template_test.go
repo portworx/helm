@@ -54,6 +54,13 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestOverrideNamespace",
+			resultFileName: "storagecluster_override_namespace.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_override_namespace.yaml"},
+			},
+		},
+		{
 			name:           "TestExternalETCD",
 			resultFileName: "storagecluster_external_etcd.yaml",
 			helmOption: &helm.Options{

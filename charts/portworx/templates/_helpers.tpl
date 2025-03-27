@@ -222,11 +222,15 @@ Generate a random token for storage provisioning
 
 
 {{- define "px.getDeploymentNamespace" -}}
-{{- if (.Release.Namespace) -}}
-    {{- if (eq "default" .Release.Namespace) -}}
-        {{- printf "portworx"  -}}
-    {{- else -}}
-        {{- printf "%s" .Release.Namespace -}}
+{{- if not .Values.namespaceOverride | empty -}}
+    {{- printf "%s" .Values.namespaceOverride -}}
+{{- else -}}
+    {{- if (.Release.Namespace) -}}
+        {{- if (eq "default" .Release.Namespace) -}}
+            {{- printf "portworx"  -}}
+        {{- else -}}
+            {{- printf "%s" .Release.Namespace -}}
+        {{- end -}}
     {{- end -}}
 {{- end -}}
 {{- end -}}
