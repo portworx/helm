@@ -218,7 +218,9 @@ spec:
             {{- end }}
           {{- include "serviceMesh.env" . | nindent 12 }}
             - name: NAMESPACE
-              value: {{ .Release.Namespace }} 
+              value: {{ .Release.Namespace }}
+            - name: DEFAULT_USER_NAME
+              value: {{ .Values.oidc.centralOIDC.defaultUsername | quote }}
             - name: MYSQL_STATEFULSET_NAME
               value: pxcentral-mysql
             - name: MYSQL_ROOT_USERNAME
