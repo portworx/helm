@@ -378,19 +378,6 @@ spec:
       restartPolicy: Always
 status: {}
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  labels:
-    app.kubernetes.io/component: pxcentral-mysql
-{{- include "px-central.labels" . | nindent 4 }}
-  name: pxcentral-mysql-secret
-  namespace: {{ .Release.Namespace }}
-type: Opaque
-stringData:
-  DB_USERNAME: "root"
-  DB_PASSWORD: {{ .Values.pxcentralDBPassword | quote}}
----
 {{- if eq $externalPersistentStorageEnabled true }}
 apiVersion: v1
 kind: PersistentVolumeClaim
