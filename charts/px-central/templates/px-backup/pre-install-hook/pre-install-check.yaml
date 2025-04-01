@@ -194,6 +194,8 @@ spec:
               value: "{{ .Values.pxbackup.version }}"
             - name: SKIP_VALIDATIONS
               value: {{ .Values.pxbackup.skipValidations | default false | quote }}
+            - name: ENCRYPT_MONGODB
+              value: {{ .Values.pxbackup.encryptMongoDB | default false | quote }}
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pre-install-check" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
