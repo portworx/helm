@@ -220,6 +220,7 @@ nodesConfiguration:                           # override certain cluster level c
 # - selector:                                 # Selector for the node(s) to which the configuration in this section will be applied
 #     nodeName:                               # Name of the node to which this configuration will be applied. Node name takes precedence over selector.labelSelector
 #     labelSelector:                          # selector for nodes to which this configuration will be applied.
+#   miscArgs:                                 # MiscArgs is a string of arguments passed to portworx container. This overrides/adds onto miscellaneous arguments passed in cluster annotations.
 #   network:                                  # Specify network configuration for the selected nodes, similar to the one specified at cluster level.
 #                                             # If this network configuration is empty, then cluster level (dataInterface,managementInterface) values are used.
 #     dataInterface:
