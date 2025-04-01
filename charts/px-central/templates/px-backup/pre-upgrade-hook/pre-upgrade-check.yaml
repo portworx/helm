@@ -189,6 +189,8 @@ spec:
               value: pxc-backup-mongodb
             - name: SKIP_VALIDATIONS
               value: {{ .Values.pxbackup.skipValidations | default false | quote }}
+            - name: ENCRYPT_MONGODB
+              value: {{ .Values.pxbackup.encryptMongoDB | default false | quote }}
             - name: TARGET_PXBACKUP_VERSION
               value: "{{ .Values.pxbackup.version }}"
             - name: MONGODB_TARGET_VERSION
@@ -201,12 +203,6 @@ spec:
               value: root
             - name: MINIMUM_KUBERNETES_VERSION
               value: "{{ $minimumKubernetesVersion }}"
-            - name: MONGODB_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: mongodb-root-password
-                  name: pxc-backup-mongodb
-                  optional: true
             - name: MONGODB_IMAGES
               value: >
                 {

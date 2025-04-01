@@ -103,20 +103,6 @@ spec:
     app.kubernetes.io/component: pxc-backup-mongodb
 ---
 apiVersion: v1
-kind: Secret
-metadata:
-  labels:
-    app.kubernetes.io/component: pxc-backup-mongodb
-{{- include "px-central.labels" . | nindent 4 }}
-  name: pxc-backup-mongodb
-  namespace: {{ .Release.Namespace }}
-type: Opaque
-stringData:
-  mongodb-root-password: "pxcentral"
-  mongodb-password: "Password1"
-  mongodb-replica-set-key: "pxbackup"
----
-apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: pxc-backup-mongodb
@@ -248,7 +234,10 @@ spec:
             - name: SHARED_FILE
               value: "/shared/info.txt"
             - name: MONGODB_USERNAME
-              value: pxbackup
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb-username
+                  name: pxc-backup-mongodb
             - name: MONGODB_DATABASE
               value: px-backup
             - name: MONGODB_PASSWORD
