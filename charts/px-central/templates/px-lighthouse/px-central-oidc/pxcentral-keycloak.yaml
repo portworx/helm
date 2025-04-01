@@ -33,19 +33,6 @@ metadata:
   labels:
     app.kubernetes.io/component: keycloak
 {{- include "px-central.labels" . | nindent 4 }}
-  name: pxcentral-keycloak-postgresql
-  namespace: {{ .Release.Namespace }}
-type: Opaque
-stringData:
-  postgresql-username: {{ .Values.oidc.centralOIDC.keyCloakBackendUserName | quote}}
-  postgresql-password: {{ .Values.oidc.centralOIDC.keyCloakBackendPassword | quote}}
----
-apiVersion: v1
-kind: Secret
-metadata:
-  labels:
-    app.kubernetes.io/component: keycloak
-{{- include "px-central.labels" . | nindent 4 }}
   name: pxcentral-keycloak-http
   namespace: {{ .Release.Namespace }}
 type: Opaque
