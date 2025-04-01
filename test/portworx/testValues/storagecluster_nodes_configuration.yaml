@@ -2,7 +2,8 @@ nodesConfiguration:
 - selector:
     labelSelector:
       matchLabels:
-        custom: "node"                 
+        custom: "node" 
+  misArgs: "-metadata /dev/sdb"                
   network:                                                                             
     dataInterface: ethX
     mgmtInterface: ethX
