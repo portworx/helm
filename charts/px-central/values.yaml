@@ -26,7 +26,6 @@ storkRequired: false
 nodeAffinityLabel: ""
 podAntiAffinity: false
 
-pxcentralDBPassword: Password1
 caCertsSecretName: ""
 
 oidc:
@@ -36,7 +35,6 @@ oidc:
     defaultPassword: admin
     defaultEmail: admin@portworx.com
     keyCloakBackendUserName: keycloak
-    keyCloakBackendPassword: keycloak
     clientId: "pxcentral"
     updateAdminProfile: true
 
@@ -140,6 +138,7 @@ pxbackup:
   version: 2.10.0
   skipValidations: false
   usePlatformRbac: false
+  encryptMongoDB: false
 
 pxlicenseserver:
   enabled: false
