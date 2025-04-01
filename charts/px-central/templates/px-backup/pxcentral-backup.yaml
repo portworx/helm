@@ -217,6 +217,18 @@ spec:
           value: "{{ .Values.pxbackup.backupDeleteWorker }}"
         - name: VOL_DELETE_WORKER
           value: "{{ .Values.pxbackup.volDeleteWorker }}"
+        - name: MONGODB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: pxc-backup-mongodb
+              key: mongodb-username
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pxc-backup-mongodb
+              key: mongodb-password
+        - name: ENCRYPT_MONGODB
+          value: {{ .Values.pxbackup.encryptMongoDB | default false | quote }}
         - name: ENABLE_MONITOR_BL_HEALTH
           value: "{{ .Values.pxbackup.enableMonitorBLHealth }}"
         - name: MONITOR_BL_HEALTH_FREQUENCY
@@ -257,8 +269,8 @@ spec:
           initialDelaySeconds: {{ .Values.pxbackup.livenessProbeInitialDelay }}
           timeoutSeconds: 1
           periodSeconds: 60
-        volumeMounts:          
-        {{- if .Values.caCertsSecretName }}  
+        volumeMounts:
+        {{- if .Values.caCertsSecretName }}
           - mountPath: /tmp/certs
             readOnly: true
             name: ssl-cert-dir
@@ -272,7 +284,7 @@ spec:
         command:
         - /px-backup
         - start
-        - --datastoreEndpoints=mongodb://pxbackup:Password1@pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017/?authSource=px-backup&replicaSet=rs0
+        - --datastoreEndpoints=mongodb://$MONGODB_USERNAME:$MONGODB_PASSWORD@pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017/?authSource=px-backup&replicaSet=rs0
         - --mongo-migration={{.Values.pxbackup.mongoMigration}}
       volumes:
       {{- if .Values.caCertsSecretName }}
