@@ -164,6 +164,8 @@ spec:
           env:
             - name: NAMESPACE
               value: {{ .Release.Namespace }}
+            - name: DEFAULT_USER_NAME
+              value: {{ .Values.oidc.centralOIDC.defaultUsername | quote }}
             - name: STORAGE_CLASS
               value: {{ .Values.persistentStorage.storageClassName }}
             - name: PX_BACKUP_ENABLED

@@ -27,18 +27,6 @@ rules:
     resources: ["secrets"]
     verbs: ["get"]
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  labels:
-    app.kubernetes.io/component: keycloak
-{{- include "px-central.labels" . | nindent 4 }}
-  name: pxcentral-keycloak-http
-  namespace: {{ .Release.Namespace }}
-type: Opaque
-stringData:
-  password: {{ .Values.oidc.centralOIDC.defaultPassword | quote}}
----
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -564,7 +552,10 @@ spec:
           - name: KC_BOOTSTRAP_ADMIN_USERNAME
             value: {{ .Values.oidc.centralOIDC.defaultUsername }}-bootstrap
           - name: KC_BOOTSTRAP_ADMIN_PASSWORD
-            value: {{ .Values.oidc.centralOIDC.defaultPassword }}
+            valueFrom:
+              secretKeyRef:
+                name: pxcentral-keycloak-http
+                key: password
           - name: KC_HTTP_RELATIVE_PATH
             value: /auth
           - name: KC_DB

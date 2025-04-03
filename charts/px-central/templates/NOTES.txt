@@ -52,7 +52,10 @@ To access PX-Central/PX-Backup UI please refer:  https://backup.docs.portworx.co
 Login with the following credentials:
 
     Username: {{ .Values.oidc.centralOIDC.defaultUsername }}
-    Password: {{ .Values.oidc.centralOIDC.defaultPassword }}
+
+    To fetch the password for "{{ .Values.oidc.centralOIDC.defaultUsername }}" user, run:
+    kubectl get secret pxcentral-keycloak-http -n {{ .Release.Namespace }} -o jsonpath="{.data.password}" | base64 --decode
+
 {{- end }}
 
 For more information: https://github.com/portworx/helm/blob/master/charts/px-central/README.md
