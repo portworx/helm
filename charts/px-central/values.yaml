@@ -32,7 +32,6 @@ oidc:
   centralOIDC:
     enabled: true
     defaultUsername: admin
-    defaultPassword: admin
     defaultEmail: admin@portworx.com
     keyCloakBackendUserName: keycloak
     clientId: "pxcentral"
