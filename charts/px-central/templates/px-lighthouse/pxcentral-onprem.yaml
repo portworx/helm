@@ -8,7 +8,6 @@ metadata:
 {{- include "px-central.labels" . | nindent 4 }}
 data:
   DEFAULT_USER_NAME: "{{ .Values.oidc.centralOIDC.defaultUsername }}"
-  DEFAULT_USER_PASSWORD: "{{ .Values.oidc.centralOIDC.defaultPassword }}"
   DEFAULT_EMAIL: "{{ .Values.oidc.centralOIDC.defaultEmail }}"
   CENTRAL_OIDC_ENABLED: "{{ .Values.oidc.centralOIDC.enabled }}"
   CENTRAL_OIDC_CLIENT_ID: "{{ .Values.oidc.centralOIDC.clientId }}"
