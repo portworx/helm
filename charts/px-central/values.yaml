@@ -32,7 +32,6 @@ oidc:
   centralOIDC:
     enabled: true
     defaultUsername: admin
-    defaultPassword: admin
     defaultEmail: admin@portworx.com
     keyCloakBackendUserName: keycloak
     clientId: "pxcentral"
@@ -238,10 +237,10 @@ images:
     tag: 2.9.0-dev
     module: pxCentral
   postInstallSetupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
-    repo: mkoppal
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
     imageName: pxcentral-onprem-post-setup-base
-    tag: pb-10042
+    tag: 2.9.0-dev
     module: pxCentral
   keycloakBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -274,10 +273,10 @@ images:
     tag: 8.0.40
     module: pxCentral
   preSetupHookImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
-    repo: mkoppal
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
     imageName: pxcentral-onprem-hook-base
-    tag: pb-10042
+    tag: 2.9.0-dev
     module: pxCentral
   mysqlInitImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -288,10 +287,10 @@ images:
 
   ## Images required for enabling px-backup
   pxBackupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
-    repo: shkumari
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
     imageName: px-backup-base
-    tag: PB-9926
+    tag: 2.9.0-dev
     module: pxBackup
   mongodbImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
