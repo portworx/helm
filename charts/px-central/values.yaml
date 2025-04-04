@@ -276,7 +276,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
     repo: shkumari
     imageName: pxcentral-onprem-hook-base
-    tag: shk
+    tag: password-customisation
     module: pxCentral
   mysqlInitImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -290,7 +290,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
     repo: shkumari
     imageName: px-backup-base
-    tag: PB-9926
+    tag: password-customisation
     module: pxBackup
   mongodbImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
