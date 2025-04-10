@@ -109,6 +109,7 @@ pxbackup:
   enabled: false
   orgName: default
   callHome: true
+  logLevel: DEBUG
   mongoMigration: complete
   livenessProbeInitialDelay: 1800
   prometheus:

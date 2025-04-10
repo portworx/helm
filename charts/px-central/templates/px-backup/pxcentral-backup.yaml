@@ -237,6 +237,8 @@ spec:
           value: mongodb
         - name: USE_PX_BACKUP_EMAIL_ALERT_TEMPLATE
           value: "{{ .Values.pxbackup.usePxBackupEmailAlertTemplate }}"
+        - name: LOG_LEVEL
+          value: {{ .Values.pxbackup.logLevel | default "DEBUG" | upper | quote }}
         - name: SOFT_LICENSING_PERIOD
           value: "36160"
         {{- include "serviceMesh.env" . | nindent 8 }}
