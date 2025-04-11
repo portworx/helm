@@ -466,10 +466,10 @@ spec:
       volumeMounts:
           {{- toYaml . | nindent 6  }}
       {{- end}}
-      {{- if $prometheus.securityContext.runAsNonRoot }}
+      {{- with $prometheus.securityContext }}
       securityContext:
-        runAsNonRoot: true
-      {{- end}}
+        {{- toYaml . | nindent 8  }}
+      {{- end }}
     {{- end }}
 
     {{- if .Values.monitoring.telemetry }}
