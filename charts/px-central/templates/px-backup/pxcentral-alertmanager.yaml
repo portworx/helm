@@ -357,6 +357,26 @@ stringData:
               </div>
               </li>
             </ul>
+            {{- else if eq .Labels.alertname "BulkBackupScheduleDeletionAlert" }}
+                <div class="pb-16" style="margin:22px 0;width:400px;color:#bc1b06;font-size:18px;font-weight:500;">
+                  Critical Alert: Bulk Backup Schedule Deletion Failure
+                </div>
+                <div class="pb-16" style="color:var(--content-onBase-strong,#292929);font-size:15px;font-weight:700;">
+                  Alert Creation Time: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+                </div>
+              {{ if .Annotations.email_description }}
+                {{ .Annotations.email_description | safeHtml }}
+              {{ end }}
+            {{- else if eq .Labels.alertname "BulkBackupScheduleUpdationAlert" }}
+              <div class="pb-16" style="margin:22px 0;width:400px;color:#bc1b06;font-size:18px;font-weight:500;">
+                Critical Alert: Bulk Backup Schedule Updation Failure
+              </div>
+              <div class="pb-16" style="color:var(--content-onBase-strong,#292929);font-size:15px;font-weight:700;">
+                Alert Creation Time: {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+              </div>
+              {{ if .Annotations.email_description }}
+                {{ .Annotations.email_description | safeHtml }}
+              {{ end }}
             {{- else if or (eq .Labels.alertname "BackupLocationAlert") (eq .Labels.alertname "BackupLocationLimitedAvailabilityAlert") }}
             <div
                 class="pb-16"
