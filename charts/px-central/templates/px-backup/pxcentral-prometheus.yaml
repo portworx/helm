@@ -536,4 +536,54 @@ spec:
       for: 1m
       labels:
         severity: critical
+  
+  - name: bulk_operations_rules
+    rules:
+    - alert: BulkBackupScheduleDeletionAlert
+      expr: |
+        sum by(batch_id) (
+          pxbackup_bulk_operations_status{
+            bulk_object="BackupSchedule",
+            bulk_operation="delete"
+          }
+        ) > 0
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: |-
+          Backup Schedule Deletion Failure: Batch {{"{{"}} $labels.batch_id {{"}}"}} 
+        description: |-
+          The following BackupSchedules are still failing to be deleted in batch {{ "{{" }} $labels.batch_id {{ "}}" }}:
+          {{ "{{" }}- $fails := query (printf "pxbackup_bulk_operations_status{bulk_object=\"BackupSchedule\",bulk_operation=\"delete\",batch_id=\"%s\"}" $labels.batch_id) {{ "}}" }}
+          {{ "{{" }}- range $i, $e := $fails {{ "}}" }}
+          • Name={{ "{{" }} $e.Labels.failed_names {{ "}}" }}, \
+            UID={{ "{{" }} $e.Labels.failed_uids {{ "}}" }}, \
+            Error={{ "{{" }} $e.Labels.error_reason {{ "}}" }}
+          {{ "{{" }}- end {{ "}}" }}
+
+    - alert: BulkBackupScheduleUpdationAlert
+      expr: |
+        sum by(batch_id) (
+          pxbackup_bulk_operations_status{
+            bulk_object="BackupSchedule",
+            bulk_operation="update"
+          }
+        ) > 0
+      for: 1m
+      labels:
+        severity: critical
+      annotations:
+        summary: |-
+          Backup Schedule Updation Failure: Batch {{"{{"}} $labels.batch_id {{"}}"}} 
+        description: |-
+          The following BackupSchedules are still failing to update in batch {{ "{{" }} $labels.batch_id {{ "}}" }}:
+          {{ "{{" }}- $fails := query (printf "pxbackup_bulk_operations_status{bulk_object=\"BackupSchedule\",bulk_operation=\"update\",batch_id=\"%s\"}" $labels.batch_id) {{ "}}" }}
+          {{ "{{" }}- range $i, $e := $fails {{ "}}" }}
+          • Name={{ "{{" }} $e.Labels.failed_names {{ "}}" }}, \
+            UID={{ "{{" }} $e.Labels.failed_uids {{ "}}" }}, \
+            Error={{ "{{" }} $e.Labels.error_reason {{ "}}" }}
+          {{ "{{" }}- end {{ "}}" }}
+
+
 {{- end -}}
