@@ -588,4 +588,180 @@ spec:
       for: 1m
       labels:
         severity: critical
+  
+  - name: bulk_operations_rules
+    rules:
+    - alert: BulkBackupScheduleDeletionAlert
+      expr: |
+        sum by(batch_id, org_id, user_id, cluster_uid, timestamp_in_secs, namespace) (
+          pxbackup_bulk_operations_status{
+            bulk_object="BackupSchedule",
+            bulk_operation="delete"
+          }
+        ) > 0
+      for: 1m
+      labels:
+        severity: critical
+        org_id:        "{{"{{"}} $labels.org_id {{"}}"}}"
+        user_id:       "{{"{{"}} $labels.user_id {{"}}"}}"
+        cluster_uid:   "{{"{{"}} $labels.cluster_uid {{"}}"}}"
+        timestamp_in_secs: "{{"{{"}} $labels.timestamp_in_secs {{"}}"}}"
+        namespace: "{{"{{"}} $labels.namespace {{"}}"}}"
+      annotations:
+        summary: >-
+          {{"{{"}}- printf "Backup Schedule Deletion Failure: Batch %s" $labels.batch_id -{{"}}"}}
+        description: |-
+          {{"{{"}}- $fails := query (printf "pxbackup_bulk_operations_status{bulk_object=\"BackupSchedule\",bulk_operation=\"delete\",batch_id=\"%s\"}" $labels.batch_id) -{{"}}"}}
+          {
+            "name":             "BulkBackupScheduleDeletionAlert",
+            "objectType":       "BackupSchedule",
+            "operation":        "delete",
+            "severity":         "{{"{{"}} .Labels.severity {{"}}"}}",
+            "batchId":          "{{"{{"}} .Labels.batch_id {{"}}"}}",
+            "orgId":            "{{"{{"}} .Labels.org_id {{"}}"}}",
+            "userId":           "{{"{{"}} .Labels.user_id {{"}}"}}",
+            "clusterUid":       "{{"{{"}} .Labels.cluster_uid {{"}}"}}",
+            "timestampInSecs":  "{{"{{"}} .Labels.timestamp_in_secs {{"}}"}}",
+            "failures": [
+            {{"{{"}}- range $i, $e := $fails -{{"}}"}}
+              {{"{{"}} if gt $i 0 {{"}}"}},{{"{{"}} end {{"}}"}}
+              {
+                "name":    "{{"{{"}} $e.Labels.failed_names {{"}}"}}",
+                "uid":     "{{"{{"}} $e.Labels.failed_uids {{"}}"}}",
+                "error":   "{{"{{"}} $e.Labels.error_reason {{"}}"}}",
+                "cluster": "{{"{{"}} $e.Labels.cluster {{"}}"}}"
+              }
+            {{"{{"}}- end -{{"}}"}}
+            ]
+          }
+        email_description: |-
+          {{`<div
+              class="pb-16"
+              style="color: var(--content-onBase-strong, #292929);
+                     font-size: 15px;
+                     font-weight: 700;"
+            >
+              Alert details:
+            </div>
+            <ul>
+              {{- $fails := query (printf "pxbackup_bulk_operations_status{bulk_object=\"BackupSchedule\",bulk_operation=\"delete\",batch_id=\"%s\",namespace=\"%s\"}" $labels.batch_id $labels.namespace) -}}
+              {{- range $e := $fails }}
+                <li>
+                  <div style="display:flex">
+                    <div style="font-weight:bold; width:170px; min-width:170px;">
+                      Backup Schedule Name:
+                    </div>
+                    <div>{{ $e.Labels.failed_names }}</div>
+                  </div>
+                </li>
+                <li>
+                  <div style="display:flex">
+                    <div style="font-weight:bold; width:170px; min-width:170px;">
+                      Error:
+                    </div>
+                    <div>{{ $e.Labels.error_reason }}</div>
+                  </div>
+                </li>
+                <li>
+                  <div style="display:flex">
+                    <div style="font-weight:bold; width:170px; min-width:170px;">
+                      Cluster:
+                    </div>
+                    <div>{{ $e.Labels.cluster }}</div>
+                  </div>
+                </li>
+              {{- end }}
+            </ul>`}}
+        objects_json: |-
+          {{"{{"}}- $fails := query (printf "pxbackup_bulk_operations_status{bulk_object=\"BackupSchedule\",bulk_operation=\"update\",batch_id=\"%s\"}" $labels.batch_id) -{{"}}"}}
+          {{"{{"}}- $firstResult := index $fails 0 -{{"}}"}}
+          {{"{{"}} $firstResult.Labels.objects_json {{"}}"}}
+
+    - alert: BulkBackupScheduleUpdationAlert
+      expr: |
+        sum by(batch_id, org_id, user_id, cluster_uid, timestamp_in_secs, namespace) (
+          pxbackup_bulk_operations_status{
+            bulk_object="BackupSchedule",
+            bulk_operation="update"
+          }
+        ) > 0
+      for: 1m
+      labels:
+        severity: critical
+        org_id:        "{{"{{"}} $labels.org_id {{"}}"}}"
+        user_id:       "{{"{{"}} $labels.user_id {{"}}"}}"
+        cluster_uid:   "{{"{{"}} $labels.cluster_uid {{"}}"}}"
+        timestamp_in_secs: "{{"{{"}} $labels.timestamp_in_secs {{"}}"}}"
+        namespace: "{{"{{"}} $labels.namespace {{"}}"}}"
+      annotations:
+        summary: >-
+          {{"{{"}}- printf "Backup Schedule Updation Failure: Batch %s" $labels.batch_id -{{"}}"}}
+        description: |-
+          {{"{{"}}- $fails := query (printf "pxbackup_bulk_operations_status{bulk_object=\"BackupSchedule\",bulk_operation=\"update\",batch_id=\"%s\"}" $labels.batch_id) -{{"}}"}}
+          {
+            "name":             "BulkBackupScheduleUpdationAlert",
+            "objectType":       "BackupSchedule",
+            "operation":        "update",
+            "severity":         "{{"{{"}} .Labels.severity {{"}}"}}",
+            "batchId":          "{{"{{"}} .Labels.batch_id {{"}}"}}",
+            "orgId":            "{{"{{"}} .Labels.org_id {{"}}"}}",
+            "userId":           "{{"{{"}} .Labels.user_id {{"}}"}}",
+            "clusterUid":       "{{"{{"}} .Labels.cluster_uid {{"}}"}}",
+            "timestampInSecs":  "{{"{{"}} .Labels.timestamp_in_secs {{"}}"}}",
+            "failures": [
+            {{"{{"}}- range $i, $e := $fails -{{"}}"}}
+              {{"{{"}} if gt $i 0 {{"}}"}},{{"{{"}} end {{"}}"}}
+              {
+                "name":    "{{"{{"}} $e.Labels.failed_names {{"}}"}}",
+                "uid":     "{{"{{"}} $e.Labels.failed_uids {{"}}"}}",
+                "error":   "{{"{{"}} $e.Labels.error_reason {{"}}"}}",
+                "cluster": "{{"{{"}} $e.Labels.cluster {{"}}"}}"
+              }
+            {{"{{"}}- end -{{"}}"}}
+            ]
+          }
+        email_description: |-
+          {{`<div
+              class="pb-16"
+              style="color: var(--content-onBase-strong, #292929);
+                     font-size: 15px;
+                     font-weight: 700;"
+            >
+              Alert details:
+            </div>
+            <ul>
+              {{- $fails := query (printf "pxbackup_bulk_operations_status{bulk_object=\"BackupSchedule\",bulk_operation=\"update\",batch_id=\"%s\",namespace=\"%s\"}" $labels.batch_id $labels.namespace) -}}
+              {{- range $e := $fails }}
+                <li>
+                  <div style="display:flex">
+                    <div style="font-weight:bold; width:170px; min-width:170px;">
+                      Backup Schedule Name:
+                    </div>
+                    <div>{{ $e.Labels.failed_names }}</div>
+                  </div>
+                </li>
+                <li>
+                  <div style="display:flex">
+                    <div style="font-weight:bold; width:170px; min-width:170px;">
+                      Error:
+                    </div>
+                    <div>{{ $e.Labels.error_reason }}</div>
+                  </div>
+                </li>
+                <li>
+                  <div style="display:flex">
+                    <div style="font-weight:bold; width:170px; min-width:170px;">
+                      Cluster:
+                    </div>
+                    <div>{{ $e.Labels.cluster }}</div>
+                  </div>
+                </li>
+              {{- end }}
+            </ul>`}}
+        objects_json: |-
+          {{"{{"}}- $fails := query (printf "pxbackup_bulk_operations_status{bulk_object=\"BackupSchedule\",bulk_operation=\"update\",batch_id=\"%s\"}" $labels.batch_id) -{{"}}"}}
+          {{"{{"}}- $firstResult := index $fails 0 -{{"}}"}}
+          {{"{{"}} $firstResult.Labels.objects_json {{"}}"}}
+
+
 {{- end -}}
