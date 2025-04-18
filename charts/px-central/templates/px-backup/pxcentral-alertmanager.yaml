@@ -130,6 +130,21 @@ spec:
   tolerations:
   {{- toYaml . | nindent 4 }}
   {{- end }}
+  route:
+  group_by: ["alertname"]         # Top-level grouping; change this as needed.
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  receiver: "default-receiver"
+  routes:
+    - match:
+        alertname: BackupScheduleDeletionFailure
+      group_by: ["bulk_object", "bulk_operation", "batch_id"]
+      receiver: backup-schedule-receiver
+    - match:
+        alertname: BackupScheduleUpdationFailure
+      group_by: ["bulk_object", "bulk_operation", "batch_id"]
+      receiver: backup-schedule-receiver
 {{- end }}
 ---
 apiVersion: v1
