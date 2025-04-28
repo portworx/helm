@@ -415,7 +415,7 @@ spec:
           volumeMounts:
             - name: dshm
               mountPath: /dev/shm
-            - name: pxcentral-keycloak-data-postgres16
+            - name: pxcentral-keycloak-data-postgres17
               mountPath: /bitnami/postgresql
       {{- with .Values.tolerations }}
       tolerations:
@@ -427,13 +427,13 @@ spec:
             medium: Memory
             sizeLimit: 1Gi
         {{- if eq $externalPersistentStorageEnabled false }}
-        - name: pxcentral-keycloak-data-postgres16
+        - name: pxcentral-keycloak-data-postgres17
           emptyDir: {}
         {{- end }}
   {{- if eq $externalPersistentStorageEnabled true }}
   volumeClaimTemplates:
     - metadata:
-        name: pxcentral-keycloak-data-postgres16
+        name: pxcentral-keycloak-data-postgres17
       spec:
         accessModes:
           - "ReadWriteOnce"
