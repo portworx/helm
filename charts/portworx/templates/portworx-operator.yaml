@@ -1,4 +1,5 @@
 {{- if .Values.deployOperator }}
+{{- $registrySecret := .Values.registrySecret | default "none" }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -100,4 +101,8 @@ spec:
                       - portworx-operator
               topologyKey: "kubernetes.io/hostname"
       serviceAccountName: portworx-operator
+      {{- if not (eq $registrySecret "none") }}
+      imagePullSecrets: 
+      - name: {{ $registrySecret }}
+      {{- end }}
 {{- end }}

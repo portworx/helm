@@ -29,6 +29,9 @@ monitoring:
       - mountPath: /data/prometheus
         name: additional-volume
     securityContext:
-      runAsNonRoot: false
+      runAsNonRoot: true
+      runAsUser: 1000
+      seLinuxOptions:
+        level: "s0:c123,c456"
   telemetry: true
   grafana: true

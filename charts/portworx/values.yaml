@@ -138,8 +138,10 @@ monitoring:
     volumeMounts:                     # Additional VolumeMounts for the Prometheus StatefulSet
     # - mountPath: /test
     #   name: additional-volume
-    securityContext:                  # Enable prometheus container run as a non-root user.
-      runAsNonRoot: false
+    securityContext:                  # Enable prometheus container run as a non-root user. 
+    # Provide securityContext fields as defined by Kubernetes (https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
+      # runAsNonRoot: false
+      # runAsUser: 1000
   telemetry: true                    # Enable telemetry
   grafana: false                      # Enable grafana
 
