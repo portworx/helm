@@ -430,7 +430,7 @@ spec:
           {{- if .Values.proxy.httpProxy }}
           env:
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-configs" .Values.proxy.includeNoProxyList) }}
-          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
           {{- end }}
           args:
@@ -441,6 +441,11 @@ spec:
             - name: config
               mountPath: /etc/cortex
               subPath: 
+            {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
+            {{- end }}
           ports:
             - name: http-metrics
               containerPort: 8080
@@ -465,6 +470,15 @@ spec:
         - name: config
           secret:
             secretName: pxcentral-cortex
+        {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+        {{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -549,7 +563,7 @@ spec:
           {{- if .Values.proxy.httpProxy }}
           env:
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-distributor" .Values.proxy.includeNoProxyList) }}
-          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
           {{- end }}
           image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
@@ -563,6 +577,11 @@ spec:
             - name: storage
               mountPath: "/data"
               subPath: 
+            {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
+            {{- end }}
           ports:
             - name: http-metrics
               containerPort: 8080
@@ -587,6 +606,15 @@ spec:
             secretName: pxcentral-cortex
         - name: storage
           emptyDir: {}
+        {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+        {{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -691,8 +719,14 @@ spec:
           {{- if .Values.proxy.httpProxy }}
           env:
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-nginx" .Values.proxy.includeNoProxyList) }}
-          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
+          {{- end }}
+          volumeMounts:
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
           {{- end }}
         - name: dnsmasq
           image: {{ printf "%s/%s/%s:%s" .Values.images.dnsmasqImage.registry .Values.images.dnsmasqImage.repo .Values.images.dnsmasqImage.imageName .Values.images.dnsmasqImage.tag }}
@@ -705,8 +739,14 @@ spec:
           {{- if .Values.proxy.httpProxy }}
           env:
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-nginx" .Values.proxy.includeNoProxyList) }}
-          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
+          {{- end }}
+          volumeMounts:
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
           {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
@@ -716,6 +756,15 @@ spec:
         - name: config
           configMap:
             name: pxcentral-cortex-nginx
+        {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+        {{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -811,6 +860,11 @@ spec:
             - name: storage
               mountPath: "/data"
               subPath: 
+            {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
+            {{- end }}
           ports:
             - name: http-metrics
               containerPort: 8080
@@ -828,8 +882,14 @@ spec:
           {{- if .Values.proxy.httpProxy }}
           env:
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-querier" .Values.proxy.includeNoProxyList) }}
-          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
+          {{- end }}
+          volumeMounts:
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
           {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
@@ -841,6 +901,15 @@ spec:
             secretName: pxcentral-cortex
         - name: storage
           emptyDir: {}
+        {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+        {{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -930,6 +999,11 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /etc/cortex
+            {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
+            {{- end }}
           ports:
             - name: http-metrics
               containerPort: 8080
@@ -950,7 +1024,7 @@ spec:
           {{- if .Values.proxy.httpProxy }}
           env:
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-query-frontend" .Values.proxy.includeNoProxyList) }}
-          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
           {{- end }}
       {{- with .Values.tolerations }}
@@ -961,6 +1035,15 @@ spec:
         - name: config
           secret:
             secretName: pxcentral-cortex
+        {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+        {{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -1035,6 +1118,11 @@ spec:
             - name: storage
               mountPath: "/data"
               subPath: 
+            {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
+            {{- end }}
           ports:
             - name: http-metrics
               containerPort: 8080
@@ -1052,7 +1140,7 @@ spec:
           {{- if .Values.proxy.httpProxy }}
           env:
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-ruler" .Values.proxy.includeNoProxyList) }}
-          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
           {{- end }}
       {{- with .Values.tolerations }}
@@ -1065,6 +1153,15 @@ spec:
             secretName: pxcentral-cortex
         - name: storage
           emptyDir: {}
+        {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+        {{- end }}
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -1135,6 +1232,11 @@ spec:
             - name: storage
               mountPath: "/data"
               subPath: 
+            {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
+            {{- end }}
           ports:
             - name: http-metrics
               containerPort: 8080
@@ -1152,7 +1254,7 @@ spec:
           {{- if .Values.proxy.httpProxy }}
           env:
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-table-manager" .Values.proxy.includeNoProxyList) }}
-          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
           {{- end }}
       {{- with .Values.tolerations }}
@@ -1165,6 +1267,15 @@ spec:
             secretName: pxcentral-cortex
         - name: storage
           emptyDir: {}
+        {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+        {{- end }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -1249,6 +1360,15 @@ spec:
         - name: storage
           emptyDir: {}
         {{- end }}
+        {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+        {{- end }}
       containers:
         - name: cortex
           image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
@@ -1267,13 +1387,18 @@ spec:
                   apiVersion: v1
                   fieldPath: status.podIP
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-alertmanager" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
           volumeMounts:
             - name: config
               mountPath: /etc/cortex
             - name: storage
               mountPath: "/data"
+            {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
+            {{- end }}
           ports:
             - name: http-metrics
               containerPort: 8080
@@ -1398,6 +1523,15 @@ spec:
         - name: storage
           emptyDir: {}
         {{- end }}
+        {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+        {{- end }}
       containers:
         - name: cortex
           image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
@@ -1412,6 +1546,11 @@ spec:
               mountPath: /etc/cortex
             - name: storage
               mountPath: "/data"
+            {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
+            {{- end }}
           ports:
             - name: http-metrics
               containerPort: 8080
@@ -1429,7 +1568,7 @@ spec:
           {{- if .Values.proxy.httpProxy }}
           env:
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-ingester" .Values.proxy.includeNoProxyList) }}
-          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
           {{- end }}
       {{- with .Values.tolerations }}
