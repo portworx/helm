@@ -269,15 +269,29 @@ spec:
               value: "false"
         {{- end }}
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pre-upgrade-check" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
           volumeMounts:
             - name: data-volume
               mountPath: /mnt/data
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
+          {{- end }}
       volumes:
         - name: data-volume
           persistentVolumeClaim:
             claimName: pre-upgrade-data-pvc
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}

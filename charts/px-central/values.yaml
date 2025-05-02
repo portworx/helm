@@ -94,6 +94,9 @@ proxy:
   includeNoProxyList: []
   httpProxy:
     noProxy: ""
+  configSecretName: ""
+  http: ""
+  https: ""
 
 postInstallJob:
   sslEnabled: true
