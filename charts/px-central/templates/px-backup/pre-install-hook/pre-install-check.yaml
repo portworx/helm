@@ -186,15 +186,29 @@ spec:
             - name: SKIP_VALIDATIONS
               value: {{ .Values.pxbackup.skipValidations | default false | quote }}
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pre-install-check" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
           volumeMounts:
             - name: data-volume
               mountPath: /mnt/data
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
+          {{- end }}
       volumes:
         - name: data-volume
           persistentVolumeClaim:
             claimName: pre-install-data-pvc
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}
@@ -264,7 +278,7 @@ spec:
             - name: JOB_TIMEOUT_SECONDS
               value: "600"
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "preflight-check" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
             - name: STORAGE_CLASS
               value: {{ .Values.persistentStorage.storageClassName }}
@@ -285,7 +299,22 @@ spec:
               value: {{ .Values.images.insecureRegistry | default false | quote }}
             - name: SKIP_VALIDATIONS
               value: {{ .Values.pxbackup.skipValidations | default false | quote }}
-          volumeMounts: []
+          volumeMounts:
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
+          {{- end }}
+      volumes:
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}

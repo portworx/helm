@@ -111,7 +111,7 @@ spec:
           name: pxc-backup-metrics
           key: metrics-token
     {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-prometheus" .Values.proxy.includeNoProxyList) }}
-    {{- include "proxy.noProxyEnv" . | nindent 4 }}
+    {{- include "proxy.proxyEnv" . | nindent 4 }}
     {{- end }}
     image: {{ printf "%s/%s/%s:%s" .Values.images.prometheusImage.registry .Values.images.prometheusImage.repo .Values.images.prometheusImage.imageName .Values.images.prometheusImage.tag }}
     livenessProbe:
@@ -140,6 +140,12 @@ spec:
     - containerPort: 9090
       name: web
       protocol: TCP
+    volumeMounts:
+      {{- if .Values.proxy.configSecretName }}
+      - mountPath: /etc/ssl/certs/proxy
+        name: proxy-ca-volume
+        readOnly: true
+      {{- end }}
   - args:
     - --listen-address=:8080
     - --reload-url=http://$(USERNAME):$(PASSWORD)@localhost:9090/-/reload
@@ -160,7 +166,7 @@ spec:
           key: password
           name: pxc-backup-metrics
     {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-prometheus" .Values.proxy.includeNoProxyList) }}
-    {{- include "proxy.noProxyEnv" . | nindent 4 }}
+    {{- include "proxy.proxyEnv" . | nindent 4 }}
     {{- end }}
     ports:
     - containerPort: 8080
@@ -176,11 +182,25 @@ spec:
       name: web-config-custom
       readOnly: true
       subPath: web-config-custom.yaml
+    {{- if .Values.proxy.configSecretName }}
+    - mountPath: /etc/ssl/certs/proxy
+      name: proxy-ca-volume
+      readOnly: true
+    {{- end }}
   volumes:
     - name: web-config-custom
       secret:
         defaultMode: 420
         secretName: pxc-backup-metrics
+    {{- if .Values.proxy.configSecretName }}
+    - name: proxy-ca-volume
+      secret:
+        items:
+        - key: CA
+          path: ca.crt
+        optional: true
+        secretName: {{ .Values.proxy.configSecretName }}
+    {{- end }}
   serviceAccountName: pxcentral-prometheus
   {{- if .Values.images.pullSecrets }}
   imagePullSecrets:
@@ -335,13 +355,18 @@ spec:
             - --kubelet-service={{ .Release.Namespace }}/kubelet
             - --prometheus-config-reloader={{ printf "%s/%s/%s:%s" .Values.images.prometheusConfigReloadrImage.registry .Values.images.prometheusConfigReloadrImage.repo .Values.images.prometheusConfigReloadrImage.imageName .Values.images.prometheusConfigReloadrImage.tag }}
           image: {{ printf "%s/%s/%s:%s" .Values.images.prometheusOperatorImage.registry .Values.images.prometheusOperatorImage.repo .Values.images.prometheusOperatorImage.imageName .Values.images.prometheusOperatorImage.tag }}
-          imagePullPolicy: {{ .Values.imagePullPolicy }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
           name: pxcentral-prometheus-operator
           {{- if .Values.proxy.httpProxy }}
           env:
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-prometheus-operator" .Values.proxy.includeNoProxyList) }}
-          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
+          {{- end }}
+          {{- if .Values.proxy.configSecretName }}
+          - mountPath: /etc/ssl/certs/proxy
+            name: proxy-ca-volume
+            readOnly: true
           {{- end }}
           ports:
             - containerPort: 8080
@@ -358,6 +383,16 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      volumes:
+        {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+        {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
