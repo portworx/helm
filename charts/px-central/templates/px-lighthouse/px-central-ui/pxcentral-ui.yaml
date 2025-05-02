@@ -205,7 +205,7 @@ spec:
                   key: credential
                   name: px-central-admin
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-backend" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
           envFrom:
             - configMapRef:
@@ -246,7 +246,7 @@ spec:
                   name: pxcentral-mysql-secret
                   key: DB_PASSWORD
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-backend" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
             - name: DB_USERNAME
               valueFrom:
@@ -365,7 +365,7 @@ spec:
                   name: pxcentral-mysql-secret
                   key: DB_PASSWORD
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-frontend" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
             - name: DB_USERNAME
               valueFrom:
@@ -532,7 +532,7 @@ spec:
             - name: SERVICE_TAGS
               value: dev
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-mysql" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
           livenessProbe:
             exec:

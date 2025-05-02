@@ -267,7 +267,7 @@ spec:
             - name: MONGODB_EXTRA_FLAGS
               value: {{ printf "--wiredTigerCacheSizeGB=%d" $mongoCacheSize }}
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxc-backup-mongodb" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
           ports:
             - containerPort: 27017
@@ -303,6 +303,11 @@ spec:
             - mountPath: /scripts/setup.sh
               name: scripts
               subPath: setup.sh
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
+          {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -316,6 +321,15 @@ spec:
         - name: pxc-mongodb-data
           emptyDir: {}
         {{- end }}
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
   {{- if eq $externalPersistentStorageEnabled true }}
   volumeClaimTemplates:
     - metadata:
