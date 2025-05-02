@@ -382,7 +382,7 @@ spec:
             - name: POSTGRESQL_ENABLE_LDAP
               value: "no"
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-keycloak-postgresql" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
           ports:
             - name: tcp-postgresql
@@ -417,11 +417,25 @@ spec:
               mountPath: /dev/shm
             - name: pxcentral-keycloak-data-postgres16
               mountPath: /bitnami/postgresql
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
+          {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
       {{- end }} 
       volumes:
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
         - name: dshm
           emptyDir:
             medium: Memory
@@ -525,14 +539,14 @@ spec:
           {{- if .Values.proxy.httpProxy.noProxy }}
           env:
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-keycloak" .Values.proxy.includeNoProxyList) }}
-          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
           {{- end }}
         - name: px-keycloak-login-theme
           {{- if .Values.proxy.httpProxy.noProxy }}
           env:
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-keycloak" .Values.proxy.includeNoProxyList) }}
-          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
           {{- end }}
           image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakLoginThemeImage.registry .Values.images.keycloakLoginThemeImage.repo .Values.images.keycloakLoginThemeImage.imageName .Values.images.keycloakLoginThemeImage.tag }}
@@ -547,6 +561,11 @@ spec:
           volumeMounts:
           - name: theme
             mountPath: /theme
+          {{- if .Values.proxy.configSecretName }}
+          - mountPath: /etc/ssl/certs/proxy
+            name: proxy-ca-volume
+            readOnly: true
+          {{- end }}
       containers:
         - name: keycloak
           image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakFrontendImage.registry .Values.images.keycloakFrontendImage.repo .Values.images.keycloakFrontendImage.imageName .Values.images.keycloakFrontendImage.tag }}
@@ -591,7 +610,7 @@ spec:
             value: {{ randAlphaNum 8 | quote }}
           {{- end }}
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-keycloak" .Values.proxy.includeNoProxyList) }}
-          {{- include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
           volumeMounts:
             - name: sh
@@ -607,11 +626,16 @@ spec:
               mountPath: /opt/keycloak/themes/portworx/
             - name: keycloakdir
               mountPath: /.keycloak
-            {{- if .Values.caCertsSecretName }}
+          {{- if .Values.caCertsSecretName }}
             - name: ssl-cert-dir
               readOnly: true
               mountPath: /tmp/certs
-            {{- end }}
+          {{- end }}
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy
+              name: proxy-ca-volume
+              readOnly: true
+          {{- end }}
           ports:
             - name: http
               containerPort: 8080
@@ -646,6 +670,15 @@ spec:
         - name: secrets
           secret:
             secretName: pxcentral-keycloak-http
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
         {{- if .Values.caCertsSecretName }}
         - name: ssl-cert-dir
           secret:

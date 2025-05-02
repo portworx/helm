@@ -160,9 +160,15 @@ spec:
           - containerPort: 8080
             name: http
         {{- if .Values.proxy.httpProxy.noProxy }}
+        volumeMounts:
+        {{- if .Values.proxy.configSecretName }}
+          - mountPath: /etc/ssl/certs/proxy
+            name: proxy-ca-volume
+            readOnly: true
+        {{- end }}
         env:
         {{- if or (empty .Values.proxy.includeNoProxyList) (has "prometheus-operator" .Values.proxy.includeNoProxyList) }}
-        {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{ include "proxy.proxyEnv" . | nindent 8 }}
         {{- end }}
         {{- end }}
         {{- if $isOpenshiftCluster }}
@@ -171,6 +177,16 @@ spec:
 {{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
       serviceAccountName: pxc-prometheus-operator
+      volumes:
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: ca.crt
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
           {{- range $sec := .Values.images.pullSecrets }}
@@ -302,6 +318,18 @@ spec:
             storage: {{ $storageSize }}
             {{- end }}
   {{- end }}
+  initContainers:
+  - name: init-config-reloader
+    volumeMounts:
+    {{- if .Values.proxy.configSecretName }}
+    - mountPath: /etc/ssl/certs/proxy
+      name: proxy-ca-volume
+      readOnly: true
+    {{- end }}
+    env:
+    {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-dashboard-prometheus" .Values.proxy.includeNoProxyList) }}
+    {{ include "proxy.proxyEnv" . | nindent 4 }}
+    {{- end }}
   containers:
   - args:
     - --web.console.templates=/etc/prometheus/consoles
@@ -325,7 +353,7 @@ spec:
           name: pxc-backup-metrics
           key: metrics-token
     {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-dashboard-prometheus" .Values.proxy.includeNoProxyList) }}
-    {{ include "proxy.noProxyEnv" . | nindent 4 }}
+    {{ include "proxy.proxyEnv" . | nindent 4 }}
     {{- end }}
     image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupPrometheusImage.registry .Values.images.pxBackupPrometheusImage.repo .Values.images.pxBackupPrometheusImage.imageName .Values.images.pxBackupPrometheusImage.tag }}
     livenessProbe:
@@ -374,12 +402,18 @@ spec:
           key: password
           name: pxc-backup-metrics
     {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-dashboard-prometheus" .Values.proxy.includeNoProxyList) }}
-    {{ include "proxy.noProxyEnv" . | nindent 4 }}
+    {{ include "proxy.proxyEnv" . | nindent 4 }}
     {{- end }}
     ports:
     - containerPort: 8080
       name: reloader-web
       protocol: TCP
+    volumeMounts:
+    {{- if .Values.proxy.configSecretName }}
+      - mountPath: /etc/ssl/certs/proxy
+        name: proxy-ca-volume
+        readOnly: true
+    {{- end }}
   {{- if $isOpenshiftCluster }}
   {{- else }}
   securityContext:
@@ -394,11 +428,25 @@ spec:
       name: web-config-custom
       readOnly: true
       subPath: web-config-custom.yaml
+  {{- if .Values.proxy.configSecretName }}
+    - mountPath: /etc/ssl/certs/proxy
+      name: proxy-ca-volume
+      readOnly: true
+  {{- end }}
   volumes:
     - name: web-config-custom
       secret:
         defaultMode: 420
         secretName: pxc-backup-metrics
+  {{- if .Values.proxy.configSecretName }}
+    - name: proxy-ca-volume
+      secret:
+        items:
+        - key: CA
+          path: ca.crt
+        optional: true
+        secretName: {{ .Values.proxy.configSecretName }}
+  {{- end }}
   replicas: {{ .Values.pxbackup.prometheus.replicas }}
   evaluationInterval: 30s
   scrapeInterval: 30s
