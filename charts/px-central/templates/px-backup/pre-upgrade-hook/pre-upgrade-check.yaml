@@ -261,12 +261,20 @@ spec:
               value: "{{ $pxBackupEnabled }}"
             - name: PX_MONITOR_ENABLED
               value: {{ .Values.pxmonitor.enabled | default false | quote }}
+            - name: PX_LICENSE_SERVER_ENABLED
+              value: {{ .Values.pxlicenseserver.enabled | default false | quote }}
+            - name: PROXY_CONFIG_SECRET_NAME
+              value: {{ .Values.proxy.configSecretName | default "" | quote }}
         {{- if eq $deployDedicatedMonitoringSystem true }}
             - name: DEDICATED_PROMETHEUS
               value: "true"
         {{- else }}
             - name: DEDICATED_PROMETHEUS
               value: "false"
+            - name: PROMETHEUS_ENDPOINT
+              value: {{ .Values.pxbackup.prometheusEndpoint | default "" | quote }}
+            - name: ALERTMANAGER_ENDPOINT
+              value: {{ .Values.pxbackup.alertmanagerEndpoint | default "" | quote }}
         {{- end }}
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pre-upgrade-check" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.proxyEnv" . | nindent 12 }}
