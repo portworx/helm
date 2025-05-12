@@ -51,7 +51,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
 
 {{- define "px-central.noProxyList" -}}
-{{- $default := "localhost,127.0.0.1,::1,.svc,.svc.cluster.local,0.0.0.0,px-backup-ui,px-central-ui,pxcentral-apiserver,pxcentral-backend,pxcentral-frontend,pxcentral-keycloak-headless,pxcentral-keycloak-http,pxcentral-keycloak-postgresql,pxcentral-keycloak-postgresql-headless,pxcentral-lh-middleware,pxcentral-mysql," }}
+{{- $default := "localhost,127.0.0.1,::1,[::]:10005,.svc,.svc.cluster.local,0.0.0.0,px-backup-ui,px-central-ui,pxcentral-apiserver,pxcentral-backend,pxcentral-frontend,pxcentral-keycloak-headless,pxcentral-keycloak-http,pxcentral-keycloak-postgresql,pxcentral-keycloak-postgresql-headless,pxcentral-lh-middleware,pxcentral-mysql," }}
 {{- if .Values.pxbackup.enabled }}
   {{- $default = printf "%s%s" $default "alertmanager-operated,prometheus-operated,px-backup,px-backup-dashboard-prometheus,pxc-backup-mongodb-headless," }}
 {{- end }}
