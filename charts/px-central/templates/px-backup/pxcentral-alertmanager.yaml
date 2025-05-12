@@ -45,7 +45,8 @@ spec:
     - name: init-config-reloader
       volumeMounts:
       {{- if .Values.proxy.configSecretName }}
-      - mountPath: /etc/ssl/certs/proxy
+      - mountPath: /etc/ssl/certs/proxy-ca.pem
+        subPath: proxy-ca.pem
         name: proxy-ca-volume
         readOnly: true
       {{- end }}
@@ -113,7 +114,8 @@ spec:
         protocol: TCP
       volumeMounts:
       {{- if .Values.proxy.configSecretName }}
-      - mountPath: /etc/ssl/certs/proxy
+      - mountPath: /etc/ssl/certs/proxy-ca.pem
+        subPath: proxy-ca.pem
         name: proxy-ca-volume
         readOnly: true
       {{- end }}
@@ -131,7 +133,8 @@ spec:
       readOnly: true
       subPath: web-config-custom.yaml
   {{- if .Values.proxy.configSecretName }}
-    - mountPath: /etc/ssl/certs/proxy
+    - mountPath: /etc/ssl/certs/proxy-ca.pem
+      subPath: proxy-ca.pem
       name: proxy-ca-volume
       readOnly: true
   {{- end }}
@@ -145,7 +148,7 @@ spec:
       secret:
         items:
         - key: CA
-          path: ca.crt
+          path: proxy-ca.pem
         optional: true
         secretName: {{ .Values.proxy.configSecretName }}
   {{- end }}
