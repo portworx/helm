@@ -200,7 +200,8 @@ spec:
             - name: data-volume
               mountPath: /mnt/data
           {{- if .Values.proxy.configSecretName }}
-            - mountPath: /etc/ssl/certs/proxy
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
               name: proxy-ca-volume
               readOnly: true
           {{- end }}
@@ -213,7 +214,7 @@ spec:
           secret:
             items:
             - key: CA
-              path: ca.crt
+              path: proxy-ca.pem
             optional: true
             secretName: {{ .Values.proxy.configSecretName }}
       {{- end }}
@@ -309,7 +310,8 @@ spec:
               value: {{ .Values.pxbackup.skipValidations | default false | quote }}
           volumeMounts:
           {{- if .Values.proxy.configSecretName }}
-            - mountPath: /etc/ssl/certs/proxy
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
               name: proxy-ca-volume
               readOnly: true
           {{- end }}
@@ -319,7 +321,7 @@ spec:
           secret:
             items:
             - key: CA
-              path: ca.crt
+              path: proxy-ca.pem
             optional: true
             secretName: {{ .Values.proxy.configSecretName }}
       {{- end }}
