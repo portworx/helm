@@ -442,7 +442,8 @@ spec:
               mountPath: /etc/cortex
               subPath: 
             {{- if .Values.proxy.configSecretName }}
-            - mountPath: /etc/ssl/certs/proxy
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
               name: proxy-ca-volume
               readOnly: true
             {{- end }}
@@ -475,7 +476,7 @@ spec:
           secret:
             items:
             - key: CA
-              path: ca.crt
+              path: proxy-ca.pem
             optional: true
             secretName: {{ .Values.proxy.configSecretName }}
         {{- end }}
@@ -578,7 +579,8 @@ spec:
               mountPath: "/data"
               subPath: 
             {{- if .Values.proxy.configSecretName }}
-            - mountPath: /etc/ssl/certs/proxy
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
               name: proxy-ca-volume
               readOnly: true
             {{- end }}
@@ -611,7 +613,7 @@ spec:
           secret:
             items:
             - key: CA
-              path: ca.crt
+              path: proxy-ca.pem
             optional: true
             secretName: {{ .Values.proxy.configSecretName }}
         {{- end }}
@@ -724,7 +726,8 @@ spec:
           {{- end }}
           volumeMounts:
           {{- if .Values.proxy.configSecretName }}
-            - mountPath: /etc/ssl/certs/proxy
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
               name: proxy-ca-volume
               readOnly: true
           {{- end }}
@@ -744,7 +747,8 @@ spec:
           {{- end }}
           volumeMounts:
           {{- if .Values.proxy.configSecretName }}
-            - mountPath: /etc/ssl/certs/proxy
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
               name: proxy-ca-volume
               readOnly: true
           {{- end }}
@@ -761,7 +765,7 @@ spec:
           secret:
             items:
             - key: CA
-              path: ca.crt
+              path: proxy-ca.pem
             optional: true
             secretName: {{ .Values.proxy.configSecretName }}
         {{- end }}
@@ -861,7 +865,8 @@ spec:
               mountPath: "/data"
               subPath: 
             {{- if .Values.proxy.configSecretName }}
-            - mountPath: /etc/ssl/certs/proxy
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
               name: proxy-ca-volume
               readOnly: true
             {{- end }}
@@ -887,7 +892,8 @@ spec:
           {{- end }}
           volumeMounts:
           {{- if .Values.proxy.configSecretName }}
-            - mountPath: /etc/ssl/certs/proxy
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
               name: proxy-ca-volume
               readOnly: true
           {{- end }}
@@ -906,7 +912,7 @@ spec:
           secret:
             items:
             - key: CA
-              path: ca.crt
+              path: proxy-ca.pem
             optional: true
             secretName: {{ .Values.proxy.configSecretName }}
         {{- end }}
@@ -1000,7 +1006,8 @@ spec:
             - name: config
               mountPath: /etc/cortex
             {{- if .Values.proxy.configSecretName }}
-            - mountPath: /etc/ssl/certs/proxy
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
               name: proxy-ca-volume
               readOnly: true
             {{- end }}
@@ -1040,7 +1047,7 @@ spec:
           secret:
             items:
             - key: CA
-              path: ca.crt
+              path: proxy-ca.pem
             optional: true
             secretName: {{ .Values.proxy.configSecretName }}
         {{- end }}
@@ -1119,7 +1126,8 @@ spec:
               mountPath: "/data"
               subPath: 
             {{- if .Values.proxy.configSecretName }}
-            - mountPath: /etc/ssl/certs/proxy
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
               name: proxy-ca-volume
               readOnly: true
             {{- end }}
@@ -1158,7 +1166,7 @@ spec:
           secret:
             items:
             - key: CA
-              path: ca.crt
+              path: proxy-ca.pem
             optional: true
             secretName: {{ .Values.proxy.configSecretName }}
         {{- end }}
@@ -1233,7 +1241,8 @@ spec:
               mountPath: "/data"
               subPath: 
             {{- if .Values.proxy.configSecretName }}
-            - mountPath: /etc/ssl/certs/proxy
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
               name: proxy-ca-volume
               readOnly: true
             {{- end }}
@@ -1272,7 +1281,7 @@ spec:
           secret:
             items:
             - key: CA
-              path: ca.crt
+              path: proxy-ca.pem
             optional: true
             secretName: {{ .Values.proxy.configSecretName }}
         {{- end }}
@@ -1365,7 +1374,7 @@ spec:
           secret:
             items:
             - key: CA
-              path: ca.crt
+              path: proxy-ca.pem
             optional: true
             secretName: {{ .Values.proxy.configSecretName }}
         {{- end }}
@@ -1395,7 +1404,8 @@ spec:
             - name: storage
               mountPath: "/data"
             {{- if .Values.proxy.configSecretName }}
-            - mountPath: /etc/ssl/certs/proxy
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
               name: proxy-ca-volume
               readOnly: true
             {{- end }}
@@ -1528,7 +1538,7 @@ spec:
           secret:
             items:
             - key: CA
-              path: ca.crt
+              path: proxy-ca.pem
             optional: true
             secretName: {{ .Values.proxy.configSecretName }}
         {{- end }}
@@ -1547,7 +1557,8 @@ spec:
             - name: storage
               mountPath: "/data"
             {{- if .Values.proxy.configSecretName }}
-            - mountPath: /etc/ssl/certs/proxy
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
               name: proxy-ca-volume
               readOnly: true
             {{- end }}
