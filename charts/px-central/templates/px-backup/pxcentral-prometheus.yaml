@@ -162,7 +162,8 @@ spec:
         {{- if .Values.proxy.httpProxy.noProxy }}
         volumeMounts:
         {{- if .Values.proxy.configSecretName }}
-          - mountPath: /etc/ssl/certs/proxy
+          - mountPath: /etc/ssl/certs/proxy-ca.pem
+            subPath: proxy-ca.pem
             name: proxy-ca-volume
             readOnly: true
         {{- end }}
@@ -183,7 +184,7 @@ spec:
           secret:
             items:
             - key: CA
-              path: ca.crt
+              path: proxy-ca.pem
             optional: true
             secretName: {{ .Values.proxy.configSecretName }}
       {{- end }}
@@ -322,7 +323,8 @@ spec:
   - name: init-config-reloader
     volumeMounts:
     {{- if .Values.proxy.configSecretName }}
-    - mountPath: /etc/ssl/certs/proxy
+    - mountPath: /etc/ssl/certs/proxy-ca.pem
+      subPath: proxy-ca.pem
       name: proxy-ca-volume
       readOnly: true
     {{- end }}
@@ -361,7 +363,7 @@ spec:
         command:
         - sh
         - -c
-        - wget {{ if .Values.proxy.httpProxy.noProxy }}--proxy=off{{ end }} http://localhost:9090/-/healthy --header="Authorization:Basic $AUTH_SECRET"
+        - wget {{ if or .Values.proxy.httpProxy.noProxy .Values.proxy.configSecretName }}--proxy=off{{ end }} http://localhost:9090/-/healthy --header="Authorization:Basic $AUTH_SECRET"
           -qO-
     name: prometheus
     readinessProbe:
@@ -369,14 +371,14 @@ spec:
         command:
         - sh
         - -c
-        - wget {{ if .Values.proxy.httpProxy.noProxy }}--proxy=off{{ end }} http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
+        - wget {{ if or .Values.proxy.httpProxy.noProxy .Values.proxy.configSecretName }}--proxy=off{{ end }} http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
           -qO-
     startupProbe:
       exec:
         command:
         - sh
         - -c
-        - wget {{ if .Values.proxy.httpProxy.noProxy }}--proxy=off{{ end }} http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
+        - wget {{ if or .Values.proxy.httpProxy.noProxy .Values.proxy.configSecretName }}--proxy=off{{ end }} http://localhost:9090/-/ready --header="Authorization:Basic $AUTH_SECRET"
           -qO-
     ports:
     - containerPort: 9090
@@ -410,7 +412,8 @@ spec:
       protocol: TCP
     volumeMounts:
     {{- if .Values.proxy.configSecretName }}
-      - mountPath: /etc/ssl/certs/proxy
+      - mountPath: /etc/ssl/certs/proxy-ca.pem
+        subPath: proxy-ca.pem
         name: proxy-ca-volume
         readOnly: true
     {{- end }}
@@ -429,7 +432,8 @@ spec:
       readOnly: true
       subPath: web-config-custom.yaml
   {{- if .Values.proxy.configSecretName }}
-    - mountPath: /etc/ssl/certs/proxy
+    - mountPath: /etc/ssl/certs/proxy-ca.pem
+      subPath: proxy-ca.pem
       name: proxy-ca-volume
       readOnly: true
   {{- end }}
@@ -443,7 +447,7 @@ spec:
       secret:
         items:
         - key: CA
-          path: ca.crt
+          path: proxy-ca.pem
         optional: true
         secretName: {{ .Values.proxy.configSecretName }}
   {{- end }}
