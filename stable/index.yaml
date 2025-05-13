@@ -899,9 +899,9 @@ entries:
   px-central:
   - apiVersion: v1
     appVersion: 2.9.0-staging
-    created: "2025-05-12T16:56:14.017283+05:30"
+    created: "2025-05-13T18:04:36.979873+05:30"
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
-    digest: 994f657a4142a8d9dba23c42a008a621378ee7c0a07001634d5dadbfd9c840fc
+    digest: 6eb74fbcea1a3487862a4cdf521ebd0d4e72b0c1b028f5c051b4189a6af3a1e7
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     keywords:
