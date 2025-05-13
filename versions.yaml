@@ -20,10 +20,10 @@ modules:
     kopiaExecutor: "docker.io/portworx/kopiaexecutor:1.2.18"
     nfsExecutor: "docker.io/portworx/nfsexecutor:1.2.18"
     filesystemCtl: "docker.io/portworx/filesystemctl:1.2.18"
-    pxBackupPrometheusImage: "docker.io/portworx/prometheus:v3.1.0"
+    pxBackupPrometheusImage: "docker.io/portworx/prometheus:v3.3.1"
     pxBackupAlertmanagerImage: "docker.io/portworx/alertmanager:v0.28.0"
-    pxBackupPrometheusOperatorImage: "docker.io/portworx/prometheus-operator:v0.79.2"
-    pxBackupPrometheusConfigReloaderImage: "docker.io/portworx/prometheus-config-reloader:v0.79.2"
+    pxBackupPrometheusOperatorImage: "docker.io/portworx/prometheus-operator:v0.82.1"
+    pxBackupPrometheusConfigReloaderImage: "docker.io/portworx/prometheus-config-reloader:v0.82.1"
   pxMonitor:
     cortex: "docker.io/portworx/cortex:v1.13.1"
     cassandra: "docker.io/portworx/cassandra:4.0.7-debian-11-r34"
