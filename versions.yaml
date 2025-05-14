@@ -14,7 +14,8 @@ modules:
     mysql: "docker.io/portworx/mysql:8.0.40"
   pxBackup:
     pxBackup: "docker.io/portworx/px-backup-base:2.9.0-staging"
-    mongodb: "docker.io/portworx/mongodb:7.0.15-debian-12-r2"
+    mongodb: "docker.io/portworx/mongodb:8.0.9-debian-12-r1"
+    mongodb7: "docker.io/portworx/mongodb:7.0.15-debian-12-r2"
     mongodb6: "docker.io/portworx/mongodb:6.0.13-debian-11-r21"
     mongodb5: "docker.io/portworx/mongodb:5.0.24-debian-11-r20"
     kopiaExecutor: "docker.io/portworx/kopiaexecutor:1.2.18"
