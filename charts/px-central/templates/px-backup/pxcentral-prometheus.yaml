@@ -541,7 +541,7 @@ spec:
     rules:
     - alert: BulkBackupScheduleDeletionAlert
       expr: |
-        sum by(batch_id, org_id, user_id, cluster, cluster_uid) (
+        sum by(batch_id, org_id, user_id, cluster, cluster_uid, timestamp_in_secs) (
           pxbackup_bulk_operations_status{
             bulk_object="BackupSchedule",
             bulk_operation="delete"
@@ -554,11 +554,12 @@ spec:
         user_id:      "{{`{{ $labels.user_id }}`}}"
         cluster:      "{{`{{ $labels.cluster }}`}}"
         cluster_uid:  "{{`{{ $labels.cluster_uid }}`}}"
+        timestamp_in_secs: "{{`{{ $labels.timestamp_in_secs }}`}}"
       annotations:
         summary: |-
           Backup Schedule Deletion Failure: Batch {{"{{"}} $labels.batch_id {{"}}"}} 
         description: |-
-          The following BackupSchedules are still failing to be deleted in batch {{ "{{" }} $labels.batch_id {{ "}}" }}:
+          The following BackupSchedules failed to be deleted in batch {{ "{{" }} $labels.batch_id {{ "}}" }}:
           {{ "{{" }}- $fails := query (printf "pxbackup_bulk_operations_status{bulk_object=\"BackupSchedule\",bulk_operation=\"delete\",batch_id=\"%s\"}" $labels.batch_id) {{ "}}" }}
           {{ "{{" }}- range $i, $e := $fails {{ "}}" }}
           • Name={{ "{{" }} $e.Labels.failed_names {{ "}}" }}, \
@@ -568,7 +569,7 @@ spec:
 
     - alert: BulkBackupScheduleUpdationAlert
       expr: |
-        sum by(batch_id, org_id, user_id, cluster, cluster_uid) (
+        sum by(batch_id, org_id, user_id, cluster, cluster_uid, timestamp_in_secs) (
           pxbackup_bulk_operations_status{
             bulk_object="BackupSchedule",
             bulk_operation="update"
@@ -581,11 +582,12 @@ spec:
         user_id:      "{{`{{ $labels.user_id }}`}}"
         cluster:      "{{`{{ $labels.cluster }}`}}"
         cluster_uid:  "{{`{{ $labels.cluster_uid }}`}}"
+        timestamp_in_secs: "{{`{{ $labels.timestamp_in_secs }}`}}"
       annotations:
         summary: |-
           Backup Schedule Updation Failure: Batch {{"{{"}} $labels.batch_id {{"}}"}} 
         description: |-
-          The following BackupSchedules are still failing to update in batch {{ "{{" }} $labels.batch_id {{ "}}" }}:
+          The following BackupSchedules failed to be updated in batch {{ "{{" }} $labels.batch_id {{ "}}" }}:
           {{ "{{" }}- $fails := query (printf "pxbackup_bulk_operations_status{bulk_object=\"BackupSchedule\",bulk_operation=\"update\",batch_id=\"%s\"}" $labels.batch_id) {{ "}}" }}
           {{ "{{" }}- range $i, $e := $fails {{ "}}" }}
           • Name={{ "{{" }} $e.Labels.failed_names {{ "}}" }}, \
