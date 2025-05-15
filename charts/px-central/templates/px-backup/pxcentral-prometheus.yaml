@@ -541,7 +541,7 @@ spec:
     rules:
     - alert: BulkBackupScheduleDeletionAlert
       expr: |
-        sum by(batch_id, org_id, user_id, cluster, cluster_uid, timestamp_in_secs) (
+        sum by(batch_id, org_id, user_id, cluster_uid, timestamp_in_secs) (
           pxbackup_bulk_operations_status{
             bulk_object="BackupSchedule",
             bulk_operation="delete"
@@ -552,8 +552,7 @@ spec:
         severity: critical
         org_id:       "{{`{{ $labels.org_id }}`}}"
         user_id:      "{{`{{ $labels.user_id }}`}}"
-        # cluster:      "{{`{{ $labels.cluster }}`}}"
-        cluster_uid:  "{{`{{ $labels.cluster_uid }}`}}"
+        cluster_uid:  '{{ "{{ if ne $labels.cluster_uid \"\" }}" }}{{ "{{ $labels.cluster_uid }}" }}{{ "{{ end }}" }}'
         timestamp_in_secs: "{{`{{ $labels.timestamp_in_secs }}`}}"
       annotations:
         summary: |-
@@ -570,7 +569,7 @@ spec:
 
     - alert: BulkBackupScheduleUpdationAlert
       expr: |
-        sum by(batch_id, org_id, user_id, cluster, cluster_uid, timestamp_in_secs) (
+        sum by(batch_id, org_id, user_id, cluster_uid, timestamp_in_secs) (
           pxbackup_bulk_operations_status{
             bulk_object="BackupSchedule",
             bulk_operation="update"
@@ -581,8 +580,7 @@ spec:
         severity: critical
         org_id:       "{{`{{ $labels.org_id }}`}}"
         user_id:      "{{`{{ $labels.user_id }}`}}"
-        # cluster:      "{{`{{ $labels.cluster }}`}}"
-        cluster_uid:  "{{`{{ $labels.cluster_uid }}`}}"
+        cluster_uid:  '{{ "{{ if ne $labels.cluster_uid \"\" }}" }}{{ "{{ $labels.cluster_uid }}" }}{{ "{{ end }}" }}'
         timestamp_in_secs: "{{`{{ $labels.timestamp_in_secs }}`}}"
       annotations:
         summary: |-
