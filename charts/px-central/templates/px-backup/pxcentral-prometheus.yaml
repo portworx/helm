@@ -552,7 +552,7 @@ spec:
         severity: critical
         org_id:       "{{`{{ $labels.org_id }}`}}"
         user_id:      "{{`{{ $labels.user_id }}`}}"
-        cluster:      "{{`{{ $labels.cluster }}`}}"
+        # cluster:      "{{`{{ $labels.cluster }}`}}"
         cluster_uid:  "{{`{{ $labels.cluster_uid }}`}}"
         timestamp_in_secs: "{{`{{ $labels.timestamp_in_secs }}`}}"
       annotations:
@@ -564,7 +564,8 @@ spec:
           {{ "{{" }}- range $i, $e := $fails {{ "}}" }}
           • Name={{ "{{" }} $e.Labels.failed_names {{ "}}" }}, \
             UID={{ "{{" }} $e.Labels.failed_uids {{ "}}" }}, \
-            Error={{ "{{" }} $e.Labels.error_reason {{ "}}" }}
+            Error={{ "{{" }} $e.Labels.error_reason {{ "}}" }}, \
+            Cluster={{ "{{" }} $e.Labels.cluster {{ "}}" }}
           {{ "{{" }}- end {{ "}}" }}
 
     - alert: BulkBackupScheduleUpdationAlert
@@ -580,7 +581,7 @@ spec:
         severity: critical
         org_id:       "{{`{{ $labels.org_id }}`}}"
         user_id:      "{{`{{ $labels.user_id }}`}}"
-        cluster:      "{{`{{ $labels.cluster }}`}}"
+        # cluster:      "{{`{{ $labels.cluster }}`}}"
         cluster_uid:  "{{`{{ $labels.cluster_uid }}`}}"
         timestamp_in_secs: "{{`{{ $labels.timestamp_in_secs }}`}}"
       annotations:
@@ -592,7 +593,8 @@ spec:
           {{ "{{" }}- range $i, $e := $fails {{ "}}" }}
           • Name={{ "{{" }} $e.Labels.failed_names {{ "}}" }}, \
             UID={{ "{{" }} $e.Labels.failed_uids {{ "}}" }}, \
-            Error={{ "{{" }} $e.Labels.error_reason {{ "}}" }}
+            Error={{ "{{" }} $e.Labels.error_reason {{ "}}" }}, \
+            Cluster={{ "{{" }} $e.Labels.cluster {{ "}}" }}
           {{ "{{" }}- end {{ "}}" }}
 
 
