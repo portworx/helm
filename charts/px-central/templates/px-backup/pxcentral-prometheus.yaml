@@ -559,28 +559,22 @@ spec:
           {{"{{"}}- printf "Backup Schedule Deletion Failure: Batch %s" $labels.batch_id -{{"}}"}}
         description: |-
           {{"{{"}}- $fails := query (printf "pxbackup_bulk_operations_status{bulk_object=\"BackupSchedule\",bulk_operation=\"delete\",batch_id=\"%s\"}" $labels.batch_id) -{{"}}"}}
-          {
-            "name":             "BulkBackupScheduleDeletionAlert",
-            "objectType":       "BackupSchedule",
-            "operation":        "delete",
-            "severity":         "{{"{{"}} .Labels.severity {{"}}"}}",
-            "batchId":          "{{"{{"}} .Labels.batch_id {{"}}"}}",
-            "orgId":            "{{"{{"}} .Labels.org_id {{"}}"}}",
-            "userId":           "{{"{{"}} .Labels.user_id {{"}}"}}",
-            "clusterUid":       "{{"{{"}} .Labels.cluster_uid {{"}}"}}",
-            "timestampInSecs":  "{{"{{"}} .Labels.timestamp_in_secs {{"}}"}}",
-            "failures": [
-            {{"{{"}}- range $i, $e := $fails -{{"}}"}}
-              {{"{{"}} if gt $i 0 {{"}}"}},{{"{{"}} end {{"}}"}}
-              {
-                "name":    "{{"{{"}} $e.Labels.failed_names {{"}}"}}",
-                "uid":     "{{"{{"}} $e.Labels.failed_uids {{"}}"}}",
-                "error":   "{{"{{"}} $e.Labels.error_reason {{"}}"}}",
-                "cluster": "{{"{{"}} $e.Labels.cluster {{"}}"}}"
-              }
+          <table style="border-collapse:collapse;width:100%;margin-bottom:10px;">
+            <tr>
+              <th style="border:1px solid #ddd;padding:6px;text-align:left;">Name</th>
+              <th style="border:1px solid #ddd;padding:6px;text-align:left;">UID</th>
+              <th style="border:1px solid #ddd;padding:6px;text-align:left;">Error</th>
+              <th style="border:1px solid #ddd;padding:6px;text-align:left;">Cluster</th>
+            </tr>
+            {{"{{"}}- range $fails -{{"}}"}}
+            <tr>
+              <td style="border:1px solid #ddd;padding:6px;">{{"{{"}} .Labels.failed_names {{"}}"}}</td>
+              <td style="border:1px solid #ddd;padding:6px;">{{"{{"}} .Labels.failed_uids  {{"}}"}}</td>
+              <td style="border:1px solid #ddd;padding:6px;">{{"{{"}} .Labels.error_reason {{"}}"}}</td>
+              <td style="border:1px solid #ddd;padding:6px;">{{"{{"}} .Labels.cluster      {{"}}"}}</td>
+            </tr>
             {{"{{"}}- end -{{"}}"}}
-            ]
-          }
+          </table>
 
     - alert: BulkBackupScheduleUpdationAlert
       expr: |
@@ -602,28 +596,23 @@ spec:
           {{"{{"}}- printf "Backup Schedule Updation Failure: Batch %s" $labels.batch_id -{{"}}"}}
         description: |-
           {{"{{"}}- $fails := query (printf "pxbackup_bulk_operations_status{bulk_object=\"BackupSchedule\",bulk_operation=\"update\",batch_id=\"%s\"}" $labels.batch_id) -{{"}}"}}
-          {
-            "name":             "BulkBackupScheduleUpdationAlert",
-            "objectType":       "BackupSchedule",
-            "operation":        "update",
-            "severity":         "{{"{{"}} .Labels.severity {{"}}"}}",
-            "batchId":          "{{"{{"}} .Labels.batch_id {{"}}"}}",
-            "orgId":            "{{"{{"}} .Labels.org_id {{"}}"}}",
-            "userId":           "{{"{{"}} .Labels.user_id {{"}}"}}",
-            "clusterUid":       "{{"{{"}} .Labels.cluster_uid {{"}}"}}",
-            "timestampInSecs":  "{{"{{"}} .Labels.timestamp_in_secs {{"}}"}}",
-            "failures": [
-            {{"{{"}}- range $i, $e := $fails -{{"}}"}}
-              {{"{{"}} if gt $i 0 {{"}}"}},{{"{{"}} end {{"}}"}}
-              {
-                "name":    "{{"{{"}} $e.Labels.failed_names {{"}}"}}",
-                "uid":     "{{"{{"}} $e.Labels.failed_uids {{"}}"}}",
-                "error":   "{{"{{"}} $e.Labels.error_reason {{"}}"}}",
-                "cluster": "{{"{{"}} $e.Labels.cluster {{"}}"}}"
-              }
+          <table style="border-collapse:collapse;width:100%;margin-bottom:10px;">
+            <tr>
+              <th style="border:1px solid #ddd;padding:6px;text-align:left;">Name</th>
+              <th style="border:1px solid #ddd;padding:6px;text-align:left;">UID</th>
+              <th style="border:1px solid #ddd;padding:6px;text-align:left;">Error</th>
+              <th style="border:1px solid #ddd;padding:6px;text-align:left;">Cluster</th>
+            </tr>
+            {{"{{"}}- range $fails -{{"}}"}}
+            <tr>
+              <td style="border:1px solid #ddd;padding:6px;">{{"{{"}} .Labels.failed_names {{"}}"}}</td>
+              <td style="border:1px solid #ddd;padding:6px;">{{"{{"}} .Labels.failed_uids  {{"}}"}}</td>
+              <td style="border:1px solid #ddd;padding:6px;">{{"{{"}} .Labels.error_reason {{"}}"}}</td>
+              <td style="border:1px solid #ddd;padding:6px;">{{"{{"}} .Labels.cluster      {{"}}"}}</td>
+            </tr>
             {{"{{"}}- end -{{"}}"}}
-            ]
-          }
+          </table>
+
 
 
 {{- end -}}

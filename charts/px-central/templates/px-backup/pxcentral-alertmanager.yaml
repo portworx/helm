@@ -322,198 +322,26 @@ stringData:
               </div>
               </li>
             </ul>
-                        {{- else if eq .Labels.alertname "BulkBackupScheduleDeletionAlert" }}
-              <div class="pb-16"
-                   style="margin:22px 0;width:400px;color:#bc1b06;
-                          font-size:18px;font-weight:500;">
-                Critical Alert: Bulk Backup Schedule Deletion Failure
-              </div>
-              <div class="pb-16"
-                   style="color:#292929;font-size:15px;font-weight:700;">
-                Alert details:
-              </div>
-              <ul>
-                <li>
-                  <div style="display:flex">
-                    <div style="font-weight:bold;width:170px;
-                                min-width:170px;">Batch ID:</div>
-                    <div>{{ .Labels.batch_id }}</div>
-                  </div>
-                </li>
-                <li>
-                  <div style="display:flex">
-                    <div style="font-weight:bold;width:170px;
-                                min-width:170px;">Org ID:</div>
-                    <div>{{ .Labels.org_id }}</div>
-                  </div>
-                </li>
-                <li>
-                  <div style="display:flex">
-                    <div style="font-weight:bold;width:170px;
-                                min-width:170px;">User ID:</div>
-                    <div>{{ .Labels.user_id }}</div>
-                  </div>
-                </li>
-                <li>
-                  <div style="display:flex">
-                    <div style="font-weight:bold;width:170px;
-                                min-width:170px;">Cluster UID:</div>
-                    <div>{{ .Labels.cluster_uid }}</div>
-                  </div>
-                </li>
-                <li>
-                  <div style="display:flex">
-                    <div style="font-weight:bold;width:170px;
-                                min-width:170px;">Timestamp:</div>
-                    <div>{{ .Labels.timestamp_in_secs }}</div>
-                  </div>
-                </li>
-                {{- $payload := fromJson .Annotations.description }}
-                <li style="padding-top:10px;">
-                  <div style="font-weight:bold;margin-bottom:5px;">
-                    Failures:
-                  </div>
-                  <table style="width:100%;border-collapse:collapse;">
-                    <thead>
-                      <tr>
-                        <th style="text-align:left;padding:4px;
-                                   border-bottom:1px solid #ccc;">Name</th>
-                        <th style="text-align:left;padding:4px;
-                                   border-bottom:1px solid #ccc;">UID</th>
-                        <th style="text-align:left;padding:4px;
-                                   border-bottom:1px solid #ccc;">Error</th>
-                        <th style="text-align:left;padding:4px;
-                                   border-bottom:1px solid #ccc;">Cluster</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {{- range $f := $payload.failures }}
-                      <tr>
-                        <td style="padding:4px;
-                                   border-bottom:1px solid #eee;">
-                          {{ $f.name }}
-                        </td>
-                        <td style="padding:4px;
-                                   border-bottom:1px solid #eee;">
-                          {{ $f.uid }}
-                        </td>
-                        <td style="padding:4px;
-                                   border-bottom:1px solid #eee;">
-                          {{ $f.error }}
-                        </td>
-                        <td style="padding:4px;
-                                   border-bottom:1px solid #eee;">
-                          {{ $f.cluster }}
-                        </td>
-                      </tr>
-                      {{- end }}
-                    </tbody>
-                  </table>
-                </li>
-                <li>
-                  <div style="display:flex">
-                    <div style="font-weight:bold;width:170px;
-                                min-width:170px;">Alert Time:</div>
-                    <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
-                  </div>
-                </li>
-              </ul>
+            {{- else if eq .Labels.alertname "BulkBackupScheduleDeletionAlert" }}
+              <h2 style="color:#bc1b06;">Bulk Backup Schedule Deletion Failure</h2>
+              <p>
+                <strong>Batch:</strong> {{ .Labels.batch_id }}<br/>
+                <strong>Org:</strong>   {{ .Labels.org_id }} &nbsp;
+                <strong>User:</strong>  {{ .Labels.user_id }} &nbsp;
+                <strong>Cluster:</strong> {{ .Labels.cluster_uid }}<br/>
+                <strong>Time:</strong>  {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+              </p>
+              {{ .Annotations.description }}
             {{- else if eq .Labels.alertname "BulkBackupScheduleUpdationAlert" }}
-              <div class="pb-16"
-                   style="margin:22px 0;width:400px;color:#bc1b06;
-                          font-size:18px;font-weight:500;">
-                Critical Alert: Bulk Backup Schedule Updation Failure
-              </div>
-              <div class="pb-16"
-                   style="color:#292929;font-size:15px;font-weight:700;">
-                Alert details:
-              </div>
-              <ul>
-                <li>
-                  <div style="display:flex">
-                    <div style="font-weight:bold;width:170px;
-                                min-width:170px;">Batch ID:</div>
-                    <div>{{ .Labels.batch_id }}</div>
-                  </div>
-                </li>
-                <li>
-                  <div style="display:flex">
-                    <div style="font-weight:bold;width:170px;
-                                min-width:170px;">Org ID:</div>
-                    <div>{{ .Labels.org_id }}</div>
-                  </div>
-                </li>
-                <li>
-                  <div style="display:flex">
-                    <div style="font-weight:bold;width:170px;
-                                min-width:170px;">User ID:</div>
-                    <div>{{ .Labels.user_id }}</div>
-                  </div>
-                </li>
-                <li>
-                  <div style="display:flex">
-                    <div style="font-weight:bold;width:170px;
-                                min-width:170px;">Cluster UID:</div>
-                    <div>{{ .Labels.cluster_uid }}</div>
-                  </div>
-                </li>
-                <li>
-                  <div style="display:flex">
-                    <div style="font-weight:bold;width:170px;
-                                min-width:170px;">Timestamp:</div>
-                    <div>{{ .Labels.timestamp_in_secs }}</div>
-                  </div>
-                </li>
-                {{- $payload := fromJson .Annotations.description }}
-                <li style="padding-top:10px;">
-                  <div style="font-weight:bold;margin-bottom:5px;">
-                    Failures:
-                  </div>
-                  <table style="width:100%;border-collapse:collapse;">
-                    <thead>
-                      <tr>
-                        <th style="text-align:left;padding:4px;
-                                   border-bottom:1px solid #ccc;">Name</th>
-                        <th style="text-align:left;padding:4px;
-                                   border-bottom:1px solid #ccc;">UID</th>
-                        <th style="text-align:left;padding:4px;
-                                   border-bottom:1px solid #ccc;">Error</th>
-                        <th style="text-align:left;padding:4px;
-                                   border-bottom:1px solid #ccc;">Cluster</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {{- range $f := $payload.failures }}
-                      <tr>
-                        <td style="padding:4px;
-                                   border-bottom:1px solid #eee;">
-                          {{ $f.name }}
-                        </td>
-                        <td style="padding:4px;
-                                   border-bottom:1px solid #eee;">
-                          {{ $f.uid }}
-                        </td>
-                        <td style="padding:4px;
-                                   border-bottom:1px solid #eee;">
-                          {{ $f.error }}
-                        </td>
-                        <td style="padding:4px;
-                                   border-bottom:1px solid #eee;">
-                          {{ $f.cluster }}
-                        </td>
-                      </tr>
-                      {{- end }}
-                    </tbody>
-                  </table>
-                </li>
-                <li>
-                  <div style="display:flex">
-                    <div style="font-weight:bold;width:170px;
-                                min-width:170px;">Alert Time:</div>
-                    <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
-                  </div>
-                </li>
-              </ul>
+              <h2 style="color:#bc1b06;">Bulk Backup Schedule Updation Failure</h2>
+              <p>
+                <strong>Batch:</strong> {{ .Labels.batch_id }}<br/>
+                <strong>Org:</strong>   {{ .Labels.org_id }} &nbsp;
+                <strong>User:</strong>  {{ .Labels.user_id }} &nbsp;
+                <strong>Cluster:</strong> {{ .Labels.cluster_uid }}<br/>
+                <strong>Time:</strong>  {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+              </p>
+              {{ .Annotations.description }}
             {{- else if or (eq .Labels.alertname "BackupLocationAlert") (eq .Labels.alertname "BackupLocationLimitedAvailabilityAlert") }}
             <div
                 class="pb-16"
