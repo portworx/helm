@@ -323,42 +323,25 @@ stringData:
               </li>
             </ul>
             {{- else if eq .Labels.alertname "BulkBackupScheduleDeletionAlert" }}
-            <h3 style="color:#bc1b06;">Bulk Deletion Failure</h3>
-
-            {{- $names  := split .Annotations.failed_names  "," -}}
-            {{- $uids   := split .Annotations.failed_uids   "," -}}
-            {{- $errors := split .Annotations.failed_errors "," -}}
-            {{- $clusts := split .Annotations.failed_clusters "," -}}
-
-            <ol>
-            {{- range $i, $n := $names }}
-              <li>
-                <strong>Name:</strong>    {{ $n }}<br/>
-                <strong>UID:</strong>     {{ index $uids   $i }}<br/>
-                <strong>Error:</strong>   {{ index $errors $i }}<br/>
-                <strong>Cluster:</strong> {{ index $clusts $i }}
-              </li>
-            {{- end }}
-            </ol>
-
-          {{- else if eq .Labels.alertname "BulkBackupScheduleUpdationAlert" }}
-            <h3 style="color:#bc1b06;">Bulk Updation Failure</h3>
-
-            {{- $names  := split .Annotations.failed_names  "," -}}
-            {{- $uids   := split .Annotations.failed_uids   "," -}}
-            {{- $errors := split .Annotations.failed_errors "," -}}
-            {{- $clusts := split .Annotations.failed_clusters "," -}}
-
-            <ol>
-            {{- range $i, $n := $names }}
-              <li>
-                <strong>Name:</strong>    {{ $n }}<br/>
-                <strong>UID:</strong>     {{ index $uids   $i }}<br/>
-                <strong>Error:</strong>   {{ index $errors $i }}<br/>
-                <strong>Cluster:</strong> {{ index $clusts $i }}
-              </li>
-            {{- end }}
-            </ol>
+              <h3 style="color:#bc1b06;">Bulk Backup Schedule Deletion Failure</h3>
+              <p>
+                <strong>Batch ID:</strong> {{ .Labels.batch_id }}<br/>
+                <strong>Org ID:</strong>   {{ .Labels.org_id }}<br/>
+                <strong>User ID:</strong>  {{ .Labels.user_id }}<br/>
+                <strong>Cluster UID:</strong> {{ .Labels.cluster_uid }}<br/>
+                <strong>Time:</strong>     {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+              </p>
+              {{ .Annotations.failures_table }}
+            {{- else if eq .Labels.alertname "BulkBackupScheduleUpdationAlert" }}
+              <h3 style="color:#bc1b06;">Bulk Backup Schedule Updation Failure</h3>
+              <p>
+                <strong>Batch ID:</strong> {{ .Labels.batch_id }}<br/>
+                <strong>Org ID:</strong>   {{ .Labels.org_id }}<br/>
+                <strong>User ID:</strong>  {{ .Labels.user_id }}<br/>
+                <strong>Cluster UID:</strong> {{ .Labels.cluster_uid }}<br/>
+                <strong>Time:</strong>     {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+              </p>
+              {{ .Annotations.failures_table }}
             {{- else if or (eq .Labels.alertname "BackupLocationAlert") (eq .Labels.alertname "BackupLocationLimitedAvailabilityAlert") }}
             <div
                 class="pb-16"
