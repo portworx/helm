@@ -557,31 +557,18 @@ spec:
       annotations:
         summary: |-
           Backup Schedule Deletion Failure: Batch {{"{{"}} $labels.batch_id {{"}}"}} 
-        description: |-
-          {{`
-          {
-            "name":             "BulkBackupScheduleDeletionAlert",
-            "objectType":       "BackupSchedule",
-            "operation":        "delete",
-            "severity":         "{{ $labels.severity }}",
-            "batchId":          "{{ $labels.batch_id }}",
-            "orgId":            "{{ $labels.org_id }}",
-            "userId":           "{{ $labels.user_id }}",
-            "clusterUid":       "{{ $labels.cluster_uid }}",
-            "timestampInSecs":  "{{ $labels.timestamp_in_secs }}",
-            "failures": [
-              {{- $fails := query (printf "pxbackup_bulk_operations_status{bulk_object=\"BackupSchedule\",bulk_operation=\"delete\",batch_id=\"%s\"}" $labels.batch_id) }}
-              {{- range $i, $e := $fails }}
-              {
-                "name":    "{{ $e.Labels.failed_names }}",
-                "uid":     "{{ $e.Labels.failed_uids }}",
-                "error":   "{{ $e.Labels.error_reason }}",
-                "cluster": "{{ $e.Labels.cluster }}"
-              }{{ if lt $i (sub (len $fails) 1) }},{{ end }}
-              {{- end }}
-            ]
-          }
-          `}}
+      description: |-
+        {{`
+        {{- /* Prometheus will evaluate this at alert‐time */ -}}
+        The following BackupSchedules failed to be deleted in batch {{ $labels.batch_id }}:
+        {{- $fails := query (printf "pxbackup_bulk_operations_status{bulk_object=\"BackupSchedule\",bulk_operation=\"delete\",batch_id=\"%s\"}" $labels.batch_id) }}
+        {{- range $i, $e := $fails }}
+        • Name={{ $e.Labels.failed_names }}, \
+          UID={{ $e.Labels.failed_uids }}, \
+          Error={{ $e.Labels.error_reason }}, \
+          Cluster={{ $e.Labels.cluster }}
+        {{- end }}
+        `}}
 
     - alert: BulkBackupScheduleUpdationAlert
       expr: |
@@ -603,28 +590,15 @@ spec:
           Backup Schedule Updation Failure: Batch {{"{{"}} $labels.batch_id {{"}}"}} 
         description: |-
           {{`
-          {
-            "name":             "BulkBackupScheduleUpdationAlert",
-            "objectType":       "BackupSchedule",
-            "operation":        "update",
-            "severity":         "{{ $labels.severity }}",
-            "batchId":          "{{ $labels.batch_id }}",
-            "orgId":            "{{ $labels.org_id }}",
-            "userId":           "{{ $labels.user_id }}",
-            "clusterUid":       "{{ $labels.cluster_uid }}",
-            "timestampInSecs":  "{{ $labels.timestamp_in_secs }}",
-            "failures": [
-              {{- $fails := query (printf "pxbackup_bulk_operations_status{bulk_object=\"BackupSchedule\",bulk_operation=\"update\",batch_id=\"%s\"}" $labels.batch_id) }}
-              {{- range $i, $e := $fails }}
-              {
-                "name":    "{{ $e.Labels.failed_names }}",
-                "uid":     "{{ $e.Labels.failed_uids }}",
-                "error":   "{{ $e.Labels.error_reason }}",
-                "cluster": "{{ $e.Labels.cluster }}"
-              }{{ if lt $i (sub (len $fails) 1) }},{{ end }}
-              {{- end }}
-            ]
-          }
+          {{- /* Prometheus will evaluate this at alert‐time */ -}}
+          The following BackupSchedules failed to be updated in batch {{ $labels.batch_id }}:
+          {{- $fails := query (printf "pxbackup_bulk_operations_status{bulk_object=\"BackupSchedule\",bulk_operation=\"update\",batch_id=\"%s\"}" $labels.batch_id) }}
+          {{- range $i, $e := $fails }}
+          • Name={{ $e.Labels.failed_names }}, \
+            UID={{ $e.Labels.failed_uids }}, \
+            Error={{ $e.Labels.error_reason }}, \
+            Cluster={{ $e.Labels.cluster }}
+          {{- end }}
           `}}
 
 
