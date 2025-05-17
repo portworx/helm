@@ -323,6 +323,7 @@ stringData:
               </li>
             </ul>
             {{- else if eq .Labels.alertname "BulkBackupScheduleDeletionAlert" }}
+              <p style="color:red">DEBUG: BulkDeletion matched</p>
               <h3 style="color:#bc1b06;">Bulk Backup Schedule Deletion Failure</h3>
               <p>
                 <strong>Batch ID:</strong> {{ .Labels.batch_id }}<br/>
@@ -333,6 +334,7 @@ stringData:
               </p>
               {{ .Annotations.failures_table }}
             {{- else if eq .Labels.alertname "BulkBackupScheduleUpdationAlert" }}
+              <p style="color:red">DEBUG: BulkUpdation matched</p>
               <h3 style="color:#bc1b06;">Bulk Backup Schedule Updation Failure</h3>
               <p>
                 <strong>Batch ID:</strong> {{ .Labels.batch_id }}<br/>

@@ -541,7 +541,7 @@ spec:
     rules:
     - alert: BulkBackupScheduleDeletionAlert
       expr: |
-        sum by(batch_id, org_id, user_id, cluster_uid, timestamp_in_secs) (
+        sum by(batch_id, org_id, user_id, cluster_uid, timestamp_in_secs, namespace) (
           pxbackup_bulk_operations_status{
             bulk_object="BackupSchedule",
             bulk_operation="delete"
@@ -554,6 +554,7 @@ spec:
         user_id:       "{{"{{"}} $labels.user_id {{"}}"}}"
         cluster_uid:   "{{"{{"}} $labels.cluster_uid {{"}}"}}"
         timestamp_in_secs: "{{"{{"}} $labels.timestamp_in_secs {{"}}"}}"
+        namespace: "{{"{{"}} $labels.namespace {{"}}"}}"
       annotations:
         summary: >-
           {{"{{"}}- printf "Backup Schedule Deletion Failure: Batch %s" $labels.batch_id -{{"}}"}}
@@ -602,7 +603,7 @@ spec:
 
     - alert: BulkBackupScheduleUpdationAlert
       expr: |
-        sum by(batch_id, org_id, user_id, cluster_uid, timestamp_in_secs) (
+        sum by(batch_id, org_id, user_id, cluster_uid, timestamp_in_secs, namespace) (
           pxbackup_bulk_operations_status{
             bulk_object="BackupSchedule",
             bulk_operation="update"
@@ -615,6 +616,7 @@ spec:
         user_id:       "{{"{{"}} $labels.user_id {{"}}"}}"
         cluster_uid:   "{{"{{"}} $labels.cluster_uid {{"}}"}}"
         timestamp_in_secs: "{{"{{"}} $labels.timestamp_in_secs {{"}}"}}"
+        namespace: "{{"{{"}} $labels.namespace {{"}}"}}"
       annotations:
         summary: >-
           {{"{{"}}- printf "Backup Schedule Updation Failure: Batch %s" $labels.batch_id -{{"}}"}}
