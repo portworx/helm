@@ -323,7 +323,6 @@ stringData:
               </li>
             </ul>
             {{- else if eq .Labels.alertname "BulkBackupScheduleDeletionAlert" }}
-              <p style="color:red">DEBUG: BulkDeletion matched</p>
               <h3 style="color:#bc1b06;">Bulk Backup Schedule Deletion Failure</h3>
               <p>
                 <strong>Batch ID:</strong> {{ .Labels.batch_id }}<br/>
@@ -332,7 +331,9 @@ stringData:
                 <strong>Cluster UID:</strong> {{ .Labels.cluster_uid }}<br/>
                 <strong>Time:</strong>     {{ .StartsAt.Format "2006-01-02 15:04:05" }}
               </p>
-              {{ .Annotations.failures_table | safeHTML }}
+              <pre style="background:#f0f0f0;padding:10px;border-radius:4px;overflow-x:auto;">
+            {{ .Annotations.description }}
+              </pre>
             {{- else if eq .Labels.alertname "BulkBackupScheduleUpdationAlert" }}
               <p style="color:red">DEBUG: BulkUpdation matched</p>
               <h3 style="color:#bc1b06;">Bulk Backup Schedule Updation Failure</h3>
@@ -343,7 +344,9 @@ stringData:
                 <strong>Cluster UID:</strong> {{ .Labels.cluster_uid }}<br/>
                 <strong>Time:</strong>     {{ .StartsAt.Format "2006-01-02 15:04:05" }}
               </p>
-              {{ .Annotations.failures_table | safeHTML }}
+              <pre style="background:#f0f0f0;padding:10px;border-radius:4px;overflow-x:auto;">
+            {{ .Annotations.description }}
+              </pre>
             {{- else if or (eq .Labels.alertname "BackupLocationAlert") (eq .Labels.alertname "BackupLocationLimitedAvailabilityAlert") }}
             <div
                 class="pb-16"
