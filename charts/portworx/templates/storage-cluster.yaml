@@ -129,17 +129,22 @@ spec:
 
   {{- if $hasMetadata}}
   metadata:
-    {{- if $hasLabels}}
+    {{- $components := .Values.customMetadata.labels }}
     labels:
-      {{- if $portworxApiServiceLabels }}
-      service/portworx-api:
-        {{- $labels := $portworxApiServiceLabels | split ";" }}
-        {{- range $key, $val := $labels }}
-        {{- $label := $val | split "=" }}
-          {{ $label._0 | trim }}: {{ $label._1 | trim | quote -}}
+    {{- range $type, $objects := $components }}
+      {{- range $name, $value := $objects }}
+        {{- if $value }}
+        {{ printf "%s/%s" $type $name | replace "_" "-" }}:
+          {{- $pairs := $value | split ";" }}
+          {{- range $pair := $pairs }}
+            {{- $kv := $pair | split "=" }}
+            {{- if eq (len $kv) 2 }}
+            {{ $kv._0 | trim }}: {{ $kv._1 | trim | quote }}
+            {{- end }}
+          {{- end }}
         {{- end }}
       {{- end }}
-    {{- end}}
+    {{- end }}
     {{- if $hasAnnotations}}
     annotations:
       {{- if $storagePodAnnotations }}
