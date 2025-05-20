@@ -14,9 +14,63 @@ spec:
   imagePullPolicy: Always
   metadata:
     labels:
-      service/portworx-api:
-          application: "my-app"
-          environment: "testing"
+        alertmanager/portworx:
+            application: "my-app"
+            environment: "testing"
+        daemonset/*:
+            application: "my-app"
+            environment: "testing"
+        daemonset/px-telemetry-phonehome:
+            application: "my-app"
+            environment: "testing"
+        daemonset/portworx-api:
+            application: "my-app"
+            environment: "testing"
+        daemonset/portworx-proxy:
+            application: "my-app"
+            environment: "testing"
+        deployment/*:
+            application: "my-app"
+            environment: "testing"
+        deployment/autopilot:
+            application: "my-app"
+            environment: "testing"
+        deployment/portworx-pvc-controller:
+            application: "my-app"
+            environment: "testing"
+        deployment/px-csi-ext:
+            application: "my-app"
+            environment: "testing"
+        deployment/px-plugin:
+            application: "my-app"
+            environment: "testing"
+        deployment/px-plugin-proxy:
+            application: "my-app"
+            environment: "testing"
+        deployment/px-prometheus-operator:
+            application: "my-app"
+            environment: "testing"
+        deployment/stork:
+            application: "my-app"
+            environment: "testing"
+        deployment/stork-scheduler:
+            application: "my-app"
+            environment: "testing"
+        pod/*:
+            application: "my-app"
+            environment: "testing"
+        pod/portworx-kvdb:
+            application: "my-app"
+            environment: "testing"
+        pod/storage:
+            application: "my-app"
+            environment: "testing"
+        prometheus/px-prometheus:
+            application: "my-app"
+            environment: "testing"
+        service/portworx-api:
+            application: "my-app"
+            environment: "testing"
     annotations:
       pod/storage:
           application: "my-app"
