@@ -101,7 +101,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `customMetadata.annotations.service.portworxApi` | Custom annotations for portwork-api service | "" |
 | `customMetadata.annotations.service.portworxService` | Custom annotations for portwork-service | "" |
 | `customMetadata.annotations.service.portworxKVDBService` | Custom annotations for portworx-kvdb-service | "" |
-| `customMetadata.labels` | These labels are automatically propagated to the respective components managed by the operator | "" |
+| `customMetadata.labels` | These labels are propagated to the respective components managed by the operator | "" |
 | `envVars` | semi-colon-separated list of environment variables that will be exported to portworx. (example: MYENV1=val1;MYENV2=val2) ( Depricated : use `envs` to set environment variables) | "none" |
 | `envs` | Add environment variables to the Portworx container in all Kubernetes-supported formats | [] |
 | `disableStorageClass` | Disable installation of default Portworx StorageClasses. | false |
