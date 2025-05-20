@@ -76,7 +76,12 @@ customMetadata:                       # Configure custom labels and annotation f
     service: 
       portworx-api: ""
     deployment:
-      "*": ""                        # This is a global label that will be applied to all deployments
+      "*": ""                         # Global label applied to all deployments using "*". If a specific component (e.g., autopilot) also has a label:
+                                      # component specific key-value pair takes precedence over global one
+                                      # - Matching keys: component label overrides the global one.
+                                      #   e.g., "*" = "key1=val1", autopilot = "key1=val2" , final labels → key1=val2
+                                      # - Different keys: labels are merged.
+                                      #   e.g., "*" = "key1=val1", autopilot = "key2=val2" , final labels → key1=val1, key2=val2
       autopilot: ""
       px-csi-ext: ""
       px-plugin: ""
