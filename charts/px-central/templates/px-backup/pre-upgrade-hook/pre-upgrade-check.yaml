@@ -216,7 +216,8 @@ spec:
                   "tags": {
                     "mongodb5": "{{ .Values.images.mongodbImageMap.tags.mongodb5 }}",
                     "mongodb6": "{{ .Values.images.mongodbImageMap.tags.mongodb6 }}",
-                    "mongodb7": "{{ .Values.images.mongodbImageMap.tags.mongodb7 }}"
+                    "mongodb7": "{{ .Values.images.mongodbImageMap.tags.mongodb7 }}",
+                    "mongodb8": "{{ .Values.images.mongodbImageMap.tags.mongodb8 }}"
                   }
                 }
             {{- end }}
