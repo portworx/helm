@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-release"
 spec:
-  image: portworx/oci-monitor:3.2.1.1
+  image: portworx/oci-monitor:3.2.3
   imagePullPolicy: Always
 
   kvdb:
@@ -46,6 +46,7 @@ spec:
       labelSelector:
         matchLabels:
           custom: node
+    misArgs: "-metadata /dev/sdb"
     storage:
       devices:
       - /dev/nvme1

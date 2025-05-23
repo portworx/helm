@@ -4,7 +4,7 @@ deployOperator: true                    # Deploy the Portworx operator
 deployCluster: true                     # Deploy the Portworx cluster
 
 imageVersion: 3.2.3                    # Version of the PX Image.
-pxOperatorImageVersion: 24.2.4         # Version of the PX operator image.
+pxOperatorImageVersion: 25.1.0         # Version of the PX operator image.
 
 openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
 isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
@@ -72,9 +72,37 @@ customMetadata:                       # Configure custom labels and annotation f
       portworxApi: ""
       portworxService: ""
       portworxKVDBService: ""
-  labels:                             # Currently, custom labels are only supported on the portworx-api service
+  labels:                            
     service: 
-      portworxApi: ""
+      portworx-api: ""
+    deployment:
+      "*": ""                         # Global label applied to all deployments using "*". If a specific component (e.g., autopilot) also has a label:
+                                      # component specific key-value pair takes precedence over global one
+                                      # - Matching keys: component label overrides the global one.
+                                      #   e.g., "*" = "key1=val1", autopilot = "key1=val2" , final labels → key1=val2
+                                      # - Different keys: labels are merged.
+                                      #   e.g., "*" = "key1=val1", autopilot = "key2=val2" , final labels → key1=val1, key2=val2
+      autopilot: ""
+      px-csi-ext: ""
+      px-plugin: ""
+      px-plugin-proxy: ""
+      portworx-pvc-controller: ""
+      stork: ""
+      stork-scheduler: ""
+      px-prometheus-operator: ""
+    daemonset:         
+      "*": ""                       # This is a global label that will be applied to all daemonsets
+      portworx-api: ""
+      portworx-proxy: ""
+      px-telemetry-phonehome: ""
+    prometheus:
+      px-prometheus: ""
+    alertmanager:
+      portworx: ""
+    pod:                           # This is a global label that will be applied to all pods
+      "*": ""
+      storage: ""
+      portworx-kvdb: ""
 
 
 envVars: none                         # DEPRECATED: Use envs section to set env variables
@@ -138,8 +166,10 @@ monitoring:
     volumeMounts:                     # Additional VolumeMounts for the Prometheus StatefulSet
     # - mountPath: /test
     #   name: additional-volume
-    securityContext:                  # Enable prometheus container run as a non-root user.
-      runAsNonRoot: false
+    securityContext:                  # Enable prometheus container run as a non-root user. 
+    # Provide securityContext fields as defined by Kubernetes (https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
+      # runAsNonRoot: false
+      # runAsUser: 1000
   telemetry: true                    # Enable telemetry
   grafana: false                      # Enable grafana
 
@@ -220,6 +250,7 @@ nodesConfiguration:                           # override certain cluster level c
 # - selector:                                 # Selector for the node(s) to which the configuration in this section will be applied
 #     nodeName:                               # Name of the node to which this configuration will be applied. Node name takes precedence over selector.labelSelector
 #     labelSelector:                          # selector for nodes to which this configuration will be applied.
+#   miscArgs:                                 # MiscArgs is a string of arguments passed to portworx container. This overrides/adds onto miscellaneous arguments passed in cluster annotations.
 #   network:                                  # Specify network configuration for the selected nodes, similar to the one specified at cluster level.
 #                                             # If this network configuration is empty, then cluster level (dataInterface,managementInterface) values are used.
 #     dataInterface:

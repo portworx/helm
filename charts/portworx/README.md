@@ -65,8 +65,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 
 | Parameter | Description | Default
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| `imageVersion` | Version of the PX image | 3.2.2.2 |
-| `pxOperatorImageVersion` | Version of the PX operator image | 24.2.4 |
+| `imageVersion` | Version of the PX image | 3.2.3 |
+| `pxOperatorImageVersion` | Version of the PX operator image | 25.1.0 |
 | `openshiftInstall` | Installing on Openshift? | false |
 | `nonDisruptivek8sUpgrade` | Used to disable or enable smart and parallel kubetnetes node upgrades. By default, S&P upgrades are disabled. To enable them, set this to true | false |
 | `skipHealthChecks` | Used to skip health checks. By default, health checks are enabled. Set this to true to disable health checks | false | 
@@ -101,7 +101,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `customMetadata.annotations.service.portworxApi` | Custom annotations for portwork-api service | "" |
 | `customMetadata.annotations.service.portworxService` | Custom annotations for portwork-service | "" |
 | `customMetadata.annotations.service.portworxKVDBService` | Custom annotations for portworx-kvdb-service | "" |
-| `customMetadata.labels.service.portworxApi` | Custom labels for portwork-api service. Currently, custom labels are only supported on the portworx-api service | "" |
+| `customMetadata.labels` | Labels to be applied to components managed by the operator. Use `"*"` to define global labels. If both global and component-specific labels are defined, the component-specific key-value pairs take precedence. | "" |
 | `envVars` | semi-colon-separated list of environment variables that will be exported to portworx. (example: MYENV1=val1;MYENV2=val2) ( Depricated : use `envs` to set environment variables) | "none" |
 | `envs` | Add environment variables to the Portworx container in all Kubernetes-supported formats | [] |
 | `disableStorageClass` | Disable installation of default Portworx StorageClasses. | false |
