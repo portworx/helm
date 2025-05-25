@@ -603,8 +603,10 @@ spec:
               secretKeyRef:
                 key: postgresql-password
                 name: pxcentral-keycloak-postgresql
-          - name: KC_PROXY
-            value: edge
+          - name: KC_PROXY_HEADERS
+            value: xforwarded
+          - name: KC_HTTP_ENABLED
+            value: true
           {{- if .Values.caCertsSecretName }}
           - name: X509_CA_BUNDLE
             value: /tmp/certs/*
