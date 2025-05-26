@@ -704,6 +704,12 @@ spec:
           volumeMounts:
             - name: config
               mountPath: /etc/nginx
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
+              name: proxy-ca-volume
+              readOnly: true
+          {{- end }}
           ports:
             - name: http
               containerPort: 80
@@ -723,13 +729,6 @@ spec:
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-nginx" .Values.proxy.includeNoProxyList) }}
           {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
-          {{- end }}
-          volumeMounts:
-          {{- if .Values.proxy.configSecretName }}
-            - mountPath: /etc/ssl/certs/proxy-ca.pem
-              subPath: proxy-ca.pem
-              name: proxy-ca-volume
-              readOnly: true
           {{- end }}
         - name: dnsmasq
           image: {{ printf "%s/%s/%s:%s" .Values.images.dnsmasqImage.registry .Values.images.dnsmasqImage.repo .Values.images.dnsmasqImage.imageName .Values.images.dnsmasqImage.tag }}
@@ -889,13 +888,6 @@ spec:
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-querier" .Values.proxy.includeNoProxyList) }}
           {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
-          {{- end }}
-          volumeMounts:
-          {{- if .Values.proxy.configSecretName }}
-            - mountPath: /etc/ssl/certs/proxy-ca.pem
-              subPath: proxy-ca.pem
-              name: proxy-ca-volume
-              readOnly: true
           {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
