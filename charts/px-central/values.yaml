@@ -251,7 +251,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: keycloak
-    tag: 25.0.2
+    tag: 26.2.4
     module: pxCentral
   keycloakLoginThemeImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
