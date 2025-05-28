@@ -289,7 +289,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
     repo: vikkumar
     imageName: px-backup
-    tag: 8922
+    tag: "8922"
     module: pxBackup
   mongodbImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
