@@ -153,7 +153,7 @@ data:
     if [[ -n "${X509_CA_BUNDLE+0}" ]] ; then
         autogenerate_keystores
     fi
-    exec /opt/keycloak/bin/kc.sh start ${CUSTOM_ARGS}  --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true --spi-connections-jpa-default-migration-strategy=update
+    exec /opt/keycloak/bin/kc.sh start ${CUSTOM_ARGS}  --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true --spi-connections-jpa-quarkus-migration-strategy=update
 
 ---
 apiVersion: v1
@@ -171,31 +171,31 @@ data:
     ## Sets the node identifier to the node name (= pod name). Node identifiers have to be unique. They can have a
     ## maximum length of 23 characters. Thus, the chart's fullname template truncates its length accordingly.
     /subsystem=transactions:write-attribute(name=node-identifier, value=${jboss.node.name})
-    
-    
+
+
     # Allow log level to be configured via environment variable
     /subsystem=logging/console-handler=CONSOLE:write-attribute(name=level, value=${env.WILDFLY_LOGLEVEL:INFO})
     /subsystem=logging/root-logger=ROOT:write-attribute(name=level, value=${env.WILDFLY_LOGLEVEL:INFO})
-    
+
     # Add dedicated eventsListener config element to allow configuring elements.
     /subsystem=keycloak-server/spi=eventsListener:add()
     /subsystem=keycloak-server/spi=eventsListener/provider=jboss-logging:add(enabled=true)
-    
+
     # Propagate success events to INFO instead of DEBUG, to expose successful logins for log analysis
     /subsystem=keycloak-server/spi=eventsListener/provider=jboss-logging:write-attribute(name=properties.success-level,value=info)
     /subsystem=keycloak-server/spi=eventsListener/provider=jboss-logging:write-attribute(name=properties.error-level,value=warn)
-    
-    
+
+
     # Configure datasource to use explicit query timeout in seconds
     /subsystem=datasources/data-source=KeycloakDS/:write-attribute(name=query-timeout,value=${env.DB_QUERY_TIMEOUT:300})
-    
+
     # Configure datasource to connection before use
     /subsystem=datasources/data-source=KeycloakDS/:write-attribute(name=validate-on-match,value=${env.DB_VALIDATE_ON_MATCH:true})
-    
+
     # Configure datasource to try all other connections before failing
     /subsystem=datasources/data-source=KeycloakDS/:write-attribute(name=use-fast-fail,value=${env.DB_USE_CAST_FAIL:false})
-    
-    
+
+
     run-batch
     stop-embedded-server
 ---
@@ -426,7 +426,7 @@ spec:
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
-      {{- end }} 
+      {{- end }}
       volumes:
       {{- if .Values.proxy.configSecretName }}
         - name: proxy-ca-volume
@@ -579,11 +579,13 @@ spec:
             value: "false"
           - name: KC_HOSTNAME_STRICT_HTTPS
             value: "false"
+          - name: KC_HTTP_ENABLED
+            value: "true"
           - name: PROXY_ADDRESS_FORWARDING
             value: "true"
-          - name: KEYCLOAK_ADMIN
-            value: {{ .Values.oidc.centralOIDC.defaultUsername }}
-          - name: KEYCLOAK_ADMIN_PASSWORD
+          - name: KC_BOOTSTRAP_ADMIN_USERNAME
+            value: {{ .Values.oidc.centralOIDC.defaultUsername }}-bootstrap
+          - name: KC_BOOTSTRAP_ADMIN_PASSWORD
             value: {{ .Values.oidc.centralOIDC.defaultPassword }}
           - name: KC_HTTP_RELATIVE_PATH
             value: /auth
@@ -603,8 +605,8 @@ spec:
               secretKeyRef:
                 key: postgresql-password
                 name: pxcentral-keycloak-postgresql
-          - name: KC_PROXY
-            value: edge
+          - name: KC_PROXY_HEADERS
+            value: xforwarded
           {{- if .Values.caCertsSecretName }}
           - name: X509_CA_BUNDLE
             value: /tmp/certs/*
@@ -657,14 +659,14 @@ spec:
               path: /auth/realms/master
               port: http
             initialDelaySeconds: 30
-            timeoutSeconds: 1      
+            timeoutSeconds: 1
           resources:
             {}
       terminationGracePeriodSeconds: 60
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
-      {{- end }} 
+      {{- end }}
       volumes:
         - name: sh
           configMap:
