@@ -108,7 +108,8 @@ isArgoCD: false
 pxbackup:
   enabled: false
   orgName: default
-  callHome: true
+  # obsolete
+  callHome: false
   mongoMigration: complete
   livenessProbeInitialDelay: 1800
   prometheus:
