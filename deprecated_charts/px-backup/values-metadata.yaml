@@ -1,0 +1,35 @@
+namespace:
+  __metadata:
+    name: "namespacee"
+    label: "PX-Central namespace"
+    description: "Namespace to deploy px-central, eg. px-backup"
+    type: "string"
+    immutable: false
+    required: false
+
+persistentStorage:
+  __metadata:
+    name: "persistentStorage"
+    label: "Persistence storage options"
+    description: "Persistence storage for px-central components"
+    immutable: false
+    required: false
+  
+  enabled:
+    __metadata:
+    name: "enabled"
+    label: "Enable Persistence storage"
+    description: "Enable persistence storage for px-central components"
+    type: "boolean"
+    immutable: false
+    required: false
+
+  storageClassName:
+    __metadata:
+    name: "storageClassName"
+    label: "Name of the storage class"
+    description: "Name of the storage class"
+    type: "string"
+    immutable: false
+    required: false
+
