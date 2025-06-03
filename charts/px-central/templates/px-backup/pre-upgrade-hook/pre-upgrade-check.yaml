@@ -11,7 +11,7 @@
   {{- if $sts }}
 
     # Expected image from helm chart values
-    {{- $expectedImage := printf "%s/%s/%s:%s" .Values.images.mongodbImage.registry .Values.images.mongodbImage.repo .Values.images.mongodbImage.imageName .Values.images.mongodbImage.tag -}}
+    {{- $expectedImage := printf "%s/%s/%s:%s" (default .Values.images.mongodbImage.registry .Values.images.registry) (default .Values.images.mongodbImage.repo .Values.images.repo) .Values.images.mongodbImage.imageName .Values.images.mongodbImage.tag -}}
 
     {{- range $container := $sts.spec.template.spec.containers }}
       {{- if ne $container.image $expectedImage }}
@@ -179,7 +179,7 @@ spec:
               {{- end }}
       containers:
         - name: pxc-pre-upgrade
-          image: {{ printf "%s/%s/%s:%s" .Values.images.preSetupHookImage.registry .Values.images.preSetupHookImage.repo .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.preSetupHookImage.registry .Values.images.registry) (default .Values.images.preSetupHookImage.repo .Values.images.repo) .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: ["/pxcentral-hook/bin/pxcentral-hook"]
           args: ["--hook=pre-upgrade"]
@@ -237,7 +237,7 @@ spec:
             - name: POSTGRES_CONTAINER_NAME
               value: pxcentral-keycloak-postgresql
             - name: POSTGRES_TARGET_IMAGE
-              value: {{ printf "%s/%s/%s:%s" .Values.images.keycloakBackendImage.registry .Values.images.keycloakBackendImage.repo .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
+              value: {{ printf "%s/%s/%s:%s" (default .Values.images.keycloakBackendImage.registry .Values.images.registry) (default .Values.images.keycloakBackendImage.repo .Values.images.repo) .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
             - name: POSTGRESQL_PORT_NUMBER
               value: "5432"
             - name: POSTGRESQL_VOLUME_DIR
