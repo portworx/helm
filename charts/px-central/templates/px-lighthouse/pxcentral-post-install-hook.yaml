@@ -44,7 +44,7 @@ spec:
       {{- end }}
       containers:
       - name: pxcentral-post-setup
-        image: {{ printf "%s/%s/%s:%s" .Values.images.postInstallSetupImage.registry .Values.images.postInstallSetupImage.repo .Values.images.postInstallSetupImage.imageName .Values.images.postInstallSetupImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.postInstallSetupImage.registry .Values.images.registry) (default .Values.images.postInstallSetupImage.repo .Values.images.repo) .Values.images.postInstallSetupImage.imageName .Values.images.postInstallSetupImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
           - name: LOG_LEVEL

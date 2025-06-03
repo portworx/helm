@@ -142,7 +142,7 @@ spec:
               {{- end }}
       containers:
       - name: pxcentral-apiserver
-        image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralApiServerImage.registry .Values.images.pxcentralApiServerImage.repo .Values.images.pxcentralApiServerImage.imageName .Values.images.pxcentralApiServerImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxcentralApiServerImage.registry .Values.images.registry) (default .Values.images.pxcentralApiServerImage.repo .Values.images.repo) .Values.images.pxcentralApiServerImage.imageName .Values.images.pxcentralApiServerImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
           - name: PXC_NAMESPACE

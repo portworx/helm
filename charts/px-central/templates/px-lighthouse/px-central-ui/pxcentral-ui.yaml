@@ -170,7 +170,7 @@ spec:
               {{- end }}
       initContainers:
         - name: init-mysql-db
-          image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralBackendImage.registry .Values.images.pxcentralBackendImage.repo .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxcentralBackendImage.registry .Values.images.registry) (default .Values.images.pxcentralBackendImage.repo .Values.images.repo) .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
             - bash
@@ -219,7 +219,7 @@ spec:
                 name: pxcentral-ui-configmap
       containers:
         - name: pxcentral-backend
-          image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralBackendImage.registry .Values.images.pxcentralBackendImage.repo .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxcentralBackendImage.registry .Values.images.registry) (default .Values.images.pxcentralBackendImage.repo .Values.images.repo) .Values.images.pxcentralBackendImage.imageName .Values.images.pxcentralBackendImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           ports:
             - containerPort: 80
@@ -358,7 +358,7 @@ spec:
               {{- end }}
       containers:
         - name: pxcentral-frontend
-          image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralFrontendImage.registry .Values.images.pxcentralFrontendImage.repo .Values.images.pxcentralFrontendImage.imageName .Values.images.pxcentralFrontendImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxcentralFrontendImage.registry .Values.images.registry) (default .Values.images.pxcentralFrontendImage.repo .Values.images.repo) .Values.images.pxcentralFrontendImage.imageName .Values.images.pxcentralFrontendImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           ports:
             - name : http
@@ -538,7 +538,7 @@ spec:
       {{- end }}
       initContainers:
       - name: init-mysql
-        image: {{ printf "%s/%s/%s:%s" .Values.images.mysqlInitImage.registry .Values.images.mysqlInitImage.repo .Values.images.mysqlInitImage.imageName .Values.images.mysqlInitImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.mysqlInitImage.registry .Values.images.registry) (default .Values.images.mysqlInitImage.repo .Values.images.repo) .Values.images.mysqlInitImage.imageName .Values.images.mysqlInitImage.tag }}
         command: ['sh', '-c', 'rmdir /var/lib/mysql/lost+found || true']
         volumeMounts:
         - mountPath: /var/lib/mysql
@@ -551,7 +551,7 @@ spec:
         {{- end }}
       containers:
         - name: mysql
-          image: {{ printf "%s/%s/%s:%s" .Values.images.mysqlImage.registry .Values.images.mysqlImage.repo .Values.images.mysqlImage.imageName .Values.images.mysqlImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.mysqlImage.registry .Values.images.registry) (default .Values.images.mysqlImage.repo .Values.images.repo) .Values.images.mysqlImage.imageName .Values.images.mysqlImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
           ports:

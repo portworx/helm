@@ -153,8 +153,8 @@ spec:
       - args:
           - -namespaces={{ .Release.Namespace }}
           - --kubelet-service={{ .Release.Namespace }}/kubelet
-          - --prometheus-config-reloader={{ printf "%s/%s/%s:%s" .Values.images.pxBackupPrometheusConfigReloaderImage.registry .Values.images.pxBackupPrometheusConfigReloaderImage.repo .Values.images.pxBackupPrometheusConfigReloaderImage.imageName .Values.images.pxBackupPrometheusConfigReloaderImage.tag }}
-        image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupPrometheusOperatorImage.registry .Values.images.pxBackupPrometheusOperatorImage.repo .Values.images.pxBackupPrometheusOperatorImage.imageName .Values.images.pxBackupPrometheusOperatorImage.tag }}
+          - --prometheus-config-reloader={{ printf "%s/%s/%s:%s" (default .Values.images.pxBackupPrometheusConfigReloaderImage.registry .Values.images.registry) (default .Values.images.pxBackupPrometheusConfigReloaderImage.repo .Values.images.repo) .Values.images.pxBackupPrometheusConfigReloaderImage.imageName .Values.images.pxBackupPrometheusConfigReloaderImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxBackupPrometheusOperatorImage.registry .Values.images.registry) (default .Values.images.pxBackupPrometheusOperatorImage.repo .Values.images.repo) .Values.images.pxBackupPrometheusOperatorImage.imageName .Values.images.pxBackupPrometheusOperatorImage.tag }}
         name: prometheus-operator
         ports:
           - containerPort: 8080
@@ -357,7 +357,7 @@ spec:
     {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-dashboard-prometheus" .Values.proxy.includeNoProxyList) }}
     {{ include "proxy.proxyEnv" . | nindent 4 }}
     {{- end }}
-    image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupPrometheusImage.registry .Values.images.pxBackupPrometheusImage.repo .Values.images.pxBackupPrometheusImage.imageName .Values.images.pxBackupPrometheusImage.tag }}
+    image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxBackupPrometheusImage.registry .Values.images.registry) (default .Values.images.pxBackupPrometheusImage.repo .Values.images.repo) .Values.images.pxBackupPrometheusImage.imageName .Values.images.pxBackupPrometheusImage.tag }}
     livenessProbe:
       exec:
         command:

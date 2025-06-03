@@ -81,7 +81,7 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: status.podIP
-      image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupAlertmanagerImage.registry .Values.images.pxBackupAlertmanagerImage.repo .Values.images.pxBackupAlertmanagerImage.imageName .Values.images.pxBackupAlertmanagerImage.tag }}
+      image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxBackupAlertmanagerImage.registry .Values.images.registry) (default .Values.images.pxBackupAlertmanagerImage.repo .Values.images.repo) .Values.images.pxBackupAlertmanagerImage.imageName .Values.images.pxBackupAlertmanagerImage.tag }}
       name: alertmanager
       ports:
         - containerPort: 9093

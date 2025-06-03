@@ -126,7 +126,7 @@ spec:
       {{- end }}
       containers:
       - name: pxcentral-memcached-index-read
-        image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedIndexImage.registry .Values.images.memcachedIndexImage.repo .Values.images.memcachedIndexImage.imageName .Values.images.memcachedIndexImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.memcachedIndexImage.registry .Values.images.registry) (default .Values.images.memcachedIndexImage.repo .Values.images.repo) .Values.images.memcachedIndexImage.imageName .Values.images.memcachedIndexImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         command:
         - memcached
@@ -163,7 +163,7 @@ spec:
             readOnly: true
         {{- end }}
       - name: metrics
-        image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedMetricsImage.registry .Values.images.memcachedMetricsImage.repo .Values.images.memcachedMetricsImage.imageName .Values.images.memcachedMetricsImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.memcachedMetricsImage.registry .Values.images.registry) (default .Values.images.memcachedMetricsImage.repo .Values.images.repo) .Values.images.memcachedMetricsImage.imageName .Values.images.memcachedMetricsImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         ports:
         - name: metrics
@@ -250,7 +250,7 @@ spec:
       {{- end }}
       containers:
       - name: pxcentral-memcached-index-write
-        image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedIndexImage.registry .Values.images.memcachedIndexImage.repo .Values.images.memcachedIndexImage.imageName .Values.images.memcachedIndexImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.memcachedIndexImage.registry .Values.images.registry) (default .Values.images.memcachedIndexImage.repo .Values.images.repo) .Values.images.memcachedIndexImage.imageName .Values.images.memcachedIndexImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         command:
         - memcached
@@ -287,7 +287,7 @@ spec:
             readOnly: true
         {{- end }}
       - name: metrics
-        image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedMetricsImage.registry .Values.images.memcachedMetricsImage.repo .Values.images.memcachedMetricsImage.imageName .Values.images.memcachedMetricsImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.memcachedMetricsImage.registry .Values.images.registry) (default .Values.images.memcachedMetricsImage.repo .Values.images.repo) .Values.images.memcachedMetricsImage.imageName .Values.images.memcachedMetricsImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         ports:
         - name: metrics
@@ -374,7 +374,7 @@ spec:
       {{- end }}
       containers:
       - name: pxcentral-memcached
-        image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedImage.registry .Values.images.memcachedImage.repo .Values.images.memcachedImage.imageName .Values.images.memcachedImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.memcachedImage.registry .Values.images.registry) (default .Values.images.memcachedImage.repo .Values.images.repo) .Values.images.memcachedImage.imageName .Values.images.memcachedImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         command:
         - memcached
@@ -410,7 +410,7 @@ spec:
             readOnly: true
         {{- end }}
       - name: metrics
-        image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedMetricsImage.registry .Values.images.memcachedMetricsImage.repo .Values.images.memcachedMetricsImage.imageName .Values.images.memcachedMetricsImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.memcachedMetricsImage.registry .Values.images.registry) (default .Values.images.memcachedMetricsImage.repo .Values.images.repo) .Values.images.memcachedMetricsImage.imageName .Values.images.memcachedMetricsImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         ports:
         - name: metrics
@@ -503,7 +503,7 @@ spec:
       {{- end }}
       containers:
         - name: consul
-          image: {{ printf "%s/%s/%s:%s" .Values.images.consulImage.registry .Values.images.consulImage.repo .Values.images.consulImage.imageName .Values.images.consulImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.consulImage.registry .Values.images.registry) (default .Values.images.consulImage.repo .Values.images.repo) .Values.images.consulImage.imageName .Values.images.consulImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           ports:
             - name: http

@@ -195,7 +195,7 @@ spec:
       {{- end }}
       containers:
         - name: pxcentral-grafana
-          image: {{ printf "%s/%s/%s:%s" .Values.images.grafanaImage.registry .Values.images.grafanaImage.repo .Values.images.grafanaImage.imageName .Values.images.grafanaImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.grafanaImage.registry .Values.images.registry) (default .Values.images.grafanaImage.repo .Values.images.repo) .Values.images.grafanaImage.imageName .Values.images.grafanaImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           {{- if or .Values.caCertsSecretName .Values.proxy.httpProxy.noProxy }}
           env:
