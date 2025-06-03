@@ -425,7 +425,7 @@ spec:
       {{- end }}
       containers:
         - name: cortex
-          image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.cortexImage.registry .Values.images.registry) (default .Values.images.cortexImage.repo .Values.images.repo) .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           {{- if .Values.proxy.httpProxy }}
           env:
@@ -567,7 +567,7 @@ spec:
           {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
           {{- end }}
-          image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.cortexImage.registry .Values.images.registry) (default .Values.images.cortexImage.repo .Values.images.repo) .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
             - "-target=distributor"
@@ -699,7 +699,7 @@ spec:
       {{- end }}
       containers:
         - name: nginx
-          image: {{ .Values.images.proxyConfigImage.registry }}/{{ .Values.images.proxyConfigImage.repo }}/{{ .Values.images.proxyConfigImage.imageName }}:{{ .Values.images.proxyConfigImage.tag }}
+          image: {{ default .Values.images.proxyConfigImage.registry .Values.images.registry }}/{{ default .Values.images.proxyConfigImage.repo .Values.images.repo }}/{{ .Values.images.proxyConfigImage.imageName }}:{{ .Values.images.proxyConfigImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           volumeMounts:
             - name: config
@@ -731,7 +731,7 @@ spec:
           {{- end }}
           {{- end }}
         - name: dnsmasq
-          image: {{ printf "%s/%s/%s:%s" .Values.images.dnsmasqImage.registry .Values.images.dnsmasqImage.repo .Values.images.dnsmasqImage.imageName .Values.images.dnsmasqImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.dnsmasqImage.registry .Values.images.registry) (default .Values.images.dnsmasqImage.repo .Values.images.repo) .Values.images.dnsmasqImage.imageName .Values.images.dnsmasqImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
             - --listen
@@ -849,7 +849,7 @@ spec:
       {{- end }}
       containers:
         - name: cortex
-          image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.cortexImage.registry .Values.images.registry) (default .Values.images.cortexImage.repo .Values.images.repo) .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
             - "-target=querier"
@@ -989,7 +989,7 @@ spec:
       {{- end }}
       containers:
         - name: cortex
-          image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.cortexImage.registry .Values.images.registry) (default .Values.images.cortexImage.repo .Values.images.repo) .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
             - "-target=query-frontend"
@@ -1102,7 +1102,7 @@ spec:
       {{- end }}
       containers:
         - name: cortex
-          image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.cortexImage.registry .Values.images.registry) (default .Values.images.cortexImage.repo .Values.images.repo) .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
             - "-target=ruler"
@@ -1221,7 +1221,7 @@ spec:
       {{- end }}
       containers:
         - name: cortex
-          image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.cortexImage.registry .Values.images.registry) (default .Values.images.cortexImage.repo .Values.images.repo) .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
             - "-target=table-manager"
@@ -1372,7 +1372,7 @@ spec:
         {{- end }}
       containers:
         - name: cortex
-          image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.cortexImage.registry .Values.images.registry) (default .Values.images.cortexImage.repo .Values.images.repo) .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
             - "-target=alertmanager"
@@ -1536,7 +1536,7 @@ spec:
         {{- end }}
       containers:
         - name: cortex
-          image: {{ printf "%s/%s/%s:%s" .Values.images.cortexImage.registry .Values.images.cortexImage.repo .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.cortexImage.registry .Values.images.registry) (default .Values.images.cortexImage.repo .Values.images.repo) .Values.images.cortexImage.imageName .Values.images.cortexImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
             - "-target=ingester"
