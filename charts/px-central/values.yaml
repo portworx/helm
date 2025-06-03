@@ -246,7 +246,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: postgresql
-    tag: 17.4.0-debian-12-r15
+    tag: 17.4.0-debian-12-r19
     module: pxCentral
   keycloakFrontendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
