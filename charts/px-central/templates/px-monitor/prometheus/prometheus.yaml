@@ -113,7 +113,7 @@ spec:
     {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-prometheus" .Values.proxy.includeNoProxyList) }}
     {{- include "proxy.proxyEnv" . | nindent 4 }}
     {{- end }}
-    image: {{ printf "%s/%s/%s:%s" .Values.images.prometheusImage.registry .Values.images.prometheusImage.repo .Values.images.prometheusImage.imageName .Values.images.prometheusImage.tag }}
+    image: {{ printf "%s/%s/%s:%s" (default .Values.images.prometheusImage.registry .Values.images.registry) (default .Values.images.prometheusImage.repo .Values.images.repo) .Values.images.prometheusImage.imageName .Values.images.prometheusImage.tag }}
     livenessProbe:
       exec:
         command:
@@ -355,8 +355,8 @@ spec:
         - args:
             - -namespaces={{ .Release.Namespace }}
             - --kubelet-service={{ .Release.Namespace }}/kubelet
-            - --prometheus-config-reloader={{ printf "%s/%s/%s:%s" .Values.images.prometheusConfigReloadrImage.registry .Values.images.prometheusConfigReloadrImage.repo .Values.images.prometheusConfigReloadrImage.imageName .Values.images.prometheusConfigReloadrImage.tag }}
-          image: {{ printf "%s/%s/%s:%s" .Values.images.prometheusOperatorImage.registry .Values.images.prometheusOperatorImage.repo .Values.images.prometheusOperatorImage.imageName .Values.images.prometheusOperatorImage.tag }}
+            - --prometheus-config-reloader={{ printf "%s/%s/%s:%s" (default .Values.images.prometheusConfigReloadrImage.registry .Values.images.registry) (default .Values.images.prometheusConfigReloadrImage.repo .Values.images.repo) .Values.images.prometheusConfigReloadrImage.imageName .Values.images.prometheusConfigReloadrImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.prometheusOperatorImage.registry .Values.images.registry) (default .Values.images.prometheusOperatorImage.repo .Values.images.repo) .Values.images.prometheusOperatorImage.imageName .Values.images.prometheusOperatorImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           name: pxcentral-prometheus-operator
           {{- if .Values.proxy.httpProxy }}

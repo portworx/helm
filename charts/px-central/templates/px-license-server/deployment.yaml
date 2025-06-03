@@ -49,7 +49,7 @@ spec:
       serviceAccountName: pxcentral-apiserver
       containers:
         - name: pxcentral-license-server
-          image: {{ printf "%s/%s/%s:%s" .Values.images.licenseServerImage.registry .Values.images.licenseServerImage.repo .Values.images.licenseServerImage.imageName .Values.images.licenseServerImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.licenseServerImage.registry .Values.images.registry) (default .Values.images.licenseServerImage.repo .Values.images.repo) .Values.images.licenseServerImage.imageName .Values.images.licenseServerImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
             {{- if eq $UATLSType true }}

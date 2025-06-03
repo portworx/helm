@@ -146,7 +146,7 @@ spec:
               {{- end }}
       containers:
       - name: pxcentral-lh-middleware
-        image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralMiddlewareImage.registry .Values.images.pxcentralMiddlewareImage.repo .Values.images.pxcentralMiddlewareImage.imageName .Values.images.pxcentralMiddlewareImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxcentralMiddlewareImage.registry .Values.images.registry) (default .Values.images.pxcentralMiddlewareImage.repo .Values.images.repo) .Values.images.pxcentralMiddlewareImage.imageName .Values.images.pxcentralMiddlewareImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
           - name: K8S_QPS

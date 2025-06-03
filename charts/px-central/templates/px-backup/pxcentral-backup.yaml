@@ -237,7 +237,7 @@ spec:
         - name: SSL_CERT_DIR
           value: /tmp/certs
         {{- end }}
-        image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupImage.registry .Values.images.pxBackupImage.repo .Values.images.pxBackupImage.imageName .Values.images.pxBackupImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxBackupImage.registry .Values.images.registry) (default .Values.images.pxBackupImage.repo .Values.images.repo) .Values.images.pxBackupImage.imageName .Values.images.pxBackupImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         name: px-backup
         ports:

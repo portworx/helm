@@ -215,6 +215,8 @@ securityContext:
 tolerations: []
 
 images:
+  registry: ""
+  repo: ""
   pullSecrets: []
   pullPolicy: Always
   insecureRegistry: false
