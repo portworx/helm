@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-release"
 spec:
-  image: portworx/oci-monitor:3.2.3
+  image: portworx/oci-monitor:3.3.0
   imagePullPolicy: Always
   updateStrategy:
     type: OnDelete
