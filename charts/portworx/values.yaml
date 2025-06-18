@@ -204,6 +204,9 @@ autopilot:
 
 internalKVDB: true                   # internal KVDB
 kvdbDevice: none                      # specify a separate device to store KVDB data, only used when internalKVDB is set to true
+internalKvdbTls: false                # Enable TLS for internal KVDB
+
+installCertManager: false             # Install PX managed cert-manager
 
 etcd:                                 # DEPRECATED: Use kvdb.authSecretName for configuring secure etcd
   credentials: none:none              # Username and password for ETCD authentication in the form user:password

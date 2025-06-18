@@ -189,6 +189,9 @@ spec:
   kvdb:
   {{- if and (eq $internalKVDB true) (empty $etcdEndPoints) }}
     internal: true
+    {{- if eq .Values.internalKvdbTls true }}
+    enableTLS: true
+    {{- end }}
   {{- else }}
     internal: false
     {{- if empty $etcdEndPoints }}
@@ -203,6 +206,11 @@ spec:
     {{- if ne $kvdbAuthSecret "none" }}
     authSecret: {{ .Values.kvdb.authSecretName }}
     {{- end }}
+  {{- end }}
+
+  {{- if eq .Values.installCertManager true }}
+  certManager:
+    enabled: true
   {{- end }}
 
 {{- if and (ne $drives "none") (not (hasPrefix "/" $drives)) }}
