@@ -1,0 +1,294 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
+{{- $nfsEnabled := .Values.pxbackup.nfs.enabled | default false }}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+{{- if eq $pxBackupEnabled true }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-backup-account
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: px-backup-cluster-role
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list"]
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["create", "update", "get", "patch", "list", "watch"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list"]
+  - apiGroups: ["snapshot.storage.k8s.io"]
+    resources: ["volumesnapshotclasses"]
+    verbs: ["get"]
+{{- if eq $nfsEnabled true }}
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["create", "update", "get", "patch", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["delete"]
+{{- end }}
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: px-backup-cluster-role-binding
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-apiserver
+{{- include "px-central.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: px-backup-account
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: px-backup-cluster-role
+  apiGroup: rbac.authorization.k8s.io
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: px-backup-role
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "create", "delete", "update", "list"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "update", "create"]
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "create", "delete", "update"]
+  - apiGroups: ["batch"]
+    resources: ["cronjobs"]
+    verbs: ["get", "create", "delete", "update"]
+  - apiGroups: ["kdmp.portworx.com"]
+    resources: ["backuplocationmaintenances"]
+    verbs: ["get", "create", "delete", "update"]
+  - apiGroups: ["kdmp.portworx.com"]
+    resources: ["volumebackupdeletes"]
+    verbs: ["get", "create", "delete", "update"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list"]
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["alertmanagerconfigs"]
+    verbs: ["get","create","delete","update","list","deletecollection"]
+{{- if eq $nfsEnabled true }}
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "create", "delete", "update", "list"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list"]
+{{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: call-home
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: px-backup
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  enable: "{{ .Values.pxbackup.callHome }}"
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: px-backup-role-binding
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: px-backup-account
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: px-backup-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: px-backup
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+  name: px-backup
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+  - protocol: TCP
+    port: 10002
+    targetPort: 10002
+    name: grpc
+  - protocol: TCP
+    port: 10001
+    targetPort: 10001
+    name: rest-api
+  selector:
+    app: px-backup
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+  name: px-backup
+  namespace: {{ .Release.Namespace }}
+spec:
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+     app: px-backup
+  template:
+    metadata:
+      labels:
+        app: px-backup
+      {{- if and (eq $azureProxyEnabled true) (not (has "px-backup" .Values.proxy.excludeAzureProxyList)) }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+              {{- end }}
+      containers:
+      - env:
+        - name: PX_BACKUP_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: PX_BACKUP_DEFAULT_ORG
+          value: {{ .Values.pxbackup.orgName }}
+        - name: BACKUP_DELETE_WORKER
+          value: "{{ .Values.pxbackup.backupDeleteWorker }}"
+        - name: VOL_DELETE_WORKER
+          value: "{{ .Values.pxbackup.volDeleteWorker }}"
+        - name: ENABLE_MONITOR_BL_HEALTH
+          value: "{{ .Values.pxbackup.enableMonitorBLHealth }}"
+        - name: MONITOR_BL_HEALTH_FREQUENCY
+          value: {{ .Values.pxbackup.monitorBLHealthFrequency }}
+        - name: PX_BACKUP_DEFAULT_DATASTORE
+          value: mongodb
+        - name: USE_PX_BACKUP_EMAIL_ALERT_TEMPLATE
+          value: "{{ .Values.pxbackup.usePxBackupEmailAlertTemplate }}"
+        - name: SOFT_LICENSING_PERIOD
+          value: "36160"
+        - name: AIRGAP_REPORTING_PERIOD
+          value: "90"
+        {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup" .Values.proxy.includeNoProxyList) }}
+        {{- include "proxy.noProxyEnv" . | nindent 8 }}
+        {{- end }}
+        {{- if .Values.caCertsSecretName }}
+        - name: SSL_CERT_DIR
+          value: /tmp/certs
+        {{- end }}
+        image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupImage.registry .Values.images.pxBackupImage.repo .Values.images.pxBackupImage.imageName .Values.images.pxBackupImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        name: px-backup
+        ports:
+        - containerPort: 10002
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /v1/health
+            port: 10001
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+          periodSeconds: 60
+        livenessProbe:
+          httpGet:
+            path: /v1/health
+            port: 10001
+          initialDelaySeconds: {{ .Values.pxbackup.livenessProbeInitialDelay }}
+          timeoutSeconds: 1
+          periodSeconds: 60
+        {{- if .Values.caCertsSecretName }}  
+        volumeMounts:
+          - mountPath: /tmp/certs
+            readOnly: true
+            name: ssl-cert-dir
+        {{- end }}
+        command:
+        - /px-backup
+        - start
+        - --datastoreEndpoints=mongodb://pxbackup:Password1@pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017/?authSource=px-backup&replicaSet=rs0
+        - --mongo-migration={{.Values.pxbackup.mongoMigration}}
+      {{- if .Values.caCertsSecretName }}
+      volumes:
+        - name: ssl-cert-dir
+          secret:
+            defaultMode: 420
+            secretName: "{{ .Values.caCertsSecretName }}"
+      {{- end }}
+      serviceAccountName: px-backup-account
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+---
+{{- end -}}

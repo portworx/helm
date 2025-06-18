@@ -1,0 +1,250 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
+{{- $prometheusEndpoint := "" }}
+{{- $alertmanagerEndpoint := "" }}
+{{- $prometheusSecretName := "" }}
+{{- $alertmanagerSecretName := "" }}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- if eq $pxBackupEnabled true }}
+{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
+{{- $prometheusEndpoint = "http://px-backup-dashboard-prometheus:9090" }}
+{{- $alertmanagerEndpoint = "http://alertmanager-operated:9093" }}
+{{- $prometheusSecretName = "pxc-backup-metrics" }}
+{{- $alertmanagerSecretName = "pxc-backup-metrics" }}
+
+{{- if not (eq $deployDedicatedMonitoringSystem true) }}
+
+{{- $prometheusEndpoint = .Values.pxbackup.prometheusEndpoint | required ".Values.pxbackup.prometheusEndpoint is required ." }}
+{{- $alertmanagerEndpoint = .Values.pxbackup.alertmanagerEndpoint | required ".Values.pxbackup.alertmanagerEndpoint is required." }}
+
+{{- $prometheusSecretName = .Values.pxbackup.prometheusSecretName }}
+{{- $alertmanagerSecretName = .Values.pxbackup.alertmanagerSecretName }}
+
+{{- $requiredPrometheusSecret := hasPrefix "https" .Values.pxbackup.prometheusEndpoint }}
+{{- if eq $requiredPrometheusSecret true }}
+{{- $prometheusSecretName = .Values.pxbackup.prometheusSecretName | required ".Values.pxbackup.prometheusSecretName is required for fetching the tls certificate."}}
+{{- end }}
+
+{{- $requiredAlertmanagerSecret := hasPrefix "https" .Values.pxbackup.alertmanagerEndpoint }}
+{{- if eq $requiredAlertmanagerSecret true }}
+{{- $alertmanagerSecretName = .Values.pxbackup.alertmanagerSecretName | required ".Values.pxbackup.alertmanagerSecretName is required for fetching the tls certificate."}}
+{{- end }}
+
+{{- end }}
+{{- end }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pxcentral-lh-middleware
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-lh-middleware
+{{- include "px-central.labels" . | nindent 4 }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pxcentral-lh-middleware
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-lh-middleware
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pxcentral-lh-middleware
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-lh-middleware
+{{- include "px-central.labels" . | nindent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: pxcentral-lh-middleware
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: pxcentral-lh-middleware
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-lh-middleware
+  namespace: {{ .Release.Namespace }}
+  labels:
+    run: pxcentral-lh-middleware
+    app.kubernetes.io/component: pxcentral-lh-middleware
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  selector:
+    run: pxcentral-lh-middleware
+  ports:
+    - name: http
+      port: 8091
+      targetPort: 8091
+      protocol: TCP
+    - name: https
+      port: 8092
+      targetPort: 8092
+      protocol: TCP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pxcentral-lh-middleware
+  namespace: {{ .Release.Namespace }}
+  labels:
+    run: pxcentral-lh-middleware
+    app.kubernetes.io/component: pxcentral-lh-middleware
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      run: pxcentral-lh-middleware
+      app.kubernetes.io/component: pxcentral-lh-middleware
+  replicas: 1
+  revisionHistoryLimit: 0
+  minReadySeconds: 0
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-lh-middleware" .Values.proxy.excludeAzureProxyList)) }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
+      labels:
+        run: pxcentral-lh-middleware
+        app.kubernetes.io/component: pxcentral-lh-middleware
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+              {{- end }}
+      containers:
+      - name: pxcentral-lh-middleware
+        image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralMiddlewareImage.registry .Values.images.pxcentralMiddlewareImage.repo .Values.images.pxcentralMiddlewareImage.imageName .Values.images.pxcentralMiddlewareImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        env:
+          - name: K8S_QPS
+            value: "100"
+          - name: K8S_BURST
+            value: "100"
+          - name: PX_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          {{- if .Values.caCertsSecretName }}
+          - name: SSL_CERT_DIR
+            value: /tmp/certs
+          {{- end }}
+          {{- if eq .Release.IsInstall true }}
+          - name: QUERY_ACTIVITY_TIMELINE_FROM_MONGO_DB
+            value: "false"        
+          {{- end }}
+          {{- if eq $pxBackupEnabled true }}
+          - name: PROMETHEUS_ENDPOINT
+            value: {{ $prometheusEndpoint }}
+          - name: ALERTMANAGER_ENDPOINT
+            value: {{ $alertmanagerEndpoint }}
+          {{- end }}
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-lh-middleware" .Values.proxy.includeNoProxyList) }}
+          {{- include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
+        ports:
+          - name: http
+            containerPort: 8091
+          - name: https
+            containerPort: 8092
+        {{- if or .Values.caCertsSecretName $prometheusSecretName $alertmanagerSecretName }}
+        volumeMounts:
+        {{- if .Values.caCertsSecretName }}
+          - mountPath: /tmp/certs
+            readOnly: true
+            name: ssl-cert-dir
+        {{- end }}
+        {{- if $prometheusSecretName }}
+          - mountPath: /tmp/prometheus/cred
+            readOnly: true
+            name: prometheus-cred-dir
+        {{- end }}
+        {{- if $alertmanagerSecretName }}
+          - mountPath: /tmp/alertmanager/cred
+            readOnly: true
+            name: alertmanager-cred-dir
+        {{- end }}
+        {{- end }}
+        readinessProbe:
+          httpGet:
+            path: /ping
+            port: 8091
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+          periodSeconds: 60
+        livenessProbe:
+          httpGet:
+            path: /ping
+            port: 8091
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+          periodSeconds: 60
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if or .Values.caCertsSecretName $prometheusSecretName $alertmanagerSecretName }}
+      volumes:
+      {{- if .Values.caCertsSecretName }}
+        - name: ssl-cert-dir
+          secret:
+            defaultMode: 420
+            secretName: "{{ .Values.caCertsSecretName }}"
+      {{- end }}
+      {{- if $prometheusSecretName }}
+        - name: prometheus-cred-dir
+          secret:
+            defaultMode: 420
+            secretName: {{ $prometheusSecretName }}
+      {{- end }}
+      {{- if $alertmanagerSecretName }}
+        - name: alertmanager-cred-dir
+          secret:
+            defaultMode: 420
+            secretName: {{ $alertmanagerSecretName }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      serviceAccountName: pxcentral-lh-middleware

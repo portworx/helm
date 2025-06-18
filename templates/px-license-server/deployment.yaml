@@ -1,0 +1,114 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $UATLSType := .Values.pxlicenseserver.internal.lsTypeUAT -}}
+{{- $AirgappedLSType := .Values.pxlicenseserver.internal.lsTypeAirgapped -}}
+{{- $lsExternalEnabled := .Values.pxlicenseserver.external.enabled | default false -}}
+{{- $lsEnabled := .Values.pxlicenseserver.enabled | default false -}}
+{{- if and (eq $lsEnabled true) (eq $lsExternalEnabled false) }}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pxcentral-license-server
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-license-server
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  replicas: 2
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: pxcentral-license-server
+  minReadySeconds: 30
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-license-server" .Values.proxy.excludeAzureProxyList)) }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
+      labels:
+        app.kubernetes.io/component: pxcentral-license-server
+{{- include "px-central.labels" . | nindent 8 }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: px/ls
+                operator: In
+                values:
+                - "true"
+      hostNetwork: true
+      hostPID: false
+      serviceAccountName: pxcentral-apiserver
+      containers:
+        - name: pxcentral-license-server
+          image: {{ printf "%s/%s/%s:%s" .Values.images.licenseServerImage.registry .Values.images.licenseServerImage.repo .Values.images.licenseServerImage.imageName .Values.images.licenseServerImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          args:
+            {{- if eq $UATLSType true }}
+            - --UAT
+            {{- end}}
+            {{- if eq $AirgappedLSType true }}
+            - --air-gapped
+            {{- end }}
+          securityContext:
+            privileged: true
+          ports:
+            - containerPort: 7070
+          {{- if .Values.proxy.httpProxy.noProxy }}
+          env:
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-license-server" .Values.proxy.includeNoProxyList) }}
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
+          {{- end }}
+          livenessProbe:
+            periodSeconds: 120
+            initialDelaySeconds: 150
+            httpGet:
+              host: 127.0.0.1
+              path: /api/1.0/instances/~/health
+              port: 7069
+          readinessProbe:
+            periodSeconds: 120
+            initialDelaySeconds: 150
+            httpGet:
+              host: 127.0.0.1
+              path: /api/1.0/instances/~/health
+              port: 7069
+          volumeMounts:
+            - name: data
+              mountPath: /data
+            - name: exportbin
+              mountPath: /export_bin
+            - name: procmount
+              mountPath: /hostproc 
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
+      volumes:
+        - name: data
+          hostPath:
+            path: /var/lib/pwx-ls
+        - name: exportbin
+          hostPath:
+            path: /opt/pwx-ls/bin
+        - name: procmount
+          hostPath:
+            path: /proc
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      restartPolicy: Always
+---
+{{- end -}}

@@ -1,0 +1,333 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
+{{- $mongoCacheSize := int .Values.persistentStorage.mongoCacheSize}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+{{- if eq $pxBackupEnabled true }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pxc-backup-mongodb-scripts
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxc-backup-mongodb
+  {{- include "px-central.labels" . | nindent 4 }}
+data:
+  setup.sh: |-
+    #!/bin/bash
+
+    . /opt/bitnami/scripts/mongodb-env.sh
+    . /opt/bitnami/scripts/libfs.sh
+    . /opt/bitnami/scripts/liblog.sh
+    . /opt/bitnami/scripts/libvalidations.sh
+
+    echo "Advertised Hostname: $MONGODB_ADVERTISED_HOSTNAME"
+    echo "Advertised Service: $K8S_SERVICE_NAME"
+
+    # Check for existing replica set in case there is no data in the PVC
+    # This is for cases where the PVC is lost or for MongoDB caches without
+    # persistence
+    current_primary=""
+    if is_dir_empty "${MONGODB_DATA_DIR}/db"; then
+      echo "Data dir empty, checking if the replica set already exists"
+      {{- $replicaCount := 3 }}
+      {{- $portNumber := 27017 }}
+      {{- $fullname := "pxc-backup-mongodb" }}
+      {{- $mongoList := list }}
+      {{- range $e, $i := until $replicaCount }}
+      {{- $mongoList = append $mongoList (printf "%s-%d.%s-headless:%d" $fullname $i $fullname $portNumber) }}
+      {{- end }}
+      echo "mongoList: {{ join "," $mongoList }}"
+      current_primary=$(mongosh admin --host "{{ join "," $mongoList }}" --authenticationDatabase admin -u root -p $MONGODB_ROOT_PASSWORD --eval 'db.runCommand("ismaster")' | awk -F\' '/primary/ {print $2}')
+
+      if ! is_empty_value "$current_primary"; then
+        echo "Detected existing primary: ${current_primary}"
+      fi
+    fi
+
+    if ! is_empty_value "$current_primary" && [[ "$MONGODB_ADVERTISED_HOSTNAME:$MONGODB_ADVERTISED_PORT_NUMBER" == "$current_primary" ]]; then
+        echo "Advertised name matches current primary, configuring node as a primary"
+        export MONGODB_REPLICA_SET_MODE="primary"
+    elif ! is_empty_value "$current_primary" && [[ "$MONGODB_ADVERTISED_HOSTNAME:$MONGODB_ADVERTISED_PORT_NUMBER" != "$current_primary" ]]; then
+        info "Current primary is different from this node. Configuring the node as replica of ${current_primary}"
+        export MONGODB_REPLICA_SET_MODE="secondary"
+        export MONGODB_INITIAL_PRIMARY_HOST="${current_primary%:*}"
+        export MONGODB_INITIAL_PRIMARY_PORT_NUMBER="${current_primary#*:}"
+        export MONGODB_SET_SECONDARY_OK="yes"
+    elif [[ "$MY_POD_NAME" = "pxc-backup-mongodb-0" ]]; then
+        echo "Pod name matches initial primary pod name, configuring node as a primary"
+        export MONGODB_REPLICA_SET_MODE="primary"
+    else
+        echo "Pod name doesn't match initial primary pod name, configuring node as a secondary"
+        export MONGODB_REPLICA_SET_MODE="secondary"
+        export MONGODB_INITIAL_PRIMARY_PORT_NUMBER="$MONGODB_PORT_NUMBER"
+    fi
+
+    if [[ "$MONGODB_REPLICA_SET_MODE" == "secondary" ]]; then
+        export MONGODB_INITIAL_PRIMARY_ROOT_USER="$MONGODB_ROOT_USER"
+        export MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD="$MONGODB_ROOT_PASSWORD"
+        export MONGODB_ROOT_PASSWORD="" MONGODB_USERNAME="" MONGODB_DATABASE="" MONGODB_PASSWORD=""
+    fi
+
+    exec /opt/bitnami/scripts/mongodb/entrypoint.sh /opt/bitnami/scripts/mongodb/run.sh
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxc-backup-mongodb-headless
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxc-backup-mongodb
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  publishNotReadyAddresses: true
+  ports:
+    - name: mongodb
+      port: 27017
+      targetPort: mongodb
+  selector:
+    app.kubernetes.io/component: pxc-backup-mongodb
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    app.kubernetes.io/component: pxc-backup-mongodb
+{{- include "px-central.labels" . | nindent 4 }}
+  name: pxc-backup-mongodb
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+stringData:
+  mongodb-root-password: "pxcentral"
+  mongodb-password: "Password1"
+  mongodb-replica-set-key: "pxbackup"
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pxc-backup-mongodb
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxc-backup-mongodb
+{{- include "px-central.labels" . | nindent 4 }}
+secrets:
+  - name: pxc-backup-mongodb
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pxc-backup-mongodb
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxc-backup-mongodb
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{.Release.Name }}
+      app.kubernetes.io/instance: {{.Release.Name }}
+      app.kubernetes.io/managed-by: {{.Release.Service }}
+      app.kubernetes.io/component: pxc-backup-mongodb
+  serviceName: pxc-backup-mongodb-headless
+  podManagementPolicy: Parallel
+  replicas: 3
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxc-backup-mongodb" .Values.proxy.excludeAzureProxyList)) }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
+      labels:
+        app.kubernetes.io/name: {{.Release.Name }}
+        app.kubernetes.io/instance: {{.Release.Name }}
+        app.kubernetes.io/managed-by: {{.Release.Service }}
+        app.kubernetes.io/component: pxc-backup-mongodb
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+              {{- end }}
+        podAntiAffinity:
+          {{- if eq .Values.podAntiAffinity true }}
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/component
+                  operator: In
+                  values:
+                  - pxc-backup-mongodb
+              topologyKey: kubernetes.io/hostname
+          {{- else }}
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                  - key: app.kubernetes.io/component
+                    operator: In
+                    values:
+                    - pxc-backup-mongodb
+                topologyKey: kubernetes.io/hostname
+          {{- end }}
+      {{- if eq .Values.storkRequired true }}
+      schedulerName: stork
+      {{- end }}
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      serviceAccountName: pxc-backup-mongodb
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+        - name: mongodb
+          image: {{ printf "%s/%s/%s:%s" .Values.images.mongodbImage.registry .Values.images.mongodbImage.repo .Values.images.mongodbImage.imageName .Values.images.mongodbImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          command:
+            - /scripts/setup.sh
+          {{- if or (eq $azureProxyEnabled true) (.Values.proxy.httpProxy.noProxy) }}
+          args:
+            - export MONGODB_INITIAL_PRIMARY_HOST=pxc-backup-mongodb-0.$(K8S_SERVICE_NAME) && export MONGODB_ADVERTISED_HOSTNAME=$(MY_POD_NAME).$(K8S_SERVICE_NAME) && /scripts/setup.sh
+          {{- end }}
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: K8S_SERVICE_NAME
+              value: pxc-backup-mongodb-headless
+            - name: MONGODB_INITIAL_PRIMARY_HOST
+              value: pxc-backup-mongodb-0.$(K8S_SERVICE_NAME)
+            - name: MONGODB_REPLICA_SET_NAME
+              value: rs0
+            - name: MONGODB_ADVERTISED_HOSTNAME
+              value: $(MY_POD_NAME).$(K8S_SERVICE_NAME)
+            - name: SHARED_FILE
+              value: "/shared/info.txt"
+            - name: MONGODB_USERNAME
+              value: pxbackup
+            - name: MONGODB_DATABASE
+              value: px-backup
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb-password
+                  name: pxc-backup-mongodb
+            - name: MONGODB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb-root-password
+                  name: pxc-backup-mongodb
+            - name: MONGODB_REPLICA_SET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb-replica-set-key
+                  name: pxc-backup-mongodb
+            - name: ALLOW_EMPTY_PASSWORD
+              value: "no"
+            - name: MONGODB_SYSTEM_LOG_VERBOSITY
+              value: "0"
+            - name: MONGODB_DISABLE_SYSTEM_LOG
+              value: "no"
+            - name: MONGODB_ENABLE_IPV6
+              value: "no"
+            - name: MONGODB_ENABLE_DIRECTORY_PER_DB
+              value: "no"
+            - name: MONGODB_EXTRA_FLAGS
+              value: {{ printf "--wiredTigerCacheSizeGB=%d" $mongoCacheSize }}
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxc-backup-mongodb" .Values.proxy.includeNoProxyList) }}
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- end }}
+          ports:
+            - containerPort: 27017
+              name: mongodb
+              protocol: TCP
+          livenessProbe:
+            exec:
+              command:
+              - bash
+              - -ec
+              - |
+                mongosh --eval 'db.adminCommand("ping") && db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'            
+            failureThreshold: 6
+            initialDelaySeconds: 600
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+              - bash
+              - -ec
+              - |
+                mongosh --eval 'db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'
+            failureThreshold: 6
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          volumeMounts:
+            - mountPath: /bitnami/mongodb
+              name: pxc-mongodb-data
+            - mountPath: /scripts/setup.sh
+              name: scripts
+              subPath: setup.sh
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: scripts
+          configMap:
+            defaultMode: 493
+            name: pxc-backup-mongodb-scripts
+        {{- if eq $externalPersistentStorageEnabled false }}
+        - name: pxc-mongodb-data
+          emptyDir: {}
+        {{- end }}
+  {{- if eq $externalPersistentStorageEnabled true }}
+  volumeClaimTemplates:
+    - metadata:
+        name: pxc-mongodb-data
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: {{ .Values.persistentStorage.mongodbVolumeSize }}
+        {{- if .Values.persistentStorage.storageClassName }}
+        storageClassName: {{ .Values.persistentStorage.storageClassName }}
+        {{- end }}
+  {{- end }}
+{{- end -}}

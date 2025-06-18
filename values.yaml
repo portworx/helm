@@ -1,0 +1,410 @@
+persistentStorage:
+  enabled: true
+  storageClassName:
+  cassandra:
+    storage: 64Gi
+  grafana:
+    storage: 20Gi
+  consul:
+    storage: 8Gi
+  alertManager:
+    storage: 2Gi
+  ingester:
+    storage: 2Gi
+  prometheus:
+    storage: 64Gi
+    retentionSize: 51200MB
+  mysqlVolumeSize: "100Gi"
+  mongodbVolumeSize: "64Gi"
+  mongoCacheSize: 4
+  keycloakThemeVolumeSize: "5Gi"
+  keycloakBackendVolumeSize: "10Gi"
+  preUpgradeHookVolumeSize: "65Gi"
+  preInstallHookVolumeSize: "2Gi"
+
+storkRequired: false
+nodeAffinityLabel: ""
+podAntiAffinity: false
+
+pxcentralDBPassword: Password1
+caCertsSecretName: ""
+
+oidc:
+  centralOIDC:
+    enabled: true
+    defaultUsername: admin
+    defaultPassword: admin
+    defaultEmail: admin@portworx.com
+    keyCloakBackendUserName: keycloak
+    keyCloakBackendPassword: keycloak
+    clientId: "pxcentral"
+    updateAdminProfile: true
+
+  externalOIDC:
+    enabled: false
+    clientID:
+    clientSecret:
+    endpoint:
+
+proxy:
+  azureProxyEnabled: false
+  ## excludeAzureProxyList: List of services to exclude from Azure proxy configuration (annotations)
+
+  # excludeAzureProxyList:
+  # - px-backup-alertmanager
+  # - px-backup
+  # - pxc-backup-mongodb
+  # - prometheus-operator
+  # - px-backup-dashboard-prometheus
+  # - pre-upgrade-check
+  # - pxcentral-apiserver
+  # - pxcentral-post-install-hook
+  # - pxcentral-keycloak-postgresql
+  # - pxcentral-keycloak
+  # - pxcentral-lh-middleware
+  # - pxcentral-backend
+  # - pxcentral-frontend
+  # - pxcentral-mysql
+
+  # Example for using set command
+  # --set "proxy.excludeAzureProxyList[0]=px-backup","proxy.excludeAzureProxyList[1]=pxcentral-mysql"
+  excludeAzureProxyList: []
+
+  ## includeNoProxyList: List of services to include in the noProxy configuration.
+  # when this list is empty, noProxy is set to all services
+
+  # includeNoProxyList:
+  # - px-backup-alertmanager
+  # - px-backup
+  # - pxc-backup-mongodb
+  # - prometheus-operator
+  # - px-backup-dashboard-prometheus
+  # - pre-upgrade-check
+  # - pxcentral-apiserver
+  # - pxcentral-post-install-hook
+  # - pxcentral-keycloak-postgresql
+  # - pxcentral-keycloak
+  # - pxcentral-lh-middleware
+  # - pxcentral-backend
+  # - pxcentral-frontend
+  # - pxcentral-mysql
+
+  # Example for using set command
+  # --set "proxy.includeNoProxyList[0]=px-backup"
+  includeNoProxyList: []
+  httpProxy:
+    noProxy: ""
+
+postInstallJob:
+  sslEnabled: true
+
+isUpgrade: false
+isOpenshift: false
+isArgoCD: false
+
+pxbackup:
+  enabled: false
+  orgName: default
+  callHome: true
+  mongoMigration: complete
+  livenessProbeInitialDelay: 1800
+  prometheus:
+    replicas: 2
+    retention: 90d
+  alertmanager:
+    replicas: 2
+    retention: 2208h
+  nfs:
+    enabled: true
+  deployDedicatedMonitoringSystem: true
+  prometheusEndpoint: ""
+  alertmanagerEndpoint: ""
+  prometheusSecretName: ""
+  alertmanagerSecretName: ""
+  usePxBackupEmailAlertTemplate: true
+  monitorBLHealthFrequency: 210m
+  enableMonitorBLHealth: false
+  backupDeleteWorker: 5
+  volDeleteWorker: 5
+  version: 2.8.4
+  skipValidations: false
+
+pxlicenseserver:
+  enabled: false
+  internal:
+    enabled: true
+    lsTypeUAT: false
+    lsTypeAirgapped: false
+  external:
+    enabled: false
+  mainNodeIP: ""
+  backupNodeIP: ""
+  adminUserName: admin
+  adminUserPassword: Adm1n!Ur
+
+pxmonitor:
+  enabled: false
+  pxCentralEndpoint:
+  sslEnabled: false
+  oidcClientID: pxcentral
+  consulBindInterface: ""
+  cortex:
+    alertmanager:
+      advertiseAddress: ""
+
+service:
+  pxCentralUIServiceType: "LoadBalancer"
+  ## To set the LoadBalancer service type to internal only
+  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
+  pxCentralUIServiceAnnotations: {}
+  pxBackupUIServiceType: "LoadBalancer"
+  pxBackupUIServiceAnnotations: {}
+  grafanaServiceType: "NodePort"
+  cortexNginxServiceType: "NodePort"
+
+## Memory settings: These are calculated automatically unless specified otherwise
+## To run on environments with little resources (<= 8GB), tune your heap settings:
+## maxHeapSize:
+## - calculate 1/2 ram and cap to 1024MB
+## - calculate 1/4 ram and cap to 8192MB
+## - pick the max
+## newHeapSize:
+## A good guideline is 100 MB per CPU core.
+## - min(100 * num_cores, 1/4 * heap size)
+##
+# maxHeapSize: 4G
+# newHeapSize: 800M
+
+cassandra:
+  jvm:
+    maxHeapSize:
+    newHeapSize:
+
+installCRDs: false
+clusterDomain: "cluster.local"
+cassandraUsername: cassandra
+cassandraPassword: cassandra
+
+operatorToChartUpgrade: false
+
+securityContext:
+  runAsUser: 1000
+  fsGroup: 1000
+  runAsNonRoot: true
+
+## sample toleration while installing from values.yaml
+# tolerations:
+# - effect: NoSchedule
+#   key: key1
+#   operator: Exists
+#
+## sample toleration while setting the param inline
+# --set 'tolerations[0].operator=Exists,tolerations[0].effect=NoSchedule,tolerations[0].key=key1'
+# ensure toleration param is enclosed with single quotes
+tolerations: []
+
+images:
+  pullSecrets: []
+  pullPolicy: Always
+  insecureRegistry: false
+
+  pxcentralApiServerImage:
+    registry: docker.io
+    repo: portworx
+    imageName: pxcentral-onprem-api
+    tag: 2.8.4
+    module: pxCentral
+  pxcentralFrontendImage:
+    registry: docker.io
+    repo: portworx
+    imageName: pxcentral-onprem-ui-frontend
+    tag: 2.8.4
+    module: pxCentral
+  pxcentralBackendImage:
+    registry: docker.io
+    repo: portworx
+    imageName: pxcentral-onprem-ui-backend
+    tag: 2.8.4
+    module: pxCentral
+  pxcentralMiddlewareImage:
+    registry: docker.io
+    repo: portworx
+    imageName: pxcentral-onprem-ui-lhbackend
+    tag: 2.8.4
+    module: pxCentral
+  postInstallSetupImage:
+    registry: docker.io
+    repo: portworx
+    imageName: pxcentral-onprem-post-setup
+    tag: 2.8.4
+    module: pxCentral
+  keycloakBackendImage:
+    registry: docker.io
+    repo: portworx
+    imageName: postgresql
+    tag: 16.6.0-debian-12-r2
+    module: pxCentral
+  keycloakFrontendImage:
+    registry: docker.io
+    repo: portworx
+    imageName: keycloak
+    tag: 25.0.2
+    module: pxCentral
+  keycloakLoginThemeImage:
+    registry: docker.io
+    repo: portworx
+    imageName: keycloak-login-theme
+    tag: 2.8.0
+    module: pxCentral
+  keycloakInitContainerImage:
+    registry: docker.io
+    repo: portworx
+    imageName: busybox
+    tag: 1.35.0
+    module: pxCentral
+  mysqlImage:
+    registry: docker.io
+    repo: portworx
+    imageName: mysql
+    tag: 8.0.40
+    module: pxCentral
+  preSetupHookImage:
+    registry: docker.io
+    repo: portworx
+    imageName: pxcentral-onprem-hook
+    tag: 2.8.4
+    module: pxCentral
+  mysqlInitImage:
+    registry: docker.io
+    repo: portworx
+    imageName: busybox
+    tag: 1.35.0
+    module: pxCentral
+
+  ## Images required for enabling px-backup
+  pxBackupImage:
+    registry: docker.io
+    repo: portworx
+    imageName: px-backup
+    tag: 2.8.4
+    module: pxBackup
+  mongodbImage:
+    registry: docker.io
+    repo: portworx
+    imageName: mongodb
+    tag: 7.0.15-debian-12-r2
+    module: pxBackup
+
+  ## Images required for enabling px-license-server
+  licenseServerImage:
+    registry: docker.io
+    repo: portworx
+    imageName: px-els
+    tag: 2.8.0
+    module: pxLicenseServer
+
+  ## Images required for enabling px-monitor
+  cortexImage:
+    registry: docker.io
+    repo: portworx
+    imageName: cortex
+    tag: v1.13.1
+    module: pxMonitor
+  cassandraImage:
+    registry: docker.io
+    repo: portworx
+    imageName: cassandra
+    tag: 4.0.7-debian-11-r34
+    module: pxMonitor
+  proxyConfigImage:
+    registry: docker.io
+    repo: portworx
+    imageName: nginx
+    tag: 1.23.3-alpine-slim
+    module: pxMonitor
+  consulImage:
+    registry: docker.io
+    repo: portworx
+    imageName: consul
+    tag: 1.14.4-debian-11-r4
+    module: pxMonitor
+  dnsmasqImage:
+    registry: docker.io
+    repo: portworx
+    imageName: go-dnsmasq
+    tag: release-1.0.7-v3
+    module: pxMonitor
+  grafanaImage:
+    registry: docker.io
+    repo: portworx
+    imageName: grafana
+    tag: 9.1.3
+    module: pxMonitor
+  prometheusImage:
+    registry: docker.io
+    repo: portworx
+    imageName: prometheus
+    tag: v2.35.0
+    module: pxMonitor
+  pxBackupPrometheusImage:
+    registry: docker.io
+    repo: portworx
+    imageName: prometheus
+    tag: v3.1.0
+    module: pxBackup
+  pxBackupAlertmanagerImage:
+    registry: docker.io
+    repo: portworx
+    imageName: alertmanager
+    tag: v0.28.0
+    module: pxBackup
+  pxBackupPrometheusOperatorImage:
+    registry: docker.io
+    repo: portworx
+    imageName: prometheus-operator
+    tag: v0.79.2
+    module: pxBackup
+  pxBackupPrometheusConfigReloaderImage:
+    registry: docker.io
+    repo: portworx
+    imageName: prometheus-config-reloader
+    tag: v0.79.2
+    module: pxBackup
+  prometheusConfigReloadrImage:
+    registry: docker.io
+    repo: portworx
+    imageName: prometheus-config-reloader
+    tag: v0.56.3
+    module: pxMonitor
+  prometheusOperatorImage:
+    registry: docker.io
+    repo: portworx
+    imageName: prometheus-operator
+    tag: v0.56.3
+    module: pxMonitor
+  memcachedMetricsImage:
+    registry: docker.io
+    repo: portworx
+    imageName: memcached-exporter
+    tag: v0.10.0
+    module: pxMonitor
+  memcachedIndexImage:
+    registry: docker.io
+    repo: portworx
+    imageName: memcached
+    tag: 1.6.17-alpine
+    module: pxMonitor
+  memcachedImage:
+    registry: docker.io
+    repo: portworx
+    imageName: memcached
+    tag: 1.6.17-alpine
+    module: pxMonitor
+
+  ## Images required for intermediate Mongo upgrades
+  mongodbImageMap:
+    tags:
+      mongodb5: 5.0.24-debian-11-r20
+      mongodb6: 6.0.13-debian-11-r21
+      mongodb7: 7.0.15-debian-12-r2
+    module: pxBackup

@@ -1,7 +1,0 @@
-drives: "type=gp2,size=200;type=gp3,size=500"                          
-provider: gce                           
-journalDevice: "type=journal"
-maxStorageNodesPerZone: 1             
-maxStorageNodes: 1              
-systemMetadataDevice: "type=gp2,size=100"
-kvdbDevice: "type=node-kvdb"

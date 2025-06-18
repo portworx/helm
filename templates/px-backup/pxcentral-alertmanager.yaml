@@ -1,0 +1,375 @@
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- if eq $pxBackupEnabled true }}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
+{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+{{- if eq $deployDedicatedMonitoringSystem true }}
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  name: px-backup-alertmanager
+  namespace: {{ .Release.Namespace }}
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          {{- if .Values.nodeAffinityLabel }}
+          - key: {{ .Values.nodeAffinityLabel }}
+            operator: Exists
+          {{- else }}
+          - key: pxbackup/enabled
+            operator: NotIn
+            values:
+            - "false"
+          {{- end }}
+  configSecret: px-backup-alertmanager-custom-config
+  {{- if and (eq $azureProxyEnabled true) (not (has "px-backup-alertmanager" .Values.proxy.excludeAzureProxyList)) }}
+  podMetadata:
+    annotations:
+      kubernetes.azure.com/no-http-proxy-vars: "true"
+  {{- end }}
+  alertmanagerConfigSelector:
+    matchLabels:
+      app: px-backup-alert-configs
+  replicas: {{ .Values.pxbackup.alertmanager.replicas }}
+  {{- if .Values.images.pullSecrets }}
+  imagePullSecrets:
+    {{- range $sec := .Values.images.pullSecrets }}
+    - name: {{ $sec | quote }}
+    {{- end }}
+  {{- end }}
+  retention: {{ .Values.pxbackup.alertmanager.retention}}
+  containers:
+    - args:
+        - '--config.file=/etc/alertmanager/config_out/alertmanager.env.yaml'
+        - '--storage.path=/alertmanager'
+        - '--data.retention={{ .Values.pxbackup.alertmanager.retention }}'
+        - '--cluster.listen-address=[$(POD_IP)]:9094'
+        - '--web.listen-address=:9093'
+        - '--web.route-prefix=/'
+        - '--cluster.label={{ .Release.Namespace }}/px-backup-alertmanager'
+        - '--cluster.peer=alertmanager-px-backup-alertmanager-0.alertmanager-operated:9094'
+        - '--cluster.peer=alertmanager-px-backup-alertmanager-1.alertmanager-operated:9094'
+        - '--cluster.reconnect-timeout=5m'
+        - '--web.config.file=/etc/alertmanager/web_config/web-config-custom.yaml'
+      env:
+        - name: AUTH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: pxc-backup-metrics
+              key: metrics-token
+        {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList) }}
+        {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{- end }}
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+      image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupAlertmanagerImage.registry .Values.images.pxBackupAlertmanagerImage.repo .Values.images.pxBackupAlertmanagerImage.imageName .Values.images.pxBackupAlertmanagerImage.tag }}
+      name: alertmanager
+      ports:
+        - containerPort: 9093
+          name: web
+          protocol: TCP
+    - args:
+      - --listen-address=:8080
+      - --reload-url=http://$(USERNAME):$(PASSWORD)@localhost:9093/-/reload
+      - --config-file=/etc/alertmanager/config/alertmanager.yaml.gz
+      - --config-envsubst-file=/etc/alertmanager/config_out/alertmanager.env.yaml
+      - --watched-dir=/etc/alertmanager/config
+      env:
+      - name: USERNAME
+        valueFrom:
+          secretKeyRef:
+            key: username
+            name: pxc-backup-metrics
+      - name: PASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: password
+            name: pxc-backup-metrics
+      {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList) }}
+      {{ include "proxy.noProxyEnv" . | nindent 6 }}
+      {{- end }}
+      name: config-reloader
+      ports:
+      - containerPort: 8080
+        name: reloader-web
+        protocol: TCP
+  {{- if $isOpenshiftCluster }}
+  {{- else }}
+  securityContext:
+    fsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
+  {{- end }}
+  listenLocal: true
+  volumeMounts:
+    - mountPath: /etc/alertmanager/web_config/web-config-custom.yaml
+      name: web-config-custom
+      readOnly: true
+      subPath: web-config-custom.yaml
+  volumes:
+    - name: web-config-custom
+      secret:
+        defaultMode: 420
+        secretName: pxc-backup-metrics
+  {{- if .Values.persistentStorage.storageClassName }}
+  storage:
+    volumeClaimTemplate:
+      spec:
+        storageClassName: {{ .Values.persistentStorage.storageClassName }}
+        resources:
+          requests:
+            storage: {{ .Values.persistentStorage.alertManager.storage }}
+  {{- end }}
+  {{- with .Values.tolerations }}
+  tolerations:
+  {{- toYaml . | nindent 4 }}
+  {{- end }}
+{{- end }}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: px-backup-alertmanager-custom-config
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+stringData:
+  alertmanager.yaml: |
+    route:
+      receiver: "null"
+    receivers:
+    - name: "null"
+    templates: [ "/etc/alertmanager/config/*.tmpl" ]
+  pxc_template.tmpl: |
+   {{` <!DOCTYPE html>
+    <html>
+      <head>
+          <title>Portworx-Backup Email</title>
+          <style>
+            body {
+            font-family: "Calibri", sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            background-color: #f4f4f4;
+            }
+            .container {
+            margin: 20px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            }
+            h1 {
+            color: #333;
+            }
+            p {
+            color: #666;
+            }
+            li {
+            color: #292929;
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            margin-bottom: 5 px;
+            }
+            .bold-text {
+            padding-left: 20px;
+            font-weight: bold;
+            }
+            .pb-16,
+            li {
+            padding-bottom: 10px;
+            }
+          </style>
+      </head>
+      <body>
+          <div class="container">
+            <img style="height: 33px; width: 89px;" src="https://portworx.com/wp-content/themes/portworx/assets/images/header/portworx-logo.png" alt="" srcset="">
+            {{ range .Alerts }}
+            {{- if eq .Labels.alertname "ClusterAlert"}}
+            <div
+                class="pb-16"
+                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: 
+                {{ if eq .Annotations.value "5" }}Cluster Disconnected
+                {{ else if eq .Annotations.value "2" }}Cluster Offline
+                {{ else }}unknown (value: {{ .Annotations.value }})
+                {{ end }}
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 15px;
+                font-weight: 700;
+                "
+                >
+                Alert details:
+            </div>
+            <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Cluster Name:</div>
+                <div>{{ .Labels.name }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
+                <div>{{ .Labels.error_reason }}</div> 
+              </div>
+              </li>
+              <li> 
+              <div style="display: flex">
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div> 
+              </div>
+              </li>
+            </ul>
+            {{- else if or (eq .Labels.alertname "BackupAlert") (eq .Labels.alertname "PartialBackupAlert") }}
+            <div
+                class="pb-16"
+                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: 
+                {{ if eq .Labels.alertname "PartialBackupAlert" }}Backup was only partially completed
+                {{ else if and (eq .Labels.alertname "BackupAlert")  (eq .Annotations.value "4") }}Backup Failed
+                {{ else if and (eq .Labels.alertname "BackupAlert") (eq .Annotations.value "10") }}Backup Missing
+                {{ else }}Unknown (value: {{ .Annotations.value }})
+                {{ end }}
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 15px;
+                font-weight: 700;
+                "
+                >
+                Alert details:
+            </div>
+            <ul>
+              <li>
+                <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Backup name:</div>
+                <div>{{ .Labels.name }}</div>
+                </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Cluster name:</div>
+                <div>{{ .Labels.cluster }}</div>
+                </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
+                <div>{{ .Labels.error_reason }}</div> 
+                </div>
+              </li>
+              <li> 
+              <div style="display: flex">
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div> 
+              </div>
+              </li>
+            </ul>
+            {{- else if eq .Labels.alertname "RestoreAlert" }}
+            <div
+                class="pb-16"
+                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: Restore Failed
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 15px;
+                font-weight: 700;
+                "
+                >
+                Alert details:
+            </div>
+            <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Restore name:</div>
+                <div>{{ .Labels.name }}</div>
+              </div>
+              </li>
+              <li>
+               <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Cluster name:</div>
+                <div>{{ .Labels.cluster }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
+                <div>{{ .Labels.error_reason }}</div> 
+              </div>
+              </li>
+              <li> 
+              <div style="display: flex">
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div> 
+              </div>
+              </li>
+            </ul>
+            {{- else if or (eq .Labels.alertname "BackupLocationAlert") (eq .Labels.alertname "BackupLocationLimitedAvailabilityAlert") }}
+            <div
+                class="pb-16"
+                style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: 
+                {{if eq .Labels.alertname "BackupLocationAlert"}}Backup Location Disconnected
+                {{else if eq .Labels.alertname "BackupLocationLimitedAvailabilityAlert"}}Backup Location state changed to limited availability
+                {{ else }}unknown{{ end }}
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 16px;
+                font-weight: 700;
+                "
+                >
+                Alert details:
+            </div>
+            <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Backup Location name:</div>
+                <div>{{ .Labels.name }}</div>
+                </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
+                <div>
+                  {{ .Labels.error_reason }}
+                </div> 
+                </div>
+              </li>
+              <li> 
+              <div style="display: flex">
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
+              </div> 
+              </li>
+            </ul>
+            {{- end }}
+            {{ end }}
+            <div style="font-size: 14px" class="pb-16">
+                Please login to your Portworx Backup deployment to view more details and
+                take corrective actions.
+            </div>
+          </div>
+      </body>
+    </html>`}}
+{{- end -}}

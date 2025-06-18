@@ -1,0 +1,679 @@
+{{/* Setting defaults if they are omitted. */}}
+{{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
+{{- $centralOIDC := .Values.oidc.centralOIDC.enabled | default false -}}
+{{- $operatorToChartUpgrade := .Values.operatorToChartUpgrade | default false -}}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+{{- if eq $centralOIDC true }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-keycloak-account
+  labels:
+    app.kubernetes.io/component: keycloak
+{{- include "px-central.labels" . | nindent 4 }}
+  namespace: {{ .Release.Namespace }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: px-keycloak-role
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: keycloak
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get"]
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    app.kubernetes.io/component: keycloak
+{{- include "px-central.labels" . | nindent 4 }}
+  name: pxcentral-keycloak-postgresql
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+stringData:
+  postgresql-username: {{ .Values.oidc.centralOIDC.keyCloakBackendUserName | quote}}
+  postgresql-password: {{ .Values.oidc.centralOIDC.keyCloakBackendPassword | quote}}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  labels:
+    app.kubernetes.io/component: keycloak
+{{- include "px-central.labels" . | nindent 4 }}
+  name: pxcentral-keycloak-http
+  namespace: {{ .Release.Namespace }}
+type: Opaque
+stringData:
+  password: {{ .Values.oidc.centralOIDC.defaultPassword | quote}}
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: px-keycloak-role-binding
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: keycloak
+{{- include "px-central.labels" . | nindent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: px-keycloak-account
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: px-keycloak-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pxcentral-keycloak-sh
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: keycloak
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  keycloak.sh: |
+    #!/bin/bash
+
+    CUSTOM_ARGS=""
+    # This is the same as the default value of log-gelf-timestamp-format in Keycloak
+    # This could be improve by retrieving the actual value if this is modified
+    LOG_TIMESTAMP_FORMAT="+%F %T,%3N"
+
+    autogenerate_keystores() {
+        local CUSTOM_TLS_ARGS=""
+
+        # Inspired by https://github.com/keycloak/keycloak-containers/blob/main/server/tools/x509.sh
+        local KEYSTORES_STORAGE="${KEYCLOAK_HOME:=/opt/keycloak}/conf/keystores"
+
+        local -r X509_CRT_DELIMITER="/-----BEGIN CERTIFICATE-----/"
+        local JKS_TRUSTSTORE_FILE="truststore.jks"
+        local JKS_TRUSTSTORE_PATH="${KEYSTORES_STORAGE}/${JKS_TRUSTSTORE_FILE}"
+        local JKS_TRUSTSTORE_PASSWORD=$(tr -cd [:alnum:] < /dev/urandom | fold -w32 | head -n 1)
+
+        local TEMPORARY_CERTIFICATE="temporary_ca.crt"
+
+        local SYSTEM_CACERTS="/etc/pki/java/cacerts"
+
+        if [[ ! -d "${KEYSTORES_STORAGE}" ]]; then
+            mkdir -p "${KEYSTORES_STORAGE}"
+        fi
+
+        if [[ -f "${JKS_TRUSTSTORE_PATH}" ]] ; then
+            rm "${JKS_TRUSTSTORE_PATH}"
+        fi
+
+        pushd /tmp >& /dev/null
+        echo "$(date "$LOG_TIMESTAMP_FORMAT") INFO  [container.initialization] (keystore-autoconfiguration) Creating Keycloak truststore..."
+
+        # We use cat so multiple CA bundle can be specify using space separator to mimic the behavior of the legacy image
+        # That's also why there is no quote arround the variable
+        cat ${X509_CA_BUNDLE} > ${TEMPORARY_CERTIFICATE}
+        csplit -s -z -f crt- "${TEMPORARY_CERTIFICATE}" "${X509_CRT_DELIMITER}" '{*}'
+        for CERT_FILE in crt-*; do
+            keytool -import -noprompt \
+                -keystore "${JKS_TRUSTSTORE_PATH}" \
+                -file "${CERT_FILE}" \
+                -storepass "${JKS_TRUSTSTORE_PASSWORD}" \
+                -alias "service-${CERT_FILE}" >& /dev/null
+        done
+
+        if [[ -f "${JKS_TRUSTSTORE_PATH}" ]]; then
+            echo "$(date "$LOG_TIMESTAMP_FORMAT") INFO  [container.initialization] (keystore-autoconfiguration) Keycloak truststore successfully created at: ${JKS_TRUSTSTORE_PATH}."
+            CUSTOM_TLS_ARGS+="--spi-truststore-file-file=${JKS_TRUSTSTORE_PATH} --spi-truststore-file-password=${JKS_TRUSTSTORE_PASSWORD}"
+        else
+            echo "$(date "$LOG_TIMESTAMP_FORMAT") ERROR  [container.initialization] (keystore-autoconfiguration) Keycloak truststore not created at: ${JKS_TRUSTSTORE_PATH}." >&2
+        fi
+
+        if keytool -v -list -keystore "${SYSTEM_CACERTS}" -storepass "changeit" > /dev/null; then
+            echo "$(date "$LOG_TIMESTAMP_FORMAT") INFO  [container.initialization] (keystore-autoconfiguration) Importing certificates from system's Java CA certificate bundle into Keycloak truststore..."
+            keytool -importkeystore -noprompt \
+                -srckeystore "${SYSTEM_CACERTS}" \
+                -destkeystore "${JKS_TRUSTSTORE_PATH}" \
+                -srcstoretype jks \
+                -deststoretype jks \
+                -storepass "${JKS_TRUSTSTORE_PASSWORD}" \
+                -srcstorepass "changeit" >& /dev/null
+            if [[ "$?" -eq "0" ]]; then
+                echo "$(date "$LOG_TIMESTAMP_FORMAT") INFO  [container.initialization] (keystore-autoconfiguration) Successfully imported certificates from system's Java CA certificate bundle into Keycloak truststore at: ${JKS_TRUSTSTORE_PATH}."
+            else
+                echo "$(date "$LOG_TIMESTAMP_FORMAT") ERROR  [container.initialization] (keystore-autoconfiguration) Failed to import certificates from system's Java CA certificate bundle into Keycloak truststore." >&2
+            fi
+        fi
+        popd >& /dev/null
+        CUSTOM_ARGS+=${CUSTOM_TLS_ARGS}
+    }
+
+    if [[ -n "${X509_CA_BUNDLE+0}" ]] ; then
+        autogenerate_keystores
+    fi
+    exec /opt/keycloak/bin/kc.sh start ${CUSTOM_ARGS}  --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true --spi-connections-jpa-default-migration-strategy=update
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pxcentral-keycloak-startup
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: keycloak
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  keycloak.cli: |
+    embed-server --std-out=echo
+    batch
+    ## Sets the node identifier to the node name (= pod name). Node identifiers have to be unique. They can have a
+    ## maximum length of 23 characters. Thus, the chart's fullname template truncates its length accordingly.
+    /subsystem=transactions:write-attribute(name=node-identifier, value=${jboss.node.name})
+    
+    
+    # Allow log level to be configured via environment variable
+    /subsystem=logging/console-handler=CONSOLE:write-attribute(name=level, value=${env.WILDFLY_LOGLEVEL:INFO})
+    /subsystem=logging/root-logger=ROOT:write-attribute(name=level, value=${env.WILDFLY_LOGLEVEL:INFO})
+    
+    # Add dedicated eventsListener config element to allow configuring elements.
+    /subsystem=keycloak-server/spi=eventsListener:add()
+    /subsystem=keycloak-server/spi=eventsListener/provider=jboss-logging:add(enabled=true)
+    
+    # Propagate success events to INFO instead of DEBUG, to expose successful logins for log analysis
+    /subsystem=keycloak-server/spi=eventsListener/provider=jboss-logging:write-attribute(name=properties.success-level,value=info)
+    /subsystem=keycloak-server/spi=eventsListener/provider=jboss-logging:write-attribute(name=properties.error-level,value=warn)
+    
+    
+    # Configure datasource to use explicit query timeout in seconds
+    /subsystem=datasources/data-source=KeycloakDS/:write-attribute(name=query-timeout,value=${env.DB_QUERY_TIMEOUT:300})
+    
+    # Configure datasource to connection before use
+    /subsystem=datasources/data-source=KeycloakDS/:write-attribute(name=validate-on-match,value=${env.DB_VALIDATE_ON_MATCH:true})
+    
+    # Configure datasource to try all other connections before failing
+    /subsystem=datasources/data-source=KeycloakDS/:write-attribute(name=use-fast-fail,value=${env.DB_USE_CAST_FAIL:false})
+    
+    
+    run-batch
+    stop-embedded-server
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-keycloak-postgresql-headless
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: keycloak
+    app: postgresql
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: tcp-postgresql
+  selector:
+    app: postgresql
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-keycloak-postgresql
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: postgresql
+    app.kubernetes.io/component: keycloak
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: tcp-postgresql
+      port: 5432
+      targetPort: tcp-postgresql
+  selector:
+    app: postgresql
+    role: master
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-keycloak-headless
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: keycloak
+    service: headless
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  clusterIP: None
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+    - name: https
+      port: 8443
+      targetPort: https
+      protocol: TCP
+  selector:
+    app.kubernetes.io/component: keycloak
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pxcentral-keycloak-http
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: keycloak
+    service: http
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP
+    - name: https
+      port: 8443
+      targetPort: https
+      protocol: TCP
+  selector:
+    app.kubernetes.io/component: keycloak
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pxcentral-keycloak-postgresql
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: postgresql
+    role: master
+    app.kubernetes.io/component: keycloak
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  serviceName: pxcentral-keycloak-postgresql-headless
+  replicas: 1
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: postgresql
+      role: master
+      app.kubernetes.io/component: keycloak
+      app.kubernetes.io/name: {{.Release.Name }}
+      app.kubernetes.io/instance: {{.Release.Name }}
+      app.kubernetes.io/managed-by: {{.Release.Service }}
+  template:
+    metadata:
+      name: pxcentral-keycloak-postgresql
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-keycloak-postgresql" .Values.proxy.excludeAzureProxyList)) }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
+      labels:
+        app: postgresql
+        role: master
+        app.kubernetes.io/component: keycloak
+        app.kubernetes.io/name: {{.Release.Name }}
+        app.kubernetes.io/instance: {{.Release.Name }}
+        app.kubernetes.io/managed-by: {{.Release.Service }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+              {{- end }}
+      serviceAccountName: px-keycloak-account
+      {{- if eq .Values.storkRequired true }}
+      schedulerName: stork
+      {{- end }}
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      containers:
+        - name: pxcentral-keycloak-postgresql
+          image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakBackendImage.registry .Values.images.keycloakBackendImage.repo .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          {{ if eq $operatorToChartUpgrade true }}
+          securityContext:
+            runAsUser: 1001
+          {{- end }}
+          env:
+            - name: BITNAMI_DEBUG
+              value: "false"
+            - name: POSTGRESQL_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_VOLUME_DIR
+              value: "/bitnami/postgresql"
+            - name: PGDATA
+              value: "/bitnami/postgresql/data"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-keycloak-postgresql
+                  key: postgresql-username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-keycloak-postgresql
+                  key: postgresql-password
+            - name: POSTGRES_DB
+              value: "keycloak"
+            - name: POSTGRESQL_ENABLE_LDAP
+              value: "no"
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-keycloak-postgresql" .Values.proxy.includeNoProxyList) }}
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- end }}
+          ports:
+            - name: tcp-postgresql
+              containerPort: 5432
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - exec pg_isready -U "keycloak" -d "keycloak" -h 127.0.0.1 -p 5432
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - -e
+                - |
+                  exec pg_isready -U "keycloak" -d "keycloak" -h 127.0.0.1 -p 5432
+                  [ -f /opt/bitnami/postgresql/tmp/.initialized ] || [ -f /bitnami/postgresql/.initialized ]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 6
+          volumeMounts:
+            - name: dshm
+              mountPath: /dev/shm
+            - name: pxcentral-keycloak-data-postgres16
+              mountPath: /bitnami/postgresql
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
+      volumes:
+        - name: dshm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Gi
+        {{- if eq $externalPersistentStorageEnabled false }}
+        - name: pxcentral-keycloak-data-postgres16
+          emptyDir: {}
+        {{- end }}
+  {{- if eq $externalPersistentStorageEnabled true }}
+  volumeClaimTemplates:
+    - metadata:
+        name: pxcentral-keycloak-data-postgres16
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: {{ .Values.persistentStorage.keycloakBackendVolumeSize }}
+        {{- if .Values.persistentStorage.storageClassName }}
+        storageClassName: {{ .Values.persistentStorage.storageClassName }}
+        {{- end }}
+  {{- end }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: pxcentral-keycloak
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: keycloak
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: keycloak
+      app.kubernetes.io/name: {{.Release.Name }}
+      app.kubernetes.io/instance: {{.Release.Name }}
+      app.kubernetes.io/managed-by: {{.Release.Service }}
+  replicas: 1
+  serviceName: pxcentral-keycloak-headless
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-keycloak" .Values.proxy.excludeAzureProxyList)) }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
+      labels:
+        app.kubernetes.io/component: keycloak
+        app.kubernetes.io/name: {{.Release.Name }}
+        app.kubernetes.io/instance: {{.Release.Name }}
+        app.kubernetes.io/managed-by: {{.Release.Service }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+              {{- end }}
+      restartPolicy: Always
+      serviceAccountName: px-keycloak-account
+      {{- if eq .Values.storkRequired true }}
+      schedulerName: stork
+      {{- end }}
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      initContainers:
+        - name: wait-for-postgresql
+          image: "{{ .Values.images.keycloakInitContainerImage.registry }}/{{ .Values.images.keycloakInitContainerImage.repo }}/{{ .Values.images.keycloakInitContainerImage.imageName }}:{{ .Values.images.keycloakInitContainerImage.tag }}"
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          command:
+            - sh
+            - -c
+            - |
+              until printf "." && nc -z -w 2 pxcentral-keycloak-postgresql 5432; do
+                  sleep 2;
+              done;
+
+              echo 'PostgreSQL OK ✓'
+          resources:
+            {}
+          {{- if .Values.proxy.httpProxy.noProxy }}
+          env:
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-keycloak" .Values.proxy.includeNoProxyList) }}
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
+          {{- end }}
+        - name: px-keycloak-login-theme
+          {{- if .Values.proxy.httpProxy.noProxy }}
+          env:
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-keycloak" .Values.proxy.includeNoProxyList) }}
+          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
+          {{- end }}
+          image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakLoginThemeImage.registry .Values.images.keycloakLoginThemeImage.repo .Values.images.keycloakLoginThemeImage.imageName .Values.images.keycloakLoginThemeImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          command:
+            - sh
+          args:
+            - -c
+            - |
+              echo "Copying portworx theme..."
+              cp -R /portworx/* /theme
+          volumeMounts:
+          - name: theme
+            mountPath: /theme
+      containers:
+        - name: keycloak
+          image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakFrontendImage.registry .Values.images.keycloakFrontendImage.repo .Values.images.keycloakFrontendImage.imageName .Values.images.keycloakFrontendImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          command:
+            - /scripts/keycloak.sh
+          env:
+          - name: KC_HOSTNAME_STRICT
+            value: "false"
+          - name: KC_HOSTNAME_STRICT_HTTPS
+            value: "false"
+          - name: PROXY_ADDRESS_FORWARDING
+            value: "true"
+          - name: KEYCLOAK_ADMIN
+            value: {{ .Values.oidc.centralOIDC.defaultUsername }}
+          - name: KEYCLOAK_ADMIN_PASSWORD
+            value: {{ .Values.oidc.centralOIDC.defaultPassword }}
+          - name: KC_HTTP_RELATIVE_PATH
+            value: /auth
+          - name: KC_DB
+            value: postgres
+          - name: KC_DB_URL_HOST
+            value: pxcentral-keycloak-postgresql
+          - name: KC_DB_URL_PORT
+            value: "5432"
+          - name: KC_DB_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: pxcentral-keycloak-postgresql
+                key: postgresql-username
+          - name: KC_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: postgresql-password
+                name: pxcentral-keycloak-postgresql
+          - name: KC_PROXY
+            value: edge
+          {{- if .Values.caCertsSecretName }}
+          - name: X509_CA_BUNDLE
+            value: /tmp/certs/*
+          - name: HELM_CHECKSUM
+            value: {{ randAlphaNum 8 | quote }}
+          {{- end }}
+          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-keycloak" .Values.proxy.includeNoProxyList) }}
+          {{- include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- end }}
+          volumeMounts:
+            - name: sh
+              mountPath: /scripts
+              readOnly: true
+            - name: secrets
+              mountPath: /secrets
+              readOnly: true
+            - name: startup
+              mountPath: /opt/startup-scripts
+              readOnly: true
+            - name: theme
+              mountPath: /opt/keycloak/themes/portworx/
+            - name: keycloakdir
+              mountPath: /.keycloak
+            {{- if .Values.caCertsSecretName }}
+            - name: ssl-cert-dir
+              readOnly: true
+              mountPath: /tmp/certs
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /auth/
+              port: http
+            initialDelaySeconds: 300
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /auth/realms/master
+              port: http
+            initialDelaySeconds: 30
+            timeoutSeconds: 1      
+          resources:
+            {}
+      terminationGracePeriodSeconds: 60
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
+      volumes:
+        - name: sh
+          configMap:
+            name: pxcentral-keycloak-sh
+            defaultMode: 0555
+        - name: secrets
+          secret:
+            secretName: pxcentral-keycloak-http
+        {{- if .Values.caCertsSecretName }}
+        - name: ssl-cert-dir
+          secret:
+            defaultMode: 420
+            secretName: "{{ .Values.caCertsSecretName }}"
+        {{- end }}
+        - name: startup
+          configMap:
+            name: pxcentral-keycloak-startup
+            defaultMode: 0555
+        {{- if eq $externalPersistentStorageEnabled false }}
+        - name: theme
+          emptyDir: {}
+        {{- end }}
+        - emptyDir: {}
+          name: keycloakdir
+  {{- if eq $externalPersistentStorageEnabled true }}
+  volumeClaimTemplates:
+    - metadata:
+        name: theme
+      spec:
+        accessModes:
+          - "ReadWriteOnce"
+        resources:
+          requests:
+            storage: {{ .Values.persistentStorage.keycloakThemeVolumeSize }}
+        {{- if .Values.persistentStorage.storageClassName }}
+        storageClassName: {{ .Values.persistentStorage.storageClassName }}
+        {{- end }}
+  {{- end }}
+{{- end -}}

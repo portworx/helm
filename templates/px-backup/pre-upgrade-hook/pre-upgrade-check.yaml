@@ -1,0 +1,293 @@
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $minimumKubernetesVersion := "1.30.0"}}
+
+{{- if or .Release.IsUpgrade .Values.isUpgrade }}
+
+{{- if .Release.IsUpgrade }}
+  {{- $sts := lookup "apps/v1" "StatefulSet" .Release.Namespace "pxc-backup-mongodb" -}}
+  {{- if $sts }}
+
+    # Expected image from helm chart values
+    {{- $expectedImage := printf "%s/%s/%s:%s" .Values.images.mongodbImage.registry .Values.images.mongodbImage.repo .Values.images.mongodbImage.imageName .Values.images.mongodbImage.tag -}}
+
+    {{- range $container := $sts.spec.template.spec.containers }}
+      {{- if ne $container.image $expectedImage }}
+        # Images do not match, check for ready replicas
+        {{- $readyReplicas := $sts.status.readyReplicas | default 0 -}}
+
+        {{- if lt $readyReplicas 3 }}
+          {{ fail (printf "ERROR MongoDB ready replicas expected = 3, received = %d. Please refer to the documentation to bring up all 3 pods." $readyReplicas) }}
+        {{- else }}
+          # Image mismatch, but ready replicas are sufficient
+        {{- end }}
+      {{- else }}
+        # Images match
+      {{- end }}
+    {{- end }}
+  {{- else }}
+    # StatefulSet not found
+  {{- end }}
+{{- end }}
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: px-backup-mongodb-pre-upgrade-role
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-pre-upgrade-hook
+    app.kubernetes.io/component: pxcentral-pre-upgrade-hook
+rules:
+  - apiGroups: ["apps"]
+    resources: ["statefulsets"]
+    verbs: ["get", "list", "update", "delete", "create"]
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["delete","get", "list", "watch","create","update"]
+  - apiGroups: [""]
+    resources: ["serviceaccounts"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["delete","get", "list", "watch","update","create"]
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "create", "delete", "update", "list"]
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["pods/status"]
+    verbs: ["get", "list"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["get", "list"]
+  - apiGroups: ["batch"]
+    resources: ["jobs", "jobs/status"]
+    verbs: ["get", "create", "delete", "update",  "list", "watch"]
+  - apiGroups: ["batch"]
+    resources: ["cronjobs"]
+    verbs: ["get", "create", "delete", "update"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list"]
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["create", "update", "get", "patch", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["create", "update", "get", "patch", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: px-backup-mongodb-pre-upgrade-rolebinding
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-pre-upgrade-hook
+    app.kubernetes.io/component: pxcentral-pre-upgrade-hook
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: px-backup-mongodb-pre-upgrade-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pre-upgrade-data-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: pxcentral-pre-upgrade-hook
+    app.kubernetes.io/component: pxcentral-pre-upgrade-hook
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    {{- if .Values.isArgoCD }}
+    "helm.sh/hook-weight": "6"
+    {{- else }}
+    "helm.sh/hook-weight": "5"
+    {{- end }}
+    "helm.sh/resource-policy": keep
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistentStorage.preUpgradeHookVolumeSize }}
+  {{- if .Values.persistentStorage.storageClassName }}
+  storageClassName: {{ .Values.persistentStorage.storageClassName }}
+  {{- end }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pre-upgrade-check
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: pxcentral-pre-upgrade-hook
+    app.kubernetes.io/component: pxcentral-pre-upgrade-hook
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "6"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-completed
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  template:  
+    {{- if and (eq $azureProxyEnabled true) (not (has "pre-upgrade-check" .Values.proxy.excludeAzureProxyList)) }}
+    metadata:
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+    {{- end }}
+    spec:
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+              {{- end }}
+      containers:
+        - name: pxc-pre-upgrade
+          image: {{ printf "%s/%s/%s:%s" .Values.images.preSetupHookImage.registry .Values.images.preSetupHookImage.repo .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          command: ["/pxcentral-hook/bin/pxcentral-hook"]
+          args: ["--hook=pre-upgrade"]
+          env:
+            {{- if eq $pxBackupEnabled true }} 
+            - name: MONGODB_STATEFULSET_NAME
+              value: pxc-backup-mongodb
+            - name: SKIP_VALIDATIONS
+              value: {{ .Values.pxbackup.skipValidations | default false | quote }}
+            - name: TARGET_PXBACKUP_VERSION
+              value: "{{ .Values.pxbackup.version }}"
+            - name: MONGODB_TARGET_VERSION
+              value: {{ .Values.images.mongodbImage.tag }}
+            - name: MONGODB_SERVICE_NAME
+              value: pxc-backup-mongodb-headless
+            - name: MONGODB_PORT
+              value: "27017"
+            - name: MONGODB_ROOT_USERNAME
+              value: root
+            - name: MINIMUM_KUBERNETES_VERSION
+              value: "{{ $minimumKubernetesVersion }}"
+            - name: MONGODB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb-root-password
+                  name: pxc-backup-mongodb
+                  optional: true
+            - name: MONGODB_IMAGES
+              value: >
+                {
+                  "registry": "{{ .Values.images.mongodbImage.registry }}",
+                  "repo": "{{ .Values.images.mongodbImage.repo }}",
+                  "imageName": "{{ .Values.images.mongodbImage.imageName }}",
+                  "tags": {
+                    "mongodb5": "{{ .Values.images.mongodbImageMap.tags.mongodb5 }}",
+                    "mongodb6": "{{ .Values.images.mongodbImageMap.tags.mongodb6 }}",
+                    "mongodb7": "{{ .Values.images.mongodbImageMap.tags.mongodb7 }}"
+                  }
+                }
+            {{- end }}
+            - name: NAMESPACE
+              value: {{ .Release.Namespace }} 
+            - name: MYSQL_STATEFULSET_NAME
+              value: pxcentral-mysql
+            - name: MYSQL_ROOT_USERNAME
+              value: root
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: DB_PASSWORD
+                  name: pxcentral-mysql-secret
+            - name: POSTGRES_STATEFULSET_NAME
+              value: pxcentral-keycloak-postgresql
+            - name: POSTGRES_CONTAINER_NAME
+              value: pxcentral-keycloak-postgresql
+            - name: POSTGRES_TARGET_IMAGE
+              value: {{ printf "%s/%s/%s:%s" .Values.images.keycloakBackendImage.registry .Values.images.keycloakBackendImage.repo .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
+            - name: POSTGRESQL_PORT_NUMBER
+              value: "5432"
+            - name: POSTGRESQL_VOLUME_DIR
+              value: "/bitnami/postgresql"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-keycloak-postgresql
+                  key: postgresql-username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-keycloak-postgresql
+                  key: postgresql-password
+            - name: POSTGRES_DB
+              value: "keycloak"
+            - name: POSTGRES_PVC_NAME
+              value: pxcentral-keycloak-data-postgres16
+            - name: JOB_TIMEOUT_SECONDS
+              value: "600"
+            - name: PX_BACKUP_ENABLED
+              value: "{{ $pxBackupEnabled }}"
+            - name: PX_MONITOR_ENABLED
+              value: {{ .Values.pxmonitor.enabled | default false | quote }}
+        {{- if eq $deployDedicatedMonitoringSystem true }}
+            - name: DEDICATED_PROMETHEUS
+              value: "true"
+        {{- else }}
+            - name: DEDICATED_PROMETHEUS
+              value: "false"
+        {{- end }}
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "pre-upgrade-check" .Values.proxy.includeNoProxyList) }}
+            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- end }}
+          volumeMounts:
+            - name: data-volume
+              mountPath: /mnt/data
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: pre-upgrade-data-pvc
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      restartPolicy: Never
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
+  backoffLimit: 0
+{{- end }}

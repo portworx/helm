@@ -1,2 +1,0 @@
-customRegistryURL: "docker.io/customregistry-test:latest"
-registrySecret: "customregistry-test-creds-sec"
