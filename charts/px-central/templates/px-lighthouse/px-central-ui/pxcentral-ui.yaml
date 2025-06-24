@@ -722,6 +722,7 @@ spec:
       port: 80
       targetPort: 8080
       protocol: TCP
+      nodePort: 31003
 ---
 apiVersion: v1
 kind: Service
