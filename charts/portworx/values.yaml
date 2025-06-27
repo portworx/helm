@@ -205,6 +205,7 @@ autopilot:
 internalKVDB: true                   # internal KVDB
 kvdbDevice: none                      # specify a separate device to store KVDB data, only used when internalKVDB is set to true
 internalKvdbTls: false                # Enable TLS for internal KVDB
+migrateToKvdbTls: false               # Enable migration to KVDB TLS, requires internalKvdbTls to be true
 
 installCertManager: false             # Install PX managed cert-manager
 

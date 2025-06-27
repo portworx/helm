@@ -345,6 +345,28 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:           "TestMigrateToKvdbTlsEnabled",
+			resultFileName: "storagecluster_migrate_to_kvdb_tls_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"internalKVDB":     "true",
+					"internalKvdbTls":  "true",
+					"migrateToKvdbTls": "true",
+				},
+			},
+		},
+		{
+			name:             "TestMigrateToKvdbTlsWithoutInternalKvdbTls",
+			expectedErrorMsg: "migrateToKvdbTls requires internalKvdbTls to be enabled. Please set internalKvdbTls to true.",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"internalKVDB":     "true",
+					"internalKvdbTls":  "false",
+					"migrateToKvdbTls": "true",
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

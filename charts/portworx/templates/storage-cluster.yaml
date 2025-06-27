@@ -1,3 +1,7 @@
+{{- if and .Values.migrateToKvdbTls (not .Values.internalKvdbTls) }}
+{{- fail "migrateToKvdbTls requires internalKvdbTls to be enabled. Please set internalKvdbTls to true." }}
+{{- end }}
+
 {{- if and (.Values.deployCluster) (or (not (lookup "apps/v1" "DaemonSet" "kube-system" "portworx")) (default true .Values.generateStorageClusterForMigration)) }}
 
   {{- $isCoreOS := .Values.isTargetOSCoreOS | default false }}
@@ -81,6 +85,9 @@ metadata:
     {{- end }}
     {{- if eq .Values.skipHealthChecks true }}
     portworx.io/health-check: "skip"
+    {{- end }}
+    {{- if eq .Values.migrateToKvdbTls true }}
+    portworx.io/migration-to-kvdb-tls: "true"
     {{- end }}
   labels:
     heritage: {{.Release.Service | quote }}
