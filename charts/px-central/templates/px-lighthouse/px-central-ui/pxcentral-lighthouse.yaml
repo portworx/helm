@@ -157,6 +157,7 @@ spec:
           - name: USE_PLATFORM_RBAC
             value: "true"
           {{- end }}
+        {{- include "serviceMesh.env" . | nindent 10 }}
           - name: PX_NAMESPACE
             valueFrom:
               fieldRef:

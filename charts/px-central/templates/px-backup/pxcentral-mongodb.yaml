@@ -223,6 +223,7 @@ spec:
           env:
             - name: BITNAMI_DEBUG
               value: "false"
+          {{- include "serviceMesh.env" . | nindent 12 }}
             - name: MY_POD_IP
               valueFrom:
                 fieldRef:

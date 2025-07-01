@@ -126,6 +126,17 @@ HTTP proxy enabled env.
 {{- end }}
 {{- end }}
 
+
+{{- define "serviceMesh.env" -}}
+{{- if .Values.istio.enabled -}}
+- name: SERVICE_MESH
+  value: istio
+{{- else if .Values.linkerd.enabled -}}
+- name: SERVICE_MESH
+  value: linkerd
+{{- end -}}
+{{- end -}}
+
 {{/*
 Create the name of the service account to use
 */}}
