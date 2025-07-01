@@ -221,6 +221,7 @@ spec:
                   }
                 }
             {{- end }}
+          {{- include "serviceMesh.env" . | nindent 12 }}
             - name: NAMESPACE
               value: {{ .Release.Namespace }} 
             - name: MYSQL_STATEFULSET_NAME
