@@ -185,6 +185,7 @@ spec:
             - name: ALERTMANAGER_ENDPOINT
               value: {{ .Values.pxbackup.alertmanagerEndpoint | default "" | quote }}
         {{- end }}
+          {{- include "serviceMesh.env" . | nindent 12 }}
             - name: MINIMUM_KUBERNETES_VERSION
               value: "{{ $minimumKubernetesVersion }}"
             - name: JOB_TIMEOUT_SECONDS
