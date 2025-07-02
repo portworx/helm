@@ -4,6 +4,7 @@ metadata:
   name: "mycluster"
   namespace: portworx
   annotations:
+    portworx.io/migration-to-kvdb-tls: "true"
   labels:
     heritage: "Helm"
     release: "my-release"
@@ -15,12 +16,16 @@ spec:
 
   kvdb:
     internal: true
+    enableTLS: true
   storage:
     useAll: true
   secretsProvider: k8s
   
   stork:
     enabled: true
+  monitoring:
+    telemetry:
+      enabled: true
   csi:
     enabled: true
   autopilot:
