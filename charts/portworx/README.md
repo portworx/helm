@@ -155,6 +155,9 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `updateStrategy.minReadySeconds` | Minimum number of seconds that a pod should be ready before the next batch of pods is updated during a rolling update | 1 |
 | `updateStrategy.disruption.allow` | This field is used to enable or disable smart and parallel upgrade. Smart upgrade is disabled by default, Enable it by setting to false. we can use the `maxUnavailable` field to control the maximum number of Portworx nodes that can be upgraded at a time | None |
 | `updateStrategy.autoUpdateComponents` | Specifies the update strategy for the component images. Valid values: None, Once, Always | None |
+| `annotations` | Map of annotations to set on the StorageCluster object itself. | {} |
+| `priorityClassName` | PriorityClassName to be passed to Podspec of px pods for it to be scheduled accordingly | "" |
+| `imagePullPolicy` | ImagePullPolicy specifies the image pull policy for all the images deployed by the operator. The possible values can be `Always` or `IfNotPresent`. | "Always" |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 

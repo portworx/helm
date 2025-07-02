@@ -303,6 +303,31 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:           "TestAnnotations",
+			resultFileName: "storagecluster_annotations.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_annotations.yaml"},
+			},
+		},
+		{
+			name:           "TestPriorityClassName",
+			resultFileName: "storagecluster_priorityclassname.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"priorityClassName": "system-cluster-critical",
+				},
+			},
+		},
+		{
+			name:           "TestImagePullPolicy",
+			resultFileName: "storagecluster_imagepullpolicy.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"imagePullPolicy": "IfNotPresent",
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

@@ -298,3 +298,7 @@ updateStrategy:
 
   autoUpdateComponents:                   # Indicates the update strategy for the component images
                                           # valid values None,Once,Always
+
+annotations:                              # Map of annotations to set on the StorageCluster object itself.
+priorityClassName:                        # PriorityClassName to be passed to Podspec of px pods for it to be scheduled accordingly
+imagePullPolicy:                          # ImagePullPolicy specifies the image pull policy for all the images deployed by the operator. The possible values can be `Always` or `IfNotPresent`. Default value is `Always`.
