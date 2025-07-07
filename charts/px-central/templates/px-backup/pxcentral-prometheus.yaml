@@ -588,4 +588,30 @@ spec:
       for: 1m
       labels:
         severity: critical
+
+    - alert: BulkBackupScheduleUpdationAlert
+    annotations:
+      description: {{`Bulk backup schedule update operation for batch "{{ $labels.batch_id }}" has {{ $value }} failed backup schedules.`}}
+      summary: {{`Bulk backup schedule update operation failed for {{ $value }} backup schedules`}}
+      batch_id: "{{`{{ $labels.batch_id }}`}}"
+      operation: "{{`{{ $labels.operation }}`}}"
+      # Get failure details from the info metric
+      failure_details: "{{`{{ with query (printf \"pxbackup_backup_schedule_bulk_operation_info{batch_id='%s',operation='%s'}\" $labels.batch_id $labels.operation) }}{{ range . }}{{ .Labels.failure_details }}{{ end }}{{ end }}`}}"
+    expr: pxbackup_backup_schedule_bulk_operation_status{operation="update"} > 0
+    for: 1m
+    labels:
+      severity: critical
+
+  - alert: BulkBackupScheduleDeletionAlert
+    annotations:
+      description: {{`Bulk backup schedule deletion operation for batch "{{ $labels.batch_id }}" has {{ $value }} failed backup schedules.`}}
+      summary: {{`Bulk backup schedule deletion operation failed for {{ $value }} backup schedules`}}
+      batch_id: "{{`{{ $labels.batch_id }}`}}"
+      operation: "{{`{{ $labels.operation }}`}}"
+      # Get failure details from the info metric
+      failure_details: "{{`{{ with query (printf \"pxbackup_backup_schedule_bulk_operation_info{batch_id='%s',operation='%s'}\" $labels.batch_id $labels.operation) }}{{ range . }}{{ .Labels.failure_details }}{{ end }}{{ end }}`}}"
+    expr: pxbackup_backup_schedule_bulk_operation_status{operation="delete"} > 0 or pxbackup_backup_schedule_bulk_operation_status{operation="controller_update"} > 0
+    for: 1m
+    labels:
+      severity: critical
 {{- end -}}

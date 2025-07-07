@@ -268,6 +268,57 @@ stringData:
               </div>
               </li>
             </ul>
+            {{- else if or (eq .Labels.alertname "BulkBackupScheduleUpdationAlert") (eq .Labels.alertname "BulkBackupScheduleDeletionAlert") }}
+            <div
+                class="pb-16"
+                style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: 
+                {{if eq .Labels.alertname "BulkBackupScheduleUpdationAlert"}}Bulk Backup Schedule Update Failed
+                {{else if eq .Labels.alertname "BulkBackupScheduleDeletionAlert"}}Bulk Backup Schedule Deletion Failed
+                {{ else }}Bulk Backup Schedule Operation Failed{{ end }}
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 16px;
+                font-weight: 700;
+                "
+                >
+                Alert details:
+            </div>
+            <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Batch ID:</div>
+                <div>{{ .Annotations.batch_id }}</div>
+                </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Operation:</div>
+                <div>{{ .Annotations.operation }}</div>
+                </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Failed Count:</div>
+                <div>{{ .Annotations.value }}</div>
+                </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Failed Objects:</div>
+                <div style="word-break: break-all; max-width: 300px;">{{ .Annotations.failure_details }}</div>
+                </div>
+              </li>
+              <li> 
+              <div style="display: flex">
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
+              </div> 
+              </li>
+            </ul>
             {{- else if or (eq .Labels.alertname "BackupAlert") (eq .Labels.alertname "PartialBackupAlert") }}
             <div
                 class="pb-16"
