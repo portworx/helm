@@ -152,8 +152,15 @@ spec:
         {{- if .Values.proxy.httpProxy.noProxy }}
         env:
         {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-memcached-index-read" .Values.proxy.includeNoProxyList) }}
-        {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{ include "proxy.proxyEnv" . | nindent 8 }}
         {{- end }}
+        {{- end }}
+        volumeMounts:
+        {{- if .Values.proxy.configSecretName }}
+          - mountPath: /etc/ssl/certs/proxy-ca.pem
+            subPath: proxy-ca.pem
+            name: proxy-ca-volume
+            readOnly: true
         {{- end }}
       - name: metrics
         image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedMetricsImage.registry .Values.images.memcachedMetricsImage.repo .Values.images.memcachedMetricsImage.imageName .Values.images.memcachedMetricsImage.tag }}
@@ -164,9 +171,26 @@ spec:
         {{- if .Values.proxy.httpProxy.noProxy }}
         env:
         {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-memcached-index-read" .Values.proxy.includeNoProxyList) }}
-        {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{ include "proxy.proxyEnv" . | nindent 8 }}
         {{- end }}
         {{- end }}
+        volumeMounts:
+        {{- if .Values.proxy.configSecretName }}
+          - mountPath: /etc/ssl/certs/proxy-ca.pem
+            subPath: proxy-ca.pem
+            name: proxy-ca-volume
+            readOnly: true
+        {{- end }}
+      volumes:   
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -252,8 +276,15 @@ spec:
         {{- if .Values.proxy.httpProxy.noProxy }}
         env:
         {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-memcached-index-write" .Values.proxy.includeNoProxyList) }}
-        {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{ include "proxy.proxyEnv" . | nindent 8 }}
         {{- end }}
+        {{- end }}
+        volumeMounts:
+        {{- if .Values.proxy.configSecretName }}
+          - mountPath: /etc/ssl/certs/proxy-ca.pem
+            subPath: proxy-ca.pem
+            name: proxy-ca-volume
+            readOnly: true
         {{- end }}
       - name: metrics
         image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedMetricsImage.registry .Values.images.memcachedMetricsImage.repo .Values.images.memcachedMetricsImage.imageName .Values.images.memcachedMetricsImage.tag }}
@@ -264,9 +295,26 @@ spec:
         {{- if .Values.proxy.httpProxy }}
         env:
         {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-memcached-index-write" .Values.proxy.includeNoProxyList) }}
-        {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{ include "proxy.proxyEnv" . | nindent 8 }}
         {{- end }}
         {{- end }}
+        volumeMounts:
+        {{- if .Values.proxy.configSecretName }}
+          - mountPath: /etc/ssl/certs/proxy-ca.pem
+            subPath: proxy-ca.pem
+            name: proxy-ca-volume
+            readOnly: true
+        {{- end }}
+      volumes:   
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -351,8 +399,15 @@ spec:
         {{- if .Values.proxy.httpProxy }}
         env:
         {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-memcached" .Values.proxy.includeNoProxyList) }}
-        {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{ include "proxy.proxyEnv" . | nindent 8 }}
         {{- end }}
+        {{- end }}
+        volumeMounts:
+        {{- if .Values.proxy.configSecretName }}
+          - mountPath: /etc/ssl/certs/proxy-ca.pem
+            subPath: proxy-ca.pem
+            name: proxy-ca-volume
+            readOnly: true
         {{- end }}
       - name: metrics
         image: {{ printf "%s/%s/%s:%s" .Values.images.memcachedMetricsImage.registry .Values.images.memcachedMetricsImage.repo .Values.images.memcachedMetricsImage.imageName .Values.images.memcachedMetricsImage.tag }}
@@ -363,9 +418,26 @@ spec:
         {{- if .Values.proxy.httpProxy }}
         env:
         {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-memcached" .Values.proxy.includeNoProxyList) }}
-        {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{ include "proxy.proxyEnv" . | nindent 8 }}
         {{- end }}
         {{- end }}
+        volumeMounts:
+        {{- if .Values.proxy.configSecretName }}
+          - mountPath: /etc/ssl/certs/proxy-ca.pem
+            subPath: proxy-ca.pem
+            name: proxy-ca-volume
+            readOnly: true
+        {{- end }}
+      volumes:   
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -481,7 +553,7 @@ spec:
             - name: CONSUL_SERF_LAN_PORT_NUMBER
               value: "8301"
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-consul" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
             {{- if .Values.pxmonitor.consulBindInterface }}
             - name: CONSUL_BIND_INTERFACE
@@ -514,10 +586,25 @@ spec:
           volumeMounts:
             - name: pxcentral-consul-data
               mountPath: /bitnami/consul
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
+              name: proxy-ca-volume
+              readOnly: true
+          {{- end }}
+      volumes:   
       {{- if eq $externalPersistentStorageEnabled false }}
-      volumes:        
         - name: pxcentral-consul-data
           emptyDir: {}
+      {{- end }}
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
       {{- end }}
       {{- with .Values.tolerations }}
       tolerations:

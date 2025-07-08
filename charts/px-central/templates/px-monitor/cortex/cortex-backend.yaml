@@ -197,7 +197,7 @@ spec:
             - name: JVM_EXTRA_OPTS
               value: "-Dcassandra.ignore_corrupted_schema_tables=true"
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-cortex-cassandra" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
             {{- if .Values.cassandra.jvm.maxHeapSize }}
             - name: MAX_HEAP_SIZE
@@ -240,6 +240,12 @@ spec:
           volumeMounts:
             - name: pxcentral-cassandra-data
               mountPath: /bitnami/cassandra
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
+              name: proxy-ca-volume
+              readOnly: true
+          {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -250,10 +256,19 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
-      {{- if eq $externalPersistentStorageEnabled false }}
       volumes:
+      {{- if eq $externalPersistentStorageEnabled false }}
         - name: pxcentral-cassandra-data
           emptyDir: {}
+      {{- end }}
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
       {{- end }}
   {{- if eq $externalPersistentStorageEnabled true }}
   volumeClaimTemplates:

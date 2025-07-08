@@ -58,7 +58,7 @@ spec:
               fieldRef:
                 fieldPath: metadata.namespace
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-post-install-hook" .Values.proxy.includeNoProxyList) }}
-          {{- include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
       {{- if eq $deployDedicatedMonitoringSystem true }}
           - name: DEDICATED_PROMETHEUS
@@ -68,12 +68,19 @@ spec:
             value: "false"
       {{- end }}
           - name: DEPLOYMENT_TYPE
-            {{- if or .Release.IsUpgrade .Values.isUpgrade }}
+      {{- if or .Release.IsUpgrade .Values.isUpgrade }}
             value: "upgrade"
             {{- else }}
             value: "install"
-            {{- end }}
+      {{- end }}
         command: ["python", "-u", "/pxcentral-post-install/pxc-post-setup.py"]
+        volumeMounts:
+        {{- if .Values.proxy.configSecretName }}
+          - mountPath: /etc/ssl/certs/proxy-ca.pem
+            subPath: proxy-ca.pem
+            name: proxy-ca-volume
+            readOnly: true
+        {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}
@@ -81,6 +88,16 @@ spec:
         {{- end }}
       {{- end }}
       restartPolicy: Never
+      volumes:
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
