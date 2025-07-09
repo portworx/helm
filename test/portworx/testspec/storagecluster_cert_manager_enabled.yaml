@@ -19,8 +19,13 @@ spec:
     useAll: true
   secretsProvider: k8s
   
+  certManager:
+    enabled: true
   stork:
     enabled: true
+  monitoring:
+    telemetry:
+      enabled: true
   csi:
     enabled: true
   autopilot:
