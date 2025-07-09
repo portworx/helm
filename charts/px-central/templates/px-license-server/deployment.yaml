@@ -65,7 +65,7 @@ spec:
           {{- if .Values.proxy.httpProxy.noProxy }}
           env:
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-license-server" .Values.proxy.includeNoProxyList) }}
-          {{ include "proxy.noProxyEnv" . | nindent 10 }}
+          {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
           {{- end }}
           livenessProbe:
@@ -88,7 +88,13 @@ spec:
             - name: exportbin
               mountPath: /export_bin
             - name: procmount
-              mountPath: /hostproc 
+              mountPath: /hostproc
+            {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
+              name: proxy-ca-volume
+              readOnly: true
+            {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -103,6 +109,15 @@ spec:
         - name: procmount
           hostPath:
             path: /proc
+        {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+        {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}

@@ -41,6 +41,19 @@ spec:
     {{- end }}
   {{- end }}
   retention: {{ .Values.pxbackup.alertmanager.retention}}
+  initContainers:
+    - name: init-config-reloader
+      volumeMounts:
+      {{- if .Values.proxy.configSecretName }}
+      - mountPath: /etc/ssl/certs/proxy-ca.pem
+        subPath: proxy-ca.pem
+        name: proxy-ca-volume
+        readOnly: true
+      {{- end }}
+      env:
+        {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList) }}
+        {{ include "proxy.proxyEnv" . | nindent 8 }}
+        {{- end }}
   containers:
     - args:
         - '--config.file=/etc/alertmanager/config_out/alertmanager.env.yaml'
@@ -61,7 +74,7 @@ spec:
               name: pxc-backup-metrics
               key: metrics-token
         {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList) }}
-        {{ include "proxy.noProxyEnv" . | nindent 8 }}
+        {{ include "proxy.proxyEnv" . | nindent 8 }}
         {{- end }}
         - name: POD_IP
           valueFrom:
@@ -92,13 +105,20 @@ spec:
             key: password
             name: pxc-backup-metrics
       {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList) }}
-      {{ include "proxy.noProxyEnv" . | nindent 6 }}
+      {{ include "proxy.proxyEnv" . | nindent 6 }}
       {{- end }}
       name: config-reloader
       ports:
       - containerPort: 8080
         name: reloader-web
         protocol: TCP
+      volumeMounts:
+      {{- if .Values.proxy.configSecretName }}
+      - mountPath: /etc/ssl/certs/proxy-ca.pem
+        subPath: proxy-ca.pem
+        name: proxy-ca-volume
+        readOnly: true
+      {{- end }}
   {{- if $isOpenshiftCluster }}
   {{- else }}
   securityContext:
@@ -112,11 +132,26 @@ spec:
       name: web-config-custom
       readOnly: true
       subPath: web-config-custom.yaml
+  {{- if .Values.proxy.configSecretName }}
+    - mountPath: /etc/ssl/certs/proxy-ca.pem
+      subPath: proxy-ca.pem
+      name: proxy-ca-volume
+      readOnly: true
+  {{- end }}
   volumes:
     - name: web-config-custom
       secret:
         defaultMode: 420
         secretName: pxc-backup-metrics
+  {{- if .Values.proxy.configSecretName }}
+    - name: proxy-ca-volume
+      secret:
+        items:
+        - key: CA
+          path: proxy-ca.pem
+        optional: true
+        secretName: {{ .Values.proxy.configSecretName }}
+  {{- end }}
   {{- if .Values.persistentStorage.storageClassName }}
   storage:
     volumeClaimTemplate:

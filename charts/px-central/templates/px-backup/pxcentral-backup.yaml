@@ -121,7 +121,7 @@ metadata:
     app.kubernetes.io/component: px-backup
 {{- include "px-central.labels" . | nindent 4 }}
 data:
-  enable: "{{ .Values.pxbackup.callHome }}"
+  enable: "false"
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -230,7 +230,7 @@ spec:
         - name: AIRGAP_REPORTING_PERIOD
           value: "90"
         {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup" .Values.proxy.includeNoProxyList) }}
-        {{- include "proxy.noProxyEnv" . | nindent 8 }}
+        {{- include "proxy.proxyEnv" . | nindent 8 }}
         {{- end }}
         {{- if .Values.caCertsSecretName }}
         - name: SSL_CERT_DIR
@@ -256,23 +256,38 @@ spec:
           initialDelaySeconds: {{ .Values.pxbackup.livenessProbeInitialDelay }}
           timeoutSeconds: 1
           periodSeconds: 60
+        volumeMounts:          
         {{- if .Values.caCertsSecretName }}  
-        volumeMounts:
           - mountPath: /tmp/certs
             readOnly: true
             name: ssl-cert-dir
+        {{- end }}
+        {{- if .Values.proxy.configSecretName }}
+          - mountPath: /etc/ssl/certs/proxy-ca.pem
+            subPath: proxy-ca.pem
+            name: proxy-ca-volume
+            readOnly: true
         {{- end }}
         command:
         - /px-backup
         - start
         - --datastoreEndpoints=mongodb://pxbackup:Password1@pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017/?authSource=px-backup&replicaSet=rs0
         - --mongo-migration={{.Values.pxbackup.mongoMigration}}
-      {{- if .Values.caCertsSecretName }}
       volumes:
+      {{- if .Values.caCertsSecretName }}
         - name: ssl-cert-dir
           secret:
             defaultMode: 420
             secretName: "{{ .Values.caCertsSecretName }}"
+      {{- end }}
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
       {{- end }}
       serviceAccountName: px-backup-account
       {{- if .Values.images.pullSecrets }}

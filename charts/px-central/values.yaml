@@ -94,6 +94,9 @@ proxy:
   includeNoProxyList: []
   httpProxy:
     noProxy: ""
+  configSecretName: ""
+  http: ""
+  https: ""
 
 postInstallJob:
   sslEnabled: true
@@ -105,7 +108,8 @@ isArgoCD: false
 pxbackup:
   enabled: false
   orgName: default
-  callHome: true
+  # obsolete
+  callHome: false
   mongoMigration: complete
   livenessProbeInitialDelay: 1800
   prometheus:
@@ -126,7 +130,7 @@ pxbackup:
   enableMonitorBLHealth: false
   backupDeleteWorker: 5
   volDeleteWorker: 5
-  version: 2.8.4
+  version: 2.9.0
   skipValidations: false
 
 pxlicenseserver:
@@ -212,49 +216,49 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 2.8.4
+    tag: 2.9.0
     module: pxCentral
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 2.8.4
+    tag: 2.9.0
     module: pxCentral
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 2.8.4
+    tag: 2.9.0
     module: pxCentral
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 2.8.4
+    tag: 2.9.0
     module: pxCentral
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 2.8.4
+    tag: 2.9.0
     module: pxCentral
   keycloakBackendImage:
     registry: docker.io
     repo: portworx
     imageName: postgresql
-    tag: 16.6.0-debian-12-r2
+    tag: 17.4.0-debian-12-r19
     module: pxCentral
   keycloakFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: keycloak
-    tag: 25.0.2
+    tag: 26.2.4
     module: pxCentral
   keycloakLoginThemeImage:
     registry: docker.io
     repo: portworx
     imageName: keycloak-login-theme
-    tag: 2.8.0
+    tag: 2.9.0
     module: pxCentral
   keycloakInitContainerImage:
     registry: docker.io
@@ -272,7 +276,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-hook
-    tag: 2.8.4
+    tag: 2.9.0
     module: pxCentral
   mysqlInitImage:
     registry: docker.io
@@ -286,13 +290,13 @@ images:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 2.8.4
+    tag: 2.9.0
     module: pxBackup
   mongodbImage:
     registry: docker.io
     repo: portworx
     imageName: mongodb
-    tag: 7.0.15-debian-12-r2
+    tag: 8.0.9-debian-12-r1
     module: pxBackup
 
   ## Images required for enabling px-license-server
@@ -350,7 +354,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: prometheus
-    tag: v3.1.0
+    tag: v3.3.1
     module: pxBackup
   pxBackupAlertmanagerImage:
     registry: docker.io
@@ -362,13 +366,13 @@ images:
     registry: docker.io
     repo: portworx
     imageName: prometheus-operator
-    tag: v0.79.2
+    tag: v0.82.1
     module: pxBackup
   pxBackupPrometheusConfigReloaderImage:
     registry: docker.io
     repo: portworx
     imageName: prometheus-config-reloader
-    tag: v0.79.2
+    tag: v0.82.1
     module: pxBackup
   prometheusConfigReloadrImage:
     registry: docker.io
@@ -407,4 +411,5 @@ images:
       mongodb5: 5.0.24-debian-11-r20
       mongodb6: 6.0.13-debian-11-r21
       mongodb7: 7.0.15-debian-12-r2
+      mongodb8: 8.0.9-debian-12-r1
     module: pxBackup
