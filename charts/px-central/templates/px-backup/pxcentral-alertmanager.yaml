@@ -315,6 +315,66 @@ stringData:
               </div>
               </li>
             </ul>
+            {{- else if eq .Labels.alertname "BackupScheduleOperationFailure" }}
+            <div
+                class="pb-16"
+                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Warning Alert: Backup Schedule {{ .Labels.operation | title }} Operation Failed
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 15px;
+                font-weight: 700;
+                "
+                >
+                Alert details:
+            </div>
+            <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Backup Schedule name:</div>
+                <div>{{ .Labels.name }}</div>
+                </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Operation:</div>
+                <div>{{ .Labels.operation | title }}</div>
+                </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Cluster name:</div>
+                <div>{{ .Labels.cluster }}</div>
+                </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">User:</div>
+                <div>{{ .Labels.user_id }}</div>
+                </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Organization:</div>
+                <div>{{ .Labels.org_id }}</div>
+                </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
+                <div>{{ .Labels.error_reason }}</div> 
+                </div>
+              </li>
+              <li> 
+              <div style="display: flex">
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div> 
+              </div>
+              </li>
+            </ul>
             {{- else if eq .Labels.alertname "RestoreAlert" }}
             <div
                 class="pb-16"
