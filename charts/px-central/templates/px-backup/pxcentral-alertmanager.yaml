@@ -320,12 +320,12 @@ stringData:
             {{- $alertCount := 0 }}
             {{- range $.Alerts }}
               {{- if eq .Labels.alertname "BackupScheduleOperationFailure" }}
-                {{- $alertCount = add $alertCount 1 }}
+                {{- $alertCount = len $.Alerts }}{{/* Use total length as workaround */}}
               {{- end }}
             {{- end }}
 
             <div class="pb-16" style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
-                Warning Alert: {{ $alertCount }} Backup Schedule {{ .Labels.operation | title }} Operation{{ if gt $alertCount 1 }}s{{ end }} Failed
+                Warning Alert: Backup Schedule {{ .Labels.operation | title }} Operation Failed
             </div>
 
             <div class="pb-16" style="color: #292929; font-size: 15px; font-weight: 700;">
@@ -337,7 +337,6 @@ stringData:
                 <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">User:</span>{{ .Labels.user_id }}</div>
                 <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Organization:</span>{{ .Labels.org_id }}</div>
                 <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Cluster:</span>{{ .Labels.cluster }}</div>
-                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Failed Count:</span>{{ $alertCount }}</div>
                 <div><span style="font-weight: bold; display: inline-block; width: 120px;">Alert Time:</span>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
             </div>
 
