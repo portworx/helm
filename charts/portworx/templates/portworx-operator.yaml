@@ -80,9 +80,11 @@ spec:
           image: {{ template "px.getPxOperatorImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.pxOperatorImageVersion }}
           command:
             - /operator
-            - --verbose
-            - --driver=portworx
-            - --leader-elect=true
+          {{- if .Values.verboseOperatorLog }}
+          - --verbose
+          {{- end }}
+          - --driver=portworx
+          - --leader-elect=true
           env:
             - name: OPERATOR_NAME
               value: portworx-operator
