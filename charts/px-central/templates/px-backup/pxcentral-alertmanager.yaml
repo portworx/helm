@@ -318,15 +318,9 @@ stringData:
             {{- else if eq .Labels.alertname "BackupScheduleOperationFailure" }}
             {{- $alertCount := len .Alerts }}
             {{- $firstAlert := index .Alerts 0 }}
-            {{- $backupScheduleAlerts := list }}
-            {{- range .Alerts }}
-              {{- if eq .Labels.alertname "BackupScheduleOperationFailure" }}
-                {{- $backupScheduleAlerts = append $backupScheduleAlerts . }}
-              {{- end }}
-            {{- end }}
 
             <div class="pb-16" style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
-                Warning Alert: {{ len $backupScheduleAlerts }} Backup Schedule {{ $firstAlert.Labels.operation | title }} Operation{{ if gt (len $backupScheduleAlerts) 1 }}s{{ end }} Failed
+                Warning Alert: {{ $alertCount }} Backup Schedule {{ $firstAlert.Labels.operation | title }} Operation{{ if gt $alertCount 1 }}s{{ end }} Failed
             </div>
 
             <div class="pb-16" style="color: #292929; font-size: 15px; font-weight: 700;">
@@ -338,7 +332,7 @@ stringData:
                 <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">User:</span>{{ $firstAlert.Labels.user_id }}</div>
                 <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Organization:</span>{{ $firstAlert.Labels.org_id }}</div>
                 <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Cluster:</span>{{ $firstAlert.Labels.cluster }}</div>
-                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Failed Count:</span>{{ len $backupScheduleAlerts }}</div>
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Failed Count:</span>{{ $alertCount }}</div>
                 <div><span style="font-weight: bold; display: inline-block; width: 120px;">Alert Time:</span>{{ $firstAlert.StartsAt.Format "2006-01-02 15:04:05" }}</div>
             </div>
 
@@ -355,12 +349,14 @@ stringData:
                     </tr>
                 </thead>
                 <tbody>
-                    {{ range $backupScheduleAlerts }}
+                    {{ range .Alerts }}
+                    {{- if eq .Labels.alertname "BackupScheduleOperationFailure" }}
                     <tr>
                         <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.name }}</td>
                         <td style="border: 1px solid #ddd; padding: 12px; max-width: 300px; word-wrap: break-word; font-family: monospace; font-size: 12px;">{{ .Labels.error_reason }}</td>
                         <td style="border: 1px solid #ddd; padding: 12px;">{{ .StartsAt.Format "15:04:05" }}</td>
                     </tr>
+                    {{- end }}
                     {{ end }}
                 </tbody>
             </table>
