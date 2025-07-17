@@ -232,7 +232,7 @@ stringData:
             <div
                 class="pb-16"
                 style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
-                Critical Alert: 
+                Critical Alert:
                 {{ if eq .Annotations.value "5" }}Cluster Disconnected
                 {{ else if eq .Annotations.value "2" }}Cluster Offline
                 {{ else }}unknown (value: {{ .Annotations.value }})
@@ -258,13 +258,13 @@ stringData:
               <li>
               <div style="display: flex">
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
-                <div>{{ .Labels.error_reason }}</div> 
+                <div>{{ .Labels.error_reason }}</div>
               </div>
               </li>
-              <li> 
+              <li>
               <div style="display: flex">
-              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
-              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div> 
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div>
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
               </div>
               </li>
             </ul>
@@ -315,55 +315,6 @@ stringData:
               </div>
               </li>
             </ul>
-            {{- else if eq .Labels.alertname "BackupScheduleOperationFailure" }}
-            <!-- This will only render ONCE for the first BackupScheduleOperationFailure alert -->
-            {{- $alertCount := 0 }}
-            {{- range $.Alerts }}
-              {{- if eq .Labels.alertname "BackupScheduleOperationFailure" }}
-                {{- $alertCount = len $.Alerts }}{{/* Use total length as workaround */}}
-              {{- end }}
-            {{- end }}
-
-            <div class="pb-16" style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
-                Warning Alert: Backup Schedule {{ .Labels.operation | title }} Operation Failed
-            </div>
-
-            <div class="pb-16" style="color: #292929; font-size: 15px; font-weight: 700;">
-                Alert Summary:
-            </div>
-
-            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #bc1b06;">
-                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Operation:</span>{{ .Labels.operation | title }}</div>
-                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">User:</span>{{ .Labels.user_id }}</div>
-                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Organization:</span>{{ .Labels.org_id }}</div>
-                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Cluster:</span>{{ .Labels.cluster }}</div>
-                <div><span style="font-weight: bold; display: inline-block; width: 120px;">Alert Time:</span>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
-            </div>
-
-            <div class="pb-16" style="color: #292929; font-size: 15px; font-weight: 700;">
-                Failed Backup Schedules:
-            </div>
-
-            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
-                <thead>
-                    <tr>
-                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Backup Schedule Name</th>
-                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Error Reason</th>
-                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Alert Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {{ range $.Alerts }}
-                    {{- if eq .Labels.alertname "BackupScheduleOperationFailure" }}
-                    <tr>
-                        <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.name }}</td>
-                        <td style="border: 1px solid #ddd; padding: 12px; max-width: 300px; word-wrap: break-word; font-family: monospace; font-size: 12px;">{{ .Labels.error_reason }}</td>
-                        <td style="border: 1px solid #ddd; padding: 12px;">{{ .StartsAt.Format "15:04:05" }}</td>
-                    </tr>
-                    {{- end }}
-                    {{ end }}
-                </tbody>
-            </table>
             {{- else if eq .Labels.alertname "RestoreAlert" }}
             <div
                 class="pb-16"
@@ -449,6 +400,61 @@ stringData:
             </ul>
             {{- end }}
             {{ end }}
+            {{/* SEPARATE SECTION FOR BackupScheduleOperationFailure - OUTSIDE the main loop */}}
+            {{- $hasBackupScheduleFailures := false }}
+            {{- $firstBackupScheduleAlert := "" }}
+            {{- range .Alerts }}
+              {{- if eq .Labels.alertname "BackupScheduleOperationFailure" }}
+                {{- $hasBackupScheduleFailures = true }}
+                {{- if not $firstBackupScheduleAlert }}
+                  {{- $firstBackupScheduleAlert = . }}
+                {{- end }}
+              {{- end }}
+            {{- end }}
+
+            {{- if $hasBackupScheduleFailures }}
+            <div class="pb-16" style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Warning Alert: Backup Schedule {{ $firstBackupScheduleAlert.Labels.operation | title }} Operation Failed
+            </div>
+
+            <div class="pb-16" style="color: #292929; font-size: 15px; font-weight: 700;">
+                Alert Summary:
+            </div>
+
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #bc1b06;">
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Operation:</span>{{ $firstBackupScheduleAlert.Labels.operation | title }}</div>
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">User:</span>{{ $firstBackupScheduleAlert.Labels.user_id }}</div>
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Organization:</span>{{ $firstBackupScheduleAlert.Labels.org_id }}</div>
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Cluster:</span>{{ $firstBackupScheduleAlert.Labels.cluster }}</div>
+                <div><span style="font-weight: bold; display: inline-block; width: 120px;">Alert Time:</span>{{ $firstBackupScheduleAlert.StartsAt.Format "2006-01-02 15:04:05" }}</div>
+            </div>
+
+            <div class="pb-16" style="color: #292929; font-size: 15px; font-weight: 700;">
+                Failed Backup Schedules:
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Backup Schedule Name</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Error Reason</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Alert Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range .Alerts }}
+                    {{- if eq .Labels.alertname "BackupScheduleOperationFailure" }}
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.name }}</td>
+                        <td style="border: 1px solid #ddd; padding: 12px; max-width: 300px; word-wrap: break-word; font-family: monospace; font-size: 12px;">{{ .Labels.error_reason }}</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">{{ .StartsAt.Format "15:04:05" }}</td>
+                    </tr>
+                    {{- end }}
+                    {{ end }}
+                </tbody>
+            </table>
+            {{- end }}
+
             <div style="font-size: 14px" class="pb-16">
                 Please login to your Portworx Backup deployment to view more details and
                 take corrective actions.

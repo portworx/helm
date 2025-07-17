@@ -108,6 +108,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.212255404Z"
 =======
     created: "2025-07-16T10:06:50.217580205Z"
@@ -124,6 +125,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.300448484Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.213466539Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: d35ccbafc7be55cdfe8363fca9b64fb5f8636fb3ac801e5c7deecde650cec4f7
     home: https://portworx.com/
@@ -153,6 +157,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.206515601Z"
 =======
     created: "2025-07-16T10:06:50.211296868Z"
@@ -169,6 +174,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.293761987Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.207793804Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 990fd545cb09b0b174c430963764eaf4879c442b2428007c8605ee8a98f50642
     home: https://portworx.com/
@@ -193,7 +201,7 @@ entries:
     version: 5.1.6
   - apiVersion: v1
     appVersion: 3.2.2.2
-    created: "2025-07-17T10:15:43.287059836Z"
+    created: "2025-07-17T10:58:30.198902373Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 6ada879d42745e64f5687b6d8b12f3b786fe1e135ff8e028f840ba6811b17908
     home: https://portworx.com/
@@ -218,7 +226,7 @@ entries:
     version: 5.1.5
   - apiVersion: v1
     appVersion: 3.2.2.1
-    created: "2025-07-17T10:15:43.279910618Z"
+    created: "2025-07-17T10:58:30.193519437Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 91414d94915174a2c60cb770abea6e0ceeb325911819c812c805921e9b5bce81
     home: https://portworx.com/
@@ -243,7 +251,7 @@ entries:
     version: 5.1.4
   - apiVersion: v1
     appVersion: 3.2.2
-    created: "2025-07-17T10:15:43.272114597Z"
+    created: "2025-07-17T10:58:30.18512928Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 1ea8fd443acfb4cc30819272322333bd5a3a403caa252739935085461dd23433
     home: https://portworx.com/
@@ -268,7 +276,7 @@ entries:
     version: 5.1.3
   - apiVersion: v1
     appVersion: 3.2.1.2
-    created: "2025-07-17T10:15:43.265085956Z"
+    created: "2025-07-17T10:58:30.176492323Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: d93f68765ea3dfe27afa68e9f4dfe17fa4bd14f58fe872873a78cca18f5faef8
     home: https://portworx.com/
@@ -293,7 +301,7 @@ entries:
     version: 5.1.2
   - apiVersion: v1
     appVersion: 3.2.1.1
-    created: "2025-07-17T10:15:43.259767543Z"
+    created: "2025-07-17T10:58:30.171721521Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: f80e1de041983764ef0bc0fcec0ef02b88174e1cc499ae9c07cfb35b25f9f753
     home: https://portworx.com/
@@ -318,7 +326,7 @@ entries:
     version: 5.1.1
   - apiVersion: v1
     appVersion: 3.2.1
-    created: "2025-07-17T10:15:43.255828419Z"
+    created: "2025-07-17T10:58:30.16771675Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: fcb5b7beff0e26563d3ab211fa5ab684d4c3f99fa3519c950f9a52e63ba5baf5
     home: https://portworx.com/
@@ -343,7 +351,7 @@ entries:
     version: 5.1.0
   - apiVersion: v1
     appVersion: 3.2.0
-    created: "2025-07-17T10:15:43.251272714Z"
+    created: "2025-07-17T10:58:30.16309703Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 5e1578d0d3d74b4a6dda9dca765eee84226f8676925573a6aa66d0fb8c129b92
     home: https://portworx.com/
@@ -368,7 +376,7 @@ entries:
     version: 5.0.0
   - apiVersion: v1
     appVersion: 3.1.7
-    created: "2025-07-17T10:15:43.246920703Z"
+    created: "2025-07-17T10:58:30.158867974Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: b0d4f9cf1a51d5f83545052511fec73c68341fa34d262dd967eab12b27819ca7
     home: https://portworx.com/
@@ -393,7 +401,7 @@ entries:
     version: 4.1.0
   - apiVersion: v1
     appVersion: 3.1.4
-    created: "2025-07-17T10:15:43.243047964Z"
+    created: "2025-07-17T10:58:30.154288589Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 94e8f1000109f518010575ecaf2274ad3c5845c273d28d6292f80df88e3acea1
     home: https://portworx.com/
@@ -418,7 +426,7 @@ entries:
     version: 4.0.0
   - apiVersion: v1
     appVersion: 3.1.0
-    created: "2025-07-17T10:15:43.239369982Z"
+    created: "2025-07-17T10:58:30.150899199Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 630d982316d27542d6a2f137793fa755e366d911d56de531b011ff27ea5f04f5
     home: https://portworx.com/
@@ -443,7 +451,7 @@ entries:
     version: 3.1.0
   - apiVersion: v1
     appVersion: 3.0.0
-    created: "2025-07-17T10:15:43.235387716Z"
+    created: "2025-07-17T10:58:30.148264476Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: b7713dc5e4b3b30efcfb5c42771fa69140daacf0fa348906694fa623f7648754
     home: https://portworx.com/
@@ -468,7 +476,7 @@ entries:
     version: 3.0.0
   - apiVersion: v1
     appVersion: 2.13.3
-    created: "2025-07-17T10:15:43.231620648Z"
+    created: "2025-07-17T10:58:30.14311869Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: f154989402d3582968ef7d8211c830dd6771a357f6e7da957176ff1bc47d81a6
     home: https://portworx.com/
@@ -493,7 +501,7 @@ entries:
     version: 2.13.3
   - apiVersion: v1
     appVersion: 2.12.2
-    created: "2025-07-17T10:15:43.229467999Z"
+    created: "2025-07-17T10:58:30.141227055Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 6f82f0772cea7e5bbee59b44fd06cf15439e42d1d96ea5ca73ad0546ac4e39c7
     home: https://portworx.com/
@@ -518,7 +526,7 @@ entries:
     version: 2.13.0
   - apiVersion: v1
     appVersion: 2.11.4
-    created: "2025-07-17T10:15:43.225893802Z"
+    created: "2025-07-17T10:58:30.139244629Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: db0319e7e0aff6a233af0187970a60a431d87f98f961dd4a11e110ef68a8e420
     home: https://portworx.com/
@@ -531,7 +539,7 @@ entries:
     version: 2.11.4
   - apiVersion: v1
     appVersion: 2.10.3
-    created: "2025-07-17T10:15:43.22358301Z"
+    created: "2025-07-17T10:58:30.136221275Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 162b316899c5023708ee0edc4083215646fe8c8458d34f79f9f13c2c376e0d0d
     home: https://portworx.com/
@@ -544,7 +552,7 @@ entries:
     version: 2.10.3
   - apiVersion: v1
     appVersion: 2.9.1
-    created: "2025-07-17T10:15:43.233366214Z"
+    created: "2025-07-17T10:58:30.146069727Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 71a44b527872750c42c9c39a6e3e03c431e0d74063aa8abf70d11f1401fddad2
     home: https://portworx.com/
@@ -556,7 +564,7 @@ entries:
     - https://raw.githubusercontent.com/portworx/helm/PB-11430-poc/stable/portworx-2.9.1.tgz
     version: 2.9.1
   - apiVersion: v1
-    created: "2025-07-17T10:15:43.221764897Z"
+    created: "2025-07-17T10:58:30.133788957Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: c312df602c509a2c5d60d6197ec137bf8484ecffb3444f1ded6be19964bc3c9f
     home: https://portworx.com/
@@ -568,7 +576,7 @@ entries:
     - https://raw.githubusercontent.com/portworx/helm/PB-11430-poc/stable/portworx-1.0.1.tgz
     version: 1.0.1
   - apiVersion: v1
-    created: "2025-07-17T10:15:43.220136866Z"
+    created: "2025-07-17T10:58:30.131982529Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: ac01a7ae62587285d9a29e2d36c386727eb96694810a563ecf723b21f7582dec
     home: https://portworx.com/
@@ -582,7 +590,7 @@ entries:
   portworx-daemonSet:
   - apiVersion: v1
     appVersion: 2.13.5
-    created: "2025-07-17T10:15:43.304208673Z"
+    created: "2025-07-17T10:58:30.218205828Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 01c9131ded26e1960fb11ddac49f86ecf36e22bd2f44e320582f8c1be6b28119
     home: https://portworx.com/
@@ -607,7 +615,7 @@ entries:
     version: 2.13.5
   - apiVersion: v1
     appVersion: 2.12.2
-    created: "2025-07-17T10:15:43.302099928Z"
+    created: "2025-07-17T10:58:30.215252184Z"
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 6a150290915cf7da30ee04cd157b32491e725bb7a1d8e02c561d5c660bbefb6b
     home: https://portworx.com/
@@ -633,7 +641,7 @@ entries:
   px-backup:
   - apiVersion: v1
     appVersion: 1.2.4
-    created: "2025-07-17T10:15:43.32430698Z"
+    created: "2025-07-17T10:58:30.238066132Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 4e1c290efdbd1cf8487e81e4b02b945d2be6aa5b3b9771091214d39c4cd6b868
@@ -655,7 +663,7 @@ entries:
     version: 1.2.4
   - apiVersion: v1
     appVersion: 1.2.3
-    created: "2025-07-17T10:15:43.32276503Z"
+    created: "2025-07-17T10:58:30.236275076Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 5041aaabb806d9075722c79d34f9dec8f4e80a75f5346d097cb0123417b08c2d
@@ -677,7 +685,7 @@ entries:
     version: 1.2.3
   - apiVersion: v1
     appVersion: 1.2.2
-    created: "2025-07-17T10:15:43.321289051Z"
+    created: "2025-07-17T10:58:30.235104946Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 5536c872859c726b4dd1cff1bcd21ef4f56903d58fcbbe5b4859b5bd242873cf
@@ -699,7 +707,7 @@ entries:
     version: 1.2.2
   - apiVersion: v1
     appVersion: 1.2.1
-    created: "2025-07-17T10:15:43.320143419Z"
+    created: "2025-07-17T10:58:30.233970642Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: a9b0290cb08d6d3c39adf27ab07be9a17424493980c720223e3a656fa77917ba
@@ -721,7 +729,7 @@ entries:
     version: 1.2.1
   - apiVersion: v1
     appVersion: 1.2.0
-    created: "2025-07-17T10:15:43.318855106Z"
+    created: "2025-07-17T10:58:30.232766522Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 7f42744f732e8d80793d06189b14f5ed8f7439706db99dd272d96d43a1fd65ab
@@ -743,7 +751,7 @@ entries:
     version: 1.2.0
   - apiVersion: v1
     appVersion: 1.1.1
-    created: "2025-07-17T10:15:43.317721582Z"
+    created: "2025-07-17T10:58:30.231572585Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 73215fe714e1a3af6bdf958eb06791b90f878b363c85b3adf4c8cfe664a08202
@@ -765,7 +773,7 @@ entries:
     version: 1.1.6
   - apiVersion: v1
     appVersion: 1.1.0
-    created: "2025-07-17T10:15:43.316590902Z"
+    created: "2025-07-17T10:58:30.230400615Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 6cc1c8df6ddd7e7e49f69db6791f1bdd6b39dc0943f60282fd9212872071103c
@@ -787,7 +795,7 @@ entries:
     version: 1.1.5
   - apiVersion: v1
     appVersion: 1.1.0
-    created: "2025-07-17T10:15:43.315216149Z"
+    created: "2025-07-17T10:58:30.229140355Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 4115cfbf2e4e8158331bcec3d4404054c9648fb227f6947747f0122ad4f2418a
@@ -809,7 +817,7 @@ entries:
     version: 1.1.4
   - apiVersion: v1
     appVersion: 1.1.0-rc4
-    created: "2025-07-17T10:15:43.313698196Z"
+    created: "2025-07-17T10:58:30.226986648Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 0121036cb537c93fff9281f05cf935345b5f769017b131b5e903cc4b8354c8ac
@@ -831,7 +839,7 @@ entries:
     version: 1.1.3
   - apiVersion: v1
     appVersion: 1.1.0-rc2
-    created: "2025-07-17T10:15:43.31163087Z"
+    created: "2025-07-17T10:58:30.225787257Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 96f785bc9ad2c477068d39f351d5c078f080264104ccd6e7630eabae6d0a514c
@@ -853,7 +861,7 @@ entries:
     version: 1.1.2
   - apiVersion: v1
     appVersion: 1.1.0-rc2
-    created: "2025-07-17T10:15:43.310383524Z"
+    created: "2025-07-17T10:58:30.224401455Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 7167db17211627d3d111441d01c8d71c57a1980c27145dc7c08ebb3ff9f7d548
@@ -875,7 +883,7 @@ entries:
     version: 1.1.1
   - apiVersion: v1
     appVersion: 1.1.0-rc1
-    created: "2025-07-17T10:15:43.309224026Z"
+    created: "2025-07-17T10:58:30.2230845Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 1a2c71389dc08d58f51f66e3ebe44e63fe7410691ec92d642c0dcfaa57c17605
@@ -897,7 +905,7 @@ entries:
     version: 1.1.0
   - apiVersion: v1
     appVersion: 1.0.2
-    created: "2025-07-17T10:15:43.308052504Z"
+    created: "2025-07-17T10:58:30.221891197Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: fd9316e9719a924eb8aa2d6d947d90e162f602ef4b77e28ef070099fd1dfb1cf
@@ -919,7 +927,7 @@ entries:
     version: 1.0.2
   - apiVersion: v1
     appVersion: 1.0.2
-    created: "2025-07-17T10:15:43.30687996Z"
+    created: "2025-07-17T10:58:30.220485295Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 0e96c406605816b9a70a0440710d4a82743d373c2b9da20696e6f3a1b1ef2698
@@ -941,7 +949,7 @@ entries:
     version: 1.0.1
   - apiVersion: v1
     appVersion: 1.0.2
-    created: "2025-07-17T10:15:43.305559864Z"
+    created: "2025-07-17T10:58:30.219381585Z"
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 2bb9b69ade7b648d46ca618f2f798ba0af346022b42ce540d3988b2c8a387226
@@ -970,8 +978,9 @@ entries:
     digest: 52c4c3100cb48e346f4a4610bdbd29a98e7efbb88c3aa357f426733aa02d11b0
 =======
     appVersion: 2.9.0-dev
-    created: "2025-07-17T10:15:43.613327013Z"
+    created: "2025-07-17T10:58:30.541355252Z"
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -993,6 +1002,9 @@ entries:
 =======
     digest: 2a5d238b96b2bfd24065813dc95bda1b539f6ca82abdea5da9371e396f939940
 >>>>>>> PB-11430: email template
+=======
+    digest: bfaf07f2d114f18d385625442910f2a62c2f176f4038f0928b13a399f6ce0a95
+>>>>>>> PB-11430: separate section for email template
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     keywords:
@@ -1016,6 +1028,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.518281842Z"
 =======
     created: "2025-07-16T10:06:50.507860322Z"
@@ -1032,6 +1045,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.600831374Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.531256914Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 1bed0e012644fe7a88032760fc5bfa43baaa40256d274f16af4d7842b7c6e1a9
     home: https://portworx.com/
@@ -1057,6 +1073,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.508010618Z"
 =======
     created: "2025-07-16T10:06:50.498988991Z"
@@ -1073,6 +1090,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.588623619Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.521345748Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: da19b5d176bc83fd649b2239bdb0e115a8cebd1facadca4a039b75f5be77cb9b
     home: https://portworx.com/
@@ -1098,6 +1118,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.49908813Z"
 =======
     created: "2025-07-16T10:06:50.489661981Z"
@@ -1114,6 +1135,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.579578927Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.509368982Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 5b78a5947dbace22ff43252da7e7124455e35b80f263cacc559227be9c2beb47
     home: https://portworx.com/
@@ -1139,6 +1163,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.488328829Z"
 =======
     created: "2025-07-16T10:06:50.480579655Z"
@@ -1155,6 +1180,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.570887857Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.498523913Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 1f36737794cd7a47154883a51ffc89ce0772b922f6e85b5840300dc09420003f
     home: https://portworx.com/
@@ -1180,6 +1208,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.477391585Z"
 =======
     created: "2025-07-16T10:06:50.471748789Z"
@@ -1196,6 +1225,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.561406339Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.489556641Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: f25bb88dc2eebdd3ce29288f96b9b57b34d46d06dcd4a97ed9784cf086380998
     home: https://portworx.com/
@@ -1221,6 +1253,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.466113066Z"
 =======
     created: "2025-07-16T10:06:50.462565119Z"
@@ -1237,6 +1270,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.551324075Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.48012198Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 400847b924699668cfdb2c11f27af52b6272dd29d006692d7415582e41b18ebe
     home: https://portworx.com/
@@ -1262,6 +1298,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.457891689Z"
 =======
     created: "2025-07-16T10:06:50.453438956Z"
@@ -1278,6 +1315,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.541253257Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.470957939Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: eaa287204c00aa1f59a5ef3bd40d0b32a3197147dea79a2cb041bd106d7dbc1a
     home: https://portworx.com/
@@ -1303,6 +1343,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.448987814Z"
 =======
     created: "2025-07-16T10:06:50.444513801Z"
@@ -1319,6 +1360,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.531120628Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.460484108Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 881a960859a68bb65ca78246160f58b028152fb92cca0ce48cd5e43a00b200c7
     home: https://portworx.com/
@@ -1344,6 +1388,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.438475215Z"
 =======
     created: "2025-07-16T10:06:50.43582672Z"
@@ -1360,6 +1405,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.522353304Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.449065819Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 648be2c10a1d748a2f100c854837b673af208047be686a28b95c6dfac63b1710
     home: https://portworx.com/
@@ -1385,6 +1433,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.429132996Z"
 =======
     created: "2025-07-16T10:06:50.42621284Z"
@@ -1401,6 +1450,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.512079417Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.440545983Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 295a652338c35a57905d3b7eea7f156d8f7a88924cc3b1a2cea84402d35369ac
     home: https://portworx.com/
@@ -1426,6 +1478,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.418873517Z"
 =======
     created: "2025-07-16T10:06:50.416156029Z"
@@ -1442,6 +1495,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.502965061Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.430053183Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: f32abdd809415d793b92123c134f13d4c14141f5bd740dbe103368b3c6b9691b
     home: https://portworx.com/
@@ -1467,6 +1523,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.4110779Z"
 =======
     created: "2025-07-16T10:06:50.405704931Z"
@@ -1483,6 +1540,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.494032986Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.419867308Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: fec02bc7e95a933c218a63f792423b3cfa8fe39c23da75596b39c88f30a1bcbe
     home: https://portworx.com/
@@ -1508,6 +1568,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.40242258Z"
 =======
     created: "2025-07-16T10:06:50.398182501Z"
@@ -1524,6 +1585,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.48485792Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.408765896Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 35e04e7436dad4c6cebcfa5e4d35eaac8b5a20fd127338d0e99c7ed88271d85c
     home: https://portworx.com/
@@ -1549,6 +1613,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.39356345Z"
 =======
     created: "2025-07-16T10:06:50.390027498Z"
@@ -1565,6 +1630,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.476378841Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.400105983Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 6c36eb1e0fe29908738d6cc5284cb7b6122549ca7ffa003f0fd21733be4733be
     home: https://portworx.com/
@@ -1590,6 +1658,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.384985979Z"
 =======
     created: "2025-07-16T10:06:50.380583883Z"
@@ -1606,6 +1675,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.466623067Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.389628929Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 2ca15224d4c0118e3dd2c0c2c4a863ee0e6a47dfedcb7feb6e942521ed99b171
     home: https://portworx.com/
@@ -1631,6 +1703,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.375696356Z"
 =======
     created: "2025-07-16T10:06:50.372707879Z"
@@ -1647,6 +1720,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.456835744Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.379068308Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 645700605aa6cdfdebe24e1288a96b2bfb9f4e9d2525866dacddc11eb7847900
     home: https://portworx.com/
@@ -1672,6 +1748,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.367583622Z"
 =======
     created: "2025-07-16T10:06:50.364125027Z"
@@ -1688,6 +1765,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.449136934Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.371153431Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 352b6de244486cef54fb2e88fee4671cf9b0d7c6a425862f2813d1ff921f1b22
     home: https://portworx.com/
@@ -1713,6 +1793,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.357791281Z"
 =======
     created: "2025-07-16T10:06:50.355209652Z"
@@ -1729,6 +1810,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.438586907Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.361444162Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: f034a271280a530c9d236d79f892a686ee961d95d865fdad84c765184923f92a
     home: https://portworx.com/
@@ -1754,6 +1838,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.346198199Z"
 =======
     created: "2025-07-16T10:06:50.346314661Z"
@@ -1770,6 +1855,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.428347746Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.350980947Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 4b2f2dbcd15878e63cb50b21208e8a00317af2566f1b112e11e191fd88183caf
     home: https://portworx.com/
@@ -1795,6 +1883,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.334382064Z"
 =======
     created: "2025-07-16T10:06:50.336156274Z"
@@ -1811,6 +1900,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.419087429Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.339220775Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 07969717a7e2ffd0a85080d1a782d2fbbf2a77b101e4e1e1e48a27c2c1b4a1cf
     home: https://portworx.com/
@@ -1836,6 +1928,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.326745962Z"
 =======
     created: "2025-07-16T10:06:50.324800646Z"
@@ -1852,6 +1945,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.409588861Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.328227762Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: bffae73f9f96a3d775084644639b6ec858633a9b377082326756577ca305b2d7
     home: https://portworx.com/
@@ -1877,6 +1973,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.317761621Z"
 =======
     created: "2025-07-16T10:06:50.315601938Z"
@@ -1893,6 +1990,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.401966523Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.318306983Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 849f16762e8c9684d91b9541033c38121f9230975c4f46819e260cbff4ff5212
     home: https://portworx.com/
@@ -1918,6 +2018,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.308420444Z"
 =======
     created: "2025-07-16T10:06:50.307700848Z"
@@ -1934,6 +2035,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.390474933Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.307546537Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 9656fdd92ce4f80ffcaf9e85eaa590c0151f2282da6a536f9722fcb315a993e2
     home: https://portworx.com/
@@ -1959,6 +2063,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.297633142Z"
 =======
     created: "2025-07-16T10:06:50.298043313Z"
@@ -1975,6 +2080,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.380154376Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.300117533Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: c4760d4aa90b2f23dff0054c6a57c423f03bdf1e3685c7701025579de77f2d60
     home: https://portworx.com/
@@ -2000,6 +2108,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.287863127Z"
 =======
     created: "2025-07-16T10:06:50.288883477Z"
@@ -2016,6 +2125,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.372036844Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.290663063Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: defa0a5d415b35c5f01ebf4ed99aa45a7e3f7ec08c417c415f12dc8bc05ae3a8
     home: https://portworx.com/
@@ -2041,6 +2153,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.278579698Z"
 =======
     created: "2025-07-16T10:06:50.28134467Z"
@@ -2057,6 +2170,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.363159875Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.280447676Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: d22206f8b66527c3bf699aab9c3227a5f40065fcb7134207a18813035a1766c2
     home: https://portworx.com/
@@ -2082,6 +2198,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.269895823Z"
 =======
     created: "2025-07-16T10:06:50.271599059Z"
@@ -2098,6 +2215,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.354862457Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.270066774Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 8b45b7ef443c2b02dc41b88b70877f7d83d8180621bf1f708fbbebd8a0dad3bd
     home: https://portworx.com/
@@ -2123,6 +2243,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.258764033Z"
 =======
     created: "2025-07-16T10:06:50.262036954Z"
@@ -2139,6 +2260,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.345194321Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.261076995Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: ab68db760b922dfeb49448ab8a5393104d02d92134b2007ffc37932b12dadb5c
     home: https://portworx.com/
@@ -2164,6 +2288,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.251098126Z"
 =======
     created: "2025-07-16T10:06:50.255105865Z"
@@ -2180,6 +2305,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.338558207Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.253277833Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: f719f6251797b14ffad588f8db5648cd9f515e0bf855c487804f4a731f26f8cb
     home: https://portworx.com/
@@ -2205,6 +2333,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.243823065Z"
 =======
     created: "2025-07-16T10:06:50.248348118Z"
@@ -2221,6 +2350,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.332101868Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.246400159Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 58adcc335f387a3090cd55316ca7f2f4ebedaeea1375764d1bf18582551d4d96
     home: https://portworx.com/
@@ -2247,6 +2379,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.530207269Z"
 =======
     created: "2025-07-16T10:06:50.521127352Z"
@@ -2263,6 +2396,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.616140913Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.544325525Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 70a52d0e5a59dfcbdabba7dda742d748d42937aecb4cdd8f603738cbbfb2c8a4
@@ -2284,6 +2420,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.529688321Z"
 =======
     created: "2025-07-16T10:06:50.520250645Z"
@@ -2300,6 +2437,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.615560016Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.543788544Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 5ee27e632cc313ab281a50c2deebbd8713657d19e0b394ea97ae4fdee76f4f09
@@ -2321,6 +2461,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.529139167Z"
 =======
     created: "2025-07-16T10:06:50.519698885Z"
@@ -2337,6 +2478,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.614994831Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.543207726Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 55f496792430763626acecb5082eaff7c5276879a0f527ae993635ad8ac90640
@@ -2358,6 +2502,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.528624401Z"
 =======
     created: "2025-07-16T10:06:50.518985387Z"
@@ -2374,6 +2519,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.614456093Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.54249764Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 6673a056155f5329ef7c8cf2c4436668af4b023d234d004448e1db8a2696e1f1
@@ -2395,6 +2543,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.528079232Z"
 =======
     created: "2025-07-16T10:06:50.518427496Z"
@@ -2411,6 +2560,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.613881853Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.541891016Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: bb595272c93ef8071e8bc606a3cf8bdb5d7099646d4f8066748f9bd57ac76af1
@@ -2433,6 +2585,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.551391117Z"
 =======
     created: "2025-07-16T10:06:50.540566215Z"
@@ -2449,6 +2602,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.635884163Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.562414343Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: 9ecba7fb39e84dbdf274784b509780465bda9b0b0c0574b7e729f5575a4a4a1e
@@ -2473,6 +2629,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.545402283Z"
 =======
     created: "2025-07-16T10:06:50.535782877Z"
@@ -2489,6 +2646,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.630007076Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.558219154Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: ed29de40a6aedebd2df7cce93084cf008b565d72cc36bcaf92c33048a920fade
@@ -2513,6 +2673,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.541371077Z"
 =======
     created: "2025-07-16T10:06:50.530957956Z"
@@ -2529,6 +2690,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.625855209Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.553296757Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: 66e6d465883dc5be2b6413cb09809aa48cc898400c5e149cf8ead44ed84ec504
@@ -2553,6 +2717,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-07-16T08:28:26.535418583Z"
 =======
     created: "2025-07-16T10:06:50.525847317Z"
@@ -2569,6 +2734,9 @@ entries:
 =======
     created: "2025-07-17T10:15:43.620325485Z"
 >>>>>>> PB-11430: email template
+=======
+    created: "2025-07-17T10:58:30.549227454Z"
+>>>>>>> PB-11430: separate section for email template
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: 079c699ed5fcba8f9214bde2b9f7b641883bac7cb57d3075a796583a10a2f9ed
@@ -2591,6 +2759,7 @@ entries:
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 generated: "2025-07-16T08:28:26.136213135Z"
 =======
 generated: "2025-07-16T10:06:50.131243444Z"
@@ -2607,3 +2776,6 @@ generated: "2025-07-17T10:03:08.516497574Z"
 =======
 generated: "2025-07-17T10:15:43.218092234Z"
 >>>>>>> PB-11430: email template
+=======
+generated: "2025-07-17T10:58:30.130017901Z"
+>>>>>>> PB-11430: separate section for email template
