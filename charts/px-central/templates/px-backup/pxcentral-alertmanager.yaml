@@ -316,65 +316,54 @@ stringData:
               </li>
             </ul>
             {{- else if eq .Labels.alertname "BackupScheduleOperationFailure" }}
-            <div
-                class="pb-16"
-                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
-                Warning Alert: Backup Schedule {{ .Labels.operation | title }} Operation Failed
+            {{- $alertCount := len .Alerts }}
+            {{- $firstAlert := index .Alerts 0 }}
+            {{- $backupScheduleAlerts := list }}
+            {{- range .Alerts }}
+              {{- if eq .Labels.alertname "BackupScheduleOperationFailure" }}
+                {{- $backupScheduleAlerts = append $backupScheduleAlerts . }}
+              {{- end }}
+            {{- end }}
+
+            <div class="pb-16" style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Warning Alert: {{ len $backupScheduleAlerts }} Backup Schedule {{ $firstAlert.Labels.operation | title }} Operation{{ if gt (len $backupScheduleAlerts) 1 }}s{{ end }} Failed
             </div>
-            <div
-                class="pb-16"
-                style="
-                color: var(--content-onBase-strong, #292929);
-                font-size: 15px;
-                font-weight: 700;
-                "
-                >
-                Alert details:
+
+            <div class="pb-16" style="color: #292929; font-size: 15px; font-weight: 700;">
+                Alert Summary:
             </div>
-            <ul>
-              <li>
-              <div style="display: flex">
-                <div style="font-weight: bold; width: 170px;min-width: 170px;">Backup Schedule name:</div>
-                <div>{{ .Labels.name }}</div>
-                </div>
-              </li>
-              <li>
-              <div style="display: flex">
-                <div style="font-weight: bold; width: 170px;min-width: 170px;">Operation:</div>
-                <div>{{ .Labels.operation | title }}</div>
-                </div>
-              </li>
-              <li>
-              <div style="display: flex">
-                <div style="font-weight: bold; width: 170px;min-width: 170px;">Cluster name:</div>
-                <div>{{ .Labels.cluster }}</div>
-                </div>
-              </li>
-              <li>
-              <div style="display: flex">
-                <div style="font-weight: bold; width: 170px;min-width: 170px;">User:</div>
-                <div>{{ .Labels.user_id }}</div>
-                </div>
-              </li>
-              <li>
-              <div style="display: flex">
-                <div style="font-weight: bold; width: 170px;min-width: 170px;">Organization:</div>
-                <div>{{ .Labels.org_id }}</div>
-                </div>
-              </li>
-              <li>
-              <div style="display: flex">
-                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
-                <div>{{ .Labels.error_reason }}</div> 
-                </div>
-              </li>
-              <li> 
-              <div style="display: flex">
-              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
-              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div> 
-              </div>
-              </li>
-            </ul>
+
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #bc1b06;">
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Operation:</span>{{ $firstAlert.Labels.operation | title }}</div>
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">User:</span>{{ $firstAlert.Labels.user_id }}</div>
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Organization:</span>{{ $firstAlert.Labels.org_id }}</div>
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Cluster:</span>{{ $firstAlert.Labels.cluster }}</div>
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Failed Count:</span>{{ len $backupScheduleAlerts }}</div>
+                <div><span style="font-weight: bold; display: inline-block; width: 120px;">Alert Time:</span>{{ $firstAlert.StartsAt.Format "2006-01-02 15:04:05" }}</div>
+            </div>
+
+            <div class="pb-16" style="color: #292929; font-size: 15px; font-weight: 700;">
+                Failed Backup Schedules:
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Backup Schedule Name</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Error Reason</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Alert Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range $backupScheduleAlerts }}
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.name }}</td>
+                        <td style="border: 1px solid #ddd; padding: 12px; max-width: 300px; word-wrap: break-word; font-family: monospace; font-size: 12px;">{{ .Labels.error_reason }}</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">{{ .StartsAt.Format "15:04:05" }}</td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
             {{- else if eq .Labels.alertname "RestoreAlert" }}
             <div
                 class="pb-16"
