@@ -19,20 +19,10 @@ spec:
     useAll: true
   secretsProvider: k8s
   
+  certManager:
+    enabled: true
   stork:
     enabled: true
-    image: openstorage/stork:2.7.0
-    env:
-    - name: PX_TEST_ENV
-      value: test_env_autopilot
-    volumes:
-    - hostPath:
-        path: /test
-      mountPath: /etc/px-test
-      name: px-test-volume
-    args:
-      verbose: "true"
-      webhook-controller: "true"
   monitoring:
     telemetry:
       enabled: true

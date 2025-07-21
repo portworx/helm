@@ -152,7 +152,7 @@ spec:
             value: /tmp/certs
           {{- end }}
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-apiserver" .Values.proxy.includeNoProxyList) }}
-          {{- include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
         readinessProbe:
           httpGet:
@@ -166,21 +166,36 @@ spec:
             containerPort: 10005
           - name: pxcentral-rest
             containerPort: 10006
-        {{- if .Values.caCertsSecretName }}
         volumeMounts:
+        {{- if .Values.caCertsSecretName }}
           - mountPath: /tmp/certs
             readOnly: true
             name: ssl-cert-dir
         {{- end }}
+        {{- if .Values.proxy.configSecretName }}
+          - mountPath: /etc/ssl/certs/proxy-ca.pem
+            subPath: proxy-ca.pem
+            name: proxy-ca-volume
+            readOnly: true
+        {{- end }}
         command:
         - /pxcentral-onprem
         - start
-      {{- if .Values.caCertsSecretName }}
       volumes:
+      {{- if .Values.caCertsSecretName }}
         - name: ssl-cert-dir
           secret:
             defaultMode: 420
             secretName: "{{ .Values.caCertsSecretName }}"
+      {{- end }}
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
       {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -198,4 +213,4 @@ spec:
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
-      {{- end }} 
+      {{- end }}

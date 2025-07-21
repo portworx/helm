@@ -25,6 +25,15 @@ data:
     echo "Advertised Hostname: $MONGODB_ADVERTISED_HOSTNAME"
     echo "Advertised Service: $K8S_SERVICE_NAME"
 
+    # Wait until all peers are resolvable via DNS
+    for i in 0 1 2; do
+      host="pxc-backup-mongodb-$i.pxc-backup-mongodb-headless"
+      echo "Waiting for DNS resolution of $host..."
+      until getent hosts $host > /dev/null; do
+        sleep 3
+      done
+    done
+
     # Check for existing replica set in case there is no data in the PVC
     # This is for cases where the PVC is lost or for MongoDB caches without
     # persistence
@@ -39,7 +48,8 @@ data:
       {{- $mongoList = append $mongoList (printf "%s-%d.%s-headless:%d" $fullname $i $fullname $portNumber) }}
       {{- end }}
       echo "mongoList: {{ join "," $mongoList }}"
-      current_primary=$(mongosh admin --host "{{ join "," $mongoList }}" --authenticationDatabase admin -u root -p $MONGODB_ROOT_PASSWORD --eval 'db.runCommand("ismaster")' | awk -F\' '/primary/ {print $2}')
+    current_primary=$(mongosh admin --host "$mongoList" --authenticationDatabase admin -u root -p "$MONGODB_ROOT_PASSWORD" \
+    --eval 'try { isMaster = db.runCommand("ismaster"); print(isMaster.primary); } catch (e) { print(""); }' | tail -n 1)
 
       if ! is_empty_value "$current_primary"; then
         echo "Detected existing primary: ${current_primary}"
@@ -59,9 +69,10 @@ data:
         echo "Pod name matches initial primary pod name, configuring node as a primary"
         export MONGODB_REPLICA_SET_MODE="primary"
     else
-        echo "Pod name doesn't match initial primary pod name, configuring node as a secondary"
-        export MONGODB_REPLICA_SET_MODE="secondary"
-        export MONGODB_INITIAL_PRIMARY_PORT_NUMBER="$MONGODB_PORT_NUMBER"
+      export MONGODB_REPLICA_SET_MODE="secondary"
+      export MONGODB_INITIAL_PRIMARY_HOST="pxc-backup-mongodb-0.pxc-backup-mongodb-headless"
+      export MONGODB_INITIAL_PRIMARY_PORT_NUMBER="$MONGODB_PORT_NUMBER"
+      export MONGODB_SET_SECONDARY_OK="yes"
     fi
 
     if [[ "$MONGODB_REPLICA_SET_MODE" == "secondary" ]]; then
@@ -267,7 +278,7 @@ spec:
             - name: MONGODB_EXTRA_FLAGS
               value: {{ printf "--wiredTigerCacheSizeGB=%d" $mongoCacheSize }}
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxc-backup-mongodb" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
           ports:
             - containerPort: 27017
@@ -303,6 +314,12 @@ spec:
             - mountPath: /scripts/setup.sh
               name: scripts
               subPath: setup.sh
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
+              name: proxy-ca-volume
+              readOnly: true
+          {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -316,6 +333,15 @@ spec:
         - name: pxc-mongodb-data
           emptyDir: {}
         {{- end }}
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
   {{- if eq $externalPersistentStorageEnabled true }}
   volumeClaimTemplates:
     - metadata:

@@ -4,6 +4,7 @@ metadata:
   name: "mycluster"
   namespace: portworx
   annotations:
+    portworx.io/migration-to-kvdb-tls: "true"
   labels:
     heritage: "Helm"
     release: "my-release"
@@ -15,24 +16,13 @@ spec:
 
   kvdb:
     internal: true
+    enableTLS: true
   storage:
     useAll: true
   secretsProvider: k8s
   
   stork:
     enabled: true
-    image: openstorage/stork:2.7.0
-    env:
-    - name: PX_TEST_ENV
-      value: test_env_autopilot
-    volumes:
-    - hostPath:
-        path: /test
-      mountPath: /etc/px-test
-      name: px-test-volume
-    args:
-      verbose: "true"
-      webhook-controller: "true"
   monitoring:
     telemetry:
       enabled: true

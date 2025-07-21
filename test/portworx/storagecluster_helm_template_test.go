@@ -328,6 +328,71 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:           "TestInternalKvdbTlsEnabled",
+			resultFileName: "storagecluster_internal_kvdb_tls_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"internalKVDB":    "true",
+					"internalKvdbTls": "true",
+				},
+			},
+		},
+		{
+			name:           "TestCertManagerEnabled",
+			resultFileName: "storagecluster_cert_manager_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"internalKVDB":       "true",
+					"installCertManager": "true",
+				},
+			},
+		},
+		{
+			name:           "TestInternalKvdbTlsAndCertManagerEnabled",
+			resultFileName: "storagecluster_internal_kvdb_tls_and_cert_manager.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"internalKVDB":       "true",
+					"internalKvdbTls":    "true",
+					"installCertManager": "true",
+				},
+			},
+		},
+		{
+			name:           "TestInternalKvdbTlsAndCertManagerDisabled",
+			resultFileName: "storagecluster_internal_kvdb_tls_and_cert_manager_disabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"internalKVDB":       "true",
+					"internalKvdbTls":    "false",
+					"installCertManager": "false",
+				},
+			},
+		},
+		{
+			name:           "TestMigrateToKvdbTlsEnabled",
+			resultFileName: "storagecluster_migrate_to_kvdb_tls_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"internalKVDB":     "true",
+					"internalKvdbTls":  "true",
+					"migrateToKvdbTls": "true",
+				},
+			},
+		},
+		{
+			name:             "TestMigrateToKvdbTlsWithoutInternalKvdbTls",
+			expectedErrorMsg: "migrateToKvdbTls requires internalKvdbTls to be enabled. Please set internalKvdbTls to true.",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"internalKVDB":     "true",
+					"internalKvdbTls":  "false",
+					"migrateToKvdbTls": "true",
+>>>>>>> upstream/master
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

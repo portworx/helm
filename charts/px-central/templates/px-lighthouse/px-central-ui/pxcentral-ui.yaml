@@ -205,8 +205,15 @@ spec:
                   key: credential
                   name: px-central-admin
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-backend" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
+          volumeMounts:
+          {{- if .Values.proxy.configSecretName }}
+          - mountPath: /etc/ssl/certs/proxy-ca.pem
+            subPath: proxy-ca.pem
+            name: proxy-ca-volume
+            readOnly: true
+          {{- end }}
           envFrom:
             - configMapRef:
                 name: pxcentral-ui-configmap
@@ -246,7 +253,7 @@ spec:
                   name: pxcentral-mysql-secret
                   key: DB_PASSWORD
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-backend" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
             - name: DB_USERNAME
               valueFrom:
@@ -269,6 +276,13 @@ spec:
                   key: credential
                   name: px-central-admin
           resources: {}
+          volumeMounts:
+          {{- if .Values.proxy.configSecretName }}
+          - mountPath: /etc/ssl/certs/proxy-ca.pem
+            subPath: proxy-ca.pem
+            name: proxy-ca-volume
+            readOnly: true
+          {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}
@@ -284,6 +298,16 @@ spec:
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
       {{- end }} 
 status: {}
 ---
@@ -365,7 +389,7 @@ spec:
                   name: pxcentral-mysql-secret
                   key: DB_PASSWORD
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-frontend" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
             - name: DB_USERNAME
               valueFrom:
@@ -385,6 +409,12 @@ spec:
           volumeMounts:
             - name: frontend-nginx-configs
               mountPath: /etc/nginx/conf.d
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
+              name: proxy-ca-volume
+              readOnly: true
+          {{- end }}
           resources: {}
       {{- with .Values.tolerations }}
       tolerations:
@@ -394,6 +424,15 @@ spec:
         - name: frontend-nginx-configs
           configMap:
             name: pxcentral-frontend-nginx-config
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }} 
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}
@@ -504,6 +543,12 @@ spec:
         volumeMounts:
         - mountPath: /var/lib/mysql
           name: pxcentral-mysql
+        {{- if .Values.proxy.configSecretName }}
+        - mountPath: /etc/ssl/certs/proxy-ca.pem
+          subPath: proxy-ca.pem
+          name: proxy-ca-volume
+          readOnly: true
+        {{- end }}
       containers:
         - name: mysql
           image: {{ printf "%s/%s/%s:%s" .Values.images.mysqlImage.registry .Values.images.mysqlImage.repo .Values.images.mysqlImage.imageName .Values.images.mysqlImage.tag }}
@@ -532,7 +577,7 @@ spec:
             - name: SERVICE_TAGS
               value: dev
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-mysql" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
           livenessProbe:
             exec:
@@ -573,6 +618,12 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/mysql
               name: pxcentral-mysql
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
+              name: proxy-ca-volume
+              readOnly: true
+          {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -585,6 +636,15 @@ spec:
           {{- else }}
           emptyDir: {}
           {{- end }}
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
 ---
 apiVersion: v1
 kind: Service

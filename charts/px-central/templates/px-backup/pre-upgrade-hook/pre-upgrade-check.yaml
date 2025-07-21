@@ -46,7 +46,7 @@ metadata:
 rules:
   - apiGroups: ["apps"]
     resources: ["statefulsets"]
-    verbs: ["get", "list", "update", "delete", "create"]
+    verbs: ["get", "list", "update", "delete", "create", "patch"]
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["delete","get", "list", "watch","create","update"]
@@ -216,7 +216,8 @@ spec:
                   "tags": {
                     "mongodb5": "{{ .Values.images.mongodbImageMap.tags.mongodb5 }}",
                     "mongodb6": "{{ .Values.images.mongodbImageMap.tags.mongodb6 }}",
-                    "mongodb7": "{{ .Values.images.mongodbImageMap.tags.mongodb7 }}"
+                    "mongodb7": "{{ .Values.images.mongodbImageMap.tags.mongodb7 }}",
+                    "mongodb8": "{{ .Values.images.mongodbImageMap.tags.mongodb8 }}"
                   }
                 }
             {{- end }}
@@ -254,30 +255,53 @@ spec:
             - name: POSTGRES_DB
               value: "keycloak"
             - name: POSTGRES_PVC_NAME
-              value: pxcentral-keycloak-data-postgres16
+              value: pxcentral-keycloak-data-postgres17
             - name: JOB_TIMEOUT_SECONDS
               value: "600"
             - name: PX_BACKUP_ENABLED
               value: "{{ $pxBackupEnabled }}"
             - name: PX_MONITOR_ENABLED
               value: {{ .Values.pxmonitor.enabled | default false | quote }}
+            - name: PX_LICENSE_SERVER_ENABLED
+              value: {{ .Values.pxlicenseserver.enabled | default false | quote }}
+            - name: PROXY_CONFIG_SECRET_NAME
+              value: {{ .Values.proxy.configSecretName | default "" | quote }}
         {{- if eq $deployDedicatedMonitoringSystem true }}
             - name: DEDICATED_PROMETHEUS
               value: "true"
         {{- else }}
             - name: DEDICATED_PROMETHEUS
               value: "false"
+            - name: PROMETHEUS_ENDPOINT
+              value: {{ .Values.pxbackup.prometheusEndpoint | default "" | quote }}
+            - name: ALERTMANAGER_ENDPOINT
+              value: {{ .Values.pxbackup.alertmanagerEndpoint | default "" | quote }}
         {{- end }}
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pre-upgrade-check" .Values.proxy.includeNoProxyList) }}
-            {{- include "proxy.noProxyEnv" . | nindent 12 }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
           volumeMounts:
             - name: data-volume
               mountPath: /mnt/data
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
+              name: proxy-ca-volume
+              readOnly: true
+          {{- end }}
       volumes:
         - name: data-volume
           persistentVolumeClaim:
             claimName: pre-upgrade-data-pvc
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}

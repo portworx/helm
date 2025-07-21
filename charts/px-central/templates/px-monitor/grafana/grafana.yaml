@@ -204,7 +204,7 @@ spec:
               value: /tmp/certs
           {{- end }}
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-grafana" .Values.proxy.includeNoProxyList) }}
-          {{- include "proxy.noProxyEnv" . | nindent 10 }}
+          {{- include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
           {{- end }}
           ports:
@@ -244,11 +244,17 @@ spec:
             - name: grafana-config
               mountPath: "/etc/grafana/grafana.ini"
               subPath: grafana.ini
-            {{- if .Values.caCertsSecretName }}
+          {{- if .Values.caCertsSecretName }}
             - name: ssl-cert-dir
               mountPath: /tmp/certs
               readOnly: true
-            {{- end }}
+          {{- end }}
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
+              name: proxy-ca-volume
+              readOnly: true
+          {{- end }}
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
@@ -280,12 +286,21 @@ spec:
         - name: grafana-config
           configMap:
             name: pxcentral-grafana-ini-config
-        {{- if .Values.caCertsSecretName }}
+      {{- if .Values.caCertsSecretName }}
         - name: ssl-cert-dir
           secret:
               defaultMode: 420
               secretName: "{{ .Values.caCertsSecretName }}"
-        {{- end }}
+      {{- end }}
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}
