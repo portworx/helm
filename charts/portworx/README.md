@@ -69,6 +69,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `pxOperatorImageVersion` | Version of the PX operator image | 25.2.2 |
 | `openshiftInstall` | Installing on Openshift? | false |
 | `nonDisruptivek8sUpgrade` | Used to disable or enable smart and parallel kubetnetes node upgrades. By default, S&P upgrades are disabled. To enable them, set this to true | false |
+| `instanceVolumeK8sUpgrade` | Enable support for kubernetes upgrades for Anthos cluster on EC2 instance with ephemeral volumes. Setting this also enables S&P | false |
 | `skipHealthChecks` | Used to skip health checks. By default, health checks are enabled. Set this to true to disable health checks | false | 
 | `pksInstall` | Installing on Pivotal Container service? | false |
 | `EKSInstall` | Installing EKS (Amazon Elastic Container service) | false |

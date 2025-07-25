@@ -83,6 +83,10 @@ metadata:
     {{- if eq .Values.nonDisruptivek8sUpgrade true }}
     portworx.io/disable-non-disruptive-upgrade: "false"
     {{- end }}
+    {{- if eq .Values.instanceVolumeK8sUpgrade true }}
+    portworx.io/disable-non-disruptive-upgrade: "false"
+    portworx.io/move-volume-replica-before-upgrade: "true"
+    {{- end }}
     {{- if eq .Values.skipHealthChecks true }}
     portworx.io/health-check: "skip"
     {{- end }}
