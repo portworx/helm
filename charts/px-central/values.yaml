@@ -231,8 +231,8 @@ images:
     tag: 2.10.0-staging
     module: pxCentral
   pxcentralBackendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
+    repo: kthiruvenkadasamy
     imageName: pxcentral-onprem-ui-backend-private
     tag: 2.10.0-staging
     module: pxCentral
