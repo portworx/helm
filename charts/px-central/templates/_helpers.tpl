@@ -133,6 +133,9 @@ HTTP proxy enabled env.
 {{- else if .Values.linkerd.enabled -}}
 - name: SERVICE_MESH
   value: linkerd
+{{- else -}}
+- name: SERVICE_MESH
+  value: ""
 {{- end -}}
 {{- end -}}
 
