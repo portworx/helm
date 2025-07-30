@@ -591,13 +591,15 @@ spec:
 
     - alert: BulkOperationFailure
       annotations:
-        description: {{`The {{ $labels.object_type | title }} "{{ $labels.name }}" {{ $labels.operation }} operation has failed for user "{{ $labels.user_id }}" in organization "{{ $labels.org_id }}" on cluster "{{ $labels.cluster }}". Error: {{ $labels.error_reason }}`}}
-        summary: {{`{{ $labels.object_type | title }} {{ $labels.operation }} operation failed`}}
+        description: |-
+          {{`The {{ $labels.object_type | title }} "{{ $labels.name }}" {{ $labels.operation }} operation has failed for user "{{ $labels.user_id }}" in organization "{{ $labels.org_id }}" on cluster "{{ $labels.cluster }}". Error: {{ $labels.error_reason }}`}}
+        summary: {{`Bulk operation {{ $labels.operation }} operation failed`}}
         value: "{{`{{ $value }}`}}"
       expr: pxbackup_bulk_operation_failure > 0
       for: 0s
       labels:
         severity: warning
+
 
 
 {{- end -}}
