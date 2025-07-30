@@ -159,7 +159,6 @@ spec:
         ports:
           - containerPort: 8080
             name: http
-        {{- if .Values.proxy.httpProxy.noProxy }}
         volumeMounts:
         {{- if .Values.proxy.configSecretName }}
           - mountPath: /etc/ssl/certs/proxy-ca.pem
@@ -169,6 +168,7 @@ spec:
         {{- end }}
         env:
         {{- include "serviceMesh.env" . | nindent 8 }}
+        {{- if .Values.proxy.httpProxy.noProxy }}
         {{- if or (empty .Values.proxy.includeNoProxyList) (has "prometheus-operator" .Values.proxy.includeNoProxyList) }}
         {{ include "proxy.proxyEnv" . | nindent 8 }}
         {{- end }}
