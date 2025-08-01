@@ -425,8 +425,8 @@ stringData:
             <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #bc1b06;">
                 <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Object Type:</span>{{ $firstBulkOperationAlert.Labels.object_type | title }}</div>
                 <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Operation:</span>{{ $firstBulkOperationAlert.Labels.operation | title }}</div>
-                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">User:</span>{{ $firstBulkOperationAlert.Labels.user_id }}</div>
-                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Organization:</span>{{ $firstBulkOperationAlert.Labels.org_id }}</div>
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">User ID:</span>{{ $firstBulkOperationAlert.Labels.user_id }}</div>
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">User Name:</span>{{ $firstBulkOperationAlert.Labels.user_name }}</div>
                 <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Cluster:</span>{{ $firstBulkOperationAlert.Labels.cluster }}</div>
                 <div><span style="font-weight: bold; display: inline-block; width: 120px;">Alert Time:</span>{{ $firstBulkOperationAlert.StartsAt.Format "2006-01-02 15:04:05" }}</div>
             </div>
