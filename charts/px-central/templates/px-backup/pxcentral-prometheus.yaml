@@ -595,6 +595,10 @@ spec:
           {{`The {{ $labels.object_type | title }} "{{ $labels.name }}" {{ $labels.operation }} operation has failed for user "{{ $labels.user_name }}" in organization "{{ $labels.org_id }}" on cluster "{{ $labels.cluster }}". Error: {{ $labels.error_reason }}`}}
         summary: {{`Bulk operation {{ $labels.operation }} operation failed`}}
         value: "{{`{{ $value }}`}}"
+        timestamp_human: |-
+          {{`{{ with $t := toTime $labels.timestamp_in_secs }}
+            {{- $t.Local.Format "2006-01-02 15:04:05 MST" -}}
+          {{ end }}`}}
       expr: pxbackup_bulk_operation_failure > 0
       for: 0s
       labels:
