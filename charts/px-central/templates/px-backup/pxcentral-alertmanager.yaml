@@ -428,7 +428,7 @@ stringData:
                 <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">User ID:</span>{{ $firstBulkOperationAlert.Labels.user_id }}</div>
                 <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">User Name:</span>{{ $firstBulkOperationAlert.Labels.user_name }}</div>
                 <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Cluster:</span>{{ $firstBulkOperationAlert.Labels.cluster }}</div>
-                <div><span style="font-weight: bold; display: inline-block; width: 120px;">Alert Time:</span>{{ $firstBulkOperationAlert.StartsAt.Format "2006-01-02 15:04:05" }}</div>
+                <div><span style="font-weight: bold; display: inline-block; width: 120px;">Alert Time:</span>{{ $firstBulkOperationAlert.Labels.timestamp_in_secs.Format "2006-01-02 15:04:05" }}</div>
             </div>
 
             <div class="pb-16" style="color: #292929; font-size: 15px; font-weight: 700;">
