@@ -416,7 +416,7 @@ stringData:
 
             {{- if $hasBulkOperationFailures }}
             <div class="pb-16" style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
-                Warning Alert: {{ $firstBulkOperationAlert.Labels.object_type | title }} {{ $firstBulkOperationAlert.Labels.operation | title }} Operation Failed
+                Warning Alert: {{ reReplaceAll "_" " " $firstBulkOperationAlert.Labels.object_type | title }} {{ $firstBulkOperationAlert.Labels.operation | title }} Operation Failed
             </div>
 
             <div class="pb-16" style="color: #292929; font-size: 15px; font-weight: 700;">
@@ -424,22 +424,21 @@ stringData:
             </div>
 
             <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #bc1b06;">
-                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Object Type:</span>{{ $firstBulkOperationAlert.Labels.object_type | title }}</div>
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Object Type:</span>{{ reReplaceAll "_" " " $firstBulkOperationAlert.Labels.object_type | title }}</div>
                 <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Operation:</span>{{ $firstBulkOperationAlert.Labels.operation | title }}</div>
-                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">User ID:</span>{{ $firstBulkOperationAlert.Labels.user_id }}</div>
                 <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">User Name:</span>{{ $firstBulkOperationAlert.Labels.user_name }}</div>
                 <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Cluster:</span>{{ $firstBulkOperationAlert.Labels.cluster }}</div>
                 <div><span style="font-weight: bold; display: inline-block; width: 120px;">Alert Time:</span>{{ $firstBulkOperationAlert.StartsAt.Format "2006-01-02 15:04:05" }}</div>
             </div>
 
             <div class="pb-16" style="color: #292929; font-size: 15px; font-weight: 700;">
-                Failed {{ $firstBulkOperationAlert.Labels.object_type | title }} Objects:
+                Failed {{ reReplaceAll "_" " " $firstBulkOperationAlert.Labels.object_type | title }} Objects:
             </div>
 
             <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
                 <thead>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">{{ $firstBulkOperationAlert.Labels.object_type | title }} Name</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">{{ reReplaceAll "_" " " $firstBulkOperationAlert.Labels.object_type | title }} Name</th>
                         <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Error Reason</th>
                         <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Alert Time</th>
                     </tr>
