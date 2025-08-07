@@ -305,6 +305,7 @@ entries:
     appVersion: 3.3.1
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     created: "2025-08-12T16:40:38.133452+05:30"
 =======
     created: "2025-08-05T06:05:21.473821202Z"
@@ -312,6 +313,9 @@ entries:
 =======
     created: "2025-08-07T12:32:23.465088662Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    created: "2025-08-08T09:35:21.644307653Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 49075ec12acdf8c08430f7dd7dfe563c7d25aef6585f2f97fb065f0c63036c8b
     home: https://portworx.com/
@@ -334,6 +338,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-6.0.2.tgz
     version: 6.0.2
   - apiVersion: v1
@@ -353,6 +358,13 @@ entries:
     appVersion: 3.3.0.1
     created: "2025-08-07T12:32:23.458155637Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-6.0.2.tgz
+    version: 6.0.2
+  - apiVersion: v1
+    appVersion: 3.3.0.1
+    created: "2025-08-08T09:35:21.637571183Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: dc471005e5c3e7b1aa150042e03021d94a2b30239eb0055a4f6c20d47bcd755c
     home: https://portworx.com/
@@ -375,6 +387,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-6.0.1.tgz
     version: 6.0.1
   - apiVersion: v1
@@ -394,6 +407,13 @@ entries:
     appVersion: 3.3.0
     created: "2025-08-07T12:32:23.451223657Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-6.0.1.tgz
+    version: 6.0.1
+  - apiVersion: v1
+    appVersion: 3.3.0
+    created: "2025-08-08T09:35:21.630581137Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 6e0cd8da586141b228a00ad741de07037465fa17e7de023942f1d9986045f2a8
     home: https://portworx.com/
@@ -414,6 +434,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-6.0.0.tgz
@@ -460,6 +481,13 @@ entries:
     appVersion: 3.2.3
     created: "2025-08-07T12:32:23.445638141Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-6.0.0.tgz
+    version: 6.0.0
+  - apiVersion: v1
+    appVersion: 3.2.3
+    created: "2025-08-08T09:35:21.624311571Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 6d75ff426557a12c5fdf365fa7609dbdd0587e5854d263ff22b8413ca94d3609
     home: https://portworx.com/
@@ -482,6 +510,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-5.2.1.tgz
     version: 5.2.1
   - apiVersion: v1
@@ -501,6 +530,13 @@ entries:
     appVersion: 3.2.3
     created: "2025-08-07T12:32:23.439486427Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-5.2.1.tgz
+    version: 5.2.1
+  - apiVersion: v1
+    appVersion: 3.2.3
+    created: "2025-08-08T09:35:21.619068743Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: d35ccbafc7be55cdfe8363fca9b64fb5f8636fb3ac801e5c7deecde650cec4f7
     home: https://portworx.com/
@@ -523,6 +559,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-5.2.0.tgz
     version: 5.2.0
   - apiVersion: v1
@@ -542,6 +579,13 @@ entries:
     appVersion: 3.2.3
     created: "2025-08-07T12:32:23.434268631Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-5.2.0.tgz
+    version: 5.2.0
+  - apiVersion: v1
+    appVersion: 3.2.3
+    created: "2025-08-08T09:35:21.611511925Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 990fd545cb09b0b174c430963764eaf4879c442b2428007c8605ee8a98f50642
     home: https://portworx.com/
@@ -564,6 +608,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-5.1.6.tgz
     version: 5.1.6
   - apiVersion: v1
@@ -583,6 +628,13 @@ entries:
     appVersion: 3.2.2.2
     created: "2025-08-07T12:32:23.426801501Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-5.1.6.tgz
+    version: 5.1.6
+  - apiVersion: v1
+    appVersion: 3.2.2.2
+    created: "2025-08-08T09:35:21.605581272Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 6ada879d42745e64f5687b6d8b12f3b786fe1e135ff8e028f840ba6811b17908
     home: https://portworx.com/
@@ -605,6 +657,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-5.1.5.tgz
     version: 5.1.5
   - apiVersion: v1
@@ -624,6 +677,13 @@ entries:
     appVersion: 3.2.2.1
     created: "2025-08-07T12:32:23.421382236Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-5.1.5.tgz
+    version: 5.1.5
+  - apiVersion: v1
+    appVersion: 3.2.2.1
+    created: "2025-08-08T09:35:21.59833985Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 91414d94915174a2c60cb770abea6e0ceeb325911819c812c805921e9b5bce81
     home: https://portworx.com/
@@ -646,6 +706,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-5.1.4.tgz
     version: 5.1.4
   - apiVersion: v1
@@ -665,6 +726,13 @@ entries:
     appVersion: 3.2.2
     created: "2025-08-07T12:32:23.413177236Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-5.1.4.tgz
+    version: 5.1.4
+  - apiVersion: v1
+    appVersion: 3.2.2
+    created: "2025-08-08T09:35:21.591895228Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 1ea8fd443acfb4cc30819272322333bd5a3a403caa252739935085461dd23433
     home: https://portworx.com/
@@ -687,6 +755,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-5.1.3.tgz
     version: 5.1.3
   - apiVersion: v1
@@ -706,6 +775,13 @@ entries:
     appVersion: 3.2.1.2
     created: "2025-08-07T12:32:23.406651338Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-5.1.3.tgz
+    version: 5.1.3
+  - apiVersion: v1
+    appVersion: 3.2.1.2
+    created: "2025-08-08T09:35:21.585743715Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: d93f68765ea3dfe27afa68e9f4dfe17fa4bd14f58fe872873a78cca18f5faef8
     home: https://portworx.com/
@@ -728,6 +804,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-5.1.2.tgz
     version: 5.1.2
   - apiVersion: v1
@@ -747,6 +824,13 @@ entries:
     appVersion: 3.2.1.1
     created: "2025-08-07T12:32:23.402834635Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-5.1.2.tgz
+    version: 5.1.2
+  - apiVersion: v1
+    appVersion: 3.2.1.1
+    created: "2025-08-08T09:35:21.581373828Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: f80e1de041983764ef0bc0fcec0ef02b88174e1cc499ae9c07cfb35b25f9f753
     home: https://portworx.com/
@@ -769,6 +853,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-5.1.1.tgz
     version: 5.1.1
   - apiVersion: v1
@@ -788,6 +873,13 @@ entries:
     appVersion: 3.2.1
     created: "2025-08-07T12:32:23.398375389Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-5.1.1.tgz
+    version: 5.1.1
+  - apiVersion: v1
+    appVersion: 3.2.1
+    created: "2025-08-08T09:35:21.577927801Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: fcb5b7beff0e26563d3ab211fa5ab684d4c3f99fa3519c950f9a52e63ba5baf5
     home: https://portworx.com/
@@ -810,6 +902,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-5.1.0.tgz
     version: 5.1.0
   - apiVersion: v1
@@ -829,6 +922,13 @@ entries:
     appVersion: 3.2.0
     created: "2025-08-07T12:32:23.394445859Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-5.1.0.tgz
+    version: 5.1.0
+  - apiVersion: v1
+    appVersion: 3.2.0
+    created: "2025-08-08T09:35:21.573132026Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 5e1578d0d3d74b4a6dda9dca765eee84226f8676925573a6aa66d0fb8c129b92
     home: https://portworx.com/
@@ -849,6 +949,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-5.0.0.tgz
@@ -895,6 +996,13 @@ entries:
     appVersion: 3.1.7
     created: "2025-08-07T12:32:23.389064582Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-5.0.0.tgz
+    version: 5.0.0
+  - apiVersion: v1
+    appVersion: 3.1.7
+    created: "2025-08-08T09:35:21.569469492Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: b0d4f9cf1a51d5f83545052511fec73c68341fa34d262dd967eab12b27819ca7
     home: https://portworx.com/
@@ -917,6 +1025,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-4.1.0.tgz
     version: 4.1.0
   - apiVersion: v1
@@ -936,6 +1045,13 @@ entries:
     appVersion: 3.1.4
     created: "2025-08-07T12:32:23.385061389Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-4.1.0.tgz
+    version: 4.1.0
+  - apiVersion: v1
+    appVersion: 3.1.4
+    created: "2025-08-08T09:35:21.564844399Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 94e8f1000109f518010575ecaf2274ad3c5845c273d28d6292f80df88e3acea1
     home: https://portworx.com/
@@ -958,6 +1074,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-4.0.0.tgz
     version: 4.0.0
   - apiVersion: v1
@@ -977,6 +1094,13 @@ entries:
     appVersion: 3.1.0
     created: "2025-08-07T12:32:23.380981098Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-4.0.0.tgz
+    version: 4.0.0
+  - apiVersion: v1
+    appVersion: 3.1.0
+    created: "2025-08-08T09:35:21.56137747Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 630d982316d27542d6a2f137793fa755e366d911d56de531b011ff27ea5f04f5
     home: https://portworx.com/
@@ -999,6 +1123,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-3.1.0.tgz
     version: 3.1.0
   - apiVersion: v1
@@ -1018,6 +1143,13 @@ entries:
     appVersion: 3.0.0
     created: "2025-08-07T12:32:23.378052556Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-3.1.0.tgz
+    version: 3.1.0
+  - apiVersion: v1
+    appVersion: 3.0.0
+    created: "2025-08-08T09:35:21.558365491Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: b7713dc5e4b3b30efcfb5c42771fa69140daacf0fa348906694fa623f7648754
     home: https://portworx.com/
@@ -1040,6 +1172,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-3.0.0.tgz
     version: 3.0.0
   - apiVersion: v1
@@ -1059,6 +1192,13 @@ entries:
     appVersion: 2.13.3
     created: "2025-08-07T12:32:23.374079172Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-3.0.0.tgz
+    version: 3.0.0
+  - apiVersion: v1
+    appVersion: 2.13.3
+    created: "2025-08-08T09:35:21.553569361Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: f154989402d3582968ef7d8211c830dd6771a357f6e7da957176ff1bc47d81a6
     home: https://portworx.com/
@@ -1081,6 +1221,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-2.13.3.tgz
     version: 2.13.3
   - apiVersion: v1
@@ -1100,6 +1241,13 @@ entries:
     appVersion: 2.12.2
     created: "2025-08-07T12:32:23.371860078Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-2.13.3.tgz
+    version: 2.13.3
+  - apiVersion: v1
+    appVersion: 2.12.2
+    created: "2025-08-08T09:35:21.551698245Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 6f82f0772cea7e5bbee59b44fd06cf15439e42d1d96ea5ca73ad0546ac4e39c7
     home: https://portworx.com/
@@ -1122,6 +1270,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-2.13.0.tgz
     version: 2.13.0
   - apiVersion: v1
@@ -1141,6 +1290,13 @@ entries:
     appVersion: 2.11.4
     created: "2025-08-07T12:32:23.370014187Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-2.13.0.tgz
+    version: 2.13.0
+  - apiVersion: v1
+    appVersion: 2.11.4
+    created: "2025-08-08T09:35:21.549414057Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: db0319e7e0aff6a233af0187970a60a431d87f98f961dd4a11e110ef68a8e420
     home: https://portworx.com/
@@ -1149,6 +1305,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-2.11.4.tgz
@@ -1170,6 +1327,13 @@ entries:
     appVersion: 2.10.3
     created: "2025-08-07T12:32:23.368269167Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-2.11.4.tgz
+    version: 2.11.4
+  - apiVersion: v1
+    appVersion: 2.10.3
+    created: "2025-08-08T09:35:21.545476617Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 162b316899c5023708ee0edc4083215646fe8c8458d34f79f9f13c2c376e0d0d
     home: https://portworx.com/
@@ -1178,6 +1342,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-2.10.3.tgz
@@ -1199,6 +1364,13 @@ entries:
     appVersion: 2.9.1
     created: "2025-08-07T12:32:23.376034019Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-2.10.3.tgz
+    version: 2.10.3
+  - apiVersion: v1
+    appVersion: 2.9.1
+    created: "2025-08-08T09:35:21.555794759Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 71a44b527872750c42c9c39a6e3e03c431e0d74063aa8abf70d11f1401fddad2
     home: https://portworx.com/
@@ -1207,6 +1379,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-2.9.1.tgz
@@ -1225,6 +1398,12 @@ entries:
   - apiVersion: v1
     created: "2025-08-07T12:32:23.365222914Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-2.9.1.tgz
+    version: 2.9.1
+  - apiVersion: v1
+    created: "2025-08-08T09:35:21.543112812Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: c312df602c509a2c5d60d6197ec137bf8484ecffb3444f1ded6be19964bc3c9f
     home: https://portworx.com/
@@ -1233,6 +1412,7 @@ entries:
     sources:
     - https://github.com/portworx/helm
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-1.0.1.tgz
@@ -1251,6 +1431,12 @@ entries:
   - apiVersion: v1
     created: "2025-08-07T12:32:23.363304179Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v1
+    created: "2025-08-08T09:35:21.541480051Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: ac01a7ae62587285d9a29e2d36c386727eb96694810a563ecf723b21f7582dec
     home: https://portworx.com/
@@ -1261,6 +1447,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-1.0.0.tgz
 =======
     - https://raw.githubusercontent.com/portworx/helm/PB-11821-rebase/stable/portworx-1.0.0.tgz
@@ -1268,10 +1455,14 @@ entries:
 =======
     - https://raw.githubusercontent.com/portworx/helm/PB-11976/stable/portworx-1.0.0.tgz
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-1.0.0.tgz
+>>>>>>> PB-11987: remove _ from description and org id as well
     version: 1.0.0
   portworx-daemonSet:
   - apiVersion: v1
     appVersion: 2.13.5
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     created: "2025-08-12T16:40:38.134915+05:30"
@@ -1281,6 +1472,9 @@ entries:
 =======
     created: "2025-08-07T12:32:23.469732423Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    created: "2025-08-08T09:35:21.648538063Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 01c9131ded26e1960fb11ddac49f86ecf36e22bd2f44e320582f8c1be6b28119
     home: https://portworx.com/
@@ -1303,6 +1497,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-daemonSet-2.13.5.tgz
     version: 2.13.5
   - apiVersion: v1
@@ -1322,6 +1517,13 @@ entries:
     appVersion: 2.12.2
     created: "2025-08-07T12:32:23.467041079Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-daemonSet-2.13.5.tgz
+    version: 2.13.5
+  - apiVersion: v1
+    appVersion: 2.12.2
+    created: "2025-08-08T09:35:21.645979223Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing Portworx on Kubernetes.
     digest: 6a150290915cf7da30ee04cd157b32491e725bb7a1d8e02c561d5c660bbefb6b
     home: https://portworx.com/
@@ -1344,6 +1546,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/portworx-daemonSet-2.13.0.tgz
 =======
     - https://raw.githubusercontent.com/portworx/helm/PB-11821-rebase/stable/portworx-daemonSet-2.13.0.tgz
@@ -1351,10 +1554,14 @@ entries:
 =======
     - https://raw.githubusercontent.com/portworx/helm/PB-11976/stable/portworx-daemonSet-2.13.0.tgz
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/portworx-daemonSet-2.13.0.tgz
+>>>>>>> PB-11987: remove _ from description and org id as well
     version: 2.13.0
   px-backup:
   - apiVersion: v1
     appVersion: 1.2.4
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     created: "2025-08-12T16:40:38.142538+05:30"
@@ -1364,6 +1571,9 @@ entries:
 =======
     created: "2025-08-07T12:32:23.490784364Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    created: "2025-08-08T09:35:21.66837281Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 4e1c290efdbd1cf8487e81e4b02b945d2be6aa5b3b9771091214d39c4cd6b868
@@ -1381,6 +1591,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-backup-1.2.4.tgz
@@ -1402,6 +1613,13 @@ entries:
     appVersion: 1.2.3
     created: "2025-08-07T12:32:23.489422244Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-backup-1.2.4.tgz
+    version: 1.2.4
+  - apiVersion: v1
+    appVersion: 1.2.3
+    created: "2025-08-08T09:35:21.667150791Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 5041aaabb806d9075722c79d34f9dec8f4e80a75f5346d097cb0123417b08c2d
@@ -1419,6 +1637,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-backup-1.2.3.tgz
@@ -1440,6 +1659,13 @@ entries:
     appVersion: 1.2.2
     created: "2025-08-07T12:32:23.488194709Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-backup-1.2.3.tgz
+    version: 1.2.3
+  - apiVersion: v1
+    appVersion: 1.2.2
+    created: "2025-08-08T09:35:21.665942627Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 5536c872859c726b4dd1cff1bcd21ef4f56903d58fcbbe5b4859b5bd242873cf
@@ -1457,6 +1683,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-backup-1.2.2.tgz
@@ -1478,6 +1705,13 @@ entries:
     appVersion: 1.2.1
     created: "2025-08-07T12:32:23.486704014Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-backup-1.2.2.tgz
+    version: 1.2.2
+  - apiVersion: v1
+    appVersion: 1.2.1
+    created: "2025-08-08T09:35:21.664681379Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: a9b0290cb08d6d3c39adf27ab07be9a17424493980c720223e3a656fa77917ba
@@ -1495,6 +1729,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-backup-1.2.1.tgz
@@ -1516,6 +1751,13 @@ entries:
     appVersion: 1.2.0
     created: "2025-08-07T12:32:23.485177868Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-backup-1.2.1.tgz
+    version: 1.2.1
+  - apiVersion: v1
+    appVersion: 1.2.0
+    created: "2025-08-08T09:35:21.66336406Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 7f42744f732e8d80793d06189b14f5ed8f7439706db99dd272d96d43a1fd65ab
@@ -1533,6 +1775,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-backup-1.2.0.tgz
@@ -1554,6 +1797,13 @@ entries:
     appVersion: 1.1.1
     created: "2025-08-07T12:32:23.483370134Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-backup-1.2.0.tgz
+    version: 1.2.0
+  - apiVersion: v1
+    appVersion: 1.1.1
+    created: "2025-08-08T09:35:21.66211803Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 73215fe714e1a3af6bdf958eb06791b90f878b363c85b3adf4c8cfe664a08202
@@ -1571,6 +1821,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-backup-1.1.6.tgz
@@ -1592,6 +1843,13 @@ entries:
     appVersion: 1.1.0
     created: "2025-08-07T12:32:23.481131908Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-backup-1.1.6.tgz
+    version: 1.1.6
+  - apiVersion: v1
+    appVersion: 1.1.0
+    created: "2025-08-08T09:35:21.660775928Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 6cc1c8df6ddd7e7e49f69db6791f1bdd6b39dc0943f60282fd9212872071103c
@@ -1609,6 +1867,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-backup-1.1.5.tgz
@@ -1630,6 +1889,13 @@ entries:
     appVersion: 1.1.0
     created: "2025-08-07T12:32:23.479535134Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-backup-1.1.5.tgz
+    version: 1.1.5
+  - apiVersion: v1
+    appVersion: 1.1.0
+    created: "2025-08-08T09:35:21.659439196Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 4115cfbf2e4e8158331bcec3d4404054c9648fb227f6947747f0122ad4f2418a
@@ -1647,6 +1913,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-backup-1.1.4.tgz
@@ -1668,6 +1935,13 @@ entries:
     appVersion: 1.1.0-rc4
     created: "2025-08-07T12:32:23.47825184Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-backup-1.1.4.tgz
+    version: 1.1.4
+  - apiVersion: v1
+    appVersion: 1.1.0-rc4
+    created: "2025-08-08T09:35:21.657226233Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 0121036cb537c93fff9281f05cf935345b5f769017b131b5e903cc4b8354c8ac
@@ -1685,6 +1959,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-backup-1.1.3.tgz
@@ -1706,6 +1981,13 @@ entries:
     appVersion: 1.1.0-rc2
     created: "2025-08-07T12:32:23.47704584Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-backup-1.1.3.tgz
+    version: 1.1.3
+  - apiVersion: v1
+    appVersion: 1.1.0-rc2
+    created: "2025-08-08T09:35:21.655972403Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 96f785bc9ad2c477068d39f351d5c078f080264104ccd6e7630eabae6d0a514c
@@ -1723,6 +2005,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-backup-1.1.2.tgz
@@ -1744,6 +2027,13 @@ entries:
     appVersion: 1.1.0-rc2
     created: "2025-08-07T12:32:23.475858822Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-backup-1.1.2.tgz
+    version: 1.1.2
+  - apiVersion: v1
+    appVersion: 1.1.0-rc2
+    created: "2025-08-08T09:35:21.654607146Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 7167db17211627d3d111441d01c8d71c57a1980c27145dc7c08ebb3ff9f7d548
@@ -1761,6 +2051,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-backup-1.1.1.tgz
@@ -1782,6 +2073,13 @@ entries:
     appVersion: 1.1.0-rc1
     created: "2025-08-07T12:32:23.474648065Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-backup-1.1.1.tgz
+    version: 1.1.1
+  - apiVersion: v1
+    appVersion: 1.1.0-rc1
+    created: "2025-08-08T09:35:21.65338911Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 1a2c71389dc08d58f51f66e3ebe44e63fe7410691ec92d642c0dcfaa57c17605
@@ -1799,6 +2097,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-backup-1.1.0.tgz
@@ -1820,6 +2119,13 @@ entries:
     appVersion: 1.0.2
     created: "2025-08-07T12:32:23.473478635Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-backup-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v1
+    appVersion: 1.0.2
+    created: "2025-08-08T09:35:21.651930039Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: fd9316e9719a924eb8aa2d6d947d90e162f602ef4b77e28ef070099fd1dfb1cf
@@ -1837,6 +2143,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-backup-1.0.2.tgz
@@ -1858,6 +2165,13 @@ entries:
     appVersion: 1.0.2
     created: "2025-08-07T12:32:23.472372188Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-backup-1.0.2.tgz
+    version: 1.0.2
+  - apiVersion: v1
+    appVersion: 1.0.2
+    created: "2025-08-08T09:35:21.650832065Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 0e96c406605816b9a70a0440710d4a82743d373c2b9da20696e6f3a1b1ef2698
@@ -1875,6 +2189,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-backup
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-backup-1.0.1.tgz
@@ -1896,6 +2211,13 @@ entries:
     appVersion: 1.0.2
     created: "2025-08-07T12:32:23.471253762Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-backup-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v1
+    appVersion: 1.0.2
+    created: "2025-08-08T09:35:21.649644507Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Backup with PX-Central on Kubernetes
       and Openshift
     digest: 2bb9b69ade7b648d46ca618f2f798ba0af346022b42ce540d3988b2c8a387226
@@ -1915,6 +2237,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-backup-1.0.0.tgz
     version: 1.0.0
   px-central:
@@ -1928,18 +2251,25 @@ entries:
 =======
     - https://raw.githubusercontent.com/portworx/helm/PB-11976/stable/px-backup-1.0.0.tgz
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-backup-1.0.0.tgz
+>>>>>>> PB-11987: remove _ from description and org id as well
     version: 1.0.0
   px-central:
   - apiVersion: v1
     appVersion: 2.10.0-staging
-    created: "2025-08-07T12:32:23.532775755Z"
+    created: "2025-08-08T09:35:21.708155212Z"
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
+<<<<<<< HEAD
 <<<<<<< HEAD
     digest: a1586c1ca422880435a2db8a72ac4043254c92d24c6f7ecb6ccf155b0b08030a
 >>>>>>> PB-11822: Alerting rule and email format for batch alerting
 =======
     digest: 8c3a2b269862760407c63bfb0034c627cd87a4712d3b31829bb7b60cb7e6a74a
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    digest: fae08333b8e5751f8c8c62febd3d38c9a872203c34c9f1fe4cb94adcd2f0dc3a
+>>>>>>> PB-11987: remove _ from description and org id as well
     home: https://portworx.com/
     icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
     keywords:
@@ -1954,6 +2284,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.10.0.tgz
@@ -1975,6 +2306,13 @@ entries:
     appVersion: 2.9.0
     created: "2025-08-07T12:32:23.781468628Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.10.0.tgz
+    version: 2.10.0
+  - apiVersion: v1
+    appVersion: 2.9.0
+    created: "2025-08-08T09:35:21.961825141Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 54149c33b459f0c04cab628564a8fac7e55a62193dbbc27f49b9b15fba028c3e
     home: https://portworx.com/
@@ -1991,6 +2329,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.9.0.tgz
@@ -2012,6 +2351,13 @@ entries:
     appVersion: 2.8.4
     created: "2025-08-07T12:32:23.769135637Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.9.0.tgz
+    version: 2.9.0
+  - apiVersion: v1
+    appVersion: 2.8.4
+    created: "2025-08-08T09:35:21.952814325Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 1bed0e012644fe7a88032760fc5bfa43baaa40256d274f16af4d7842b7c6e1a9
     home: https://portworx.com/
@@ -2028,6 +2374,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.8.4.tgz
@@ -2049,6 +2396,13 @@ entries:
     appVersion: 2.8.3
     created: "2025-08-07T12:32:23.759094568Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.8.4.tgz
+    version: 2.8.4
+  - apiVersion: v1
+    appVersion: 2.8.3
+    created: "2025-08-08T09:35:21.942957962Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: da19b5d176bc83fd649b2239bdb0e115a8cebd1facadca4a039b75f5be77cb9b
     home: https://portworx.com/
@@ -2065,6 +2419,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.8.3.tgz
@@ -2086,6 +2441,13 @@ entries:
     appVersion: 2.8.2
     created: "2025-08-07T12:32:23.749290026Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.8.3.tgz
+    version: 2.8.3
+  - apiVersion: v1
+    appVersion: 2.8.2
+    created: "2025-08-08T09:35:21.933006481Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 5b78a5947dbace22ff43252da7e7124455e35b80f263cacc559227be9c2beb47
     home: https://portworx.com/
@@ -2102,6 +2464,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.8.2.tgz
@@ -2123,6 +2486,13 @@ entries:
     appVersion: 2.8.1
     created: "2025-08-07T12:32:23.739546484Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.8.2.tgz
+    version: 2.8.2
+  - apiVersion: v1
+    appVersion: 2.8.1
+    created: "2025-08-08T09:35:21.923629001Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 1f36737794cd7a47154883a51ffc89ce0772b922f6e85b5840300dc09420003f
     home: https://portworx.com/
@@ -2139,6 +2509,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.8.1.tgz
@@ -2160,6 +2531,13 @@ entries:
     appVersion: 2.8.0
     created: "2025-08-07T12:32:23.728398635Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.8.1.tgz
+    version: 2.8.1
+  - apiVersion: v1
+    appVersion: 2.8.0
+    created: "2025-08-08T09:35:21.915494286Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: f25bb88dc2eebdd3ce29288f96b9b57b34d46d06dcd4a97ed9784cf086380998
     home: https://portworx.com/
@@ -2176,6 +2554,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.8.0.tgz
@@ -2197,6 +2576,13 @@ entries:
     appVersion: 2.7.4
     created: "2025-08-07T12:32:23.71876193Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.8.0.tgz
+    version: 2.8.0
+  - apiVersion: v1
+    appVersion: 2.7.4
+    created: "2025-08-08T09:35:21.905892103Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 400847b924699668cfdb2c11f27af52b6272dd29d006692d7415582e41b18ebe
     home: https://portworx.com/
@@ -2213,6 +2599,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.7.4.tgz
@@ -2234,6 +2621,13 @@ entries:
     appVersion: 2.7.3
     created: "2025-08-07T12:32:23.710236277Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.7.4.tgz
+    version: 2.7.4
+  - apiVersion: v1
+    appVersion: 2.7.3
+    created: "2025-08-08T09:35:21.89675074Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: eaa287204c00aa1f59a5ef3bd40d0b32a3197147dea79a2cb041bd106d7dbc1a
     home: https://portworx.com/
@@ -2250,6 +2644,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.7.3.tgz
@@ -2271,6 +2666,13 @@ entries:
     appVersion: 2.7.2
     created: "2025-08-07T12:32:23.699618448Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.7.3.tgz
+    version: 2.7.3
+  - apiVersion: v1
+    appVersion: 2.7.2
+    created: "2025-08-08T09:35:21.888531162Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 881a960859a68bb65ca78246160f58b028152fb92cca0ce48cd5e43a00b200c7
     home: https://portworx.com/
@@ -2287,6 +2689,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.7.2.tgz
@@ -2308,6 +2711,13 @@ entries:
     appVersion: 2.7.1
     created: "2025-08-07T12:32:23.689372674Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.7.2.tgz
+    version: 2.7.2
+  - apiVersion: v1
+    appVersion: 2.7.1
+    created: "2025-08-08T09:35:21.878945492Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 648be2c10a1d748a2f100c854837b673af208047be686a28b95c6dfac63b1710
     home: https://portworx.com/
@@ -2324,6 +2734,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.7.1.tgz
@@ -2345,6 +2756,13 @@ entries:
     appVersion: 2.7.0
     created: "2025-08-07T12:32:23.681280168Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.7.1.tgz
+    version: 2.7.1
+  - apiVersion: v1
+    appVersion: 2.7.0
+    created: "2025-08-08T09:35:21.870593535Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 295a652338c35a57905d3b7eea7f156d8f7a88924cc3b1a2cea84402d35369ac
     home: https://portworx.com/
@@ -2361,6 +2779,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.7.0.tgz
@@ -2382,6 +2801,13 @@ entries:
     appVersion: 2.6.1
     created: "2025-08-07T12:32:23.670958911Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.7.0.tgz
+    version: 2.7.0
+  - apiVersion: v1
+    appVersion: 2.6.1
+    created: "2025-08-08T09:35:21.860285903Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: f32abdd809415d793b92123c134f13d4c14141f5bd740dbe103368b3c6b9691b
     home: https://portworx.com/
@@ -2398,6 +2824,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.6.1.tgz
@@ -2419,6 +2846,13 @@ entries:
     appVersion: 2.6.0
     created: "2025-08-07T12:32:23.661383292Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.6.1.tgz
+    version: 2.6.1
+  - apiVersion: v1
+    appVersion: 2.6.0
+    created: "2025-08-08T09:35:21.848827279Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: fec02bc7e95a933c218a63f792423b3cfa8fe39c23da75596b39c88f30a1bcbe
     home: https://portworx.com/
@@ -2435,6 +2869,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.6.0.tgz
@@ -2456,6 +2891,13 @@ entries:
     appVersion: 2.5.1
     created: "2025-08-07T12:32:23.651367102Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.6.0.tgz
+    version: 2.6.0
+  - apiVersion: v1
+    appVersion: 2.5.1
+    created: "2025-08-08T09:35:21.8385073Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 35e04e7436dad4c6cebcfa5e4d35eaac8b5a20fd127338d0e99c7ed88271d85c
     home: https://portworx.com/
@@ -2472,6 +2914,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.5.1.tgz
@@ -2493,6 +2936,13 @@ entries:
     appVersion: 2.5.0
     created: "2025-08-07T12:32:23.642994411Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.5.1.tgz
+    version: 2.5.1
+  - apiVersion: v1
+    appVersion: 2.5.0
+    created: "2025-08-08T09:35:21.829396412Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 6c36eb1e0fe29908738d6cc5284cb7b6122549ca7ffa003f0fd21733be4733be
     home: https://portworx.com/
@@ -2509,6 +2959,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.5.0.tgz
@@ -2530,6 +2981,13 @@ entries:
     appVersion: 2.4.3
     created: "2025-08-07T12:32:23.635361267Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.5.0.tgz
+    version: 2.5.0
+  - apiVersion: v1
+    appVersion: 2.4.3
+    created: "2025-08-08T09:35:21.819446083Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 2ca15224d4c0118e3dd2c0c2c4a863ee0e6a47dfedcb7feb6e942521ed99b171
     home: https://portworx.com/
@@ -2546,6 +3004,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.4.3.tgz
@@ -2567,6 +3026,13 @@ entries:
     appVersion: 2.4.2
     created: "2025-08-07T12:32:23.62565715Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.4.3.tgz
+    version: 2.4.3
+  - apiVersion: v1
+    appVersion: 2.4.2
+    created: "2025-08-08T09:35:21.809768549Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 645700605aa6cdfdebe24e1288a96b2bfb9f4e9d2525866dacddc11eb7847900
     home: https://portworx.com/
@@ -2583,6 +3049,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.4.2.tgz
@@ -2604,6 +3071,13 @@ entries:
     appVersion: 2.4.1
     created: "2025-08-07T12:32:23.618091226Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.4.2.tgz
+    version: 2.4.2
+  - apiVersion: v1
+    appVersion: 2.4.1
+    created: "2025-08-08T09:35:21.800151317Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 352b6de244486cef54fb2e88fee4671cf9b0d7c6a425862f2813d1ff921f1b22
     home: https://portworx.com/
@@ -2620,6 +3094,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.4.1.tgz
@@ -2641,6 +3116,13 @@ entries:
     appVersion: 2.4.0
     created: "2025-08-07T12:32:23.608891817Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.4.1.tgz
+    version: 2.4.1
+  - apiVersion: v1
+    appVersion: 2.4.0
+    created: "2025-08-08T09:35:21.790733446Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: f034a271280a530c9d236d79f892a686ee961d95d865fdad84c765184923f92a
     home: https://portworx.com/
@@ -2657,6 +3139,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.4.0.tgz
@@ -2678,6 +3161,13 @@ entries:
     appVersion: 2.3.3
     created: "2025-08-07T12:32:23.600651196Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.4.0.tgz
+    version: 2.4.0
+  - apiVersion: v1
+    appVersion: 2.3.3
+    created: "2025-08-08T09:35:21.782145408Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 4b2f2dbcd15878e63cb50b21208e8a00317af2566f1b112e11e191fd88183caf
     home: https://portworx.com/
@@ -2694,6 +3184,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.3.3.tgz
@@ -2715,6 +3206,13 @@ entries:
     appVersion: 2.3.2
     created: "2025-08-07T12:32:23.591694863Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.3.3.tgz
+    version: 2.3.3
+  - apiVersion: v1
+    appVersion: 2.3.2
+    created: "2025-08-08T09:35:21.774067265Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 07969717a7e2ffd0a85080d1a782d2fbbf2a77b101e4e1e1e48a27c2c1b4a1cf
     home: https://portworx.com/
@@ -2731,6 +3229,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.3.2.tgz
@@ -2752,6 +3251,13 @@ entries:
     appVersion: 2.3.1
     created: "2025-08-07T12:32:23.584142537Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.3.2.tgz
+    version: 2.3.2
+  - apiVersion: v1
+    appVersion: 2.3.1
+    created: "2025-08-08T09:35:21.764016085Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: bffae73f9f96a3d775084644639b6ec858633a9b377082326756577ca305b2d7
     home: https://portworx.com/
@@ -2768,6 +3274,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.3.1.tgz
@@ -2789,6 +3296,13 @@ entries:
     appVersion: 2.3.0
     created: "2025-08-07T12:32:23.575913136Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.3.1.tgz
+    version: 2.3.1
+  - apiVersion: v1
+    appVersion: 2.3.0
+    created: "2025-08-08T09:35:21.753780367Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 849f16762e8c9684d91b9541033c38121f9230975c4f46819e260cbff4ff5212
     home: https://portworx.com/
@@ -2805,6 +3319,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.3.0.tgz
@@ -2826,6 +3341,13 @@ entries:
     appVersion: 2.2.3
     created: "2025-08-07T12:32:23.566588394Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.3.0.tgz
+    version: 2.3.0
+  - apiVersion: v1
+    appVersion: 2.2.3
+    created: "2025-08-08T09:35:21.745191074Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 9656fdd92ce4f80ffcaf9e85eaa590c0151f2282da6a536f9722fcb315a993e2
     home: https://portworx.com/
@@ -2842,6 +3364,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.2.3.tgz
@@ -2863,6 +3386,13 @@ entries:
     appVersion: 2.2.2
     created: "2025-08-07T12:32:23.55833656Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.2.3.tgz
+    version: 2.2.3
+  - apiVersion: v1
+    appVersion: 2.2.2
+    created: "2025-08-08T09:35:21.734792818Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: c4760d4aa90b2f23dff0054c6a57c423f03bdf1e3685c7701025579de77f2d60
     home: https://portworx.com/
@@ -2879,6 +3409,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.2.2.tgz
@@ -2900,6 +3431,13 @@ entries:
     appVersion: 2.2.1
     created: "2025-08-07T12:32:23.550084577Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.2.2.tgz
+    version: 2.2.2
+  - apiVersion: v1
+    appVersion: 2.2.1
+    created: "2025-08-08T09:35:21.725431227Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: defa0a5d415b35c5f01ebf4ed99aa45a7e3f7ec08c417c415f12dc8bc05ae3a8
     home: https://portworx.com/
@@ -2916,6 +3454,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.2.1.tgz
@@ -2937,6 +3476,13 @@ entries:
     appVersion: 2.2.0
     created: "2025-08-07T12:32:23.540989553Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.2.1.tgz
+    version: 2.2.1
+  - apiVersion: v1
+    appVersion: 2.2.0
+    created: "2025-08-08T09:35:21.71641734Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: d22206f8b66527c3bf699aab9c3227a5f40065fcb7134207a18813035a1766c2
     home: https://portworx.com/
@@ -2953,6 +3499,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.2.0.tgz
@@ -2974,6 +3521,13 @@ entries:
     appVersion: 2.1.2
     created: "2025-08-07T12:32:23.522479927Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.2.0.tgz
+    version: 2.2.0
+  - apiVersion: v1
+    appVersion: 2.1.2
+    created: "2025-08-08T09:35:21.698546958Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 8b45b7ef443c2b02dc41b88b70877f7d83d8180621bf1f708fbbebd8a0dad3bd
     home: https://portworx.com/
@@ -2990,6 +3544,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.1.2.tgz
@@ -3011,6 +3566,13 @@ entries:
     appVersion: 2.1.1
     created: "2025-08-07T12:32:23.512717251Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.1.2.tgz
+    version: 2.1.2
+  - apiVersion: v1
+    appVersion: 2.1.1
+    created: "2025-08-08T09:35:21.69046211Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: ab68db760b922dfeb49448ab8a5393104d02d92134b2007ffc37932b12dadb5c
     home: https://portworx.com/
@@ -3027,6 +3589,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.1.1.tgz
@@ -3048,6 +3611,13 @@ entries:
     appVersion: 2.0.1
     created: "2025-08-07T12:32:23.504721614Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.1.1.tgz
+    version: 2.1.1
+  - apiVersion: v1
+    appVersion: 2.0.1
+    created: "2025-08-08T09:35:21.682724482Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: f719f6251797b14ffad588f8db5648cd9f515e0bf855c487804f4a731f26f8cb
     home: https://portworx.com/
@@ -3064,6 +3634,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.0.1.tgz
@@ -3085,6 +3656,13 @@ entries:
     appVersion: 2.0.0
     created: "2025-08-07T12:32:23.498055874Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.0.1.tgz
+    version: 2.0.1
+  - apiVersion: v1
+    appVersion: 2.0.0
+    created: "2025-08-08T09:35:21.675417497Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift
     digest: 58adcc335f387a3090cd55316ca7f2f4ebedaeea1375764d1bf18582551d4d96
     home: https://portworx.com/
@@ -3103,6 +3681,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-central-2.0.0.tgz
 =======
     - https://raw.githubusercontent.com/portworx/helm/PB-11821-rebase/stable/px-central-2.0.0.tgz
@@ -3110,10 +3689,14 @@ entries:
 =======
     - https://raw.githubusercontent.com/portworx/helm/PB-11976/stable/px-central-2.0.0.tgz
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-central-2.0.0.tgz
+>>>>>>> PB-11987: remove _ from description and org id as well
     version: 2.0.0
   px-license-server:
   - apiVersion: v1
     appVersion: 1.0.0
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     created: "2025-08-12T16:40:38.249484+05:30"
@@ -3123,6 +3706,9 @@ entries:
 =======
     created: "2025-08-07T12:32:23.784395805Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    created: "2025-08-08T09:35:21.965250016Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 70a52d0e5a59dfcbdabba7dda742d748d42937aecb4cdd8f603738cbbfb2c8a4
@@ -3135,6 +3721,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-license-server-1.2.1.tgz
@@ -3156,6 +3743,13 @@ entries:
     appVersion: 1.0.0
     created: "2025-08-07T12:32:23.783857576Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-license-server-1.2.1.tgz
+    version: 1.2.1
+  - apiVersion: v1
+    appVersion: 1.0.0
+    created: "2025-08-08T09:35:21.964588205Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 5ee27e632cc313ab281a50c2deebbd8713657d19e0b394ea97ae4fdee76f4f09
@@ -3168,6 +3762,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-license-server-1.2.0.tgz
@@ -3189,6 +3784,13 @@ entries:
     appVersion: 1.0.0
     created: "2025-08-07T12:32:23.783284389Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-license-server-1.2.0.tgz
+    version: 1.2.0
+  - apiVersion: v1
+    appVersion: 1.0.0
+    created: "2025-08-08T09:35:21.96405514Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 55f496792430763626acecb5082eaff7c5276879a0f527ae993635ad8ac90640
@@ -3201,6 +3803,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-license-server-1.1.0.tgz
@@ -3222,6 +3825,13 @@ entries:
     appVersion: 1.0.1
     created: "2025-08-07T12:32:23.78258595Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-license-server-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v1
+    appVersion: 1.0.1
+    created: "2025-08-08T09:35:21.963469061Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: 6673a056155f5329ef7c8cf2c4436668af4b023d234d004448e1db8a2696e1f1
@@ -3234,6 +3844,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-license-server
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-license-server-1.0.1.tgz
@@ -3255,6 +3866,13 @@ entries:
     appVersion: 1.0.0
     created: "2025-08-07T12:32:23.782032572Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-license-server-1.0.1.tgz
+    version: 1.0.1
+  - apiVersion: v1
+    appVersion: 1.0.0
+    created: "2025-08-08T09:35:21.962708082Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for install and configure PX-License-Server on Kubernetes
       and Openshift
     digest: bb595272c93ef8071e8bc606a3cf8bdb5d7099646d4f8066748f9bd57ac76af1
@@ -3269,6 +3887,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-license-server-1.0.0.tgz
 =======
     - https://raw.githubusercontent.com/portworx/helm/PB-11821-rebase/stable/px-license-server-1.0.0.tgz
@@ -3276,10 +3895,14 @@ entries:
 =======
     - https://raw.githubusercontent.com/portworx/helm/PB-11976/stable/px-license-server-1.0.0.tgz
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-license-server-1.0.0.tgz
+>>>>>>> PB-11987: remove _ from description and org id as well
     version: 1.0.0
   px-monitor:
   - apiVersion: v1
     appVersion: 1.2.1
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     created: "2025-08-12T16:40:38.256859+05:30"
@@ -3289,6 +3912,9 @@ entries:
 =======
     created: "2025-08-07T12:32:23.802545623Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    created: "2025-08-08T09:35:21.982897877Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: 9ecba7fb39e84dbdf274784b509780465bda9b0b0c0574b7e729f5575a4a4a1e
@@ -3304,6 +3930,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-monitor-1.2.1.tgz
@@ -3325,6 +3952,13 @@ entries:
     appVersion: 1.2.0
     created: "2025-08-07T12:32:23.797956569Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-monitor-1.2.1.tgz
+    version: 1.2.1
+  - apiVersion: v1
+    appVersion: 1.2.0
+    created: "2025-08-08T09:35:21.978681294Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: ed29de40a6aedebd2df7cce93084cf008b565d72cc36bcaf92c33048a920fade
@@ -3340,6 +3974,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-monitor-1.2.0.tgz
@@ -3361,6 +3996,13 @@ entries:
     appVersion: 1.1.1
     created: "2025-08-07T12:32:23.793384794Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-monitor-1.2.0.tgz
+    version: 1.2.0
+  - apiVersion: v1
+    appVersion: 1.1.1
+    created: "2025-08-08T09:35:21.974027562Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: 66e6d465883dc5be2b6413cb09809aa48cc898400c5e149cf8ead44ed84ec504
@@ -3376,6 +4018,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-monitor
     urls:
+<<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-monitor-1.1.1.tgz
@@ -3397,6 +4040,13 @@ entries:
     appVersion: 1.1.0
     created: "2025-08-07T12:32:23.788368973Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-monitor-1.1.1.tgz
+    version: 1.1.1
+  - apiVersion: v1
+    appVersion: 1.1.0
+    created: "2025-08-08T09:35:21.969340381Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
     description: A Helm chart for install and configure PX-Monitor on Kubernetes and
       Openshift
     digest: 079c699ed5fcba8f9214bde2b9f7b641883bac7cb57d3075a796583a10a2f9ed
@@ -3414,6 +4064,7 @@ entries:
     urls:
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     - https://raw.githubusercontent.com/portworx/helm/2.10.0-fc1/stable/px-monitor-1.1.0.tgz
     version: 1.1.0
 generated: "2025-08-12T16:40:38.094902+05:30"
@@ -3427,3 +4078,8 @@ generated: "2025-08-05T06:05:21.357690132Z"
     version: 1.1.0
 generated: "2025-08-07T12:32:23.361435979Z"
 >>>>>>> PB-11976: Replacing "_" with " " for bulk opertions alerts
+=======
+    - https://raw.githubusercontent.com/portworx/helm/PB-11987/stable/px-monitor-1.1.0.tgz
+    version: 1.1.0
+generated: "2025-08-08T09:35:21.539506703Z"
+>>>>>>> PB-11987: remove _ from description and org id as well
