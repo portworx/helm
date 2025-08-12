@@ -12,7 +12,7 @@ metadata:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-release"
 spec:
-  image: portworx/oci-monitor:3.3.1.1
+  image: portworx/oci-monitor:3.3.1.2
   imagePullPolicy: Always
 
   kvdb:
