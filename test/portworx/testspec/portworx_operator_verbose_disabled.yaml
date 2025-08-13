@@ -54,7 +54,7 @@ spec:
       containers:
         - name: portworx-operator
           imagePullPolicy: Always
-          image: portworx/px-operator:25.2.2
+          image: portworx/px-operator
           command:
             - /operator
             - --driver=portworx
