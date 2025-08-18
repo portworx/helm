@@ -302,3 +302,9 @@ updateStrategy:
 
   autoUpdateComponents:                   # Indicates the update strategy for the component images
                                           # valid values None,Once,Always
+
+workloadIdentity:
+  credentials:
+#    - cloudProvider: ""                  # Valid values: aws, azure, gcp. Note: currently only aws is supported
+#      key: ""                            # Key for the annotation to be added to the ServiceAccount, e.g. for AWS it is "eks.amazonaws.com/role-arn"
+#      value: ""                          # Role ARN for the IAM role to be assumed by the ServiceAccount, it will be the value of the above key
