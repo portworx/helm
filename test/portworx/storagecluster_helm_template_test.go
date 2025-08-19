@@ -373,6 +373,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
 					"instanceVolumeK8sUpgrade": "true",
+					"nonDisruptivek8sUpgrade":  "true",
 				},
 			},
 		},
