@@ -19,3 +19,4 @@ data:
   OIDC_AUTHSERVERURL: http://pxcentral-keycloak-http:80/auth/realms/master
   OIDC_SCOPES: openid
   HIDE_KUBE_CONFIG: "False"
+  USE_PLATFORM_RBAC: "{{ .Values.pxbackup.usePlatformRbac }}"
