@@ -5,6 +5,7 @@
 {{- $alertmanagerEndpoint := "" }}
 {{- $prometheusSecretName := "" }}
 {{- $alertmanagerSecretName := "" }}
+{{- $usePlatformRbac := .Values.pxbackup.usePlatformRbac | default false }}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- if eq $pxBackupEnabled true }}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
@@ -152,6 +153,10 @@ spec:
             value: "100"
           - name: K8S_BURST
             value: "100"
+          {{- if eq $usePlatformRbac true }}
+          - name: USE_PLATFORM_RBAC
+            value: "true"
+          {{- end }}
           - name: PX_NAMESPACE
             valueFrom:
               fieldRef:
