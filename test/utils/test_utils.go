@@ -30,10 +30,10 @@ func TestRenderedHelmTemplate(t *testing.T, helmOptions *helm.Options, helmChart
 	var resultFileData interface{}
 	helm.UnmarshalK8SYaml(t, string(resultFileContent), &resultFileData)
 
-	var storageCluster interface{}
-	helm.UnmarshalK8SYaml(t, output, &storageCluster)
+	var templateOutput interface{}
+	helm.UnmarshalK8SYaml(t, output, &templateOutput)
 
-	require.Equal(t, isYamlMatched(resultFileData, storageCluster), true)
+	require.Equal(t, isYamlMatched(resultFileData, templateOutput), true)
 }
 
 func isYamlMatched(expected, actual interface{}) bool {

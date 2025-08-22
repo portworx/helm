@@ -1,0 +1,44 @@
+apiVersion: core.libopenstorage.org/v1
+kind: ComponentK8sConfig
+metadata:
+  name: portworx-k8s-config
+  namespace: portworx
+spec:
+  components:
+    - componentNames:
+      - Autopilot
+      - CSI
+      - Portworx API
+      workloadConfigs:
+      - annotations:
+          example-annotation: "true"
+        containerConfigs:
+        - containerSelector:
+          - autopilot
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
+        labels:
+          example-label: value
+        placement:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+              - matchExpressions:
+                - key: px/enabled
+                  operator: NotIn
+                  values:
+                  - "false"
+                - key: node-role.kubernetes.io/master
+                  operator: DoesNotExist
+          tolerations:
+          - key: test-key
+            operator: Exists
+        workloadNames:
+        - autopilot
+        - px-csi-ext
+        - portworx-api

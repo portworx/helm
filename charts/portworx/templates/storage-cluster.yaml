@@ -34,11 +34,6 @@
   {{- $systemMetadataDevice:= .Values.systemMetadataDevice | default "none"}}
   {{- $miscArgs := include "px.miscArgs" . }}
   {{- $volumesPresent := include "px.volumesPresent" . }}
-  {{- $storagePodAnnotations := .Values.customMetadata.annotations.pod.storage }}
-  {{- $portworxApiServiceAnnotations := .Values.customMetadata.annotations.service.portworxApi }}
-  {{- $portworxServiceAnnotations := .Values.customMetadata.annotations.service.portworxService }}
-  {{- $kvdbServiceAnnotations := .Values.customMetadata.annotations.service.portworxKVDBService }}
-  {{- $portworxApiServiceLabels := .Values.customMetadata.labels.service.portworxApi}}
 
   {{- $prometheus := .Values.monitoring.prometheus}}
   {{- $prometheousRetention := .Values.monitoring.prometheus.retention | default "none"}}
@@ -92,6 +87,9 @@ metadata:
     {{- if eq .Values.migrateToKvdbTls true }}
     portworx.io/migration-to-kvdb-tls: "true"
     {{- end }}
+    {{- if eq .Values.migrateToComponentK8sConfig true }}
+    portworx.io/migrate-configs: "true"
+    {{- end }}
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
@@ -133,9 +131,23 @@ spec:
   {{- end}}
 
 
-  {{- $hasAnnotations := or ($storagePodAnnotations) ($portworxApiServiceAnnotations) ($portworxServiceAnnotations ) ($kvdbServiceAnnotations) }}
-  {{- $hasLabels := $portworxApiServiceLabels }}
-  {{- $hasMetadata := or $hasAnnotations $hasLabels }}
+  {{- $labels := .Values.customMetadata.labels }}
+  {{- $annotations := .Values.customMetadata.annotations }}
+  {{- $hasLabels := false }}
+  {{- range $type, $objects := $labels }}
+    {{- range $name, $value := $objects }}
+      {{- if $value }}{{- $hasLabels = true }}{{- end }}
+    {{- end }}
+  {{- end }}
+
+  {{- $hasAnnotations := false }}
+  {{- range $type, $objects := $annotations }}
+    {{- range $name, $value := $objects }}
+      {{- if $value }}{{- $hasAnnotations = true }}{{- end }}
+    {{- end }}
+  {{- end }}
+
+  {{- $hasMetadata := or $hasLabels $hasAnnotations }}
 
   {{- if $hasMetadata}}
   metadata:
@@ -155,45 +167,23 @@ spec:
         {{- end }}
       {{- end }}
     {{- end }}
-    {{- if $hasAnnotations}}
+    {{- if $hasAnnotations }}
     annotations:
-      {{- if $storagePodAnnotations }}
-      pod/storage:
-        {{- $annotations := $storagePodAnnotations | split ";" }}
-        {{- range $key, $val := $annotations }}
-        {{- $annotation := $val | split "=" }}
-          {{ $annotation._0 | trim }}: {{ $annotation._1 | trim | quote -}}
+      {{- range $type, $objects := $annotations }}
+        {{- range $name, $value := $objects }}
+          {{- if $value }}
+          {{ printf "%s/%s" $type $name | replace "_" "-" }}:
+            {{- $pairs := $value | split ";" }}
+            {{- range $pair := $pairs }}
+              {{- $kv := $pair | split "=" }}
+              {{- if eq (len $kv) 2 }}
+              {{ $kv._0 | trim }}: {{ $kv._1 | trim | quote }}
+              {{- end }}
+            {{- end }}
+          {{- end }}
         {{- end }}
       {{- end }}
-
-      {{- if $portworxApiServiceAnnotations }}
-      service/portworx-api:
-        {{- $annotations := $portworxApiServiceAnnotations | split ";" }}
-        {{- range $key, $val := $annotations }}
-        {{- $annotation := $val | split "=" }}
-          {{ $annotation._0 | trim }}: {{ $annotation._1 | trim | quote -}}
-        {{- end }}
-      {{- end }}
-
-      {{- if $portworxServiceAnnotations }}
-      service/portworx-service:
-        {{- $annotations := $portworxServiceAnnotations | split ";" }}
-        {{- range $key, $val := $annotations }}
-        {{- $annotation := $val | split "=" }}
-          {{ $annotation._0 | trim }}: {{ $annotation._1 | trim | quote -}}
-        {{- end }}
-      {{- end }}
-
-      {{- if $kvdbServiceAnnotations }}
-      service/portworx-kvdb-service:
-        {{- $annotations := $kvdbServiceAnnotations | split ";" }}
-        {{- range $key, $val := $annotations }}
-        {{- $annotation := $val | split "=" }}
-          {{ $annotation._0 | trim }}: {{ $annotation._1 | trim | quote -}}
-        {{- end }}
-      {{- end }}    
-
-    {{- end}}
+    {{- end }}
   {{- end }}
 
   kvdb:

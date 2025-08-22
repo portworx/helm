@@ -4,7 +4,7 @@ deployOperator: true                    # Deploy the Portworx operator
 deployCluster: true                     # Deploy the Portworx cluster
 
 imageVersion: 3.3.1.2                    # Version of the PX Image.
-pxOperatorImageVersion: 25.2.2         # Version of the PX operator image.
+pxOperatorImageVersion: 25.3.0         # Version of the PX operator image.
 
 openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
 isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
@@ -12,6 +12,7 @@ isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to 
 nonDisruptivek8sUpgrade: false          # By default, S&P upgrades are disabled. To enable them, set this to true
 instanceVolumeK8sUpgrade: false         # Set to true to enable support for kubernetes upgrades for Anthos cluster on EC2 instance with ephemeral volumes. Setting this also enables S&P
 skipHealthChecks: false                 # Used to skip health checks. By default, health checks are enabled. Set this to true to disable health checks
+migrateToComponentK8sConfig: false
 
 pksInstall: false                       # installation on PKS (Pivotal Container Service)
 EKSInstall: false                     # installation on EKS.
@@ -303,3 +304,38 @@ updateStrategy:
 
   autoUpdateComponents:                   # Indicates the update strategy for the component images
                                           # valid values None,Once,Always
+
+componentK8sConfig:
+  enabled: false                                          # Enables or disables creation of ComponentK8sConfig CR
+  name: portworx-k8s-config                               # Name of the ComponentK8sConfig resource
+  components:
+  # - componentNames: ["Autopilot","CSI","Portworx API"]   # List of Portworx components this config applies to
+  #   workloadConfigs:
+  #     - workloadNames: ["autopilot","px-csi-ext","portworx-api"]   # List of workloads (Deployment/DaemonSet/Pod) affected by this config
+  #       annotations:                                               # Key-value annotations to be applied on the workloads
+  #         example-annotation: "true"
+  #       labels:                                                    # Key-value labels to be applied on the workloads
+  #         example-label: "value"
+  #       containerConfigs:                                          # Configuration applied at container level
+  #         - containerSelector: ["autopilot"]                       # List of container names inside the workload
+  #           resources:                                             # Resource requirements for the containers
+  #             requests:              
+  #               cpu: "100m"
+  #               memory: "128Mi"
+  #             limits:               
+  #               cpu: "200m"
+  #               memory: "256Mi"
+  #
+  #       placement:                                               # Placement configuration for the workloads
+  #         tolerations:                                           # Tolerations that allow workloads to run on tainted nodes
+  #           - key: test-key
+  #             operator: Exists
+  #         nodeAffinity:                                          # Node affinity rules for scheduling workloads
+  #           requiredDuringSchedulingIgnoredDuringExecution:
+  #             nodeSelectorTerms:
+  #               - matchExpressions:
+  #                   - key: px/enabled
+  #                     operator: NotIn
+  #                     values: ["false"]
+  #                   - key: node-role.kubernetes.io/master
+  #                     operator: DoesNotExist
