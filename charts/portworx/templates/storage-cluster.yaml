@@ -623,10 +623,4 @@ spec:
   deleteStrategy:
     type: {{ .Values.deleteStrategy.type }}
   {{- end }}
-  {{- with .Values.workloadIdentity.credentials }}
-  workloadIdentity:
-    credentials:
-      {{- toYaml . | nindent 4 }}
-  {{- end }}
-
 {{- end }}
