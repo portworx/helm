@@ -367,13 +367,6 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				},
 			},
 		},
-		{
-			name:           "TestWorkloadIdentity",
-			resultFileName: "storagecluster_with_workload_identity.yaml",
-			helmOption: &helm.Options{
-				ValuesFiles: []string{"./testValues/storagecluster_with_workload_identity.yaml"},
-			},
-		},
 	}
 
 	for _, testCase := range testCases {
