@@ -213,73 +213,73 @@ images:
   insecureRegistry: false
 
   pxcentralApiServerImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-api-base
-    tag: 2.9.1-staging
+    imageName: pxcentral-onprem-api
+    tag: 2.9.1
     module: pxCentral
   pxcentralFrontendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-frontend-private
-    tag: 2.9.1-staging
+    imageName: pxcentral-onprem-ui-frontend
+    tag: 2.9.1
     module: pxCentral
   pxcentralBackendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-backend-private
-    tag: 2.9.1-staging
+    imageName: pxcentral-onprem-ui-backend
+    tag: 2.9.1
     module: pxCentral
   pxcentralMiddlewareImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-lhbackend-private
-    tag: 2.9.1-staging
+    imageName: pxcentral-onprem-ui-lhbackend
+    tag: 2.9.1
     module: pxCentral
   postInstallSetupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-post-setup-base
-    tag: 2.9.1-staging
+    imageName: pxcentral-onprem-post-setup
+    tag: 2.9.1
     module: pxCentral
   keycloakBackendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: postgresql
     tag: 17.4.0-debian-12-r19
     module: pxCentral
   keycloakFrontendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: keycloak
     tag: 26.2.4
     module: pxCentral
   keycloakLoginThemeImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
-    imageName: sb-keycloak-login-theme
-    tag: 2.9.1-staging
+    imageName: keycloak-login-theme
+    tag: 2.9.1
     module: pxCentral
   keycloakInitContainerImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: busybox
     tag: 1.35.0
     module: pxCentral
   mysqlImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: mysql
     tag: 8.0.40
     module: pxCentral
   preSetupHookImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-hook-base
-    tag: 2.9.1-staging
+    imageName: pxcentral-onprem-hook
+    tag: 2.9.1
     module: pxCentral
   mysqlInitImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: busybox
     tag: 1.35.0
@@ -287,13 +287,13 @@ images:
 
   ## Images required for enabling px-backup
   pxBackupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
-    imageName: px-backup-base
-    tag: 2.9.1-staging
+    imageName: px-backup
+    tag: 2.9.1
     module: pxBackup
   mongodbImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: mongodb
     tag: 8.0.9-debian-12-r1
@@ -301,7 +301,7 @@ images:
 
   ## Images required for enabling px-license-server
   licenseServerImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: px-els
     tag: 2.8.0
@@ -309,97 +309,97 @@ images:
 
   ## Images required for enabling px-monitor
   cortexImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: cortex
     tag: v1.13.1
     module: pxMonitor
   cassandraImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: cassandra
     tag: 4.0.7-debian-11-r34
     module: pxMonitor
   proxyConfigImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: nginx
     tag: 1.23.3-alpine-slim
     module: pxMonitor
   consulImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: consul
     tag: 1.14.4-debian-11-r4
     module: pxMonitor
   dnsmasqImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: go-dnsmasq
     tag: release-1.0.7-v3
     module: pxMonitor
   grafanaImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: grafana
     tag: 9.1.3
     module: pxMonitor
   prometheusImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: prometheus
     tag: v2.35.0
     module: pxMonitor
   pxBackupPrometheusImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: prometheus
     tag: v3.3.1
     module: pxBackup
   pxBackupAlertmanagerImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: alertmanager
     tag: v0.28.0
     module: pxBackup
   pxBackupPrometheusOperatorImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: prometheus-operator
     tag: v0.82.1
     module: pxBackup
   pxBackupPrometheusConfigReloaderImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: prometheus-config-reloader
     tag: v0.82.1
     module: pxBackup
   prometheusConfigReloadrImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: prometheus-config-reloader
     tag: v0.56.3
     module: pxMonitor
   prometheusOperatorImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: prometheus-operator
     tag: v0.56.3
     module: pxMonitor
   memcachedMetricsImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: memcached-exporter
     tag: v0.10.0
     module: pxMonitor
   memcachedIndexImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: memcached
     tag: 1.6.17-alpine
     module: pxMonitor
   memcachedImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
     imageName: memcached
     tag: 1.6.17-alpine
