@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: px-backup
+  labels:
+    app: px-backup
+    prometheus: px-backup
+spec:
+  jobLabel: app
+  selector:
+    matchLabels:
+      app: px-backup
+  namespaceSelector:
+    any: true
+  endpoints:
+  - port: rest-api

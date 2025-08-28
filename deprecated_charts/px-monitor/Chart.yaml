@@ -1,0 +1,15 @@
+apiVersion: v1
+description: A Helm chart for install and configure PX-Monitor on Kubernetes and Openshift
+home: https://portworx.com/
+icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
+keywords:
+- px-central
+- px-monitoring
+- prometheus
+- grafana
+- cortex
+name: px-monitor
+sources:
+- https://github.com/portworx/helm/tree/master/charts/px-monitor
+version: 1.2.1
+appVersion: 1.2.1
