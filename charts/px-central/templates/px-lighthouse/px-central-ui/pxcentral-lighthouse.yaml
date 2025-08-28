@@ -5,6 +5,7 @@
 {{- $alertmanagerEndpoint := "" }}
 {{- $prometheusSecretName := "" }}
 {{- $alertmanagerSecretName := "" }}
+{{- $usePlatformRbac := .Values.pxbackup.usePlatformRbac | default false }}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- if eq $pxBackupEnabled true }}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
@@ -152,7 +153,10 @@ spec:
             value: "100"
           - name: K8S_BURST
             value: "100"
-        {{- include "serviceMesh.env" . | nindent 10 }}
+          {{- if eq $usePlatformRbac true }}
+          - name: USE_PLATFORM_RBAC
+            value: "true"
+          {{- end }}
           - name: PX_NAMESPACE
             valueFrom:
               fieldRef:
@@ -174,6 +178,7 @@ spec:
           {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-lh-middleware" .Values.proxy.includeNoProxyList) }}
           {{- include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
+          {{- include "serviceMesh.env" . | nindent 10 }}
         ports:
           - name: http
             containerPort: 8091
