@@ -132,6 +132,7 @@ pxbackup:
   volDeleteWorker: 5
   version: 2.10.0
   skipValidations: false
+  usePlatformRbac: false
 
 pxlicenseserver:
   enabled: false
