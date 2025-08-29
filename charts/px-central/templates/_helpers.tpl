@@ -54,6 +54,7 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- $default := "localhost,127.0.0.1,::1,[::]:10005,.svc,.svc.cluster.local,0.0.0.0,px-backup-ui,px-central-ui,pxcentral-apiserver,pxcentral-backend,pxcentral-frontend,pxcentral-keycloak-headless,pxcentral-keycloak-http,pxcentral-keycloak-postgresql,pxcentral-keycloak-postgresql-headless,pxcentral-lh-middleware,pxcentral-mysql," }}
 {{- if .Values.pxbackup.enabled }}
   {{- $default = printf "%s%s" $default "alertmanager-operated,prometheus-operated,px-backup,px-backup-dashboard-prometheus,pxc-backup-mongodb-headless," }}
+  {{- $default = printf "%s%s.%s," $default "px-backup" .Release.Namespace }}
 {{- end }}
 {{- if .Values.pxmonitor.enabled }}
   {{- $default = printf "%s%s" $default "pxcentral-grafana,pxcentral-cortex-nginx,pxcentral-cortex-cassandra-headless,pxcentral-cortex-cassandra,pxcentral-memcached-index-read,pxcentral-memcached-index-write,pxcentral-memcached,pxcentral-cortex-alertmanager-headless,pxcentral-cortex-alertmanager,pxcentral-cortex-configs,pxcentral-cortex-distributor,pxcentral-cortex-ingester,pxcentral-cortex-querier,pxcentral-cortex-query-frontend-headless,pxcentral-cortex-consul,pxcentral-cortex-query-frontend,pxcentral-cortex-ruler,pxcentral-cortex-table-manager,pxcentral-prometheus,"}}
