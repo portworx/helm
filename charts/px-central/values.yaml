@@ -224,31 +224,31 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-api-base
-    tag: 2.10.0-fc2
+    tag: 2.10.0-fc3
     module: pxCentral
   pxcentralFrontendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend-private
-    tag: 2.10.0-fc2
+    tag: 2.10.0-fc3
     module: pxCentral
   pxcentralBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-backend-private
-    tag: 2.10.0-fc2
+    tag: 2.10.0-fc3
     module: pxCentral
   pxcentralMiddlewareImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend-private
-    tag: 2.10.0-fc2
+    tag: 2.10.0-fc3
     module: pxCentral
   postInstallSetupImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-post-setup-base
-    tag: 2.10.0-fc2
+    tag: 2.10.0-fc3
     module: pxCentral
   keycloakBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -266,7 +266,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: sb-keycloak-login-theme
-    tag: 2.10.0-fc2
+    tag: 2.10.0-fc3
     module: pxCentral
   keycloakInitContainerImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -284,7 +284,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-hook-base
-    tag: 2.10.0-fc2
+    tag: 2.10.0-fc3
     module: pxCentral
   mysqlInitImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -298,7 +298,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: px-backup-base
-    tag: 2.10.0-fc2
+    tag: 2.10.0-fc3
     module: pxBackup
   mongodbImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
