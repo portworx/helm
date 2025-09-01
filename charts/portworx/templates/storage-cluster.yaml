@@ -89,6 +89,9 @@ metadata:
     {{- if eq .Values.migrateToKvdbTls true }}
     portworx.io/migration-to-kvdb-tls: "true"
     {{- end }}
+    {{- with .Values.annotations }}
+{{ toYaml . | indent 4 }}
+    {{- end }}
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
@@ -97,7 +100,7 @@ metadata:
     app.kubernetes.io/instance: {{.Release.Name | quote }}
 spec:
   image: portworx/oci-monitor:{{ required "A valid Image tag is required in the SemVer format" .Values.imageVersion }}
-  imagePullPolicy: Always
+  imagePullPolicy: {{ .Values.imagePullPolicy | default "Always" }}
   {{- if not (eq $customRegistryURL "none") }}
   customImageRegistry: {{ $customRegistryURL }}
   {{- end }}
@@ -624,3 +627,7 @@ spec:
     type: {{ .Values.deleteStrategy.type }}
   {{- end }}
 {{- end }}
+  {{- if .Values.priorityClassName }}
+  priorityClassName: {{ .Values.priorityClassName }}
+  {{- end }}
+
