@@ -317,7 +317,7 @@ componentK8sConfig:
   #       labels:                                                    # Key-value labels to be applied on the workloads
   #         example-label: "value"
   #       containerConfigs:                                          # Configuration applied at container level
-  #         - containerSelector: ["autopilot"]                       # List of container names inside the workload
+  #         - containerNames: ["autopilot"]                          # List of container names inside the workload
   #           resources:                                             # Resource requirements for the containers
   #             requests:              
   #               cpu: "100m"

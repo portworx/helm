@@ -79,7 +79,7 @@ spec:
                               description: ContainerConfig is the configuration for
                                 containers
                               properties:
-                                containerSelector:
+                                containerNames:
                                   description: ContainerNames is the list of containers
                                     for a workload on which these resource configurations
                                     will be applied.
@@ -88,7 +88,7 @@ spec:
                                   type: array
                                 resources:
                                   description: Resources contains resource requirements
-                                    for all the containers selected by the containerSelector
+                                    for all the containers selected by the containerNames
                                   properties:
                                     claims:
                                       description: |-
