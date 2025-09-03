@@ -2160,6 +2160,11 @@ spec:
                     description: Image is docker image of the cluster diags container
                     type: string
                 type: object
+              clusterDomain:
+                description: |-
+                  ClusterDomain specifies the cluster domain for the selected nodes in a sync DR setup.
+                  If this field is empty, it is not sync DR setup
+                type: string
               csi:
                 description: CSI configurations for setting up CSI
                 properties:
@@ -2721,6 +2726,20 @@ spec:
                         description: Enabled flag indicates whether CSI topology feature
                           gate is enabled.
                         type: boolean
+                    type: object
+                  volumeSnapshotClass:
+                    description: CSIVolumeSnapshotClassSpec defines configuration
+                      for creating a default CSI VolumeSnapshotClass.
+                    properties:
+                      create:
+                        description: Create indicates whether a default CSI VolumeSnapshotClass
+                          should be created. Default value is true.
+                        type: boolean
+                      volumeSnapshotClassName:
+                        description: VolumeSnapshotClassName specifies the name of
+                          the CSI VolumeSnapshotClass to be created or referenced.
+                          Default name is 'px-csi-snapclass'
+                        type: string
                     type: object
                 type: object
               customImageRegistry:
@@ -5639,8 +5658,8 @@ spec:
                       resources:
                         description: |-
                           Resources define resources requests and limits for telemetry pods.
-                          No requests or limits should be necessary for the pods.
-                          If desired, we recommend a limit of 500m CPU and 500Mi memory.
+                          By default, resource requests and limits are not required.
+                          If limits are desired, it is recommended to set them to no less than 500m CPU and 500Mi memory.
                         properties:
                           claims:
                             description: |-
@@ -5754,6 +5773,11 @@ spec:
                             metadata by the driver.
                           type: string
                       type: object
+                    clusterDomain:
+                      description: |-
+                        ClusterDomain specifies the cluster domain for the selected nodes in a sync DR setup.
+                        If this field is empty, it is not sync DR setup
+                      type: string
                     env:
                       description: Env is a list of [Kubernetes like environment variables](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L1826).
                         Similar to how environment variables are provided in Kubernetes,
@@ -10383,6 +10407,33 @@ spec:
                       type: object
                   type: object
                 type: array
+              workloadIdentity:
+                description: WorkloadIdentity is the spec to configure the Workload
+                  Identity for Portworx
+                properties:
+                  credentials:
+                    description: Credentials is an array of workload identity credentials.
+                      Where each item represent the cloud provider name, role key
+                      and role value.
+                    items:
+                      description: WorkloadIdentityCredentials contains the workload
+                        identity credentials
+                      properties:
+                        cloudProvider:
+                          description: CloudProvider is the cloud provider name. Example
+                            - azure, aws, gcp.
+                          type: string
+                        key:
+                          description: AnnotationKey is the key of the annotation
+                          type: string
+                        value:
+                          description: AnnotationValue is the value of the annotation
+                          type: string
+                      required:
+                      - cloudProvider
+                      type: object
+                    type: array
+                type: object
             type: object
           status:
             description: StorageClusterStatus is the most recently observed status

@@ -1,0 +1,34 @@
+componentK8sConfig:
+  enabled: true                                          # Enables or disables creation of ComponentK8sConfig CR
+  name: portworx-k8s-config                               # Name of the ComponentK8sConfig resource
+  components:
+  - componentNames: ["Autopilot","CSI","Portworx API"]   # List of Portworx components this config applies to
+    workloadConfigs:
+      - workloadNames: ["autopilot","px-csi-ext","portworx-api"]   # List of workloads (Deployment/DaemonSet/Pod) affected by this config
+        annotations:                                               # Key-value annotations to be applied on the workloads
+          example-annotation: "true"
+        labels:                                                    # Key-value labels to be applied on the workloads
+          example-label: "value"
+        containerConfigs:                                          # Configuration applied at container level
+          - containerNames: ["autopilot"]                          # List of container names inside the workload
+            resources:                                             # Resource requirements for the containers
+              requests:              
+                cpu: "100m"
+                memory: "128Mi"
+              limits:               
+                cpu: "200m"
+                memory: "256Mi"
+  
+        placement:                                               # Placement configuration for the workloads
+          tolerations:                                           # Tolerations that allow workloads to run on tainted nodes
+            - key: test-key
+              operator: Exists
+          nodeAffinity:                                          # Node affinity rules for scheduling workloads
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: px/enabled
+                      operator: NotIn
+                      values: ["false"]
+                    - key: node-role.kubernetes.io/master
+                      operator: DoesNotExist
