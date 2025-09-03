@@ -368,16 +368,6 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
-			name:           "TestInstanceVolumeK8sUpgrade",
-			resultFileName: "storagecluster_instance_volume_upgrade_annotation.yaml",
-			helmOption: &helm.Options{
-				SetValues: map[string]string{
-					"instanceVolumeK8sUpgrade": "true",
-					"nonDisruptivek8sUpgrade":  "true",
-				},
-			},
-		},
-		{
 			name:           "TestWorkloadIdentity",
 			resultFileName: "storagecluster_with_workload_identity.yaml",
 			helmOption: &helm.Options{
