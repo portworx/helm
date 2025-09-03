@@ -75,11 +75,8 @@ metadata:
     {{- if (lookup "apps/v1" "DaemonSet" "kube-system" "portworx") }}
     portworx.io/migration-approved: "false"
     {{- end }}
-    {{- if or (eq .Values.nonDisruptivek8sUpgrade true) (eq .Values.instanceVolumeK8sUpgrade true) }}
+    {{- if eq .Values.nonDisruptivek8sUpgrade true }}
     portworx.io/disable-non-disruptive-upgrade: "false"
-    {{- end }}
-    {{- if eq .Values.instanceVolumeK8sUpgrade true }}
-    portworx.io/move-volume-replica-before-upgrade: "true"
     {{- end }}
     {{- if eq .Values.skipHealthChecks true }}
     portworx.io/health-check: "skip"
