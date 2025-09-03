@@ -44,7 +44,7 @@ spec:
   gateways:
   - pxcentral-gateway
   hosts:
-  - '*'
+  - {{ .Values.istio.hostName | default "*" | quote }}
   http:
   - match:
     - uri:
