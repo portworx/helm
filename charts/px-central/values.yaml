@@ -238,10 +238,10 @@ images:
     tag: 2.10.0-staging
     module: pxCentral
   postInstallSetupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/users
+    repo: ykumari
     imageName: pxcentral-onprem-post-setup-base
-    tag: 2.10.0-staging
+    tag: PB-11709
     module: pxCentral
   keycloakBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
