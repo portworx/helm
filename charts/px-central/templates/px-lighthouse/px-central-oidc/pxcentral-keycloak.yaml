@@ -352,7 +352,7 @@ spec:
       {{- end }}
       containers:
         - name: pxcentral-keycloak-postgresql
-          image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakBackendImage.registry .Values.images.keycloakBackendImage.repo .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.keycloakBackendImage.registry .Values.images.registry) (default .Values.images.keycloakBackendImage.repo .Values.images.repo) .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           {{ if eq $operatorToChartUpgrade true }}
           securityContext:
@@ -361,6 +361,7 @@ spec:
           env:
             - name: BITNAMI_DEBUG
               value: "false"
+          {{- include "serviceMesh.env" . | nindent 12 }}
             - name: POSTGRESQL_PORT_NUMBER
               value: "5432"
             - name: POSTGRESQL_VOLUME_DIR
@@ -523,26 +524,6 @@ spec:
 {{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
       initContainers:
-        - name: wait-for-postgresql
-          image: "{{ .Values.images.keycloakInitContainerImage.registry }}/{{ .Values.images.keycloakInitContainerImage.repo }}/{{ .Values.images.keycloakInitContainerImage.imageName }}:{{ .Values.images.keycloakInitContainerImage.tag }}"
-          imagePullPolicy: {{ .Values.images.pullPolicy }}
-          command:
-            - sh
-            - -c
-            - |
-              until printf "." && nc -z -w 2 pxcentral-keycloak-postgresql 5432; do
-                  sleep 2;
-              done;
-
-              echo 'PostgreSQL OK ✓'
-          resources:
-            {}
-          {{- if .Values.proxy.httpProxy.noProxy }}
-          env:
-          {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-keycloak" .Values.proxy.includeNoProxyList) }}
-          {{ include "proxy.proxyEnv" . | nindent 10 }}
-          {{- end }}
-          {{- end }}
         - name: px-keycloak-login-theme
           {{- if .Values.proxy.httpProxy.noProxy }}
           env:
@@ -550,7 +531,7 @@ spec:
           {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
           {{- end }}
-          image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakLoginThemeImage.registry .Values.images.keycloakLoginThemeImage.repo .Values.images.keycloakLoginThemeImage.imageName .Values.images.keycloakLoginThemeImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.keycloakLoginThemeImage.registry .Values.images.registry) (default .Values.images.keycloakLoginThemeImage.repo .Values.images.repo) .Values.images.keycloakLoginThemeImage.imageName .Values.images.keycloakLoginThemeImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
             - sh
@@ -570,11 +551,21 @@ spec:
           {{- end }}
       containers:
         - name: keycloak
-          image: {{ printf "%s/%s/%s:%s" .Values.images.keycloakFrontendImage.registry .Values.images.keycloakFrontendImage.repo .Values.images.keycloakFrontendImage.imageName .Values.images.keycloakFrontendImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.keycloakFrontendImage.registry .Values.images.registry) (default .Values.images.keycloakFrontendImage.repo .Values.images.repo) .Values.images.keycloakFrontendImage.imageName .Values.images.keycloakFrontendImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
-            - /scripts/keycloak.sh
+            - sh
+            - -c
+            - |
+              until printf "." && nc -z -w 2 pxcentral-keycloak-postgresql 5432; do
+                  sleep 2;
+              done;
+
+              echo 'PostgreSQL OK ✓'
+              
+              /scripts/keycloak.sh
           env:
+          {{- include "serviceMesh.env" . | nindent 10 }}
           - name: KC_HOSTNAME_STRICT
             value: "false"
           - name: KC_HOSTNAME_STRICT_HTTPS

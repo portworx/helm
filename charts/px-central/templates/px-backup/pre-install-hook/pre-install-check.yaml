@@ -157,7 +157,7 @@ spec:
               {{- end }}
       containers:
         - name: pxbackup-pre-install-check
-          image: {{ printf "%s/%s/%s:%s" .Values.images.preSetupHookImage.registry .Values.images.preSetupHookImage.repo .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.preSetupHookImage.registry .Values.images.registry) (default .Values.images.preSetupHookImage.repo .Values.images.repo) .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: ["/pxcentral-hook/bin/pxcentral-hook"]
           args: ["--hook=pre-install"]
@@ -185,6 +185,7 @@ spec:
             - name: ALERTMANAGER_ENDPOINT
               value: {{ .Values.pxbackup.alertmanagerEndpoint | default "" | quote }}
         {{- end }}
+          {{- include "serviceMesh.env" . | nindent 12 }}
             - name: MINIMUM_KUBERNETES_VERSION
               value: "{{ $minimumKubernetesVersion }}"
             - name: JOB_TIMEOUT_SECONDS
@@ -277,7 +278,7 @@ spec:
               {{- end }}
       containers:
         - name: pxbackup-pre-flight-checker
-          image: {{ printf "%s/%s/%s:%s" .Values.images.preSetupHookImage.registry .Values.images.preSetupHookImage.repo .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.preSetupHookImage.registry .Values.images.registry) (default .Values.images.preSetupHookImage.repo .Values.images.repo) .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: [ "/pxcentral-hook/bin/pxcentral-hook" ]
           args: [ "--hook=preflight-check" ]

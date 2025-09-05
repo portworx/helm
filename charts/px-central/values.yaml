@@ -101,6 +101,13 @@ proxy:
 postInstallJob:
   sslEnabled: true
 
+istio:
+  enabled: false
+  hostName: ""
+
+linkerd:
+  enabled: false
+
 isUpgrade: false
 isOpenshift: false
 isArgoCD: false
@@ -209,6 +216,8 @@ securityContext:
 tolerations: []
 
 images:
+  registry: ""
+  repo: ""
   pullSecrets: []
   pullPolicy: Always
   insecureRegistry: false
@@ -253,7 +262,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: keycloak
-    tag: 26.2.4
+    tag: 26.2.4_v2
     module: pxCentral
   keycloakLoginThemeImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote

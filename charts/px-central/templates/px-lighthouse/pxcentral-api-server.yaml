@@ -86,11 +86,11 @@ spec:
   selector:
     app: pxcentral-apiserver
   ports:
-    - name: pxcentral-grpc
+    - name: grpc-pxcentral
       protocol: TCP
       port: 10005
       targetPort: 10005
-    - name: pxcentral-rest
+    - name: http-pxc-rest
       protocol: TCP
       port: 10006
       targetPort: 10006
@@ -142,11 +142,12 @@ spec:
               {{- end }}
       containers:
       - name: pxcentral-apiserver
-        image: {{ printf "%s/%s/%s:%s" .Values.images.pxcentralApiServerImage.registry .Values.images.pxcentralApiServerImage.repo .Values.images.pxcentralApiServerImage.imageName .Values.images.pxcentralApiServerImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxcentralApiServerImage.registry .Values.images.registry) (default .Values.images.pxcentralApiServerImage.repo .Values.images.repo) .Values.images.pxcentralApiServerImage.imageName .Values.images.pxcentralApiServerImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
           - name: PXC_NAMESPACE
             value: {{ .Release.Namespace }}
+        {{- include "serviceMesh.env" . | nindent 10 }}
           {{- if .Values.caCertsSecretName }}
           - name: SSL_CERT_DIR
             value: /tmp/certs
@@ -162,9 +163,9 @@ spec:
           timeoutSeconds: 120
           periodSeconds: 20
         ports:
-          - name: pxcentral-grpc
+          - name: grpc-pxcentral
             containerPort: 10005
-          - name: pxcentral-rest
+          - name: http-pxc-rest
             containerPort: 10006
         volumeMounts:
         {{- if .Values.caCertsSecretName }}
