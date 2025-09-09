@@ -223,7 +223,7 @@ images:
   insecureRegistry: false
 
   pxcentralApiServerImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/users/deepab
     repo: portworx
     imageName: pxcentral-onprem-api-base
     tag: 2.10.0-staging
