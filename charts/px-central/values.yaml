@@ -245,8 +245,8 @@ images:
     tag: 2.10.0-fc1
     module: pxCentral
   postInstallSetupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
-    repo: bk
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
     imageName: pxcentral-onprem-post-setup-base
     tag: 2.10.0-fc1
     module: pxCentral
@@ -281,8 +281,8 @@ images:
     tag: 8.0.43
     module: pxCentral
   preSetupHookImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
-    repo: bk
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
     imageName: pxcentral-onprem-hook-base
     tag: 2.10.0-fc1
     module: pxCentral
@@ -295,8 +295,8 @@ images:
 
   ## Images required for enabling px-backup
   pxBackupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
-    repo: bk
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
     imageName: px-backup-base
     tag: 2.10.0-fc1
     module: pxBackup
