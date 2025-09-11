@@ -626,4 +626,45 @@ spec:
       for: 0s
       labels:
         severity: critical
+
+    - alert: LicenseExpiryAlert
+      annotations:
+        description: |-
+          {{`{{ $labels.license_type }} license for "{{ $labels.name }}" ({{ $labels.license_count }} nodes) 
+          {{- if eq $labels.error_reason "License expires in 0 days" }} 
+          expires today ({{ $labels.expiry_date }})
+          {{- else if match ".*expired.*" $labels.error_reason }} 
+          has expired on {{ $labels.expiry_date }}
+          {{- else if eq $labels.error_reason "License expires in 1 days" }} 
+          expires tomorrow ({{ $labels.expiry_date }})
+          {{- else if match ".*expires in [2-9] days.*" $labels.error_reason }} 
+          expires in a few days on {{ $labels.expiry_date }}
+          {{- else if match ".*expires in [0-9]+ days.*" $labels.error_reason }} 
+          will expire soon on {{ $labels.expiry_date }}
+          {{- else }} 
+          status: {{ $labels.error_reason }}
+          {{- end }}. 
+          Please contact support to renew your license to avoid service interruption.`}}
+        summary: |-
+          {{`{{ $labels.license_type }} license 
+          {{- if eq $labels.error_reason "License expires in 0 days" }} 
+          expires today
+          {{- else if match ".*expired.*" $labels.error_reason }} 
+          has expired
+          {{- else if eq $labels.error_reason "License expires in 1 days" }} 
+          expires tomorrow
+          {{- else if match ".*expires in [2-7] days.*" $labels.error_reason }} 
+          expires soon (critical)
+          {{- else if match ".*expires in (8|9|[12][0-9]|30) days.*" $labels.error_reason }} 
+          expires soon (warning)
+          {{- else if match ".*expires in [0-9]+ days.*" $labels.error_reason }} 
+          expires soon
+          {{- else }} 
+          needs attention
+          {{- end }}`}}
+      expr: pxbackup_license_expiry_status
+      for: 1m
+      labels:
+        severity: critical
+        user_id: "{{`{{ $labels.user_id }}`}}"
 {{- end -}}
