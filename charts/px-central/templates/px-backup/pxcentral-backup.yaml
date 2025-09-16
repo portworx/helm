@@ -159,10 +159,41 @@ spec:
     port: 10001
     targetPort: 10001
     name: http-rest-api
+{{- if .Values.pxbackup.mcp.enabled }}
+  - protocol: TCP
+    port: {{ .Values.pxbackup.mcp.port }}
+    targetPort: {{ .Values.pxbackup.mcp.port }}
+    name: mcp-server
+{{- if eq .Values.pxbackup.mcp.serviceType "NodePort" }}
+    nodePort: {{ .Values.pxbackup.mcp.nodePort }}
+{{- end }}
+{{- end }}
   selector:
     app: px-backup
   type: ClusterIP
 ---
+{{- if and .Values.pxbackup.mcp.enabled (eq .Values.pxbackup.mcp.serviceType "NodePort") }}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: px-backup-mcp
+    app.kubernetes.io/component: px-backup-mcp
+{{- include "px-central.labels" . | nindent 4 }}
+  name: px-backup-mcp
+  namespace: {{ .Release.Namespace }}
+spec:
+  ports:
+  - protocol: TCP
+    port: {{ .Values.pxbackup.mcp.port }}
+    targetPort: {{ .Values.pxbackup.mcp.port }}
+    nodePort: {{ .Values.pxbackup.mcp.nodePort }}
+    name: mcp-server
+  selector:
+    app: px-backup
+  type: NodePort
+---
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -242,6 +273,24 @@ spec:
         {{- include "serviceMesh.env" . | nindent 8 }}
         - name: AIRGAP_REPORTING_PERIOD
           value: "90"
+{{- if .Values.pxbackup.mcp.enabled }}
+        - name: MCP_ENABLED
+          value: "{{ .Values.pxbackup.mcp.enabled }}"
+        - name: MCP_PORT
+          value: "{{ .Values.pxbackup.mcp.port }}"
+        - name: MCP_ADDRESS
+          value: "{{ .Values.pxbackup.mcp.address }}"
+        - name: MCP_AUTH_REQUIRED
+          value: "{{ .Values.pxbackup.mcp.authRequired }}"
+{{- if .Values.pxbackup.mcp.tlsCertFile }}
+        - name: MCP_TLS_CERT_FILE
+          value: "{{ .Values.pxbackup.mcp.tlsCertFile }}"
+{{- end }}
+{{- if .Values.pxbackup.mcp.tlsKeyFile }}
+        - name: MCP_TLS_KEY_FILE
+          value: "{{ .Values.pxbackup.mcp.tlsKeyFile }}"
+{{- end }}
+{{- end }}
         {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup" .Values.proxy.includeNoProxyList) }}
         {{- include "proxy.proxyEnv" . | nindent 8 }}
         {{- end }}
@@ -255,6 +304,12 @@ spec:
         ports:
         - containerPort: 10002
           protocol: TCP
+        - containerPort: 10001
+          protocol: TCP
+{{- if .Values.pxbackup.mcp.enabled }}
+        - containerPort: {{ .Values.pxbackup.mcp.port }}
+          protocol: TCP
+{{- end }}
         readinessProbe:
           httpGet:
             path: /v1/health
@@ -286,6 +341,18 @@ spec:
         - start
         - --datastoreEndpoints=mongodb://$MONGODB_USERNAME:$MONGODB_PASSWORD@pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017/?authSource=px-backup&replicaSet=rs0
         - --mongo-migration={{.Values.pxbackup.mongoMigration}}
+{{- if .Values.pxbackup.mcp.enabled }}
+        - --mcp-enabled={{ .Values.pxbackup.mcp.enabled }}
+        - --mcp-port={{ .Values.pxbackup.mcp.port }}
+        - --mcp-address={{ .Values.pxbackup.mcp.address }}
+        - --mcp-auth-required={{ .Values.pxbackup.mcp.authRequired }}
+{{- if .Values.pxbackup.mcp.tlsCertFile }}
+        - --mcp-tls-cert-file={{ .Values.pxbackup.mcp.tlsCertFile }}
+{{- end }}
+{{- if .Values.pxbackup.mcp.tlsKeyFile }}
+        - --mcp-tls-key-file={{ .Values.pxbackup.mcp.tlsKeyFile }}
+{{- end }}
+{{- end }}
       volumes:
       {{- if .Values.caCertsSecretName }}
         - name: ssl-cert-dir

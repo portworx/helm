@@ -1,0 +1,39 @@
+# Test values for MCP deployment
+# This file demonstrates how to enable MCP functionality in px-backup
+
+# Enable px-backup with MCP
+pxbackup:
+  enabled: true
+  orgName: default
+  
+  # Enable MCP server for AI agent integration
+  mcp:
+    enabled: true
+    port: 8080
+    address: "0.0.0.0"
+    authRequired: true
+    serviceType: "NodePort"
+    nodePort: 30080
+    # Optional TLS configuration
+    # tlsCertFile: "/path/to/cert.pem"
+    # tlsKeyFile: "/path/to/key.pem"
+
+# Basic required configurations
+images:
+  pxBackupImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
+    repo: portworx
+    imageName: px-backup-base
+    tag: 2.10.0-staging
+
+# Example deployment command:
+# helm install px-central . -f mcp-test-values.yaml -n px-central --create-namespace
+
+# After deployment, MCP server will be available at:
+# - Internal: http://px-backup:8080
+# - External: http://<node-ip>:30080
+#
+# Test endpoints:
+# - Health: GET http://<node-ip>:30080/health
+# - Tools: GET http://<node-ip>:30080/tools
+# - JSON-RPC: POST http://<node-ip>:30080/ with MCP requests

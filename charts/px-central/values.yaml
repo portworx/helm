@@ -50,6 +50,7 @@ proxy:
   # excludeAzureProxyList:
   # - px-backup-alertmanager
   # - px-backup
+  # - px-backup-mcp
   # - pxc-backup-mongodb
   # - prometheus-operator
   # - px-backup-dashboard-prometheus
@@ -73,6 +74,7 @@ proxy:
   # includeNoProxyList:
   # - px-backup-alertmanager
   # - px-backup
+  # - px-backup-mcp
   # - pxc-backup-mongodb
   # - prometheus-operator
   # - px-backup-dashboard-prometheus
@@ -87,7 +89,7 @@ proxy:
   # - pxcentral-mysql
 
   # Example for using set command
-  # --set "proxy.includeNoProxyList[0]=px-backup"
+  # --set "proxy.includeNoProxyList[0]=px-backup","proxy.includeNoProxyList[1]=px-backup-mcp"
   includeNoProxyList: []
   httpProxy:
     noProxy: ""
@@ -138,6 +140,16 @@ pxbackup:
   skipValidations: false
   usePlatformRbac: false
   encryptMongoDB: false
+  # MCP (Model Context Protocol) server configuration for AI agent integration
+  mcp:
+    enabled: false
+    port: 8080
+    address: "0.0.0.0"
+    authRequired: true
+    tlsCertFile: ""
+    tlsKeyFile: ""
+    serviceType: "NodePort"
+    nodePort: 30080
 
 pxlicenseserver:
   enabled: false
