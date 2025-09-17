@@ -76,11 +76,11 @@ else
     print_status 1 "MCP container port missing"
 fi
 
-# Check for NodePort configuration
-if grep -q "nodePort: 30080" /tmp/mcp-enabled.yaml; then
-    print_status 0 "NodePort 30080 configured"
+# Check for NodePort configuration in separate MCP service
+if grep -A 10 "name: px-backup-mcp" /tmp/mcp-enabled.yaml | grep -q "nodePort: 30080"; then
+    print_status 0 "NodePort 30080 configured in MCP service"
 else
-    print_status 1 "NodePort 30080 not found"
+    print_status 1 "NodePort 30080 not found in MCP service"
 fi
 
 # Test 3: Validate values.yaml structure

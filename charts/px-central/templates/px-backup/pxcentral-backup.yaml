@@ -164,9 +164,6 @@ spec:
     port: {{ .Values.pxbackup.mcp.port }}
     targetPort: {{ .Values.pxbackup.mcp.port }}
     name: mcp-server
-{{- if eq .Values.pxbackup.mcp.serviceType "NodePort" }}
-    nodePort: {{ .Values.pxbackup.mcp.nodePort }}
-{{- end }}
 {{- end }}
   selector:
     app: px-backup
