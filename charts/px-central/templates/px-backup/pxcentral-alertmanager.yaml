@@ -445,7 +445,7 @@ stringData:
               </li>
               <li>
                 <div style="display: flex">
-                <div style="font-weight: bold; width: 170px;min-width: 170px;">Node Count:</div>
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Entitled Node Count:</div>
                 <div>{{ .Labels.license_count }}</div>
                 </div>
               </li>
