@@ -6,10 +6,6 @@
 
   {{- $isCoreOS := .Values.isTargetOSCoreOS | default false }}
   {{- $internalKVDB := .Values.internalKVDB | default false }}
-  {{- $etcdEndPoints := .Values.etcdEndPoint }}
-  {{- $etcdCertPath := .Values.etcd.certPath | default "none" }}
-  {{- $etcdCert := .Values.etcd.cert | default "none" }}
-  {{- $etcdKey := .Values.etcd.key | default "none" }}
   {{- $kvdbAuthSecret := .Values.kvdb.authSecretName | default "none" }}
   {{- $openshiftInstall := .Values.openshiftInstall | default false }}
   {{- $EKSInstall := .Values.EKSInstall | default false }}
@@ -191,14 +187,13 @@ spec:
     {{- end }}
   {{- else }}
     internal: false
-    {{- if empty $etcdEndPoints }}
-    "{{ required "A valid ETCD url in the format etcd:http://<your-etcd-endpoint> is required. Verify that the key is correct and there isnt any typo in specifying that, also ensure it is accessible from all node of your kubernetes cluster" .etcdEndPoint}}"
+    {{- if empty .Values.etcdEndpoints }}
+    "{{ required "A valid ETCD url in the format etcd:http://<your-etcd-endpoint> is required. Verify that the key is correct and there isnt any typo in specifying that, also ensure it is accessible from all nodes in your kubernetes cluster" .etcdEndpoints }}"
     {{- else }}
+    {{- with .Values.etcdEndpoints }}
     endpoints:
-      {{- $endpoints := $etcdEndPoints | split ";" }}
-      {{- range $key, $val := $endpoints }}
-      - {{$val}}
-      {{- end }}
+      {{- toYaml . | nindent 4 }}
+    {{- end }}
     {{- end }}
     {{- if ne $kvdbAuthSecret "none" }}
     authSecret: {{ .Values.kvdb.authSecretName }}
@@ -413,7 +408,7 @@ spec:
       path: /lib/modules
       type: Directory
   {{- end }}
-  {{- if ne $etcdCertPath "none" }}
+  {{- if .Values.etcd.certPath }}
   - name: etcdcerts
     mountPath: /etc/pwx/etcdcerts
     secret:
@@ -421,11 +416,11 @@ spec:
       items:
       - key: ca.pem
         path: ca.pem
-      {{- if ne $etcdCert "none" }}
+      {{- if .Values.etcd.cert }}
       - key: client.pem
         path: client.pem
       {{- end -}}
-      {{- if ne $etcdKey "none" }}
+      {{- if .Values.etcd.key }}
       - key: client-key.pem
         path: client-key.key
       {{- end -}}
