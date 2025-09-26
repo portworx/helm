@@ -21,9 +21,9 @@ modules:
     kopiaExecutor: "docker.io/portworx/kopiaexecutor:1.2.22-staging"
     nfsExecutor: "docker.io/portworx/nfsexecutor:1.2.22-staging"
     filesystemCtl: "docker.io/portworx/filesystemctl:1.2.22-staging"
-    pxBackupPrometheusImage: "docker.io/portworx/prometheus:v3.5.0"
+    pxBackupPrometheusImage: "docker.io/portworx/prometheus:v3.6.0"
     pxBackupAlertmanagerImage: "docker.io/portworx/alertmanager:v0.28.0"
-    pxBackupPrometheusOperatorImage: "docker.io/portworx/prometheus-operator:v0.82.1"
+    pxBackupPrometheusOperatorImage: "docker.io/portworx/prometheus-operator:v0.85.0"
     pxBackupPrometheusConfigReloaderImage: "docker.io/portworx/prometheus-config-reloader:v0.85.0"
   pxMonitor:
     cortex: "docker.io/portworx/cortex:v1.13.1"
