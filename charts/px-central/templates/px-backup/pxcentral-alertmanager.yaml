@@ -43,17 +43,18 @@ spec:
   retention: {{ .Values.pxbackup.alertmanager.retention}}
   initContainers:
     - name: init-config-reloader
-      volumeMounts:
       {{- if .Values.proxy.configSecretName }}
+      volumeMounts:
       - mountPath: /etc/ssl/certs/proxy-ca.pem
         subPath: proxy-ca.pem
         name: proxy-ca-volume
         readOnly: true
       {{- end }}
+      {{- $proxyEnv := include "proxy.proxyEnv" . }}
+      {{- if and (or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList)) (ne (trim $proxyEnv) "") }}
       env:
-        {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList) }}
-        {{ include "proxy.proxyEnv" . | nindent 8 }}
-        {{- end }}
+        {{ $proxyEnv | nindent 8 }}
+      {{- end }}
   containers:
     - args:
         - '--config.file=/etc/alertmanager/config_out/alertmanager.env.yaml'
@@ -113,8 +114,8 @@ spec:
       - containerPort: 8080
         name: reloader-web
         protocol: TCP
-      volumeMounts:
       {{- if .Values.proxy.configSecretName }}
+      volumeMounts:
       - mountPath: /etc/ssl/certs/proxy-ca.pem
         subPath: proxy-ca.pem
         name: proxy-ca-volume
