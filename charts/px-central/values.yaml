@@ -362,7 +362,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: prometheus
-    tag: v3.5.0
+    tag: v3.6.0
     module: pxBackup
   pxBackupAlertmanagerImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -374,7 +374,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: prometheus-operator
-    tag: v0.82.1
+    tag: v0.85.0
     module: pxBackup
   pxBackupPrometheusConfigReloaderImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
