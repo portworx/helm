@@ -22,6 +22,8 @@
 {{- end -}}
 {{- else }}
 {{- end }}
+{{- $hasAzureAnnotation := and (eq $azureProxyEnabled true) (not (has "px-backup-dashboard-prometheus" .Values.proxy.excludeAzureProxyList)) }}
+{{- $hasIstioAnnotation := .Values.istio.enabled }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -302,17 +304,19 @@ spec:
   additionalAlertManagerConfigs:
     key: am-configs.yaml
     name: pxc-backup-metrics
+  {{- if or $hasAzureAnnotation $hasIstioAnnotation }}
   podMetadata:
     annotations:
-  {{- if and (eq $azureProxyEnabled true) (not (has "px-backup-dashboard-prometheus" .Values.proxy.excludeAzureProxyList)) }}
+  {{- if $hasAzureAnnotation }}
       kubernetes.azure.com/no-http-proxy-vars: "true"
   {{- end }}
-  {{- if .Values.istio.enabled }}
+  {{- if $hasIstioAnnotation }}
       proxy.istio.io/config: |
         proxyMetadata:
           OUTPUT_CERTS: /etc/istio-output-certs
       sidecar.istio.io/userVolumeMount: '[{"name": "istio-certs", "mountPath": "/etc/istio-output-certs"}]'
       traffic.sidecar.istio.io/includeOutboundIPRanges: ""
+  {{- end}}
   {{- end}}
   {{- if .Values.persistentStorage.storageClassName }}
   storage:
@@ -329,16 +333,17 @@ spec:
   {{- end }}
   initContainers:
   - name: init-config-reloader
-    volumeMounts:
     {{- if .Values.proxy.configSecretName }}
+    volumeMounts:
     - mountPath: /etc/ssl/certs/proxy-ca.pem
       subPath: proxy-ca.pem
       name: proxy-ca-volume
       readOnly: true
     {{- end }}
+    {{- $proxyEnv := include "proxy.proxyEnv" . }}
+    {{- if and (or (empty .Values.proxy.includeNoProxyList) (has "px-backup-dashboard-prometheus" .Values.proxy.includeNoProxyList)) (ne (trim $proxyEnv) "") }}
     env:
-    {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-dashboard-prometheus" .Values.proxy.includeNoProxyList) }}
-    {{ include "proxy.proxyEnv" . | nindent 4 }}
+    {{ $proxyEnv | nindent 4 }}
     {{- end }}
   containers:
   - args:
@@ -419,8 +424,8 @@ spec:
     - containerPort: 8080
       name: reloader-web
       protocol: TCP
-    volumeMounts:
     {{- if .Values.proxy.configSecretName }}
+    volumeMounts:
       - mountPath: /etc/ssl/certs/proxy-ca.pem
         subPath: proxy-ca.pem
         name: proxy-ca-volume
