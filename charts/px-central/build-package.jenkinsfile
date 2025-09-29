@@ -1,0 +1,20 @@
+@Library('shared-library') import globalVars
+
+pipeline {
+	agent {
+		label "pxb-backup-builder"
+	}
+
+	stages {
+		stage("Build pxb-helm-package") {
+			steps {
+				build(
+					job: globalVars.BUILD_PXB_HELM_PACKAGE_JOB_NAME,
+					parameters: [
+						string(name: "PXB_HELM_BRANCH", value: GIT_BRANCH),
+					]
+				)
+			}
+		}
+	}
+}
