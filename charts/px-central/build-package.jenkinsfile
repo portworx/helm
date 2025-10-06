@@ -2,7 +2,7 @@
 
 pipeline {
 	agent {
-		label "pxb-backup-builder"
+		label "px-backup-builder"
 	}
 
 	stages {
