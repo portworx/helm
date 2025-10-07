@@ -7,6 +7,7 @@ PX-Central with 1.2.x has 3 different charts.
 
 From 2.0.0, px-central is supported with a single chart (px-central) and the above features components can be enabled or disabled.
 
+
 ### Steps to Upgrade:
 
 - Downloading migration.sh .
