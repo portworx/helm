@@ -31,9 +31,9 @@ spec:
       containers:
         - name: delete-storagecluster
           {{- if eq $customRegistryURL "none" }}
-          image: "bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
+          image: "bitnamilegacy/kubectl:{{ template "px.kubectlImageTag" . }}"
           {{- else}}
-          image: "{{ $customRegistryURL }}/bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
+          image: "{{ $customRegistryURL }}/bitnamilegacy/kubectl:{{ template "px.kubectlImageTag" . }}"
           {{- end}}
           command: ['/bin/sh',
                     '-c',
