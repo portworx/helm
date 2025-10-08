@@ -3,7 +3,7 @@ apiVersion: core.libopenstorage.org/v1
 kind: ComponentK8sConfig
 metadata:
   name: {{ .Values.componentK8sConfig.name | default "portworx-k8s-config" }}
-  namespace: {{ .Values.namespace | default "portworx" }}
+  namespace: {{ template "px.getDeploymentNamespace" . }}
 spec:
   components:
     {{- toYaml .Values.componentK8sConfig.components | nindent 4 }}
