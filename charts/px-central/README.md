@@ -9,6 +9,7 @@ To enable each feature, follow the respective sections for detailed steps.
 
 ## Installing the Chart
 
+
 To install the chart with the release name `px-central`:
 
 Add portworx/px-central helm repository using command:
