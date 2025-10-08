@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -63,6 +64,25 @@ func removeDynamicFields(obj interface{}) interface{} {
 		if labels, ok := obj["metadata"].(map[string]interface{}); ok {
 			if labels, ok := labels["labels"].(map[string]interface{}); ok {
 				delete(labels, "chart")
+			}
+		}
+
+		// Normalize portworx/px-operator image by removing version tag
+		if spec, ok := obj["spec"].(map[string]interface{}); ok {
+			if template, ok := spec["template"].(map[string]interface{}); ok {
+				if templateSpec, ok := template["spec"].(map[string]interface{}); ok {
+					if containers, ok := templateSpec["containers"].([]interface{}); ok {
+						for _, container := range containers {
+							if containerMap, ok := container.(map[string]interface{}); ok {
+								if image, ok := containerMap["image"].(string); ok {
+									if strings.HasPrefix(image, "portworx/px-operator:") {
+										containerMap["image"] = "portworx/px-operator"
+									}
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 

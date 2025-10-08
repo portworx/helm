@@ -1,6 +1,7 @@
 # Please uncomment and specify values for these options as per your requirements.
 
 deployOperator: true                    # Deploy the Portworx operator
+verboseOperatorLog: true                # Enable verbose logging for the Portworx operator.
 deployCluster: true                     # Deploy the Portworx cluster
 
 imageVersion: 3.4.0.1                    # Version of the PX Image.
