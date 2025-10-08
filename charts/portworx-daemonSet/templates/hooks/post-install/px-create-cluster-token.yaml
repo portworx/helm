@@ -34,9 +34,9 @@ spec:
       containers:
         - name: post-install-job
           {{- if eq $customRegistryURL "none" }}
-          image: "bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
+          image: "bitnamilegacy/kubectl:{{ template "px.kubectlImageTag" . }}"
           {{- else}}
-          image: "{{ $customRegistryURL }}/bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
+          image: "{{ $customRegistryURL }}/bitnamilegacy/kubectl:{{ template "px.kubectlImageTag" . }}"
           {{- end }}
           env:
             - name: NS
@@ -49,9 +49,9 @@ spec:
       initContainers:
         - name: post-install-job-init
           {{- if eq $customRegistryURL "none" }}
-          image: "bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
+          image: "bitnamilegacy/kubectl:{{ template "px.kubectlImageTag" . }}"
           {{- else}}
-          image: "{{ $customRegistryURL }}/bitnami/kubectl:{{ template "px.kubectlImageTag" . }}"
+          image: "{{ $customRegistryURL }}/bitnamilegacy/kubectl:{{ template "px.kubectlImageTag" . }}"
           {{- end }}
           env:
             - name: NS
