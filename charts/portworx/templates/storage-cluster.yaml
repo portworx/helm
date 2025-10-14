@@ -87,6 +87,18 @@ metadata:
     {{- if eq .Values.migrateToComponentK8sConfig true }}
     portworx.io/migrate-configs: "true"
     {{- end }}
+    {{- $annotations := .Values.clusterAnnotations | trim }}
+    {{- if $annotations }}
+    {{- range $annotation := splitList ";" $annotations }}
+    {{- $annotation = $annotation | trim }}
+    {{- if $annotation }}
+    {{- $parts := splitList "=" $annotation }}
+    {{- if eq (len $parts) 2 }}
+    {{ index $parts 0 | trim }}: {{ index $parts 1 | trim | quote }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
@@ -95,7 +107,7 @@ metadata:
     app.kubernetes.io/instance: {{.Release.Name | quote }}
 spec:
   image: portworx/oci-monitor:{{ required "A valid Image tag is required in the SemVer format" .Values.imageVersion }}
-  imagePullPolicy: Always
+  imagePullPolicy: {{ .Values.imagePullPolicy | default "Always" }}
   {{- if not (eq $customRegistryURL "none") }}
   customImageRegistry: {{ $customRegistryURL }}
   {{- end }}

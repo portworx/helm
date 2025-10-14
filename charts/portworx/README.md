@@ -67,6 +67,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
 | `imageVersion` | Version of the PX image | 3.4.1 |
 | `pxOperatorImageVersion` | Version of the PX operator image | 25.3.1 |
+| `verboseOperatorLogs` | Enable verbose logging for the Portworx operator | true |
 | `openshiftInstall` | Installing on Openshift? | false |
 | `nonDisruptivek8sUpgrade` | Used to disable or enable smart and parallel kubetnetes node upgrades. By default, S&P upgrades are disabled. To enable them, set this to true | false |
 | `skipHealthChecks` | Used to skip health checks. By default, health checks are enabled. Set this to true to disable health checks | false | 
@@ -74,6 +75,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `EKSInstall` | Installing EKS (Amazon Elastic Container service) | false |
 | `AKSInstall` | Installing on AKS (Azure Kubernetes service) | false |
 | `GKEInstall` | Installing on GKE (Google Kubernetes Engine) | false |
+| `clusterAnnotations` | Semicolon-separated list of annotations to apply on the StorageCluster resource | {} |
 | `etcdEndPoint` | (REQUIRED) etcd endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>". Multiple Urls should be semi-colon seperated example: etcd:http://<your-etcd-endpoint1>;etcd:http://<your-etcd-endpoint2> | "" |
 | `clusterName` | Portworx Cluster Name | "mycluster" |
 | `usefileSystemDrive` | Should Portworx use an unmounted drive even with a filesystem ? | false |
@@ -112,6 +114,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `stork.env` | List of Kubernetes like environment variables passed to Stork | [] |
 | `customRegistryURL` | Custom Docker registry | "" |
 | `registrySecret` | Registry secret | "" |
+| `imagePullPolicy` | ImagePullPolicy specifies the image pull policy for all the images deployed by the operator. The possible values can be `Always` or `IfNotPresent`. | "Always" |
 | `monitoring.prometheus.enabled` | Enable or disable Prometheus | false |
 | `monitoring.prometheus.exportMetrics` | Expose the Portworx metrics to an external or operator deployed Prometheus | false |
 | `monitoring.prometheus.alertManager` | Enable or disable alertmanager | false |

@@ -374,6 +374,24 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				ValuesFiles: []string{"./testValues/storagecluster_with_workload_identity.yaml"},
 			},
 		},
+		{
+			name:           "TestStorageClusterAnnotations",
+			resultFileName: "storagecluster_annotations.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"clusterAnnotations": "foo=bar;portworx.io/test-annotation=test-val",
+				},
+			},
+		},
+		{
+			name:           "TestImagePullPolicy",
+			resultFileName: "storagecluster_imagepullpolicy.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"imagePullPolicy": "IfNotPresent",
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
