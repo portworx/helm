@@ -2600,6 +2600,11 @@ spec:
                             type: object
                         type: object
                     type: object
+                  seLinuxMount:
+                    description: |-
+                      SELinuxMount specifies whether the CSI driver supports the "-o context" mount option.
+                      It overrides the seLinuxMount value in the CSI driver. The default value is `true`.
+                    type: boolean
                   snapshotController:
                     description: CSISnapshotControllerSpec is used to define the CSI
                       snapshot controller configurations
@@ -10512,8 +10517,17 @@ spec:
                   csiHealthMonitorController:
                     description: Desired image for CSI health monitor controller.
                     type: string
+                  csiLivenessProbe:
+                    description: Desired image for CSI liveness probe.
+                    type: string
+                  csiMigrator:
+                    description: Desired image for Pure CSI Migrator.
+                    type: string
                   csiNodeDriverRegistrar:
                     description: Desired image for CSI node driver registrar.
+                    type: string
+                  csiPlugin:
+                    description: Desired image for Pure CSI Driver Plugin.
                     type: string
                   csiProvisioner:
                     description: Desired image for CSI provisioner.
@@ -10526,6 +10540,9 @@ spec:
                     type: string
                   csiSnapshotter:
                     description: Desired image for CSI snapshotter.
+                    type: string
+                  csiTelemetry:
+                    description: Desired image for Pure CSI Telemetry.
                     type: string
                   dynamicPlugin:
                     description: Desired image for dynamic plugin image.
@@ -10579,6 +10596,9 @@ spec:
                     description: Desired image for user interface.
                     type: string
                 type: object
+              operatorVersion:
+                description: OperatorVersion represents version of Portworx Operator
+                type: string
               phase:
                 description: Phase of the StorageCluster is a simple, high-level summary
                   of where the StorageCluster is in its lifecycle. The condition array
