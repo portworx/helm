@@ -128,6 +128,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `csi.enabled` | Enables CSI | true |
 | `csi.topology.enabled` | Enable CSI topology feature gate | false |
 | `csi.installSnapshotController` | Install CSI Snapshot Controller | false |
+| `csi.seLinuxMount` | SELinuxMount specifies whether the CSI driver supports the "-o context" mount option. It overrides the seLinuxMount value in the CSI driver | true |
 | `autopilot.enabled` | Enable AutoPilot | true |
 | `autopilot.image` | Specify AutoPilot image | "" |
 | `autopilot.lockImage` | Enables locking AutoPilot to the given image | false |

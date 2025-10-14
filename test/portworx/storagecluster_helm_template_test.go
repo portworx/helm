@@ -81,6 +81,28 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestCSISeLinuxMountEnabled",
+			resultFileName: "storagecluster_csi_selinxumount_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"csi.enabled":                   "true",
+					"csi.installSnapshotController": "true",
+					"csi.seLinuxMount":              "true",
+				},
+			},
+		},
+		{
+			name:           "TestCSISeLinuxMountDisabled",
+			resultFileName: "storagecluster_csi_selinxumount_disabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"csi.enabled":                   "true",
+					"csi.installSnapshotController": "true",
+					"csi.seLinuxMount":              "false",
+				},
+			},
+		},
+		{
 			name:           "TestCSIDisabled",
 			resultFileName: "storagecluster_csi_disabled.yaml",
 			helmOption: &helm.Options{

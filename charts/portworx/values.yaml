@@ -182,6 +182,8 @@ csi:
   topology: 
     enabled: false                    # Enable CSI topology feature gate
   installSnapshotController: false    # Enable CSI Snapshot Controller
+  seLinuxMount:                       # Specifies whether the CSI driver supports the -o context mount option. 
+                                      # This value overrides the seLinuxMount setting in the CSI driver
 
 autopilot: 
   enabled: true                      # Enable AutoPilot
