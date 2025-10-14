@@ -75,7 +75,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `EKSInstall` | Installing EKS (Amazon Elastic Container service) | false |
 | `AKSInstall` | Installing on AKS (Azure Kubernetes service) | false |
 | `GKEInstall` | Installing on GKE (Google Kubernetes Engine) | false |
-| `clusterAnnotations` | Semicolon-separated list of annotations to apply on the StorageCluster resource | {} |
+| `clusterAnnotations` | Semicolon-separated list of annotations to apply on the StorageCluster resource | "" |
 | `etcdEndPoint` | (REQUIRED) etcd endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>". Multiple Urls should be semi-colon seperated example: etcd:http://<your-etcd-endpoint1>;etcd:http://<your-etcd-endpoint2> | "" |
 | `clusterName` | Portworx Cluster Name | "mycluster" |
 | `usefileSystemDrive` | Should Portworx use an unmounted drive even with a filesystem ? | false |
