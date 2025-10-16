@@ -206,8 +206,8 @@ spec:
             - name: MONGODB_IMAGES
               value: >
                 {
-                  "registry": "{{ .Values.images.mongodbImage.registry }}",
-                  "repo": "{{ .Values.images.mongodbImage.repo }}",
+                  "registry": "{{ (default .Values.images.mongodbImage.registry .Values.images.registry) }}",
+                  "repo": "{{ (default .Values.images.pxBackupImage.repo .Values.images.repo) }}",
                   "imageName": "{{ .Values.images.mongodbImage.imageName }}",
                   "tags": {
                     "mongodb5": "{{ .Values.images.mongodbImageMap.tags.mongodb5 }}",
