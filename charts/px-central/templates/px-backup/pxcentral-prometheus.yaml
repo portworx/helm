@@ -528,7 +528,7 @@ spec:
       sourceLabels:
       - __name__
     port: http-rest-api
-    {{- if .Values.istio.enabled }}
+    {{- if and .Values.istio.enabled (eq $deployDedicatedMonitoringSystem true) }}
     scheme: https
     tlsConfig:
       caFile: /etc/prom-certs/root-cert.pem

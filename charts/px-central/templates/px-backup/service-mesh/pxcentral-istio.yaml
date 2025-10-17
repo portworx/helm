@@ -60,7 +60,7 @@ apiVersion: security.istio.io/v1
 kind: PeerAuthentication
 metadata:
   name: allow-external-prometheus-scrape
-  namespace: central
+  namespace: {{ .Release.Namespace }}
 spec:
   selector:
     matchLabels:
