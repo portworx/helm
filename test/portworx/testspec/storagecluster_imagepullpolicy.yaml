@@ -11,15 +11,14 @@ metadata:
     app.kubernetes.io/instance: "my-release"
 spec:
   image: portworx/oci-monitor:3.4.1
-  imagePullPolicy: Always
+  imagePullPolicy: IfNotPresent
 
   kvdb:
     internal: true
-    enableTLS: true
   storage:
     useAll: true
   secretsProvider: k8s
-  
+
   stork:
     enabled: true
   monitoring:

@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-release"
 spec:
-  image: portworx/oci-monitor:3.4.0.1
+  image: portworx/oci-monitor:3.4.1
   imagePullPolicy: Always
   customImageRegistry: docker.io/customregistry-test:latest
   imagePullSecret: customregistry-test-creds-sec

@@ -15,7 +15,6 @@ spec:
 
   kvdb:
     internal: true
-    enableTLS: true
   storage:
     useAll: true
   secretsProvider: k8s
@@ -27,5 +26,7 @@ spec:
       enabled: true
   csi:
     enabled: true
+    seLinuxMount: true
+    installSnapshotController: true
   autopilot:
     enabled: true

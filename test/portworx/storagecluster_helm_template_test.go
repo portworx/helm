@@ -81,6 +81,28 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestCSISeLinuxMountEnabled",
+			resultFileName: "storagecluster_csi_selinxumount_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"csi.enabled":                   "true",
+					"csi.installSnapshotController": "true",
+					"csi.seLinuxMount":              "true",
+				},
+			},
+		},
+		{
+			name:           "TestCSISeLinuxMountDisabled",
+			resultFileName: "storagecluster_csi_selinxumount_disabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"csi.enabled":                   "true",
+					"csi.installSnapshotController": "true",
+					"csi.seLinuxMount":              "false",
+				},
+			},
+		},
+		{
 			name:           "TestCSIDisabled",
 			resultFileName: "storagecluster_csi_disabled.yaml",
 			helmOption: &helm.Options{
@@ -372,6 +394,24 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			resultFileName: "storagecluster_with_workload_identity.yaml",
 			helmOption: &helm.Options{
 				ValuesFiles: []string{"./testValues/storagecluster_with_workload_identity.yaml"},
+			},
+		},
+		{
+			name:           "TestStorageClusterAnnotations",
+			resultFileName: "storagecluster_annotations.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"clusterAnnotations": "foo=bar;portworx.io/test-annotation=test-val",
+				},
+			},
+		},
+		{
+			name:           "TestImagePullPolicy",
+			resultFileName: "storagecluster_imagepullpolicy.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"imagePullPolicy": "IfNotPresent",
+				},
 			},
 		},
 	}

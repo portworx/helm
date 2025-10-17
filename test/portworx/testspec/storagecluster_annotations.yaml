@@ -4,6 +4,8 @@ metadata:
   name: "mycluster"
   namespace: portworx
   annotations:
+    foo: bar
+    portworx.io/test-annotation: test-val
   labels:
     heritage: "Helm"
     release: "my-release"
@@ -15,11 +17,10 @@ spec:
 
   kvdb:
     internal: true
-    enableTLS: true
   storage:
     useAll: true
   secretsProvider: k8s
-  
+
   stork:
     enabled: true
   monitoring:
