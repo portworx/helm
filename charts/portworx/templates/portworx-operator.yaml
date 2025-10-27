@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   name: portworx-operator
   namespace: {{ template "px.getDeploymentNamespace" . }}
-{{- if (semverCompare "<1.25" (.Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+"| trimPrefix "v"))}}
+{{- if (semverCompare "<1.25" (.Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+(\\.\\d+)?"| trimPrefix "v"))}}
 ---
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
@@ -34,7 +34,7 @@ rules:
   - apiGroups: ["*"]
     resources: ["*"]
     verbs: ["*"]
-  {{- if (semverCompare "<1.25" (.Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+"| trimPrefix "v"))}}
+  {{- if (semverCompare "<1.25" (.Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+(\\.\\d+)?"| trimPrefix "v"))}}
   - apiGroups: ["policy"]
     resources: ["podsecuritypolicies"]
     resourceNames: ["px-operator"]
