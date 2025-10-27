@@ -1,5 +1,0 @@
-pxOperatorImageVersion: 25.5.0-dev
-imageVersion: 4b3826f_9ac2be1    
-envs:
-  - name: PX_RELEASE_MANIFEST_URL
-    value: "https://edge-install.portworx.com/main-staging/version"
