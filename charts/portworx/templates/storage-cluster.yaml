@@ -517,7 +517,7 @@ spec:
     {{- if eq .Values.csi.installSnapshotController true }}
     installSnapshotController: true
     {{- end}}
-    {{- if or (eq .Values.csi.seLinuxMount true) (eq .Values.csi.seLinuxMount false) }}
+    {{- if and (hasKey .Values.csi "seLinuxMount") (kindIs "bool" .Values.csi.seLinuxMount) }}
     seLinuxMount: {{ .Values.csi.seLinuxMount }}
     {{- end }}
     {{- end}}
