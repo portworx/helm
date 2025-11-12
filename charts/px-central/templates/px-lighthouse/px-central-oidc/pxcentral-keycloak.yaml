@@ -101,7 +101,9 @@ data:
 
         if [[ -f "${JKS_TRUSTSTORE_PATH}" ]]; then
             echo "$(date "$LOG_TIMESTAMP_FORMAT") INFO  [container.initialization] (keystore-autoconfiguration) Keycloak truststore successfully created at: ${JKS_TRUSTSTORE_PATH}."
-            CUSTOM_TLS_ARGS+="--spi-truststore-file-file=${JKS_TRUSTSTORE_PATH} --spi-truststore-file-password=${JKS_TRUSTSTORE_PASSWORD}"
+            # Set truststore password as environment variable to avoid logging sensitive data
+            export KC_SPI_TRUSTSTORE_FILE_PASSWORD="${JKS_TRUSTSTORE_PASSWORD}"
+            CUSTOM_TLS_ARGS+="--spi-truststore-file-file=${JKS_TRUSTSTORE_PATH}"
         else
             echo "$(date "$LOG_TIMESTAMP_FORMAT") ERROR  [container.initialization] (keystore-autoconfiguration) Keycloak truststore not created at: ${JKS_TRUSTSTORE_PATH}." >&2
         fi
