@@ -2,7 +2,7 @@
 */}}
 
 {{- define "rbac.apiVersion" -}}
-{{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+" | trimPrefix "v"}}
+{{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+(\\.\\d+)?" | trimPrefix "v"}}
 {{- if semverCompare ">= 1.8" $version -}}
 "rbac.authorization.k8s.io/v1"
 {{- else -}}
@@ -22,11 +22,11 @@ release: {{ .Release.Name | quote }}
 {{- end -}}
 
 {{- define "px.kubernetesVersion" -}}
-{{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+"}}{{$version}}
+{{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+(\\.\\d+)?"}}{{$version}}
 {{- end -}}
 
 {{- define "px.kubectlImageTag" -}}
-{{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+" | trimPrefix "v" | split "."}}
+{{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+(\\.\\d+)?" | trimPrefix "v" | split "."}}
 {{- $major := index $version "_0" -}}
 {{- $minor := index $version "_1" -}}
 {{printf "%s.%s" $major $minor }}
@@ -81,7 +81,7 @@ release: {{ .Release.Name | quote }}
 {{- end -}}
 
 {{- define "px.getk8sImages" -}}
-{{- $version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+" | trimPrefix "v" -}}
+{{- $version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+(\\.\\d+)?" | trimPrefix "v" -}}
 {{- if (.Values.customRegistryURL) -}}
     {{- if (eq "/" (.Values.customRegistryURL | regexFind "/")) -}}
         {{ trim .Values.customRegistryURL }}
@@ -139,7 +139,7 @@ release: {{ .Release.Name | quote }}
 {{- end -}}
 
 {{- define "px.registryConfigType" -}}
-{{- $version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+\\.\\d+" | trimPrefix "v" -}}
+{{- $version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+(\\.\\d+)?" | trimPrefix "v" -}}
 {{- if semverCompare ">=1.9" $version -}}
 ".dockerconfigjson"
 {{- else -}}
