@@ -1,7 +1,7 @@
 AKSInstall: true                     
 provider: azure                           
 journalDevice: "type=journal"
-maxStorageNodesPerZone: 1             
+initialStorageNodes: 1             
 maxStorageNodes: 1              
 systemMetadataDevice: "type=gp2,size=100"
 kvdbDevice: "type=node-kvdb"

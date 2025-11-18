@@ -11,7 +11,7 @@ metadata:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-release"
 spec:
-  image: portworx/oci-monitor:3.4.1
+  image: portworx/oci-monitor:3.5.0
   imagePullPolicy: Always
 
   kvdb:
@@ -23,7 +23,7 @@ spec:
     kvdbDeviceSpec: type=node-kvdb
     systemMetadataDeviceSpec: type=gp2,size=100
     journalDeviceSpec: type=journal
-    maxStorageNodesPerZone: 1
+    initialStorageNodes: 1
     maxStorageNodes: 1
   secretsProvider: k8s
 

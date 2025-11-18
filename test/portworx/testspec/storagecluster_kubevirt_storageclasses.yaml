@@ -6,9 +6,10 @@ metadata:
   annotations:
   labels:
     heritage: "Helm"
-    release: "my-release"
+    release: "myrelease"
+    chart: "portworx-7.0.3"
     app.kubernetes.io/managed-by: "Helm"
-    app.kubernetes.io/instance: "my-release"
+    app.kubernetes.io/instance: "myrelease"
 spec:
   image: portworx/oci-monitor:3.5.0
   imagePullPolicy: Always
@@ -16,15 +17,9 @@ spec:
   kvdb:
     internal: true
   storage:
-    cacheDevices:
-        - /dev/one
-        - /dev/two
     useAll: true
-    kvdbDevice: /node-kvdb
-    systemMetadataDevice: /dev/sde
-    journalDevice: /dev/sdd
   secretsProvider: k8s
-
+  
   stork:
     enabled: true
   monitoring:
@@ -32,5 +27,9 @@ spec:
       enabled: true
   csi:
     enabled: true
+    kubeVirtStorageClasses:
+      pxCdiScratch: true
+      pxRwxBlockKubevirt: true
+      pxRwxFileKubevirt: true
   autopilot:
     enabled: true
