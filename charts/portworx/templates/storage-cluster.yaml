@@ -241,8 +241,8 @@ spec:
     {{- if and (ne $journalDevice "none") (not (hasPrefix "/" $journalDevice)) }}
     journalDeviceSpec: {{ $journalDevice }}
     {{- end }}
-    {{- if ne (.Values.maxStorageNodesPerZone | int) 0 }}
-    maxStorageNodesPerZone: {{ .Values.maxStorageNodesPerZone }}
+    {{- if ne (.Values.initialStorageNodes | int) 0 }}
+    initialStorageNodes: {{ .Values.initialStorageNodes }}
     {{- end }}
     {{- if ne (.Values.maxStorageNodes | int) 0 }}
     maxStorageNodes: {{ .Values.maxStorageNodes }}
@@ -264,8 +264,8 @@ spec:
     {{- if and (ne $journalDevice "none") (not (hasPrefix "/" $journalDevice)) }}
     journalDeviceSpec: {{ $journalDevice }}
     {{- end }}
-    {{- if gt (.Values.maxStorageNodesPerZone | int) 0 }}
-    maxStorageNodesPerZone: {{ .Values.maxStorageNodesPerZone }}
+    {{- if gt (.Values.initialStorageNodes | int) 0 }}
+    initialStorageNodes: {{ .Values.initialStorageNodes }}
     {{- end }}
     {{- if ne (.Values.maxStorageNodes | int) 0 }}
     maxStorageNodes: {{ .Values.maxStorageNodes }}
@@ -520,6 +520,22 @@ spec:
     {{- if or (eq .Values.csi.seLinuxMount true) (eq .Values.csi.seLinuxMount false) }}
     seLinuxMount: {{ .Values.csi.seLinuxMount }}
     {{- end }}
+
+    {{- $pxRwxBlockKubevirt := or (eq .Values.csi.kubeVirtStorageClasses.pxRwxBlockKubevirt true) (eq .Values.csi.kubeVirtStorageClasses.pxRwxBlockKubevirt false) }}
+    {{- $pxRwxFileKubevirt := or (eq .Values.csi.kubeVirtStorageClasses.pxRwxFileKubevirt true) (eq .Values.csi.kubeVirtStorageClasses.pxRwxFileKubevirt false) }}
+    {{- $pxCdiScratch := or (eq .Values.csi.kubeVirtStorageClasses.pxCdiScratch true) (eq .Values.csi.kubeVirtStorageClasses.pxCdiScratch false) }}
+    {{- if or $pxRwxBlockKubevirt $pxRwxFileKubevirt $pxCdiScratch }}
+    kubeVirtStorageClasses:
+      {{- if $pxRwxBlockKubevirt }}
+      pxRwxBlockKubevirt: {{ .Values.csi.kubeVirtStorageClasses.pxRwxBlockKubevirt }}
+      {{- end }}
+      {{- if $pxRwxFileKubevirt }}
+      pxRwxFileKubevirt: {{ .Values.csi.kubeVirtStorageClasses.pxRwxFileKubevirt }}
+      {{- end }}
+      {{- if $pxCdiScratch }}
+      pxCdiScratch: {{ .Values.csi.kubeVirtStorageClasses.pxCdiScratch }}
+      {{- end }}
+    {{- end }}
     {{- end}}
   {{- end }}
 
@@ -627,6 +643,9 @@ spec:
   {{- if .Values.deleteStrategy.type }}
   deleteStrategy:
     type: {{ .Values.deleteStrategy.type }}
+    {{- if and (hasKey .Values.deleteStrategy "ignoreVolumes") (kindIs "bool" .Values.deleteStrategy.ignoreVolumes) }}
+    ignoreVolumes: {{ .Values.deleteStrategy.ignoreVolumes }}
+    {{- end }}
   {{- end }}
   {{- with .Values.workloadIdentity.credentials }}
   workloadIdentity:
