@@ -2,9 +2,9 @@ pxCentralVersion: 2.11.0
 modules:
   pxCentral:
     pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:2.11.0-staging"
-    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:2.11.0-staging"
-    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:2.11.0-staging"
-    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:2.11.0-staging"
+    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:PB-9932"
+    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:PB-9932"
+    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:PB-9932"
     pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:2.11.0-staging"
     pxcentralOnpremPreSetup: "docker.io/portworx/pxcentral-onprem-hook-base:2.11.0-staging"
     postgresql: "docker.io/portworx/postgresql:17.4.0-debian-12-r19"
@@ -13,7 +13,7 @@ modules:
     busybox: "docker.io/portworx/busybox:1.35.0"
     mysql: "docker.io/portworx/mysql:8.0.43"
   pxBackup:
-    pxBackup: "docker.io/portworx/px-backup-base:2.11.0-staging"
+    pxBackup: "docker.io/portworx/px-backup-base:2.11.0-fc1"
     mongodb: "docker.io/portworx/mongodb:8.0.16"
     mongodb7: "docker.io/portworx/mongodb:7.0.15-debian-12-r2"
     mongodb6: "docker.io/portworx/mongodb:6.0.13-debian-11-r21"
