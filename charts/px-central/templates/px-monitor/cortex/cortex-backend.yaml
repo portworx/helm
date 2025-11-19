@@ -159,7 +159,7 @@ spec:
                 export CASSANDRA_IGNORE_INITDB_SCRIPTS=1
               fi
               /entrypoint.sh /run.sh
-          image: {{ printf "%s/%s/%s:%s" .Values.images.cassandraImage.registry .Values.images.cassandraImage.repo .Values.images.cassandraImage.imageName .Values.images.cassandraImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.cassandraImage.registry .Values.images.registry) (default .Values.images.cassandraImage.repo .Values.images.repo) .Values.images.cassandraImage.imageName .Values.images.cassandraImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           env:
             - name: BITNAMI_DEBUG

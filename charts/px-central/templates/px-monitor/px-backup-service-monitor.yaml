@@ -17,5 +17,5 @@ spec:
   namespaceSelector:
     any: true
   endpoints:
-  - port: rest-api
+  - port: http-rest-api
 {{- end -}}

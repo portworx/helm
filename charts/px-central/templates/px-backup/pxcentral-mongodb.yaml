@@ -103,20 +103,6 @@ spec:
     app.kubernetes.io/component: pxc-backup-mongodb
 ---
 apiVersion: v1
-kind: Secret
-metadata:
-  labels:
-    app.kubernetes.io/component: pxc-backup-mongodb
-{{- include "px-central.labels" . | nindent 4 }}
-  name: pxc-backup-mongodb
-  namespace: {{ .Release.Namespace }}
-type: Opaque
-stringData:
-  mongodb-root-password: "pxcentral"
-  mongodb-password: "Password1"
-  mongodb-replica-set-key: "pxbackup"
----
-apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: pxc-backup-mongodb
@@ -212,7 +198,7 @@ spec:
       {{- end }}
       containers:
         - name: mongodb
-          image: {{ printf "%s/%s/%s:%s" .Values.images.mongodbImage.registry .Values.images.mongodbImage.repo .Values.images.mongodbImage.imageName .Values.images.mongodbImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.mongodbImage.registry .Values.images.registry) (default .Values.images.mongodbImage.repo .Values.images.repo) .Values.images.mongodbImage.imageName .Values.images.mongodbImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
             - /scripts/setup.sh
@@ -223,6 +209,7 @@ spec:
           env:
             - name: BITNAMI_DEBUG
               value: "false"
+          {{- include "serviceMesh.env" . | nindent 12 }}
             - name: MY_POD_IP
               valueFrom:
                 fieldRef:
@@ -247,7 +234,10 @@ spec:
             - name: SHARED_FILE
               value: "/shared/info.txt"
             - name: MONGODB_USERNAME
-              value: pxbackup
+              valueFrom:
+                secretKeyRef:
+                  key: mongodb-username
+                  name: pxc-backup-mongodb
             - name: MONGODB_DATABASE
               value: px-backup
             - name: MONGODB_PASSWORD
