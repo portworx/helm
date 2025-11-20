@@ -2099,6 +2099,13 @@ spec:
                     items:
                       type: string
                     type: array
+                  initialStorageNodes:
+                    description: InitialStorageNodes specifies the number of storage
+                      nodes to be provisioned in the cluster. This field is only used
+                      when the cluster is being created.
+                    format: int32
+                    minimum: 3
+                    type: integer
                   journalDeviceSpec:
                     description: JournalDeviceSpec specifies the cloud device Portworx
                       uses for journaling.
@@ -2236,6 +2243,26 @@ spec:
                       CSI Snapshot Controller needs to be installed for the storage
                       cluster. Default value is `false`.
                     type: boolean
+                  kubeVirtStorageClasses:
+                    description: KubeVirtStorageClasses defines the storage classes
+                      required for KubeVirt integration.
+                    properties:
+                      pxCdiScratch:
+                        description: |-
+                          PxCdiScratch enables creation of the StorageClass used for
+                          CDI (Containerized Data Importer) scratch space
+                        type: boolean
+                      pxRwxBlockKubevirt:
+                        description: |-
+                          PxRwxBlockKubevirt enables creation of a ReadWriteMany (RWX) block-based
+                          StorageClass for KubeVirt workloads
+                        type: boolean
+                      pxRwxFileKubevirt:
+                        description: |-
+                          PxRwxFileKubevirt enables creation of a ReadWriteMany (RWX) file-based
+                          StorageClass for KubeVirt workloads
+                        type: boolean
+                    type: object
                   nodeDriverRegistrar:
                     description: CSINodeDriverRegistrarSpec is used to define the
                       CSI node driver registrar configurations
@@ -2758,22 +2785,33 @@ spec:
                   DeleteStrategy indicates what happens when the Portworx `StorageCluster` object is deleted.
                   By default, there is no delete strategy, which means only the Kubernetes components deployed by the operator are removed.
                   The Portworx `systemd` service continues to run, and the Kubernetes applications using the Portworx volumes are not affected.
-                  Portworx supports the following delete strategies. <br/> - `Uninstall` - Removes all Portworx components from the system and leaves the devices and KVDB intact. <br/> - `UninstallAndWipe` - Removes all Portworx components from the system and wipes the devices and metadata from KVDB.
+                  Portworx supports the following delete strategies. <br/> - `Uninstall` - Removes all Portworx components from the system and leaves the devices and KVDB intact. <br/> - `UninstallAndWipe` - Removes all Portworx components from the system and wipes the devices and metadata from KVDB. <br/> - `UninstallAndDelete` - Removes all Portworx components from the system, wipes the devices and metadata from KVDB, and deletes the drives attached to each driveset.
                 properties:
+                  ignoreVolumes:
+                    description: IgnoreVolumes indicates whether to ignore volumes
+                      when deleting the storage cluster. If set to true, the storage
+                      cluster will be deleted even if there are Portworx volumes present.
+                      If set to false, the storage cluster will not be deleted if
+                      there are Portworx volumes present.
+                    type: boolean
                   type:
-                    description: Type of storage cluster delete. Can be Uninstall
-                      or UninstallAndWipe. There is no default delete strategy. When
-                      no delete strategy only objects managed by the StorageCluster
-                      controller and owned by the StorageCluster object are deleted.
-                      The storage driver will be left in a state where it will not
-                      be managed by any object. Uninstall strategy ensures that the
-                      cluster is completely uninstalled even from the storage driver
-                      perspective. UninstallAndWipe strategy ensures that the cluster
-                      is completely uninstalled as well as the storage devices and
-                      metadata are wiped for reuse. This may result in data loss.
+                    description: Type of storage cluster delete. Can be Uninstall,
+                      UninstallAndWipe, or UninstallAndDelete. There is no default
+                      delete strategy. When no delete strategy only objects managed
+                      by the StorageCluster controller and owned by the StorageCluster
+                      object are deleted. The storage driver will be left in a state
+                      where it will not be managed by any object. Uninstall strategy
+                      ensures that the cluster is completely uninstalled even from
+                      the storage driver perspective. UninstallAndWipe strategy ensures
+                      that the cluster is completely uninstalled as well as the storage
+                      devices and metadata are wiped for reuse. UninstallAndDelete
+                      strategy ensures that the cluster is completely uninstalled,
+                      the storage devices and metadata are wiped, and the drives attached
+                      to each driveset are deleted. This may result in data loss.
                     enum:
                     - Uninstall
                     - UninstallAndWipe
+                    - UninstallAndDelete
                     type: string
                 type: object
               env:
@@ -10483,6 +10521,13 @@ spec:
                       type: string
                   type: object
                 type: array
+              configSource:
+                description: ConfigSource indicates whether component configs come
+                  from componentK8sConfig or StorageCluster.
+                enum:
+                - ComponentK8sConfig
+                - StorageCluster
+                type: string
               desiredImages:
                 description: DesiredImages represents all the desired images of various
                   components

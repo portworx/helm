@@ -65,7 +65,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 
 | Parameter | Description | Default
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| `imageVersion` | Version of the PX image | 3.4.1 |
+| `imageVersion` | Version of the PX image | 3.4.2 |
 | `pxOperatorImageVersion` | Version of the PX operator image | 25.4.0 |
 | `verboseOperatorLogs` | Enable verbose logging for the Portworx operator | true |
 | `openshiftInstall` | Installing on Openshift? | false |
@@ -132,6 +132,10 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `csi.topology.enabled` | Enable CSI topology feature gate | false |
 | `csi.installSnapshotController` | Install CSI Snapshot Controller | false |
 | `csi.seLinuxMount` | SELinuxMount specifies whether the CSI driver supports the "-o context" mount option. It overrides the seLinuxMount value in the CSI driver | true |
+| `kubeVirtStorageClasses.pxRwxFileKubevirt` | Enables creation of the `px-rwx-file-kubevirt` StorageClass, which provides RWX access using a file-based backend for KubeVirt virtual machines. | false |
+| `kubeVirtStorageClasses.pxRwxBlockKubevirt` | Enables creation of the `px-rwx-block-kubevirt` StorageClass, which provides RWX access using a block-based backend for KubeVirt workloads. | false |
+| `kubeVirtStorageClasses.pxCdiScratch` | Enables creation of the `px-cdi-scratch` StorageClass used by the Containerized Data Importer (CDI) for temporary scratch space during VM image imports or uploads. | false |
+
 | `autopilot.enabled` | Enable AutoPilot | true |
 | `autopilot.image` | Specify AutoPilot image | "" |
 | `autopilot.lockImage` | Enables locking AutoPilot to the given image | false |
@@ -154,6 +158,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `clusterToken.secretName` | Name of the Kubernetes secret to be created for the cluster token. Requires clusterToken.create to be true. | "px-vol-encryption" |
 | `clusterToken.serviceAccountName` | Service account name to use for the post-install hook to create the cluster token. | "px-create-cluster-token" |
 | `deleteStrategy.type` | Optional: Specifies the delete strategy for the Portworx cluster. Valid values: Uninstall, UninstallAndWipe | "" |
+| `deleteStrategy.ignoreVolumes` | Optional: Indicates whether to ignore volumes when deleting the portworx cluster | "" |
 | `updateStrategy.type` | Specifies the update strategy for the Portworx cluster. Supported values: RollingUpdate, OnDelete | "" |
 | `updateStrategy.maxUnavailable` | Maximum number of nodes that can be unavailable during a rolling update | 1 |
 | `updateStrategy.minReadySeconds` | Minimum number of seconds that a pod should be ready before the next batch of pods is updated during a rolling update | 1 |
