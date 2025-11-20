@@ -65,8 +65,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 
 | Parameter | Description | Default
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| `imageVersion` | Version of the PX image | 3.4.2 |
-| `pxOperatorImageVersion` | Version of the PX operator image | 25.4.0 |
+| `imageVersion` | Version of the PX image | 3.5.0 |
+| `pxOperatorImageVersion` | Version of the PX operator image | 25.5.0 |
 | `verboseOperatorLogs` | Enable verbose logging for the Portworx operator | true |
 | `openshiftInstall` | Installing on Openshift? | false |
 | `nonDisruptivek8sUpgrade` | Used to disable or enable smart and parallel kubetnetes node upgrades. By default, S&P upgrades are disabled. To enable them, set this to true | false |
@@ -84,7 +84,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `provider` | Specifies the cloud provider name, such as: pure, azure, aws, gce, vsphere, if using cloud storage. | "" |
 | `journalDevice` | Journal device for Portworx metadata | "" |
 | `cacheDevices` | semi-colon seperated list of cache devices Portworx should use. | "" |
-| `maxStorageNodesPerZone` | Indicates the maximum number of storage nodes per zone. If this number is reached, and a new node is added to the zone, Portworx doesn't provision drives for the new node. Instead, Portworx starts the node as a compute-only node | 0 |
+| `initialStorageNodes` | InitialStorageNodes specifies the number of storage nodes to be provisioned in the cluster. This field is only used when the cluster is being created  | 0 |
 | `maxStorageNodes` | Specifies the maximum number of storage nodes. If this number is reached, and a new node is added, Portworx doesn't provision drives for the new node. Instead, Portworx starts the node as a compute-only node. As a best practice, it is recommended to use the `maxStorageNodesPerZone` field | 0 |
 | `systemMetadataDevice` | Specifies the device Portworx uses to store metadata. | "" |
 | `secretType` | Secrets store to be used can be AWS KMS/KVDB/Vault/K8s/IBM Key Protect | k8s |

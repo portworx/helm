@@ -241,8 +241,8 @@ spec:
     {{- if and (ne $journalDevice "none") (not (hasPrefix "/" $journalDevice)) }}
     journalDeviceSpec: {{ $journalDevice }}
     {{- end }}
-    {{- if ne (.Values.maxStorageNodesPerZone | int) 0 }}
-    maxStorageNodesPerZone: {{ .Values.maxStorageNodesPerZone }}
+    {{- if ne (.Values.initialStorageNodes | int) 0 }}
+    initialStorageNodes: {{ .Values.initialStorageNodes }}
     {{- end }}
     {{- if ne (.Values.maxStorageNodes | int) 0 }}
     maxStorageNodes: {{ .Values.maxStorageNodes }}
@@ -264,8 +264,8 @@ spec:
     {{- if and (ne $journalDevice "none") (not (hasPrefix "/" $journalDevice)) }}
     journalDeviceSpec: {{ $journalDevice }}
     {{- end }}
-    {{- if gt (.Values.maxStorageNodesPerZone | int) 0 }}
-    maxStorageNodesPerZone: {{ .Values.maxStorageNodesPerZone }}
+    {{- if gt (.Values.initialStorageNodes | int) 0 }}
+    initialStorageNodes: {{ .Values.initialStorageNodes }}
     {{- end }}
     {{- if ne (.Values.maxStorageNodes | int) 0 }}
     maxStorageNodes: {{ .Values.maxStorageNodes }}
