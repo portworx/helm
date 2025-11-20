@@ -1,6 +1,6 @@
 persistentStorage:
   enabled: true
-  storageClassName:
+  storageClassName: "px-csi-db"
   cassandra:
     storage: 64Gi
   grafana:
@@ -101,12 +101,12 @@ proxy:
 postInstallJob:
   sslEnabled: true
 
-isUpgrade: false
+isUpgrade: true
 isOpenshift: false
-isArgoCD: false
+isArgoCD: true
 
 pxbackup:
-  enabled: false
+  enabled: true
   orgName: default
   # obsolete
   callHome: false
