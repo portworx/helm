@@ -414,6 +414,32 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:           "TestDeleteStrategyWithIgnoreVolumes",
+			resultFileName: "storagecluster_deleteStrategy_with_ignorevolumes.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"deleteStrategy.type":          "UninstallAndWipe",
+					"deleteStrategy.ignoreVolumes": "true",
+				},
+			},
+		},
+		{
+			name:           "TestDeleteStrategy",
+			resultFileName: "storagecluster_deleteStrategy.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"deleteStrategy.type": "UninstallAndWipe",
+				},
+			},
+		},
+		{
+			name:           "TestKubeVirtStorageClasses",
+			resultFileName: "storagecluster_kubevirt_storageclasses.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"storagecluster_kubevirt_storageclasses.yaml"},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

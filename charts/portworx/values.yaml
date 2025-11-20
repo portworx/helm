@@ -191,6 +191,10 @@ csi:
   installSnapshotController: false    # Enable CSI Snapshot Controller
   seLinuxMount:                       # Specifies whether the CSI driver supports the -o context mount option. 
                                       # This value overrides the seLinuxMount setting in the CSI driver
+  kubeVirtStorageClasses:             # Controls creation of default StorageClasses for OpenShift Virtualization (KubeVirt)
+      pxRwxFileKubevirt:              # Enable or disable creation of px-rwx-block-kubevirt StorageClass (RWX block)
+      pxRwxBlockKubevirt:             # Enable or disable creation of px-rwx-fileock-kubevirt StorageClass (RWX file)
+      pxCdiScratch:                   # Enable or disable creation of px-cdi-scratch StorageClass used for CDI scratch space
 
 autopilot: 
   enabled: true                      # Enable AutoPilot
@@ -297,6 +301,7 @@ clusterToken:
 
 deleteStrategy:                           # Optional: Delete strategy for the portworx cluster
   type:                                   # Valid values: Uninstall, UninstallAndWipe
+  ignoreVolumes:                          # Indicates whether to ignore volumes when deleting the portworx cluster
 
 updateStrategy:   
   type:                                   # portworx supports the following update strategies- RollingUpdate and OnDelete
