@@ -520,7 +520,6 @@ spec:
     {{- if or (eq .Values.csi.seLinuxMount true) (eq .Values.csi.seLinuxMount false) }}
     seLinuxMount: {{ .Values.csi.seLinuxMount }}
     {{- end }}
-
     {{- $pxRwxBlockKubevirt := or (eq .Values.csi.kubeVirtStorageClasses.pxRwxBlockKubevirt true) (eq .Values.csi.kubeVirtStorageClasses.pxRwxBlockKubevirt false) }}
     {{- $pxRwxFileKubevirt := or (eq .Values.csi.kubeVirtStorageClasses.pxRwxFileKubevirt true) (eq .Values.csi.kubeVirtStorageClasses.pxRwxFileKubevirt false) }}
     {{- $pxCdiScratch := or (eq .Values.csi.kubeVirtStorageClasses.pxCdiScratch true) (eq .Values.csi.kubeVirtStorageClasses.pxCdiScratch false) }}

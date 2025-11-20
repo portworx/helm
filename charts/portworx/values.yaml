@@ -197,7 +197,6 @@ csi:
       pxRwxBlockKubevirt:             # Enable or disable creation of px-rwx-fileock-kubevirt StorageClass (RWX file)
       pxCdiScratch:                   # Enable or disable creation of px-cdi-scratch StorageClass used for CDI scratch space
 
-
 autopilot: 
   enabled: true                      # Enable AutoPilot
   image: ""                           # Autopilot image
@@ -303,7 +302,7 @@ clusterToken:
 
 deleteStrategy:                           # Optional: Delete strategy for the portworx cluster
   type:                                   # Valid values: Uninstall, UninstallAndWipe
-  ignoreVolumes:
+  ignoreVolumes:                          # Indicates whether to ignore volumes when deleting the portworx cluster
 
 updateStrategy:   
   type:                                   # portworx supports the following update strategies- RollingUpdate and OnDelete
