@@ -1,6 +1,6 @@
 persistentStorage:
   enabled: true
-  storageClassName:
+  storageClassName: "px-csi-db"
   cassandra:
     storage: 64Gi
   grafana:
@@ -100,10 +100,10 @@ postInstallJob:
 
 isUpgrade: false
 isOpenshift: false
-isArgoCD: false
+isArgoCD: true
 
 pxbackup:
-  enabled: false
+  enabled: true
   orgName: default
   callHome: true
   mongoMigration: complete
