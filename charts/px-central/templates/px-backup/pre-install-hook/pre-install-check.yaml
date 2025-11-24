@@ -2,7 +2,6 @@
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $minimumKubernetesVersion := "1.30.0"}}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
-{{- if or $pxBackupEnabled $pxMonitorEnabled }}
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 
@@ -157,13 +156,15 @@ spec:
               {{- end }}
       containers:
         - name: pxbackup-pre-install-check
-          image: {{ printf "%s/%s/%s:%s" .Values.images.preSetupHookImage.registry .Values.images.preSetupHookImage.repo .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.preSetupHookImage.registry .Values.images.registry) (default .Values.images.preSetupHookImage.repo .Values.images.repo) .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: ["/pxcentral-hook/bin/pxcentral-hook"]
           args: ["--hook=pre-install"]
           env:
             - name: NAMESPACE
               value: {{ .Release.Namespace }}
+            - name: DEFAULT_USER_NAME
+              value: {{ .Values.oidc.centralOIDC.defaultUsername | quote }}
             - name: STORAGE_CLASS
               value: {{ .Values.persistentStorage.storageClassName }}
             - name: PX_BACKUP_ENABLED
@@ -185,6 +186,7 @@ spec:
             - name: ALERTMANAGER_ENDPOINT
               value: {{ .Values.pxbackup.alertmanagerEndpoint | default "" | quote }}
         {{- end }}
+          {{- include "serviceMesh.env" . | nindent 12 }}
             - name: MINIMUM_KUBERNETES_VERSION
               value: "{{ $minimumKubernetesVersion }}"
             - name: JOB_TIMEOUT_SECONDS
@@ -193,6 +195,8 @@ spec:
               value: "{{ .Values.pxbackup.version }}"
             - name: SKIP_VALIDATIONS
               value: {{ .Values.pxbackup.skipValidations | default false | quote }}
+            - name: ENCRYPT_MONGODB
+              value: {{ .Values.pxbackup.encryptMongoDB | default false | quote }}
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pre-install-check" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
@@ -277,7 +281,7 @@ spec:
               {{- end }}
       containers:
         - name: pxbackup-pre-flight-checker
-          image: {{ printf "%s/%s/%s:%s" .Values.images.preSetupHookImage.registry .Values.images.preSetupHookImage.repo .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.preSetupHookImage.registry .Values.images.registry) (default .Values.images.preSetupHookImage.repo .Values.images.repo) .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: [ "/pxcentral-hook/bin/pxcentral-hook" ]
           args: [ "--hook=preflight-check" ]
@@ -377,5 +381,3 @@ roleRef:
   kind: ClusterRole
   name: px-backup-pre-setup-clusterrole
   apiGroup: rbac.authorization.k8s.io
-
-{{- end }}

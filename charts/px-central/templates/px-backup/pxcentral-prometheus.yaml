@@ -22,6 +22,8 @@
 {{- end -}}
 {{- else }}
 {{- end }}
+{{- $hasAzureAnnotation := and (eq $azureProxyEnabled true) (not (has "px-backup-dashboard-prometheus" .Values.proxy.excludeAzureProxyList)) }}
+{{- $hasIstioAnnotation := .Values.istio.enabled }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -153,13 +155,12 @@ spec:
       - args:
           - -namespaces={{ .Release.Namespace }}
           - --kubelet-service={{ .Release.Namespace }}/kubelet
-          - --prometheus-config-reloader={{ printf "%s/%s/%s:%s" .Values.images.pxBackupPrometheusConfigReloaderImage.registry .Values.images.pxBackupPrometheusConfigReloaderImage.repo .Values.images.pxBackupPrometheusConfigReloaderImage.imageName .Values.images.pxBackupPrometheusConfigReloaderImage.tag }}
-        image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupPrometheusOperatorImage.registry .Values.images.pxBackupPrometheusOperatorImage.repo .Values.images.pxBackupPrometheusOperatorImage.imageName .Values.images.pxBackupPrometheusOperatorImage.tag }}
+          - --prometheus-config-reloader={{ printf "%s/%s/%s:%s" (default .Values.images.pxBackupPrometheusConfigReloaderImage.registry .Values.images.registry) (default .Values.images.pxBackupPrometheusConfigReloaderImage.repo .Values.images.repo) .Values.images.pxBackupPrometheusConfigReloaderImage.imageName .Values.images.pxBackupPrometheusConfigReloaderImage.tag }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxBackupPrometheusOperatorImage.registry .Values.images.registry) (default .Values.images.pxBackupPrometheusOperatorImage.repo .Values.images.repo) .Values.images.pxBackupPrometheusOperatorImage.imageName .Values.images.pxBackupPrometheusOperatorImage.tag }}
         name: prometheus-operator
         ports:
           - containerPort: 8080
             name: http
-        {{- if .Values.proxy.httpProxy.noProxy }}
         volumeMounts:
         {{- if .Values.proxy.configSecretName }}
           - mountPath: /etc/ssl/certs/proxy-ca.pem
@@ -168,6 +169,8 @@ spec:
             readOnly: true
         {{- end }}
         env:
+        {{- include "serviceMesh.env" . | nindent 8 }}
+        {{- if .Values.proxy.httpProxy.noProxy }}
         {{- if or (empty .Values.proxy.includeNoProxyList) (has "prometheus-operator" .Values.proxy.includeNoProxyList) }}
         {{ include "proxy.proxyEnv" . | nindent 8 }}
         {{- end }}
@@ -260,7 +263,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - name: web
+    - name: http-web
       port: 9090
       protocol: TCP
       targetPort: 9090
@@ -301,11 +304,20 @@ spec:
   additionalAlertManagerConfigs:
     key: am-configs.yaml
     name: pxc-backup-metrics
-  {{- if and (eq $azureProxyEnabled true) (not (has "px-backup-dashboard-prometheus" .Values.proxy.excludeAzureProxyList)) }}
+  {{- if or $hasAzureAnnotation $hasIstioAnnotation }}
   podMetadata:
     annotations:
+  {{- if $hasAzureAnnotation }}
       kubernetes.azure.com/no-http-proxy-vars: "true"
   {{- end }}
+  {{- if $hasIstioAnnotation }}
+      proxy.istio.io/config: |
+        proxyMetadata:
+          OUTPUT_CERTS: /etc/istio-output-certs
+      sidecar.istio.io/userVolumeMount: '[{"name": "istio-certs", "mountPath": "/etc/istio-output-certs"}]'
+      traffic.sidecar.istio.io/includeOutboundIPRanges: ""
+  {{- end}}
+  {{- end}}
   {{- if .Values.persistentStorage.storageClassName }}
   storage:
     volumeClaimTemplate:
@@ -321,16 +333,17 @@ spec:
   {{- end }}
   initContainers:
   - name: init-config-reloader
-    volumeMounts:
     {{- if .Values.proxy.configSecretName }}
+    volumeMounts:
     - mountPath: /etc/ssl/certs/proxy-ca.pem
       subPath: proxy-ca.pem
       name: proxy-ca-volume
       readOnly: true
     {{- end }}
+    {{- $proxyEnv := include "proxy.proxyEnv" . }}
+    {{- if and (or (empty .Values.proxy.includeNoProxyList) (has "px-backup-dashboard-prometheus" .Values.proxy.includeNoProxyList)) (ne (trim $proxyEnv) "") }}
     env:
-    {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-dashboard-prometheus" .Values.proxy.includeNoProxyList) }}
-    {{ include "proxy.proxyEnv" . | nindent 4 }}
+    {{ $proxyEnv | nindent 4 }}
     {{- end }}
   containers:
   - args:
@@ -354,10 +367,11 @@ spec:
         secretKeyRef:
           name: pxc-backup-metrics
           key: metrics-token
+    {{- include "serviceMesh.env" . | nindent 4 }}
     {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-dashboard-prometheus" .Values.proxy.includeNoProxyList) }}
     {{ include "proxy.proxyEnv" . | nindent 4 }}
     {{- end }}
-    image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupPrometheusImage.registry .Values.images.pxBackupPrometheusImage.repo .Values.images.pxBackupPrometheusImage.imageName .Values.images.pxBackupPrometheusImage.tag }}
+    image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxBackupPrometheusImage.registry .Values.images.registry) (default .Values.images.pxBackupPrometheusImage.repo .Values.images.repo) .Values.images.pxBackupPrometheusImage.imageName .Values.images.pxBackupPrometheusImage.tag }}
     livenessProbe:
       exec:
         command:
@@ -382,7 +396,7 @@ spec:
           -qO-
     ports:
     - containerPort: 9090
-      name: web
+      name: http-web
       protocol: TCP
   - args:
     - --listen-address=:8080
@@ -410,8 +424,8 @@ spec:
     - containerPort: 8080
       name: reloader-web
       protocol: TCP
-    volumeMounts:
     {{- if .Values.proxy.configSecretName }}
+    volumeMounts:
       - mountPath: /etc/ssl/certs/proxy-ca.pem
         subPath: proxy-ca.pem
         name: proxy-ca-volume
@@ -437,6 +451,10 @@ spec:
       name: proxy-ca-volume
       readOnly: true
   {{- end }}
+  {{- if .Values.istio.enabled }}
+    - mountPath: /etc/prom-certs/
+      name: istio-certs
+  {{- end}}
   volumes:
     - name: web-config-custom
       secret:
@@ -451,6 +469,11 @@ spec:
         optional: true
         secretName: {{ .Values.proxy.configSecretName }}
   {{- end }}
+  {{- if .Values.istio.enabled }}
+    - emptyDir:
+        medium: Memory
+      name: istio-certs
+  {{- end}}
   replicas: {{ .Values.pxbackup.prometheus.replicas }}
   evaluationInterval: 30s
   scrapeInterval: 30s
@@ -504,7 +527,15 @@ spec:
       regex: (pxbackup_backup_duration_seconds|pxbackup_backup_resource_count|pxbackup_backup_schedule_status|pxbackup_backup_size_bytes|pxbackup_backup_volume_count|pxbackup_backuplocation_metrics|pxbackup_cloudcred_metrics|pxbackup_schedpolicy_metrics|pxbackup_restore_duration_seconds|pxbackup_restore_resource_count|pxbackup_restore_size_bytes|pxbackup_restore_volume_count)
       sourceLabels:
       - __name__
-    port: rest-api
+    port: http-rest-api
+    {{- if and .Values.istio.enabled (eq $deployDedicatedMonitoringSystem true) }}
+    scheme: https
+    tlsConfig:
+      caFile: /etc/prom-certs/root-cert.pem
+      certFile: /etc/prom-certs/cert-chain.pem
+      insecureSkipVerify: true
+      keyFile: /etc/prom-certs/key.pem
+    {{- end }}
     targetPort: 10001
   namespaceSelector:
     any: true
@@ -588,4 +619,57 @@ spec:
       for: 1m
       labels:
         severity: critical
+    
+    - alert: BulkOperationFailure
+      annotations:
+        description: |-
+          {{`{{- $obj := reReplaceAll "_" " " $labels.object_type | title -}}
+          The {{ $obj }} "{{ $labels.name }}" {{ $labels.operation }} operation has failed for user "{{ $labels.user_name }}" on cluster "{{ $labels.cluster }}". Error: {{ $labels.error_reason }}`}}
+        summary: {{`Bulk operation {{ $labels.operation }} operation failed`}}
+        value: "{{`{{ $value }}`}}"
+      expr: pxbackup_bulk_operation_failure > 0
+      for: 0s
+      labels:
+        severity: critical
+
+    - alert: LicenseExpiryAlert
+      annotations:
+        description: >-
+          {{`{{ $labels.license_type }} license 
+          {{- if eq $labels.error_reason "License expires in 0 days" }} 
+          expires today
+          {{- else if match ".*expired.*" $labels.error_reason }} 
+          has expired
+          {{- else if eq $labels.error_reason "License expires in 1 days" }} 
+          expires tomorrow
+          {{- else if match ".*expires in [2-7] days.*" $labels.error_reason }} 
+          expires soon (critical)
+          {{- else if match ".*expires in (8|9|[12][0-9]|30) days.*" $labels.error_reason }} 
+          expires soon (warning)
+          {{- else if match ".*expires in [0-9]+ days.*" $labels.error_reason }} 
+          expires soon
+          {{- else }} 
+          needs attention
+          {{- end }}`}}
+        summary: >-
+          {{`{{ $labels.license_type }} license for "{{ $labels.name }}" ({{ $labels.license_count }} nodes) 
+          {{- if eq $labels.error_reason "License expires in 0 days" }} 
+          expires today ({{ $labels.expiry_date }})
+          {{- else if match ".*expired.*" $labels.error_reason }} 
+          has expired on {{ $labels.expiry_date }}
+          {{- else if eq $labels.error_reason "License expires in 1 days" }} 
+          expires tomorrow ({{ $labels.expiry_date }})
+          {{- else if match ".*expires in [2-9] days.*" $labels.error_reason }} 
+          expires in a few days on {{ $labels.expiry_date }}
+          {{- else if match ".*expires in [0-9]+ days.*" $labels.error_reason }} 
+          will expire soon on {{ $labels.expiry_date }}
+          {{- else }} 
+          status: {{ $labels.error_reason }}
+          {{- end }}. 
+          Please contact support to renew your license to avoid service interruption.`}}
+      expr: pxbackup_license_expiry_status
+      for: 1m
+      labels:
+        severity: critical
+        user_id: "{{`{{ $labels.user_id }}`}}"
 {{- end -}}

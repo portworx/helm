@@ -1,0 +1,72 @@
+{{- $istioEnabled := .Values.istio.enabled | default false }}
+{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
+{{- if eq $istioEnabled true }}
+apiVersion: networking.istio.io/v1
+kind: Gateway
+metadata:
+  name: pxcentral-gateway
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - '*'
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+---
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: pxcentral-peer-authentication
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+spec:
+  mtls:
+    mode: STRICT
+---
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: pxcentral-virtualservice
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+spec:
+  gateways:
+  - pxcentral-gateway
+  hosts:
+  - {{ .Values.istio.hostName | default "*" | quote }}
+  http:
+  - match:
+    - uri:
+        prefix: /
+    route:
+    - destination:
+        host: px-central-ui.{{ .Release.Namespace }}.svc.cluster.local
+        port:
+          number: 80
+---
+{{- if not (eq $deployDedicatedMonitoringSystem true) }}
+apiVersion: security.istio.io/v1
+kind: PeerAuthentication
+metadata:
+  name: allow-external-prometheus-scrape
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: px-backup
+  portLevelMtls:
+    10001:
+      mode: PERMISSIVE
+{{- end }}
+{{- end }}

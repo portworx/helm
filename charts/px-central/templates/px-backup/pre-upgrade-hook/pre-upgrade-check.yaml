@@ -11,7 +11,7 @@
   {{- if $sts }}
 
     # Expected image from helm chart values
-    {{- $expectedImage := printf "%s/%s/%s:%s" .Values.images.mongodbImage.registry .Values.images.mongodbImage.repo .Values.images.mongodbImage.imageName .Values.images.mongodbImage.tag -}}
+    {{- $expectedImage := printf "%s/%s/%s:%s" (default .Values.images.mongodbImage.registry .Values.images.registry) (default .Values.images.mongodbImage.repo .Values.images.repo) .Values.images.mongodbImage.imageName .Values.images.mongodbImage.tag -}}
 
     {{- range $container := $sts.spec.template.spec.containers }}
       {{- if ne $container.image $expectedImage }}
@@ -79,7 +79,7 @@ rules:
     verbs: ["get", "create", "delete", "update"]
   - apiGroups: ["apps"]
     resources: ["deployments"]
-    verbs: ["get", "list"]
+    verbs: ["get", "list", "update", "patch"]
   - apiGroups: ["apiextensions.k8s.io"]
     resources: ["customresourcedefinitions"]
     verbs: ["create", "update", "get", "patch", "list", "watch"]
@@ -179,7 +179,7 @@ spec:
               {{- end }}
       containers:
         - name: pxc-pre-upgrade
-          image: {{ printf "%s/%s/%s:%s" .Values.images.preSetupHookImage.registry .Values.images.preSetupHookImage.repo .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          image: {{ printf "%s/%s/%s:%s" (default .Values.images.preSetupHookImage.registry .Values.images.registry) (default .Values.images.preSetupHookImage.repo .Values.images.repo) .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: ["/pxcentral-hook/bin/pxcentral-hook"]
           args: ["--hook=pre-upgrade"]
@@ -189,6 +189,8 @@ spec:
               value: pxc-backup-mongodb
             - name: SKIP_VALIDATIONS
               value: {{ .Values.pxbackup.skipValidations | default false | quote }}
+            - name: ENCRYPT_MONGODB
+              value: {{ .Values.pxbackup.encryptMongoDB | default false | quote }}
             - name: TARGET_PXBACKUP_VERSION
               value: "{{ .Values.pxbackup.version }}"
             - name: MONGODB_TARGET_VERSION
@@ -201,17 +203,11 @@ spec:
               value: root
             - name: MINIMUM_KUBERNETES_VERSION
               value: "{{ $minimumKubernetesVersion }}"
-            - name: MONGODB_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: mongodb-root-password
-                  name: pxc-backup-mongodb
-                  optional: true
             - name: MONGODB_IMAGES
               value: >
                 {
-                  "registry": "{{ .Values.images.mongodbImage.registry }}",
-                  "repo": "{{ .Values.images.mongodbImage.repo }}",
+                  "registry": "{{ (default .Values.images.mongodbImage.registry .Values.images.registry) }}",
+                  "repo": "{{ (default .Values.images.pxBackupImage.repo .Values.images.repo) }}",
                   "imageName": "{{ .Values.images.mongodbImage.imageName }}",
                   "tags": {
                     "mongodb5": "{{ .Values.images.mongodbImageMap.tags.mongodb5 }}",
@@ -221,8 +217,11 @@ spec:
                   }
                 }
             {{- end }}
+          {{- include "serviceMesh.env" . | nindent 12 }}
             - name: NAMESPACE
-              value: {{ .Release.Namespace }} 
+              value: {{ .Release.Namespace }}
+            - name: DEFAULT_USER_NAME
+              value: {{ .Values.oidc.centralOIDC.defaultUsername | quote }}
             - name: MYSQL_STATEFULSET_NAME
               value: pxcentral-mysql
             - name: MYSQL_ROOT_USERNAME
@@ -237,7 +236,7 @@ spec:
             - name: POSTGRES_CONTAINER_NAME
               value: pxcentral-keycloak-postgresql
             - name: POSTGRES_TARGET_IMAGE
-              value: {{ printf "%s/%s/%s:%s" .Values.images.keycloakBackendImage.registry .Values.images.keycloakBackendImage.repo .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
+              value: {{ printf "%s/%s/%s:%s" (default .Values.images.keycloakBackendImage.registry .Values.images.registry) (default .Values.images.keycloakBackendImage.repo .Values.images.repo) .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
             - name: POSTGRESQL_PORT_NUMBER
               value: "5432"
             - name: POSTGRESQL_VOLUME_DIR
@@ -266,6 +265,8 @@ spec:
               value: {{ .Values.pxlicenseserver.enabled | default false | quote }}
             - name: PROXY_CONFIG_SECRET_NAME
               value: {{ .Values.proxy.configSecretName | default "" | quote }}
+            - name: IS_ARGOCD
+              value: {{ .Values.isArgoCD | default false | quote }}
         {{- if eq $deployDedicatedMonitoringSystem true }}
             - name: DEDICATED_PROMETHEUS
               value: "true"

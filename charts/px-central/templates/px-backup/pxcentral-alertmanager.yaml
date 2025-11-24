@@ -43,17 +43,18 @@ spec:
   retention: {{ .Values.pxbackup.alertmanager.retention}}
   initContainers:
     - name: init-config-reloader
-      volumeMounts:
       {{- if .Values.proxy.configSecretName }}
+      volumeMounts:
       - mountPath: /etc/ssl/certs/proxy-ca.pem
         subPath: proxy-ca.pem
         name: proxy-ca-volume
         readOnly: true
       {{- end }}
+      {{- $proxyEnv := include "proxy.proxyEnv" . }}
+      {{- if and (or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList)) (ne (trim $proxyEnv) "") }}
       env:
-        {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList) }}
-        {{ include "proxy.proxyEnv" . | nindent 8 }}
-        {{- end }}
+        {{ $proxyEnv | nindent 8 }}
+      {{- end }}
   containers:
     - args:
         - '--config.file=/etc/alertmanager/config_out/alertmanager.env.yaml'
@@ -73,6 +74,7 @@ spec:
             secretKeyRef:
               name: pxc-backup-metrics
               key: metrics-token
+        {{- include "serviceMesh.env" . | nindent 8 }}
         {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList) }}
         {{ include "proxy.proxyEnv" . | nindent 8 }}
         {{- end }}
@@ -81,7 +83,7 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: status.podIP
-      image: {{ printf "%s/%s/%s:%s" .Values.images.pxBackupAlertmanagerImage.registry .Values.images.pxBackupAlertmanagerImage.repo .Values.images.pxBackupAlertmanagerImage.imageName .Values.images.pxBackupAlertmanagerImage.tag }}
+      image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxBackupAlertmanagerImage.registry .Values.images.registry) (default .Values.images.pxBackupAlertmanagerImage.repo .Values.images.repo) .Values.images.pxBackupAlertmanagerImage.imageName .Values.images.pxBackupAlertmanagerImage.tag }}
       name: alertmanager
       ports:
         - containerPort: 9093
@@ -112,8 +114,8 @@ spec:
       - containerPort: 8080
         name: reloader-web
         protocol: TCP
-      volumeMounts:
       {{- if .Values.proxy.configSecretName }}
+      volumeMounts:
       - mountPath: /etc/ssl/certs/proxy-ca.pem
         subPath: proxy-ca.pem
         name: proxy-ca-volume
@@ -226,13 +228,13 @@ stringData:
       </head>
       <body>
           <div class="container">
-            <img style="height: 33px; width: 89px;" src="https://portworx.com/wp-content/themes/portworx/assets/images/header/portworx-logo.png" alt="" srcset="">
+            <img style="height: 33px; width: 89px;" src="https://central.portworx.com/assets/images/logo/portworx_pure_storage.large.d.png" alt="" srcset="">
             {{ range .Alerts }}
             {{- if eq .Labels.alertname "ClusterAlert"}}
             <div
                 class="pb-16"
                 style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
-                Critical Alert: 
+                Critical Alert:
                 {{ if eq .Annotations.value "5" }}Cluster Disconnected
                 {{ else if eq .Annotations.value "2" }}Cluster Offline
                 {{ else }}unknown (value: {{ .Annotations.value }})
@@ -258,13 +260,13 @@ stringData:
               <li>
               <div style="display: flex">
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
-                <div>{{ .Labels.error_reason }}</div> 
+                <div>{{ .Labels.error_reason }}</div>
               </div>
               </li>
-              <li> 
+              <li>
               <div style="display: flex">
-              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
-              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div> 
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div>
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
               </div>
               </li>
             </ul>
@@ -398,11 +400,147 @@ stringData:
               </div> 
               </li>
             </ul>
+            {{- else if eq .Labels.alertname "LicenseExpiryAlert" }}
+            <div
+                class="pb-16"
+                style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: 
+                {{- if eq .Labels.error_reason "License expires in 0 days" }}
+                License Expires Today
+                {{- else if match ".*expired.*" .Labels.error_reason }}
+                License Has Expired
+                {{- else if eq .Labels.error_reason "License expires in 1 days" }}
+                License Expires Tomorrow
+                {{- else if match ".*expires in [2-7] days.*" .Labels.error_reason }}
+                License Expiring Soon (Critical)
+                {{- else if match ".*expires in (8|9|[12][0-9]|30) days.*" .Labels.error_reason }}
+                License Expiring Soon (Warning)
+                {{- else if match ".*expires in [0-9]+ days.*" .Labels.error_reason }}
+                License Expiring Soon
+                {{- else }}
+                License Needs Attention
+                {{- end }}
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 15px;
+                font-weight: 700;
+                "
+                >
+                Alert details:
+            </div>
+            <ul>
+              <li>
+                <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">License Type:</div>
+                <div>{{ .Labels.license_type }}</div>
+                </div>
+              </li>
+              <li>
+                <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">License Name:</div>
+                <div>{{ .Labels.name }}</div>
+                </div>
+              </li>
+              <li>
+                <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Entitled Node Count:</div>
+                <div>{{ .Labels.license_count }}</div>
+                </div>
+              </li>
+              <li>
+                <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Expiry Date:</div>
+                <div>{{ .Labels.expiry_date }}</div>
+                </div>
+              </li>
+              <li>
+                <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Status:</div>
+                <div>{{ .Labels.error_reason }}</div>
+                </div>
+              </li>
+              <li> 
+                <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
+                <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div> 
+                </div>
+              </li>
+            </ul>
             {{- end }}
             {{ end }}
+
+            {{/* SEPARATE SECTION FOR BulkOperationFailure - OUTSIDE the main loop */}}
+            {{- $hasBulkOperationFailures := false }}
+            {{- $firstBulkOperationAlert := "" }}
+            {{- range .Alerts }}
+              {{- if eq .Labels.alertname "BulkOperationFailure" }}
+                {{- $hasBulkOperationFailures = true }}
+                {{- if not $firstBulkOperationAlert }}
+                  {{- $firstBulkOperationAlert = . }}
+                {{- end }}
+              {{- end }}
+            {{- end }}
+
+            {{- if $hasBulkOperationFailures }}
+            <div class="pb-16" style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Warning Alert: {{ reReplaceAll "_" " " $firstBulkOperationAlert.Labels.object_type | title }} {{ $firstBulkOperationAlert.Labels.operation | title }} Operation Failed
+            </div>
+
+            <div class="pb-16" style="color: #292929; font-size: 15px; font-weight: 700;">
+                Alert Summary:
+            </div>
+
+            <div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #bc1b06;">
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Object Type:</span>{{ reReplaceAll "_" " " $firstBulkOperationAlert.Labels.object_type | title }}</div>
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Operation:</span>{{ $firstBulkOperationAlert.Labels.operation | title }}</div>
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">User Name:</span>{{ $firstBulkOperationAlert.Labels.user_name }}</div>
+                <div style="margin-bottom: 8px;"><span style="font-weight: bold; display: inline-block; width: 120px;">Cluster:</span>{{ $firstBulkOperationAlert.Labels.cluster }}</div>
+                <div><span style="font-weight: bold; display: inline-block; width: 120px;">Alert Time:</span>{{ $firstBulkOperationAlert.StartsAt.Format "2006-01-02 15:04:05" }}</div>
+            </div>
+
+            <div class="pb-16" style="color: #292929; font-size: 15px; font-weight: 700;">
+                Failed {{ reReplaceAll "_" " " $firstBulkOperationAlert.Labels.object_type | title }} Objects:
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">{{ reReplaceAll "_" " " $firstBulkOperationAlert.Labels.object_type | title }} Name</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Error Reason</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Alert Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range .Alerts }}
+                    {{- if eq .Labels.alertname "BulkOperationFailure" }}
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.name }}</td>
+                        <td style="border: 1px solid #ddd; padding: 12px; max-width: 300px; word-wrap: break-word; font-family: monospace; font-size: 12px;">{{ .Labels.error_reason }}</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">{{ .StartsAt.Format "15:04:05" }}</td>
+                    </tr>
+                    {{- end }}
+                    {{ end }}
+                </tbody>
+            </table>
+            {{- end }}
+
             <div style="font-size: 14px" class="pb-16">
+                {{- $hasLicenseAlert := false }}
+                {{- range .Alerts }}
+                  {{- if eq .Labels.alertname "LicenseExpiryAlert" }}
+                    {{- $hasLicenseAlert = true }}
+                    Please contact support to renew your license to avoid service interruption. 
+                    <br><br>
+                    {{- break }}
+                  {{- end }}
+                {{- end }}
+                {{- if not $hasLicenseAlert }}
                 Please login to your Portworx Backup deployment to view more details and
                 take corrective actions.
+                {{- end }}
             </div>
           </div>
       </body>
