@@ -134,7 +134,7 @@ pxbackup:
   enableMonitorBLHealth: false
   backupDeleteWorker: 5
   volDeleteWorker: 5
-  version: 2.10.0
+  version: 2.11.0
   skipValidations: false
   usePlatformRbac: false
   encryptMongoDB: false
