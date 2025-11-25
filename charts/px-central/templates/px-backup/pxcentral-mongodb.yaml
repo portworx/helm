@@ -16,11 +16,7 @@ metadata:
 data:
   setup.sh: |-
     #!/bin/bash
-
-    . /opt/bitnami/scripts/mongodb-env.sh
-    . /opt/bitnami/scripts/libfs.sh
-    . /opt/bitnami/scripts/liblog.sh
-    . /opt/bitnami/scripts/libvalidations.sh
+    set -e
 
     echo "Advertised Hostname: $MONGODB_ADVERTISED_HOSTNAME"
     echo "Advertised Service: $K8S_SERVICE_NAME"
@@ -34,54 +30,239 @@ data:
       done
     done
 
-    # Check for existing replica set in case there is no data in the PVC
-    # This is for cases where the PVC is lost or for MongoDB caches without
-    # persistence
+    # Check for existing replica set (always check, not just when data dir is empty)
+    # This handles:
+    # 1. Fresh install: data dir empty, no primary exists yet
+    # 2. Pod restart with existing data: need to detect if another pod became primary
+    # 3. PVC recovery: data dir empty, but replica set exists
     current_primary=""
-    if is_dir_empty "${MONGODB_DATA_DIR}/db"; then
-      echo "Data dir empty, checking if the replica set already exists"
-      {{- $replicaCount := 3 }}
-      {{- $portNumber := 27017 }}
-      {{- $fullname := "pxc-backup-mongodb" }}
-      {{- $mongoList := list }}
-      {{- range $e, $i := until $replicaCount }}
-      {{- $mongoList = append $mongoList (printf "%s-%d.%s-headless:%d" $fullname $i $fullname $portNumber) }}
-      {{- end }}
-      echo "mongoList: {{ join "," $mongoList }}"
+    mongoList="pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017"
+    echo "Checking for existing primary..."
     current_primary=$(mongosh admin --host "$mongoList" --authenticationDatabase admin -u root -p "$MONGODB_ROOT_PASSWORD" \
-    --eval 'try { isMaster = db.runCommand("ismaster"); print(isMaster.primary); } catch (e) { print(""); }' | tail -n 1)
+      --eval 'try { isMaster = db.runCommand("ismaster"); print(isMaster.primary); } catch (e) { print(""); }' --quiet | tail -n 1)
 
-      if ! is_empty_value "$current_primary"; then
-        echo "Detected existing primary: ${current_primary}"
-      fi
+    if [ -n "$current_primary" ]; then
+      echo "Detected existing primary: ${current_primary}"
     fi
 
-    if ! is_empty_value "$current_primary" && [[ "$MONGODB_ADVERTISED_HOSTNAME:$MONGODB_ADVERTISED_PORT_NUMBER" == "$current_primary" ]]; then
+    # Determine replica set mode
+    if [ -n "$current_primary" ] && [[ "$MONGODB_ADVERTISED_HOSTNAME:27017" == "$current_primary" ]]; then
         echo "Advertised name matches current primary, configuring node as a primary"
         export MONGODB_REPLICA_SET_MODE="primary"
-    elif ! is_empty_value "$current_primary" && [[ "$MONGODB_ADVERTISED_HOSTNAME:$MONGODB_ADVERTISED_PORT_NUMBER" != "$current_primary" ]]; then
-        info "Current primary is different from this node. Configuring the node as replica of ${current_primary}"
+    elif [ -n "$current_primary" ] && [[ "$MONGODB_ADVERTISED_HOSTNAME:27017" != "$current_primary" ]]; then
+        echo "Current primary is different from this node. Configuring the node as replica of ${current_primary}"
         export MONGODB_REPLICA_SET_MODE="secondary"
-        export MONGODB_INITIAL_PRIMARY_HOST="${current_primary%:*}"
-        export MONGODB_INITIAL_PRIMARY_PORT_NUMBER="${current_primary#*:}"
-        export MONGODB_SET_SECONDARY_OK="yes"
-    elif [[ "$MY_POD_NAME" = "pxc-backup-mongodb-0" ]]; then
+        export MONGODB_INITIAL_PRIMARY_HOST="$current_primary"
+    elif [[ "$MY_POD_NAME" = "$(echo $MONGODB_INITIAL_PRIMARY_HOST | cut -d'.' -f1)" ]]; then
         echo "Pod name matches initial primary pod name, configuring node as a primary"
         export MONGODB_REPLICA_SET_MODE="primary"
     else
       export MONGODB_REPLICA_SET_MODE="secondary"
-      export MONGODB_INITIAL_PRIMARY_HOST="pxc-backup-mongodb-0.pxc-backup-mongodb-headless"
-      export MONGODB_INITIAL_PRIMARY_PORT_NUMBER="$MONGODB_PORT_NUMBER"
-      export MONGODB_SET_SECONDARY_OK="yes"
+      # Safety net: If no primary detected, assume Pod-0 is the primary
+      if [ -z "$MONGODB_INITIAL_PRIMARY_HOST" ]; then
+        export MONGODB_INITIAL_PRIMARY_HOST="pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017"
+        echo "No primary detected, defaulting to Pod-0 as initial primary"
+      fi
     fi
 
-    if [[ "$MONGODB_REPLICA_SET_MODE" == "secondary" ]]; then
-        export MONGODB_INITIAL_PRIMARY_ROOT_USER="$MONGODB_ROOT_USER"
-        export MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD="$MONGODB_ROOT_PASSWORD"
-        export MONGODB_ROOT_PASSWORD="" MONGODB_USERNAME="" MONGODB_DATABASE="" MONGODB_PASSWORD=""
+    # Create MongoDB configuration file
+    cat > /data/db/mongod.conf <<EOF
+    net:
+      port: 27017
+      bindIp: 0.0.0.0
+    replication:
+      replSetName: ${MONGODB_REPLICA_SET_NAME}
+    security:
+      authorization: enabled
+      keyFile: /tmp/replica.key
+    storage:
+      wiredTiger:
+        engineConfig:
+          cacheSizeGB: ${MONGODB_CACHE_SIZE}
+    EOF
+
+    # Setup replica set key with proper permissions from the start
+    (
+      umask 077
+      echo "$MONGODB_REPLICA_SET_KEY" > /tmp/replica.key
+    )
+
+    # Verify and fix permissions if needed
+    current_perms=$(stat -c "%a" /tmp/replica.key 2>/dev/null || echo "unknown")
+    if [ "$current_perms" != "400" ] && [ "$current_perms" != "600" ]; then
+        echo "Warning: replica.key has unexpected permissions: $current_perms"
+        echo "Attempting to fix with chmod 400..."
+        chmod 400 /tmp/replica.key 2>/dev/null || {
+            echo "Warning: Could not set permissions on replica.key, continuing anyway (MongoDB may still work)"
+        }
     fi
 
-    exec /opt/bitnami/scripts/mongodb/entrypoint.sh /opt/bitnami/scripts/mongodb/run.sh
+    # Change ownership to mongodb user
+    chown mongodb:mongodb /tmp/replica.key 2>/dev/null || {
+        echo "Warning: Could not change ownership of replica.key, continuing anyway"
+    }
+
+    # Initialize replica set if primary
+    if [[ "$MONGODB_REPLICA_SET_MODE" == "primary" ]]; then
+      echo "Starting MongoDB as primary..."
+
+      # Check if already initialized
+      if [ -f /data/db/initialized ]; then
+        echo "MongoDB already initialized, starting normally..."
+        exec mongod --config /data/db/mongod.conf
+      fi
+
+      # Start MongoDB without auth for initial setup (Bitnami-style bootstrap)
+      mongod --bind_ip_all --replSet ${MONGODB_REPLICA_SET_NAME} --port 27017 --dbpath /data/db --fork --logpath /data/db/mongod.log
+
+      # Wait for MongoDB to accept connections
+      until mongosh --quiet --eval "db.adminCommand('ping')" > /dev/null 2>&1; do
+        echo "Waiting for MongoDB to start..."
+        sleep 2
+      done
+
+      # Initialize replica set with only this node (PRIMARY)
+      mongosh admin --eval "
+        rs.initiate({
+          _id: '${MONGODB_REPLICA_SET_NAME}',
+          members: [
+            { _id: 0, host: '${MONGODB_ADVERTISED_HOSTNAME}:27017' }
+          ]
+        })
+      " || true
+
+      # Wait until this node is PRIMARY before creating users
+      echo "Waiting to become PRIMARY..."
+      TIMEOUT=300
+      ELAPSED=0
+      until mongosh --quiet --eval 'db.hello().isWritablePrimary' | grep -q '^true$'; do
+        ELAPSED=$((ELAPSED + 2))
+        if [ $ELAPSED -gt $TIMEOUT ]; then
+          echo "ERROR: Primary election timeout after $TIMEOUT seconds"
+          exit 1
+        fi
+        sleep 2
+      done
+
+      # Create root user if missing
+      if ! mongosh admin --quiet --eval 'db.getUser("root") ? "EXISTS" : "MISSING"' | grep -q '^EXISTS$'; then
+        mongosh admin --quiet --eval "db.createUser({user:'root',pwd:'${MONGODB_ROOT_PASSWORD}',roles:[{role:'root',db:'admin'}]})"
+      fi
+
+      # Create application user if provided (and missing)
+      if [ -n "$MONGODB_USERNAME" ] && [ -n "$MONGODB_PASSWORD" ]; then
+        if ! mongosh admin --quiet --eval "db.getSiblingDB('${MONGODB_DATABASE}').getUser('${MONGODB_USERNAME}') ? 'EXISTS' : 'MISSING'" | grep -q '^EXISTS$'; then
+          mongosh admin --quiet --eval "db.getSiblingDB('${MONGODB_DATABASE}').createUser({user:'${MONGODB_USERNAME}',pwd:'${MONGODB_PASSWORD}',roles:[{role:'readWrite',db:'${MONGODB_DATABASE}'}]})"
+        fi
+      fi
+
+      # Mark as initialized
+      touch /data/db/initialized
+
+      # Shutdown to restart with auth enabled
+      mongosh admin --quiet --eval "db.shutdownServer()" || true
+      sleep 3
+
+      # Start with auth enabled (uses keyFile + authorization in mongod.conf)
+      # Secondaries will add themselves to the replica set
+      exec mongod --config /data/db/mongod.conf
+    else
+      # Secondary node - add itself to replica set (same pattern as PRIMARY)
+      echo "Starting MongoDB as secondary..."
+
+      # Check if already initialized
+      if [ -f /data/db/initialized ]; then
+        echo "MongoDB already initialized, starting normally..."
+        exec mongod --config /data/db/mongod.conf
+      fi
+
+      # Extract primary host and port from MONGODB_INITIAL_PRIMARY_HOST
+      if [[ "$MONGODB_INITIAL_PRIMARY_HOST" == *":"* ]]; then
+        PRIMARY_HOST=$(echo $MONGODB_INITIAL_PRIMARY_HOST | cut -d':' -f1)
+        PRIMARY_PORT=$(echo $MONGODB_INITIAL_PRIMARY_HOST | cut -d':' -f2)
+      else
+        PRIMARY_HOST=$MONGODB_INITIAL_PRIMARY_HOST
+        PRIMARY_PORT=27017
+      fi
+
+      echo "Waiting for primary to be ready..."
+      TIMEOUT=300
+      ELAPSED=0
+      until mongosh admin --host "$PRIMARY_HOST:$PRIMARY_PORT" -u root -p "$MONGODB_ROOT_PASSWORD" \
+        --eval "db.adminCommand('ping')" --quiet > /dev/null 2>&1; do
+        ELAPSED=$((ELAPSED + 3))
+        if [ $ELAPSED -gt $TIMEOUT ]; then
+          echo "ERROR: Primary not ready after $TIMEOUT seconds"
+          exit 1
+        fi
+        echo "Primary not ready yet, waiting..."
+        sleep 3
+      done
+
+      # Start MongoDB without auth for replica set addition (same as PRIMARY)
+      echo "Starting MongoDB without auth for replica set addition..."
+      mongod --bind_ip_all --replSet ${MONGODB_REPLICA_SET_NAME} --port 27017 --dbpath /data/db --fork --logpath /data/db/mongod.log
+
+      # Wait for MongoDB to accept connections
+      until mongosh --quiet --eval "db.adminCommand('ping')" > /dev/null 2>&1; do
+        echo "Waiting for MongoDB to start..."
+        sleep 2
+      done
+
+      # Try to add this node to replica set with exponential backoff retry
+      echo "Attempting to add this node to replica set..."
+      MAX_ATTEMPTS=10
+      ATTEMPT=1
+      WAIT_TIME=1
+      SUCCESS=false
+
+      while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+        echo "Attempt $ATTEMPT/$MAX_ATTEMPTS to add node to replica set..."
+
+        if mongosh admin --host "$PRIMARY_HOST:$PRIMARY_PORT" -u root -p "$MONGODB_ROOT_PASSWORD" \
+          --quiet --eval "rs.add('${MONGODB_ADVERTISED_HOSTNAME}:27017')" > /dev/null 2>&1; then
+          echo "Successfully added to replica set"
+          SUCCESS=true
+          break
+        else
+          # Check if already in replica set
+          if mongosh admin --host "$PRIMARY_HOST:$PRIMARY_PORT" -u root -p "$MONGODB_ROOT_PASSWORD" \
+            --quiet --eval "rs.conf().members.find(m => m.host === '${MONGODB_ADVERTISED_HOSTNAME}:27017') ? 'YES' : 'NO'" | grep -q '^YES$'; then
+            echo "Node already in replica set"
+            SUCCESS=true
+            break
+          fi
+
+          if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+            echo "Failed to add node, retrying in ${WAIT_TIME}s..."
+            sleep $WAIT_TIME
+            # Exponential backoff: 1s, 2s, 4s, 8s, etc.
+            WAIT_TIME=$((WAIT_TIME * 2))
+            if [ $WAIT_TIME -gt 32 ]; then
+              WAIT_TIME=32
+            fi
+          fi
+        fi
+
+        ATTEMPT=$((ATTEMPT + 1))
+      done
+
+      if [ "$SUCCESS" != "true" ]; then
+        echo "ERROR: Failed to add node to replica set after $MAX_ATTEMPTS attempts"
+        exit 1
+      fi
+
+      # Mark as initialized
+      touch /data/db/initialized
+
+      # Shutdown to restart with auth enabled
+      mongosh admin --quiet --eval "db.shutdownServer()" || true
+      sleep 3
+
+      # Start with auth enabled (uses keyFile + authorization in mongod.conf)
+      echo "Restarting with auth enabled..."
+      exec mongod --config /data/db/mongod.conf
+    fi
 ---
 apiVersion: v1
 kind: Service
@@ -207,8 +388,7 @@ spec:
             - export MONGODB_INITIAL_PRIMARY_HOST=pxc-backup-mongodb-0.$(K8S_SERVICE_NAME) && export MONGODB_ADVERTISED_HOSTNAME=$(MY_POD_NAME).$(K8S_SERVICE_NAME) && /scripts/setup.sh
           {{- end }}
           env:
-            - name: BITNAMI_DEBUG
-              value: "false"
+
           {{- include "serviceMesh.env" . | nindent 12 }}
             - name: MY_POD_IP
               valueFrom:
@@ -231,8 +411,8 @@ spec:
               value: rs0
             - name: MONGODB_ADVERTISED_HOSTNAME
               value: $(MY_POD_NAME).$(K8S_SERVICE_NAME)
-            - name: SHARED_FILE
-              value: "/shared/info.txt"
+            - name: MONGODB_DATA_DIR
+              value: /data/db
             - name: MONGODB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -255,18 +435,9 @@ spec:
                 secretKeyRef:
                   key: mongodb-replica-set-key
                   name: pxc-backup-mongodb
-            - name: ALLOW_EMPTY_PASSWORD
-              value: "no"
-            - name: MONGODB_SYSTEM_LOG_VERBOSITY
-              value: "0"
-            - name: MONGODB_DISABLE_SYSTEM_LOG
-              value: "no"
-            - name: MONGODB_ENABLE_IPV6
-              value: "no"
-            - name: MONGODB_ENABLE_DIRECTORY_PER_DB
-              value: "no"
-            - name: MONGODB_EXTRA_FLAGS
-              value: {{ printf "--wiredTigerCacheSizeGB=%d" $mongoCacheSize }}
+            - name: MONGODB_CACHE_SIZE
+              value: "{{ $mongoCacheSize }}"
+
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxc-backup-mongodb" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
@@ -274,13 +445,14 @@ spec:
             - containerPort: 27017
               name: mongodb
               protocol: TCP
+          # Simple liveness probe
           livenessProbe:
             exec:
               command:
               - bash
-              - -ec
+              - -c
               - |
-                mongosh --eval 'db.adminCommand("ping") && db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'            
+                mongosh --quiet --eval 'db.adminCommand("ping")' || exit 1
             failureThreshold: 6
             initialDelaySeconds: 600
             periodSeconds: 10
@@ -290,16 +462,27 @@ spec:
             exec:
               command:
               - bash
-              - -ec
+              - -c
               - |
-                mongosh --eval 'db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'
+                mongosh --quiet --eval 'db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'
             failureThreshold: 6
             initialDelaySeconds: 60
             periodSeconds: 10
-            successThreshold: 1
             timeoutSeconds: 5
+          # Startup probe
+          startupProbe:
+            exec:
+              command:
+                - bash
+                - -c
+                - |
+                  mongosh --quiet --eval 'db.adminCommand("ping")' > /dev/null 2>&1
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 60
           volumeMounts:
-            - mountPath: /bitnami/mongodb
+            - mountPath: /data/db
               name: pxc-mongodb-data
             - mountPath: /scripts/setup.sh
               name: scripts
