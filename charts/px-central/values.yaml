@@ -130,6 +130,71 @@ pxbackup:
   prometheusSecretName: ""
   alertmanagerSecretName: ""
   usePxBackupEmailAlertTemplate: true
+
+  # Telemetry configuration for PX-Backup metrics collector
+  # REQUIRES: PX-Enterprise telemetry enabled (pure-telemetry-certs secret must exist)
+  telemetry:
+    enabled: false
+    clusterUid: ""  # Auto-detected from StorageCluster if empty
+    pure1Endpoint: "rest.staging-cloud-support.purestorage.com:443"
+
+    certWatcher:
+      image: bitnami/kubectl:latest
+      watchInterval: 30
+      resources:
+        requests:
+          cpu: 10m
+          memory: 20Mi
+        limits:
+          cpu: 50m
+          memory: 50Mi
+
+    collector:
+      image: portworx/realtime-metrics:1.0.32
+      scrapeInterval: 10
+      batchSize: 5
+      podSelector:
+        app: px-backup
+      metricsEndpoint:
+        name: metrics
+        port: 10001
+      resources:
+        requests:
+          cpu: 50m
+          memory: 100Mi
+        limits:
+          cpu: 100m
+          memory: 200Mi
+
+    envoy:
+      image: portworx/telemetry-envoy:1.1.18
+      resources:
+        requests:
+          cpu: 50m
+          memory: 100Mi
+        limits:
+          cpu: 100m
+          memory: 200Mi
+
+    logCollector:
+      image: bitnami/kubectl:latest
+      collectionInterval: 3600  # seconds (1 hour)
+      logSince: "3600s"  # Collect logs from last 1 hour
+      resources:
+        requests:
+          cpu: 10m
+          memory: 50Mi
+        limits:
+          cpu: 50m
+          memory: 100Mi
+
+    deployment:
+      replicas: 1
+      strategy:
+        type: Recreate
+      nodeSelector: {}
+      tolerations: []
+      affinity: {}
   monitorBLHealthFrequency: 210m
   enableMonitorBLHealth: false
   backupDeleteWorker: 5

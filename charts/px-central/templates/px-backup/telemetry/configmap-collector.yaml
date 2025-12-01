@@ -1,0 +1,46 @@
+{{/* Metrics collector configuration */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
+{{- if and $pxBackupEnabled $telemetryEnabled }}
+{{- $scrapeInterval := .Values.pxbackup.telemetry.collector.scrapeInterval | default 10 }}
+{{- $batchSize := .Values.pxbackup.telemetry.collector.batchSize | default 5 }}
+{{- $podSelector := .Values.pxbackup.telemetry.collector.podSelector | default (dict "app" "px-backup") }}
+{{- $metricsEndpoint := .Values.pxbackup.telemetry.collector.metricsEndpoint | default (dict "name" "metrics" "port" 10001) }}
+{{- /* Get cluster UUID for metrics identifier */ -}}
+{{- $clusterUid := .Values.pxbackup.telemetry.clusterUid | default "" }}
+{{- if not $clusterUid }}
+  {{- $storageCluster := (lookup "core.libopenstorage.org/v1" "StorageCluster" "portworx" "") }}
+  {{- if and $storageCluster $storageCluster.items }}
+    {{- $clusterUid = (index $storageCluster.items 0).status.clusterUid }}
+  {{- end }}
+{{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: px-backup-telemetry-collector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: metrics-collector
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  portworx.yaml: |-
+    scrapeConfig:
+      # How often to scrape metrics (seconds)
+      interval: {{ $scrapeInterval }}
+      # How many scrapes to batch before sending to Pure1
+      batchSize: {{ $batchSize }}
+      # Static target configuration
+      # Using static config instead of k8sConfig because we need to set
+      # the 'name' field which becomes the 'Metrics-Message-Identifier' header
+      # required by Pure1 API
+      staticConfig:
+        targets:
+        - name: px-backup
+          url: http://px-backup.{{ .Release.Namespace }}.svc.cluster.local:{{ $metricsEndpoint.port }}/{{ $metricsEndpoint.name }}
+    forwardConfig:
+      # Forward to local Envoy proxy which handles TLS to Pure1
+      url: http://localhost:10000/metrics/1.0/pure1-metrics-pb
+{{- end }}
+

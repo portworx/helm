@@ -1,0 +1,134 @@
+{{/* ConfigMap containing the certificate watcher script */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
+{{- if and $pxBackupEnabled $telemetryEnabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: px-backup-telemetry-watcher-script
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: metrics-collector
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  cert-watcher.sh: |
+    #!/bin/bash
+    #
+    # Certificate Watcher Script
+    # 
+    # This script watches the pure-telemetry-certs secret in the portworx namespace
+    # and automatically syncs it to the px-backup namespace.
+    #
+
+    set -e
+
+    # Configuration from environment variables
+    SOURCE_NAMESPACE="${SOURCE_NAMESPACE:-portworx}"
+    SOURCE_SECRET="${SOURCE_SECRET:-pure-telemetry-certs}"
+    TARGET_NAMESPACE="${TARGET_NAMESPACE:-px-backup}"
+    TARGET_SECRET="${TARGET_SECRET:-pure-telemetry-certs}"
+    WATCH_INTERVAL="${WATCH_INTERVAL:-30}"
+
+    # Logging functions
+    log_info() {
+        echo "[$(date +'%Y-%m-%d %H:%M:%S')] INFO: $*"
+    }
+
+    log_error() {
+        echo "[$(date +'%Y-%m-%d %H:%M:%S')] ERROR: $*" >&2
+    }
+
+    log_warn() {
+        echo "[$(date +'%Y-%m-%d %H:%M:%S')] WARN: $*"
+    }
+
+    # Check if kubectl is available
+    if ! command -v kubectl &> /dev/null; then
+        log_error "kubectl not found in PATH"
+        exit 1
+    fi
+
+    # Function to check if secret exists
+    secret_exists() {
+        local namespace=$1
+        local secret=$2
+        kubectl get secret -n "$namespace" "$secret" &>/dev/null
+    }
+
+    # Function to get secret data field
+    get_secret_field() {
+        local namespace=$1
+        local secret=$2
+        local field=$3
+        kubectl get secret -n "$namespace" "$secret" -o jsonpath="{.data.$field}" 2>/dev/null || echo ""
+    }
+
+    # Function to sync secret
+    sync_secret() {
+        log_info "Syncing secret from $SOURCE_NAMESPACE/$SOURCE_SECRET to $TARGET_NAMESPACE/$TARGET_SECRET..."
+        
+        # Get source secret as YAML
+        kubectl get secret -n "$SOURCE_NAMESPACE" "$SOURCE_SECRET" -o yaml | \
+          sed "s/namespace: $SOURCE_NAMESPACE/namespace: $TARGET_NAMESPACE/" | \
+          sed '/resourceVersion:/d' | \
+          sed '/uid:/d' | \
+          sed '/creationTimestamp:/d' | \
+          sed '/ownerReferences:/,+10d' | \
+          kubectl apply -f -
+        
+        if [[ $? -eq 0 ]]; then
+            log_info "✅ Secret synced successfully"
+            return 0
+        else
+            log_error "❌ Failed to sync secret"
+            return 1
+        fi
+    }
+
+    # Function to compare secrets
+    secrets_match() {
+        local source_cert=$(get_secret_field "$SOURCE_NAMESPACE" "$SOURCE_SECRET" "cert")
+        local target_cert=$(get_secret_field "$TARGET_NAMESPACE" "$TARGET_SECRET" "cert")
+        
+        if [[ "$source_cert" == "$target_cert" ]]; then
+            return 0  # Match
+        else
+            return 1  # Different
+        fi
+    }
+
+    # Main watch loop
+    log_info "Starting certificate watcher..."
+    log_info "Source: $SOURCE_NAMESPACE/$SOURCE_SECRET"
+    log_info "Target: $TARGET_NAMESPACE/$TARGET_SECRET"
+    log_info "Watch interval: ${WATCH_INTERVAL}s"
+
+    # Main loop
+    while true; do
+        # Check if source secret exists
+        if ! secret_exists "$SOURCE_NAMESPACE" "$SOURCE_SECRET"; then
+            log_warn "Source secret $SOURCE_NAMESPACE/$SOURCE_SECRET not found, waiting..."
+            sleep "$WATCH_INTERVAL"
+            continue
+        fi
+        
+        # Check if target secret exists
+        if ! secret_exists "$TARGET_NAMESPACE" "$TARGET_SECRET"; then
+            log_info "Target secret does not exist, creating..."
+            sync_secret
+        else
+            # Compare secrets
+            if secrets_match; then
+                log_info "✅ Secrets are in sync"
+            else
+                log_info "⚠️  Secrets differ, syncing..."
+                sync_secret
+            fi
+        fi
+
+        # Sleep before next check
+        sleep "$WATCH_INTERVAL"
+    done
+{{- end }}

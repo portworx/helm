@@ -1,0 +1,32 @@
+# ConfigMap for TLS Certificate Configuration
+# 
+# This tells Envoy where to find the certificate files.
+# The certificate files are mounted from the pure-telemetry-certs secret
+# which is automatically synced by the cert-watcher sidecar.
+---
+{{/* TLS certificate configuration */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
+{{- if and $pxBackupEnabled $telemetryEnabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: px-backup-telemetry-tls-certificate
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: metrics-collector
+{{- include "px-central.labels" . | nindent 4 }}
+    app.kubernetes.io/part-of: px-backup
+data:
+  tls_certificate_sds_secret.yaml: |-
+    resources:
+      - "@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.Secret"
+        name: tls_sds
+        tls_certificate:
+          certificate_chain:
+            filename: /appliance-cert/cert
+          private_key:
+            filename: /appliance-cert/private_key
+{{- end }}

@@ -1,0 +1,60 @@
+{{/* RBAC resources for PX-Backup Telemetry in px-backup namespace */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
+{{- if and $pxBackupEnabled $telemetryEnabled }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-backup-telemetry
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: metrics-collector
+{{- include "px-central.labels" . | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: px-backup-telemetry
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: metrics-collector
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+  # Permissions to manage the synced certificate in px-backup namespace
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+    resourceNames: ["pure-telemetry-certs"]
+  
+  # Permission to create secret if it doesn't exist
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["create"]
+  
+  # Permissions to discover PX-Backup pods for metrics scraping
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: px-backup-telemetry
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: metrics-collector
+{{- include "px-central.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: px-backup-telemetry
+subjects:
+  - kind: ServiceAccount
+    name: px-backup-telemetry
+    namespace: {{ .Release.Namespace }}
+{{- end }}
+

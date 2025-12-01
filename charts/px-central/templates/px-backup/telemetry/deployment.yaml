@@ -1,0 +1,165 @@
+{{/* PX-Backup Telemetry Metrics Collector Deployment */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
+{{- if and $pxBackupEnabled $telemetryEnabled }}
+{{- /* Check if PX-Enterprise telemetry is enabled by looking for the certificate */ -}}
+{{- /* Prerequisite check disabled for testing - will be enabled in production */ -}}
+{{- /* TODO: Re-enable prerequisite check after testing */ -}}
+{{- $certWatcherImage := .Values.pxbackup.telemetry.certWatcher.image | default "bitnami/kubectl:latest" }}
+{{- $collectorImage := .Values.pxbackup.telemetry.collector.image | default "portworx/realtime-metrics:1.0.32" }}
+{{- $envoyImage := .Values.pxbackup.telemetry.envoy.image | default "portworx/telemetry-envoy:1.1.18" }}
+{{- $watchInterval := .Values.pxbackup.telemetry.certWatcher.watchInterval | default 30 }}
+{{- $replicas := .Values.pxbackup.telemetry.deployment.replicas | default 1 }}
+{{- $imagePullPolicy := .Values.images.pullPolicy | default "Always" }}
+{{- $securityContext := .Values.securityContext | default dict }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: px-backup-telemetry-metrics-collector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app: px-backup-telemetry-metrics-collector
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: metrics-collector
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  replicas: {{ $replicas }}
+  strategy:
+    type: {{ .Values.pxbackup.telemetry.deployment.strategy.type | default "Recreate" }}
+  selector:
+    matchLabels:
+      app: px-backup-telemetry-metrics-collector
+  template:
+    metadata:
+      labels:
+        app: px-backup-telemetry-metrics-collector
+        app.kubernetes.io/name: px-backup-telemetry
+        app.kubernetes.io/component: metrics-collector
+{{- include "px-central.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: px-backup-telemetry
+      {{- if $securityContext }}
+      securityContext:
+{{ toYaml $securityContext | indent 8 }}
+      {{- end }}
+      
+      {{- if .Values.pxbackup.telemetry.deployment.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.pxbackup.telemetry.deployment.nodeSelector | indent 8 }}
+      {{- end }}
+      
+      {{- if .Values.pxbackup.telemetry.deployment.tolerations }}
+      tolerations:
+{{ toYaml .Values.pxbackup.telemetry.deployment.tolerations | indent 8 }}
+      {{- end }}
+      
+      {{- if .Values.pxbackup.telemetry.deployment.affinity }}
+      affinity:
+{{ toYaml .Values.pxbackup.telemetry.deployment.affinity | indent 8 }}
+      {{- end }}
+      
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.images.pullSecrets | indent 8 }}
+      {{- end }}
+      
+      initContainers:
+      # Wait for source certificate to exist before starting
+      - name: init-check-source-cert
+        image: {{ $certWatcherImage }}
+        imagePullPolicy: {{ $imagePullPolicy }}
+        command:
+        - /bin/bash
+        - -c
+        - |
+          echo "Waiting for source certificate to exist..."
+          for i in {1..60}; do
+            if kubectl get secret -n portworx pure-telemetry-certs &>/dev/null; then
+              echo "✅ Source certificate found"
+              exit 0
+            fi
+            echo "Waiting... ($i/60)"
+            sleep 5
+          done
+          echo "❌ Source certificate not found after 5 minutes"
+          exit 1
+      
+      containers:
+      # Container 1: Certificate Watcher
+      - name: cert-watcher
+        image: {{ $certWatcherImage }}
+        imagePullPolicy: {{ $imagePullPolicy }}
+        command: [/bin/bash, /scripts/cert-watcher.sh]
+        env:
+        - name: SOURCE_NAMESPACE
+          value: portworx
+        - name: SOURCE_SECRET
+          value: pure-telemetry-certs
+        - name: TARGET_NAMESPACE
+          value: {{ .Release.Namespace }}
+        - name: TARGET_SECRET
+          value: pure-telemetry-certs
+        - name: WATCH_INTERVAL
+          value: "{{ $watchInterval }}"
+        resources:
+{{ toYaml .Values.pxbackup.telemetry.certWatcher.resources | indent 10 }}
+        volumeMounts:
+        - name: watcher-script
+          mountPath: /scripts
+      
+      # Container 2: Metrics Collector
+      - name: collector
+        image: {{ $collectorImage }}
+        imagePullPolicy: {{ $imagePullPolicy }}
+        env:
+        - name: CONFIG
+          value: config/portworx.yaml
+        resources:
+{{ toYaml .Values.pxbackup.telemetry.collector.resources | indent 10 }}
+        volumeMounts:
+        - name: collector-config
+          mountPath: /config
+      
+      # Container 3: Envoy Proxy
+      - name: envoy
+        image: {{ $envoyImage }}
+        imagePullPolicy: {{ $imagePullPolicy }}
+        args:
+        - envoy
+        - --base-id
+        - "4"
+        - --config-path
+        - /config/envoy-config.yaml
+        resources:
+{{ toYaml .Values.pxbackup.telemetry.envoy.resources | indent 10 }}
+        volumeMounts:
+        - name: envoy-config
+          mountPath: /config
+        - name: pure-telemetry-certs
+          mountPath: /certs
+          readOnly: true
+        - name: tls-config
+          mountPath: /etc/pwx/telemetry
+          readOnly: true
+      
+      volumes:
+      - name: watcher-script
+        configMap:
+          name: px-backup-telemetry-watcher-script
+          defaultMode: 0755
+      - name: collector-config
+        configMap:
+          name: px-backup-telemetry-collector
+      - name: envoy-config
+        configMap:
+          name: px-backup-telemetry-envoy-metrics
+      - name: pure-telemetry-certs
+        secret:
+          secretName: pure-telemetry-certs
+          optional: true
+      - name: tls-config
+        configMap:
+          name: px-backup-telemetry-tls-certificate
+{{- end }}
+

@@ -1,0 +1,41 @@
+{{/* RBAC resources for cross-namespace access to portworx/pure-telemetry-certs */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
+{{- if and $pxBackupEnabled $telemetryEnabled }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: px-backup-telemetry-cert-reader
+  namespace: portworx
+  labels:
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: metrics-collector
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+  # READ-ONLY access to pure-telemetry-certs in portworx namespace
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch"]
+    resourceNames: ["pure-telemetry-certs"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: px-backup-telemetry-cert-reader
+  namespace: portworx
+  labels:
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: metrics-collector
+{{- include "px-central.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: px-backup-telemetry-cert-reader
+subjects:
+  # Cross-namespace reference to px-backup-telemetry ServiceAccount
+  - kind: ServiceAccount
+    name: px-backup-telemetry
+    namespace: {{ .Release.Namespace }}
+{{- end }}
+

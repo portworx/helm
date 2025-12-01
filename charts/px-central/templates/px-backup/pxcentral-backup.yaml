@@ -1,5 +1,6 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $nfsEnabled := .Values.pxbackup.nfs.enabled | default false }}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
@@ -286,6 +287,40 @@ spec:
         - start
         - --datastoreEndpoints=mongodb://$MONGODB_USERNAME:$MONGODB_PASSWORD@pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017/?authSource=px-backup&replicaSet=rs0
         - --mongo-migration={{.Values.pxbackup.mongoMigration}}
+        {{- if not $isOpenshiftCluster }}
+        securityContext:
+          runAsUser: 1000
+          runAsNonRoot: true
+        {{- end }}
+      {{- if $telemetryEnabled }}
+      # Log collector sidecar for telemetry
+      - name: log-collector
+        image: {{ .Values.pxbackup.telemetry.logCollector.image | default "bitnami/kubectl:latest" }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        command: ["/bin/bash", "/scripts/collect-logs.sh"]
+        env:
+        - name: NAMESPACE
+          value: {{ .Release.Namespace }}
+        - name: POD_LABEL
+          value: "app=px-backup"
+        - name: LOG_DIR
+          value: "/var/cores"
+        - name: COLLECTION_INTERVAL
+          value: "{{ .Values.pxbackup.telemetry.logCollector.collectionInterval | default 3600 }}"
+        - name: LOG_SINCE
+          value: "{{ .Values.pxbackup.telemetry.logCollector.logSince | default "3600s" }}"
+        volumeMounts:
+        - name: log-collector-script
+          mountPath: /scripts
+        - name: cores
+          mountPath: /var/cores
+        resources:
+{{ toYaml .Values.pxbackup.telemetry.logCollector.resources | indent 10 }}
+        {{- if not $isOpenshiftCluster }}
+        securityContext:
+          runAsUser: 0  # Needs root to write to /var/cores/
+        {{- end }}
+      {{- end }}
       volumes:
       {{- if .Values.caCertsSecretName }}
         - name: ssl-cert-dir
@@ -302,6 +337,16 @@ spec:
             optional: true
             secretName: {{ .Values.proxy.configSecretName }}
       {{- end }}
+      {{- if $telemetryEnabled }}
+        - name: log-collector-script
+          configMap:
+            name: px-backup-log-collector-script
+            defaultMode: 0755
+        - name: cores
+          hostPath:
+            path: /var/cores
+            type: DirectoryOrCreate
+      {{- end }}
       serviceAccountName: px-backup-account
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
@@ -315,8 +360,14 @@ spec:
       {{- end }}
       {{- if $isOpenshiftCluster}}
       {{- else }}
+      {{- if $telemetryEnabled }}
+      # When telemetry is enabled, allow log-collector to run as root
+      securityContext:
+        runAsNonRoot: false
+      {{- else }}
       securityContext:
 {{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
       {{- end }}
 ---
 {{- end -}}
