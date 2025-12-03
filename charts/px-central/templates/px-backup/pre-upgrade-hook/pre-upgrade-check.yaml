@@ -207,7 +207,7 @@ spec:
               value: >
                 {
                   "registry": "{{ (default .Values.images.mongodbImage.registry .Values.images.registry) }}",
-                  "repo": "{{ (default .Values.images.pxBackupImage.repo .Values.images.repo) }}",
+                  "repo": "{{ (default .Values.images.mongodbImage.repo .Values.images.repo) }}",
                   "imageName": "{{ .Values.images.mongodbImage.imageName }}",
                   "tags": {
                     "mongodb5": "{{ .Values.images.mongodbImageMap.tags.mongodb5 }}",
