@@ -4,6 +4,7 @@
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+{{- $enableExternalMetricsScraping := .Values.pxbackup.enableExternalMetricsScraping | default false }}
 {{- if eq $deployDedicatedMonitoringSystem true }}
 {{- $storageSize := "5Gi" }}
 {{- $retentionSize := "4096MB" }}
@@ -494,9 +495,11 @@ spec:
   tolerations:
   {{- toYaml . | nindent 4 }}
   {{- end }}
-{{- end}}
 
 ---
+# ServiceMonitor for px-backup's dedicated Prometheus dashboard
+# Only created when dedicated monitoring system is enabled
+# Includes metric drops to optimize for dashboard use
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -524,11 +527,11 @@ spec:
       sourceLabels:
       - __name__
     - action: drop
-      regex: (pxbackup_backup_duration_seconds|pxbackup_backup_resource_count|pxbackup_backup_schedule_status|pxbackup_backup_size_bytes|pxbackup_backup_volume_count|pxbackup_backuplocation_metrics|pxbackup_cloudcred_metrics|pxbackup_schedpolicy_metrics|pxbackup_restore_duration_seconds|pxbackup_restore_resource_count|pxbackup_restore_size_bytes|pxbackup_restore_volume_count)
+      regex: (pxbackup_backup_duration_seconds|pxbackup_backup_resource_count|pxbackup_backup_schedule_status|pxbackup_backup_size_bytes|pxbackup_backup_volume_count|pxbackup_backuplocation_metrics|pxbackup_cloudcred_metrics|pxbackup_schedpolicy_metrics|pxbackup_restore_duration_seconds|pxbackup_restore_resource_count|pxbackup_restore_size_bytes|pxbackup_restore_volume_count|pxbackup_backup_object_info|pxbackup_backup_volume_info|pxbackup_virtual_machine_info|pxbackup_virtual_machine_resource_info)
       sourceLabels:
       - __name__
     port: http-rest-api
-    {{- if and .Values.istio.enabled (eq $deployDedicatedMonitoringSystem true) }}
+    {{- if .Values.istio.enabled }}
     scheme: https
     tlsConfig:
       caFile: /etc/prom-certs/root-cert.pem
@@ -542,6 +545,64 @@ spec:
   selector:
     matchLabels:
       app: px-backup
+{{- end}}
+
+{{- if $enableExternalMetricsScraping }}
+---
+# ServiceMonitor for external monitoring systems (e.g., central monitoring namespace)
+# Drops noisy metrics (process/go/grpc) and legacy pxbackup metrics
+# But KEEPS detailed metrics for comprehensive monitoring
+# External Prometheus should select this using label: prometheus=external-monitoring
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: px-backup-external-monitoring-sm
+  labels:
+    name: px-backup-external-monitoring-sm
+    app.kubernetes.io/component: px-backup
+    prometheus: external-monitoring
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  endpoints:
+  - metricRelabelings:
+    - action: labeldrop
+      regex: (instance|pod)
+    - action: drop
+      regex: process_.*
+      sourceLabels:
+      - __name__
+    - action: drop
+      regex: go_.*
+      sourceLabels:
+      - __name__
+    - action: drop
+      regex: grpc_.*
+      sourceLabels:
+      - __name__
+    - action: drop
+      regex: (pxbackup_backup_duration_seconds|pxbackup_backup_resource_count|pxbackup_backup_schedule_status|pxbackup_backup_size_bytes|pxbackup_backup_volume_count|pxbackup_backuplocation_metrics|pxbackup_cloudcred_metrics|pxbackup_schedpolicy_metrics|pxbackup_restore_duration_seconds|pxbackup_restore_resource_count|pxbackup_restore_size_bytes|pxbackup_restore_volume_count)
+      sourceLabels:
+      - __name__
+    # NOTE: Detailed metrics are NOT dropped for external monitoring
+    # These are kept: pxbackup_backup_object_info, pxbackup_backup_volume_info,
+    #                 pxbackup_virtual_machine_info, pxbackup_virtual_machine_resource_info
+    port: http-rest-api
+    targetPort: 10001
+    {{- if .Values.istio.enabled }}
+    scheme: https
+    tlsConfig:
+      caFile: /etc/istio-output-certs/root-cert.pem
+      certFile: /etc/istio-output-certs/cert-chain.pem
+      insecureSkipVerify: true
+      keyFile: /etc/istio-output-certs/key.pem
+    {{- end }}
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app: px-backup
+{{- end}}
 
 ---
 apiVersion: monitoring.coreos.com/v1
