@@ -6,84 +6,6 @@
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $pxBackupEnabled true }}
 apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: pxc-backup-mongodb-scripts
-  namespace: {{ .Release.Namespace }}
-  labels:
-    app.kubernetes.io/component: pxc-backup-mongodb
-  {{- include "px-central.labels" . | nindent 4 }}
-data:
-  setup.sh: |-
-    #!/bin/bash
-
-    . /opt/bitnami/scripts/mongodb-env.sh
-    . /opt/bitnami/scripts/libfs.sh
-    . /opt/bitnami/scripts/liblog.sh
-    . /opt/bitnami/scripts/libvalidations.sh
-
-    echo "Advertised Hostname: $MONGODB_ADVERTISED_HOSTNAME"
-    echo "Advertised Service: $K8S_SERVICE_NAME"
-
-    # Wait until all peers are resolvable via DNS
-    for i in 0 1 2; do
-      host="pxc-backup-mongodb-$i.pxc-backup-mongodb-headless"
-      echo "Waiting for DNS resolution of $host..."
-      until getent hosts $host > /dev/null; do
-        sleep 3
-      done
-    done
-
-    # Check for existing replica set in case there is no data in the PVC
-    # This is for cases where the PVC is lost or for MongoDB caches without
-    # persistence
-    current_primary=""
-    if is_dir_empty "${MONGODB_DATA_DIR}/db"; then
-      echo "Data dir empty, checking if the replica set already exists"
-      {{- $replicaCount := 3 }}
-      {{- $portNumber := 27017 }}
-      {{- $fullname := "pxc-backup-mongodb" }}
-      {{- $mongoList := list }}
-      {{- range $e, $i := until $replicaCount }}
-      {{- $mongoList = append $mongoList (printf "%s-%d.%s-headless:%d" $fullname $i $fullname $portNumber) }}
-      {{- end }}
-      echo "mongoList: {{ join "," $mongoList }}"
-    current_primary=$(mongosh admin --host "$mongoList" --authenticationDatabase admin -u root -p "$MONGODB_ROOT_PASSWORD" \
-    --eval 'try { isMaster = db.runCommand("ismaster"); print(isMaster.primary); } catch (e) { print(""); }' | tail -n 1)
-
-      if ! is_empty_value "$current_primary"; then
-        echo "Detected existing primary: ${current_primary}"
-      fi
-    fi
-
-    if ! is_empty_value "$current_primary" && [[ "$MONGODB_ADVERTISED_HOSTNAME:$MONGODB_ADVERTISED_PORT_NUMBER" == "$current_primary" ]]; then
-        echo "Advertised name matches current primary, configuring node as a primary"
-        export MONGODB_REPLICA_SET_MODE="primary"
-    elif ! is_empty_value "$current_primary" && [[ "$MONGODB_ADVERTISED_HOSTNAME:$MONGODB_ADVERTISED_PORT_NUMBER" != "$current_primary" ]]; then
-        info "Current primary is different from this node. Configuring the node as replica of ${current_primary}"
-        export MONGODB_REPLICA_SET_MODE="secondary"
-        export MONGODB_INITIAL_PRIMARY_HOST="${current_primary%:*}"
-        export MONGODB_INITIAL_PRIMARY_PORT_NUMBER="${current_primary#*:}"
-        export MONGODB_SET_SECONDARY_OK="yes"
-    elif [[ "$MY_POD_NAME" = "pxc-backup-mongodb-0" ]]; then
-        echo "Pod name matches initial primary pod name, configuring node as a primary"
-        export MONGODB_REPLICA_SET_MODE="primary"
-    else
-      export MONGODB_REPLICA_SET_MODE="secondary"
-      export MONGODB_INITIAL_PRIMARY_HOST="pxc-backup-mongodb-0.pxc-backup-mongodb-headless"
-      export MONGODB_INITIAL_PRIMARY_PORT_NUMBER="$MONGODB_PORT_NUMBER"
-      export MONGODB_SET_SECONDARY_OK="yes"
-    fi
-
-    if [[ "$MONGODB_REPLICA_SET_MODE" == "secondary" ]]; then
-        export MONGODB_INITIAL_PRIMARY_ROOT_USER="$MONGODB_ROOT_USER"
-        export MONGODB_INITIAL_PRIMARY_ROOT_PASSWORD="$MONGODB_ROOT_PASSWORD"
-        export MONGODB_ROOT_PASSWORD="" MONGODB_USERNAME="" MONGODB_DATABASE="" MONGODB_PASSWORD=""
-    fi
-
-    exec /opt/bitnami/scripts/mongodb/entrypoint.sh /opt/bitnami/scripts/mongodb/run.sh
----
-apiVersion: v1
 kind: Service
 metadata:
   name: pxc-backup-mongodb-headless
@@ -207,8 +129,6 @@ spec:
             - export MONGODB_INITIAL_PRIMARY_HOST=pxc-backup-mongodb-0.$(K8S_SERVICE_NAME) && export MONGODB_ADVERTISED_HOSTNAME=$(MY_POD_NAME).$(K8S_SERVICE_NAME) && /scripts/setup.sh
           {{- end }}
           env:
-            - name: BITNAMI_DEBUG
-              value: "false"
           {{- include "serviceMesh.env" . | nindent 12 }}
             - name: MY_POD_IP
               valueFrom:
@@ -231,8 +151,8 @@ spec:
               value: rs0
             - name: MONGODB_ADVERTISED_HOSTNAME
               value: $(MY_POD_NAME).$(K8S_SERVICE_NAME)
-            - name: SHARED_FILE
-              value: "/shared/info.txt"
+            - name: MONGODB_DATA_DIR
+              value: /data/db
             - name: MONGODB_USERNAME
               valueFrom:
                 secretKeyRef:
@@ -255,18 +175,8 @@ spec:
                 secretKeyRef:
                   key: mongodb-replica-set-key
                   name: pxc-backup-mongodb
-            - name: ALLOW_EMPTY_PASSWORD
-              value: "no"
-            - name: MONGODB_SYSTEM_LOG_VERBOSITY
-              value: "0"
-            - name: MONGODB_DISABLE_SYSTEM_LOG
-              value: "no"
-            - name: MONGODB_ENABLE_IPV6
-              value: "no"
-            - name: MONGODB_ENABLE_DIRECTORY_PER_DB
-              value: "no"
-            - name: MONGODB_EXTRA_FLAGS
-              value: {{ printf "--wiredTigerCacheSizeGB=%d" $mongoCacheSize }}
+            - name: MONGODB_CACHE_SIZE
+              value: "{{ $mongoCacheSize }}"
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxc-backup-mongodb" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
@@ -299,8 +209,9 @@ spec:
             successThreshold: 1
             timeoutSeconds: 5
           volumeMounts:
-            - mountPath: /bitnami/mongodb
+            - mountPath: /data/db
               name: pxc-mongodb-data
+              subPath: data/db
             - mountPath: /scripts/setup.sh
               name: scripts
               subPath: setup.sh
