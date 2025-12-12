@@ -440,6 +440,20 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				ValuesFiles: []string{"storagecluster_kubevirt_storageclasses.yaml"},
 			},
 		},
+		{
+			name:           "TestTentBasedSchedulingEnabled",
+			resultFileName: "storagecluster_taint_based_scheduling_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{"taintBasedScheduling.enabled": "true"},
+			},
+		},
+		{
+			name:           "TestTentBasedSchedulingDisabled",
+			resultFileName: "storagecluster_taint_based_scheduling_disabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{"taintBasedScheduling": "false"},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

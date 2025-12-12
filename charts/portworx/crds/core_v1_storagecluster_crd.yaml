@@ -8516,6 +8516,17 @@ spec:
                       type: object
                     type: array
                 type: object
+              taintBasedScheduling:
+                description: |-
+                  TaintBasedScheduling contains the taint-based scheduling configuration for the storage cluster.
+                  When enabled, the operator will apply taints to Px nodes, configure tolerations for Portworx components and
+                  enable feature flag in stork to add tolerations to application pods using px backend.
+                properties:
+                  enabled:
+                    description: Enabled indicates whether taint-based scheduling
+                      is enabled for the storage cluster.
+                    type: boolean
+                type: object
               updateStrategy:
                 description: |-
                   An update strategy to replace existing StorageCluster pods with new pods.
