@@ -448,7 +448,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
-			name:           "TestTentBasedSchedulingDisabled",
+			name:           "TestTaintBasedSchedulingDisabled",
 			resultFileName: "storagecluster_taint_based_scheduling_disabled.yaml",
 			helmOption: &helm.Options{
 				SetValues: map[string]string{"taintBasedScheduling": "false"},
