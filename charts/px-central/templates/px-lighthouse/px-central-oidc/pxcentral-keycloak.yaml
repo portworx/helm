@@ -393,7 +393,7 @@ spec:
           volumeMounts:
             - name: dshm
               mountPath: /dev/shm
-            - name: pxcentral-keycloak-data-postgres17
+            - name: pxcentral-keycloak-data-postgres18
               mountPath: /bitnami/postgresql
           {{- if .Values.proxy.configSecretName }}
             - mountPath: /etc/ssl/certs/proxy-ca.pem
@@ -420,13 +420,13 @@ spec:
             medium: Memory
             sizeLimit: 1Gi
         {{- if eq $externalPersistentStorageEnabled false }}
-        - name: pxcentral-keycloak-data-postgres17
+        - name: pxcentral-keycloak-data-postgres18
           emptyDir: {}
         {{- end }}
   {{- if eq $externalPersistentStorageEnabled true }}
   volumeClaimTemplates:
     - metadata:
-        name: pxcentral-keycloak-data-postgres17
+        name: pxcentral-keycloak-data-postgres18
       spec:
         accessModes:
           - "ReadWriteOnce"
