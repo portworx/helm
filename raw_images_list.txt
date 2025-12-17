@@ -17,10 +17,10 @@ docker.io/portworx/mongodb:5.0.24-debian-11-r20
 docker.io/portworx/kopiaexecutor:1.2.23-staging
 docker.io/portworx/nfsexecutor:1.2.23-staging
 docker.io/portworx/filesystemctl:1.2.23-staging
-docker.io/portworx/prometheus:v3.6.0
-docker.io/portworx/alertmanager:v0.28.0
-docker.io/portworx/prometheus-operator:v0.85.0
-docker.io/portworx/prometheus-config-reloader:v0.85.0
+docker.io/portworx/prometheus:v3.8.0
+docker.io/portworx/alertmanager:v0.29.0
+docker.io/portworx/prometheus-operator:v0.87.0
+docker.io/portworx/prometheus-config-reloader:v0.87.0
 docker.io/portworx/cortex:v1.13.1
 docker.io/portworx/cassandra:4.0.7-debian-11-r34
 docker.io/portworx/nginx:1.23.3-alpine-slim
