@@ -133,6 +133,7 @@ spec:
     metadata:
       labels:
         k8s-app: prometheus-operator
+        created-by: px-backup
       {{- if and (eq $azureProxyEnabled true) (not (has "prometheus-operator" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
@@ -287,6 +288,8 @@ kind: Prometheus
 metadata:
    name: px-backup-dashboard-prometheus
    namespace: {{ .Release.Namespace }}
+   labels:
+     created-by: px-backup
 spec:
   affinity:
     nodeAffinity:
@@ -305,8 +308,8 @@ spec:
   additionalAlertManagerConfigs:
     key: am-configs.yaml
     name: pxc-backup-metrics
-  {{- if or $hasAzureAnnotation $hasIstioAnnotation }}
   podMetadata:
+    {{- if or $hasAzureAnnotation $hasIstioAnnotation }}
     annotations:
   {{- if $hasAzureAnnotation }}
       kubernetes.azure.com/no-http-proxy-vars: "true"
@@ -318,10 +321,15 @@ spec:
       sidecar.istio.io/userVolumeMount: '[{"name": "istio-certs", "mountPath": "/etc/istio-output-certs"}]'
       traffic.sidecar.istio.io/includeOutboundIPRanges: ""
   {{- end}}
-  {{- end}}
+    {{- end }}
+    labels:
+      created-by: px-backup
   {{- if .Values.persistentStorage.storageClassName }}
   storage:
     volumeClaimTemplate:
+      metadata:
+        labels:
+          created-by: px-backup
       spec:
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         resources:
@@ -610,6 +618,7 @@ kind: PrometheusRule
 metadata:
   labels:
     app: px-backup-alerts
+    created-by: px-backup
   name: px-backup-dashboard-prometheus-rules
 spec:
   groups:

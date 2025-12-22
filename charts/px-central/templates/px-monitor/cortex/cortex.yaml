@@ -1300,6 +1300,8 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: storage
+        labels:
+          created-by: px-backup
       spec:
         {{- if .Values.persistentStorage.storageClassName }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
@@ -1442,6 +1444,8 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: storage
+        labels:
+          created-by: px-backup
       spec:
         {{- if .Values.persistentStorage.storageClassName }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
