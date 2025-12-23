@@ -1312,7 +1312,7 @@ entries:
     sources:
     - https://github.com/portworx/helm/tree/master/charts/px-central
     urls:
-    - https://raw.githubusercontent.com/portworx/helm/2.11.0-staging/stable/px-central-2.10.1.tgz
+    - https://raw.githubusercontent.com/portworx/helm/2.11.0-fc1/stable/px-central-2.10.1.tgz
     version: 2.10.1
   - apiVersion: v1
     appVersion: 2.10.0
