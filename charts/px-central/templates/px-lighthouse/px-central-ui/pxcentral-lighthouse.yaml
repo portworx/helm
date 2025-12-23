@@ -129,6 +129,7 @@ spec:
       labels:
         run: pxcentral-lh-middleware
         app.kubernetes.io/component: pxcentral-lh-middleware
+        created-by: px-backup
     spec:
       affinity:
         nodeAffinity:

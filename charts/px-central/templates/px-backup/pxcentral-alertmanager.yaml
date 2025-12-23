@@ -9,6 +9,8 @@ kind: Alertmanager
 metadata:
   name: px-backup-alertmanager
   namespace: {{ .Release.Namespace }}
+  labels:
+    created-by: px-backup
 spec:
   affinity:
     nodeAffinity:
@@ -25,11 +27,13 @@ spec:
             - "false"
           {{- end }}
   configSecret: px-backup-alertmanager-custom-config
-  {{- if and (eq $azureProxyEnabled true) (not (has "px-backup-alertmanager" .Values.proxy.excludeAzureProxyList)) }}
   podMetadata:
+    {{- if and (eq $azureProxyEnabled true) (not (has "px-backup-alertmanager" .Values.proxy.excludeAzureProxyList)) }}
     annotations:
       kubernetes.azure.com/no-http-proxy-vars: "true"
-  {{- end }}
+    {{- end }}
+    labels:
+      created-by: px-backup
   alertmanagerConfigSelector:
     matchLabels:
       app: px-backup-alert-configs
@@ -157,6 +161,9 @@ spec:
   {{- if .Values.persistentStorage.storageClassName }}
   storage:
     volumeClaimTemplate:
+      metadata:
+        labels:
+          created-by: px-backup
       spec:
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         resources:
@@ -174,6 +181,8 @@ kind: Secret
 metadata:
   name: px-backup-alertmanager-custom-config
   namespace: {{ .Release.Namespace }}
+  labels:
+    created-by: px-backup
 type: Opaque
 stringData:
   alertmanager.yaml: |

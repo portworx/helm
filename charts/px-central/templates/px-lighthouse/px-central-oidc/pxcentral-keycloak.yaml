@@ -297,6 +297,7 @@ spec:
         app.kubernetes.io/name: {{.Release.Name }}
         app.kubernetes.io/instance: {{.Release.Name }}
         app.kubernetes.io/managed-by: {{.Release.Service }}
+        created-by: px-backup
     spec:
       affinity:
         nodeAffinity:
@@ -427,6 +428,8 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: pxcentral-keycloak-data-postgres18
+        labels:
+          created-by: px-backup
       spec:
         accessModes:
           - "ReadWriteOnce"
@@ -469,6 +472,7 @@ spec:
         app.kubernetes.io/name: {{.Release.Name }}
         app.kubernetes.io/instance: {{.Release.Name }}
         app.kubernetes.io/managed-by: {{.Release.Service }}
+        created-by: px-backup
     spec:
       affinity:
         nodeAffinity:
@@ -675,6 +679,8 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: theme
+        labels:
+          created-by: px-backup
       spec:
         accessModes:
           - "ReadWriteOnce"

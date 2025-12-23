@@ -16,11 +16,13 @@ metadata:
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
   template:
-    {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-post-install-hook" .Values.proxy.excludeAzureProxyList)) }}
     metadata:
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-post-install-hook" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
-    {{- end }}
+      {{- end }}
+      labels:
+        created-by: px-backup
     spec:
       affinity:
         nodeAffinity:

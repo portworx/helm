@@ -66,6 +66,7 @@ spec:
         app.kubernetes.io/instance: {{.Release.Name }}
         app.kubernetes.io/managed-by: {{.Release.Service }}
         app.kubernetes.io/component: pxc-backup-mongodb
+        created-by: px-backup
     spec:
       affinity:
         nodeAffinity:
@@ -247,6 +248,8 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: pxc-mongodb-data
+        labels:
+          created-by: px-backup
       spec:
         accessModes:
           - "ReadWriteOnce"

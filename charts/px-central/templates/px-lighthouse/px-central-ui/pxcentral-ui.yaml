@@ -167,6 +167,7 @@ spec:
       labels:
         run: pxcentral-backend
         app.kubernetes.io/component: pxcentral-backend
+        created-by: px-backup
     spec:
       affinity:
         nodeAffinity:
@@ -315,6 +316,7 @@ spec:
       labels:
         run: pxcentral-frontend
         app.kubernetes.io/component: pxcentral-frontend
+        created-by: px-backup
     spec:
       affinity:
         nodeAffinity:
@@ -469,6 +471,7 @@ spec:
       labels:
         run: pxcentral-mysql
         app.kubernetes.io/component: pxcentral-mysql
+        created-by: px-backup
     spec:
       affinity:
         nodeAffinity:
