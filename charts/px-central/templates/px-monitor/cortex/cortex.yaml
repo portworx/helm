@@ -1301,7 +1301,7 @@ spec:
     - metadata:
         name: storage
         labels:
-          created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 10 }}
       spec:
         {{- if .Values.persistentStorage.storageClassName }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
@@ -1445,7 +1445,7 @@ spec:
     - metadata:
         name: storage
         labels:
-          created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 10 }}
       spec:
         {{- if .Values.persistentStorage.storageClassName }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}

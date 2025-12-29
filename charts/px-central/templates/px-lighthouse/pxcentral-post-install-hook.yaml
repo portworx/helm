@@ -22,7 +22,7 @@ spec:
         kubernetes.azure.com/no-http-proxy-vars: "true"
       {{- end }}
       labels:
-        created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 8 }}
     spec:
       affinity:
         nodeAffinity:

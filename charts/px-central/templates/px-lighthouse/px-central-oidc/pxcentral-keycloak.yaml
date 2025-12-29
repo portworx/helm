@@ -297,7 +297,7 @@ spec:
         app.kubernetes.io/name: {{.Release.Name }}
         app.kubernetes.io/instance: {{.Release.Name }}
         app.kubernetes.io/managed-by: {{.Release.Service }}
-        created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 8 }}
     spec:
       affinity:
         nodeAffinity:
@@ -429,7 +429,7 @@ spec:
     - metadata:
         name: pxcentral-keycloak-data-postgres18
         labels:
-          created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 10 }}
       spec:
         accessModes:
           - "ReadWriteOnce"
@@ -472,7 +472,7 @@ spec:
         app.kubernetes.io/name: {{.Release.Name }}
         app.kubernetes.io/instance: {{.Release.Name }}
         app.kubernetes.io/managed-by: {{.Release.Service }}
-        created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 8 }}
     spec:
       affinity:
         nodeAffinity:
@@ -680,7 +680,7 @@ spec:
     - metadata:
         name: theme
         labels:
-          created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 10 }}
       spec:
         accessModes:
           - "ReadWriteOnce"

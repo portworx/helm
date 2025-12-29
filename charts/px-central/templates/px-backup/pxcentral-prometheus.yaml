@@ -133,7 +133,7 @@ spec:
     metadata:
       labels:
         k8s-app: prometheus-operator
-        created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 8 }}
       {{- if and (eq $azureProxyEnabled true) (not (has "prometheus-operator" .Values.proxy.excludeAzureProxyList)) }}
       annotations:
         kubernetes.azure.com/no-http-proxy-vars: "true"
@@ -289,7 +289,7 @@ metadata:
    name: px-backup-dashboard-prometheus
    namespace: {{ .Release.Namespace }}
    labels:
-     created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 5 }}
 spec:
   affinity:
     nodeAffinity:
@@ -323,13 +323,13 @@ spec:
   {{- end}}
     {{- end }}
     labels:
-      created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 6 }}
   {{- if .Values.persistentStorage.storageClassName }}
   storage:
     volumeClaimTemplate:
       metadata:
         labels:
-          created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 10 }}
       spec:
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         resources:
@@ -618,7 +618,7 @@ kind: PrometheusRule
 metadata:
   labels:
     app: px-backup-alerts
-    created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 4 }}
   name: px-backup-dashboard-prometheus-rules
 spec:
   groups:

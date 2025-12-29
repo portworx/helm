@@ -19,7 +19,7 @@ metadata:
   labels:
     name: pxcentral-pre-install-hook
     app.kubernetes.io/component: pxcentral-pre-install-hook
-    created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 4 }}
 rules:
   - apiGroups: ["apps"]
     resources: ["statefulsets"]
@@ -79,7 +79,7 @@ metadata:
   labels:
     name: pxcentral-pre-install-hook
     app.kubernetes.io/component: pxcentral-pre-install-hook
-    created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
     name: default
@@ -97,7 +97,7 @@ metadata:
   labels:
     name: pxcentral-pre-install-hook
     app.kubernetes.io/component: pxcentral-pre-install-hook
-    created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 4 }}
   annotations:
     "helm.sh/hook": pre-install
     {{- if .Values.isArgoCD }}
@@ -124,7 +124,7 @@ metadata:
   labels:
     name: pxcentral-pre-install-hook
     app.kubernetes.io/component: pxcentral-pre-install-hook
-    created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 4 }}
   annotations:
     "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "6"
@@ -252,7 +252,7 @@ metadata:
   labels:
     name: pxcentral-preflight-check-hook
     app.kubernetes.io/component: pxcentral-preflight-check-hook
-    created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 4 }}
   annotations:
     "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-weight": "4"
@@ -361,7 +361,7 @@ metadata:
   labels:
     name: pxcentral-pre-setup-hook
     app.kubernetes.io/component: pxcentral-pre-setup-hook
-    created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 4 }}
 rules:
   - apiGroups: [ "storage.k8s.io" ]
     resources: [ "storageclasses" ]
@@ -381,7 +381,7 @@ metadata:
   labels:
     name: pxcentral-pre-setup-hook
     app.kubernetes.io/component: pxcentral-pre-setup-hook
-    created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
     name: default

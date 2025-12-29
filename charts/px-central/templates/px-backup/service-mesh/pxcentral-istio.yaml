@@ -10,7 +10,7 @@ metadata:
     "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-weight": "0"
   labels:
-    created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 4 }}
 spec:
   selector:
     istio: ingressgateway
@@ -31,7 +31,7 @@ metadata:
     "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-weight": "0"
   labels:
-    created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 4 }}
 spec:
   mtls:
     mode: STRICT
@@ -45,7 +45,7 @@ metadata:
     "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-weight": "0"
   labels:
-    created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 4 }}
 spec:
   gateways:
   - pxcentral-gateway
@@ -68,7 +68,7 @@ metadata:
   name: allow-external-prometheus-scrape
   namespace: {{ .Release.Namespace }}
   labels:
-    created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 4 }}
 spec:
   selector:
     matchLabels:

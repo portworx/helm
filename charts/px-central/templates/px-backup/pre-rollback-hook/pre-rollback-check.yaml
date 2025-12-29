@@ -9,7 +9,7 @@ metadata:
   labels:
     name: pxcentral-pre-install-hook
     app.kubernetes.io/component: pxcentral-pre-install-hook
-    created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 4 }}
   annotations:
     "helm.sh/hook": pre-rollback
     "helm.sh/hook-delete-policy": hook-succeeded

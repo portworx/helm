@@ -66,7 +66,7 @@ spec:
         app.kubernetes.io/instance: {{.Release.Name }}
         app.kubernetes.io/managed-by: {{.Release.Service }}
         app.kubernetes.io/component: pxc-backup-mongodb
-        created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 8 }}
     spec:
       affinity:
         nodeAffinity:
@@ -249,7 +249,7 @@ spec:
     - metadata:
         name: pxc-mongodb-data
         labels:
-          created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 10 }}
       spec:
         accessModes:
           - "ReadWriteOnce"

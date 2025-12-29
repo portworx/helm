@@ -125,7 +125,7 @@ spec:
       labels:
         app: pxcentral-apiserver
         app.kubernetes.io/component: pxcentral-apiserver
-        created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 8 }}
     spec:
       affinity:
         nodeAffinity:

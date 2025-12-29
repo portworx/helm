@@ -10,7 +10,7 @@ metadata:
   name: px-backup-alertmanager
   namespace: {{ .Release.Namespace }}
   labels:
-    created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 4 }}
 spec:
   affinity:
     nodeAffinity:
@@ -33,7 +33,7 @@ spec:
       kubernetes.azure.com/no-http-proxy-vars: "true"
     {{- end }}
     labels:
-      created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 6 }}
   alertmanagerConfigSelector:
     matchLabels:
       app: px-backup-alert-configs
@@ -163,7 +163,7 @@ spec:
     volumeClaimTemplate:
       metadata:
         labels:
-          created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 10 }}
       spec:
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         resources:
@@ -182,7 +182,7 @@ metadata:
   name: px-backup-alertmanager-custom-config
   namespace: {{ .Release.Namespace }}
   labels:
-    created-by: px-backup
+{{- include "px-central.partOfLabel" . | nindent 4 }}
 type: Opaque
 stringData:
   alertmanager.yaml: |
