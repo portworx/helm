@@ -65,7 +65,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 
 | Parameter | Description | Default
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| `imageVersion` | Version of the PX image | 3.5.0 |
+| `imageVersion` | Version of the PX image | 3.5.1 |
 | `pxOperatorImageVersion` | Version of the PX operator image | 25.5.1 |
 | `verboseOperatorLogs` | Enable verbose logging for the Portworx operator | true |
 | `openshiftInstall` | Installing on Openshift? | false |

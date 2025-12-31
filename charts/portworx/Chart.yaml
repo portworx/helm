@@ -2,7 +2,7 @@ name: portworx
 version: 8.0.1
 description: A Helm chart for installing Portworx on Kubernetes.
 kubeVersion: ">=1.26.0-0"
-appVersion: "3.5.0"
+appVersion: "3.5.1"
 apiVersion: v1
 keywords:
   - Storage
