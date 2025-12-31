@@ -25,12 +25,44 @@ release: {{ .Release.Name | quote }}
 {{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+(\\.\\d+)?"}}{{$version}}
 {{- end -}}
 
-{{- define "px.kubectlImageTag" -}}
-{{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+(\\.\\d+)?" | trimPrefix "v" | split "."}}
-{{- $major := index $version "_0" -}}
-{{- $minor := index $version "_1" -}}
-{{printf "%s.%s" $major $minor }}
+{{- define "px.getKubectlImage" -}}
+{{- $gitVersion := default "v0.0.0" .Capabilities.KubeVersion.GitVersion -}}
+{{- $fullVersion := default "0.0.0" (
+    $gitVersion
+    | regexFind "^v\\d+\\.\\d+(\\.\\d+)?"
+    | trimPrefix "v"
+) -}}
+
+{{- if semverCompare "<1.34.0" $fullVersion -}}
+bitnamilegacy/kubectl
+{{- else -}}
+alpine/kubectl
 {{- end -}}
+{{- end -}}
+
+
+
+
+{{- define "px.kubectlImageTag" -}}
+{{- $gitVersion := default "v0.0.0" .Capabilities.KubeVersion.GitVersion -}}
+{{- $fullVersion := default "0.0.0" (
+    $gitVersion
+    | regexFind "^v\\d+\\.\\d+(\\.\\d+)?"
+    | trimPrefix "v"
+) -}}
+
+{{- if semverCompare "<1.34.0" $fullVersion -}}
+  {{- /* Bitnami legacy expects major.minor */ -}}
+  {{- $gitVersion
+      | regexFind "^v\\d+\\.\\d+"
+      | trimPrefix "v"
+  -}}
+{{- else -}}
+  {{- /* Alpine expects full major.minor.patch */ -}}
+  {{- $fullVersion -}}
+{{- end -}}
+{{- end -}}
+
 
 {{- define "px.getPxOperatorImage" -}}
 {{- if (.Values.customRegistryURL) -}}
