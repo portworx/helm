@@ -43,6 +43,7 @@ metadata:
   labels:
     name: pxcentral-pre-upgrade-hook
     app.kubernetes.io/component: pxcentral-pre-upgrade-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
 rules:
   - apiGroups: ["apps"]
     resources: ["statefulsets"]
@@ -101,6 +102,7 @@ metadata:
   labels:
     name: pxcentral-pre-upgrade-hook
     app.kubernetes.io/component: pxcentral-pre-upgrade-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
     name: default
@@ -118,6 +120,7 @@ metadata:
   labels:
     name: pxcentral-pre-upgrade-hook
     app.kubernetes.io/component: pxcentral-pre-upgrade-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
   annotations:
     "helm.sh/hook": pre-upgrade
     {{- if .Values.isArgoCD }}
@@ -144,6 +147,7 @@ metadata:
   labels:
     name: pxcentral-pre-upgrade-hook
     app.kubernetes.io/component: pxcentral-pre-upgrade-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
   annotations:
     "helm.sh/hook": pre-upgrade
     "helm.sh/hook-weight": "6"

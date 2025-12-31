@@ -129,6 +129,7 @@ spec:
       labels:
         run: pxcentral-lh-middleware
         app.kubernetes.io/component: pxcentral-lh-middleware
+{{- include "px-central.partOfLabel" . | nindent 8 }}
     spec:
       affinity:
         nodeAffinity:

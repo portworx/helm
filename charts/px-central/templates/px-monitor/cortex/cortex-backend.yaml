@@ -274,6 +274,8 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: pxcentral-cassandra-data
+        labels:
+{{- include "px-central.partOfLabel" . | nindent 10 }}
       spec:
         accessModes: ["ReadWriteOnce"]
         {{- if .Values.persistentStorage.storageClassName }}
