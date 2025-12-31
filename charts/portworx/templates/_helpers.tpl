@@ -26,12 +26,11 @@ release: {{ .Release.Name | quote }}
 {{- end -}}
 
 {{- define "px.kubectlImageTag" -}}
-{{- .Capabilities.KubeVersion.GitVersion
-    | regexFind "^v\\d+\\.\\d+\\.\\d+"
-    | trimPrefix "v"
--}}
+{{$version := .Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+(\\.\\d+)?" | trimPrefix "v" | split "."}}
+{{- $major := index $version "_0" -}}
+{{- $minor := index $version "_1" -}}
+{{printf "%s.%s" $major $minor }}
 {{- end -}}
-
 
 {{- define "px.getPxOperatorImage" -}}
 {{- if (.Values.customRegistryURL) -}}

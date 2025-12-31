@@ -28,9 +28,9 @@ spec:
       containers:
         - name: retain-px-daemonset
           {{- if eq $customRegistryURL "none" }}
-          image: "alpine/kubectl:{{ template "px.kubectlImageTag" . }}"
+          image: "bitnamilegacy/kubectl:{{ template "px.kubectlImageTag" . }}"
           {{- else}}
-          image: "{{ $customRegistryURL }}/alpine/kubectl:{{ template "px.kubectlImageTag" . }}"
+          image: "{{ $customRegistryURL }}/bitnamilegacy/kubectl:{{ template "px.kubectlImageTag" . }}"
           {{- end}}
           command: ['/bin/sh',
                     '-c',
