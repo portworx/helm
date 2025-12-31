@@ -250,7 +250,9 @@ volumes:                              # Add volumes to Portworx container. Suppo
   #       path: objectstore.pem
 
 taintBasedScheduling:
-  enabled: 
+  enabled:        # Enables taint-based scheduling for Portworx.
+                  # Applies taints on Px nodes, adds tolerations to Portworx components,
+                  # and enables Stork to add tolerations to application pods using Px backend
 
 tolerations:                          # Add tolerations
   # - key: "key"
