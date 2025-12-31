@@ -175,6 +175,8 @@ spec:
               value: {{ .Values.pxlicenseserver.enabled | default false | quote }}
             - name: PROXY_CONFIG_SECRET_NAME
               value: {{ .Values.proxy.configSecretName | default "" | quote }}
+            - name: POSTGRES_USER
+              value: {{ .Values.oidc.centralOIDC.keyCloakBackendUserName | quote }}
         {{- if eq $deployDedicatedMonitoringSystem true }}
             - name: DEDICATED_PROMETHEUS
               value: "true"

@@ -125,6 +125,7 @@ pxbackup:
   nfs:
     enabled: true
   deployDedicatedMonitoringSystem: true
+  enableExternalMetricsScraping: false
   prometheusEndpoint: ""
   alertmanagerEndpoint: ""
   prometheusSecretName: ""
@@ -134,7 +135,8 @@ pxbackup:
   enableMonitorBLHealth: false
   backupDeleteWorker: 5
   volDeleteWorker: 5
-  version: 2.10.0
+  backupInfoMetricsBackfillHours: 24
+  version: 2.10.1
   skipValidations: false
   usePlatformRbac: false
   encryptMongoDB: false
@@ -224,31 +226,31 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 2.10.0
+    tag: 2.10.1
     module: pxCentral
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 2.10.0
+    tag: 2.10.1
     module: pxCentral
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 2.10.0
+    tag: 2.10.1
     module: pxCentral
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 2.10.0
+    tag: 2.10.1
     module: pxCentral
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 2.10.0
+    tag: 2.10.1
     module: pxCentral
   keycloakBackendImage:
     registry: docker.io
@@ -266,7 +268,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: keycloak-login-theme
-    tag: 2.10.0
+    tag: 2.10.1
     module: pxCentral
   keycloakInitContainerImage:
     registry: docker.io
@@ -284,7 +286,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-hook
-    tag: 2.10.0
+    tag: 2.10.1
     module: pxCentral
   mysqlInitImage:
     registry: docker.io
@@ -298,7 +300,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 2.10.0
+    tag: 2.10.1
     module: pxBackup
   mongodbImage:
     registry: docker.io
