@@ -1,0 +1,106 @@
+{{/* PX-Backup Telemetry RBAC */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
+{{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-backup-telemetry
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+{{- include "px-central.labels" . | nindent 4 }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: px-backup-telemetry-role
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+  # ConfigMap access for telemetry configuration
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+    resourceNames: ["px-backup-telemetry-config"]
+  # Secret access for Pure1 certificates
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list", "watch", "create", "update", "patch"]
+    resourceNames: ["pure-telemetry-certs", "px-backup-telemetry-certs"]
+  # Allow creating the secret if it doesn't exist
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["create"]
+  # Pod access for metrics scraping
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "watch"]
+  # Service access for endpoint discovery
+  - apiGroups: [""]
+    resources: ["services", "endpoints"]
+    verbs: ["get", "list", "watch"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: px-backup-telemetry-role-binding
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+{{- include "px-central.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: px-backup-telemetry
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: px-backup-telemetry-role
+  apiGroup: rbac.authorization.k8s.io
+---
+# RBAC for Logs Collector
+{{- $logsEnabled := .Values.pxbackup.telemetry.logsCollector.enabled | default true }}
+{{- if eq $logsEnabled true }}
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: px-backup-telemetry-logs-collector-role
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+    app.kubernetes.io/name: logs-collector
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+  # Pod access for log collection
+  - apiGroups: [""]
+    resources: ["pods", "pods/log"]
+    verbs: ["get", "list"]
+  # ConfigMap access for telemetry configuration
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "list", "watch"]
+    resourceNames: ["px-backup-telemetry-config"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: px-backup-telemetry-logs-collector-role-binding
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+    app.kubernetes.io/name: logs-collector
+{{- include "px-central.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: px-backup-telemetry-logs-collector
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: px-backup-telemetry-logs-collector-role
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}
+{{- end }}
+

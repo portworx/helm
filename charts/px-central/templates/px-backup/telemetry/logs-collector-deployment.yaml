@@ -1,0 +1,165 @@
+{{/* PX-Backup Telemetry Logs Collector Deployment */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
+{{- $logsEnabled := .Values.pxbackup.telemetry.logsCollector.enabled | default true }}
+{{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) (eq $logsEnabled true) }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-backup-telemetry-logs-collector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+    app.kubernetes.io/name: logs-collector
+{{- include "px-central.labels" . | nindent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: px-backup-telemetry-logs-collector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+    app.kubernetes.io/name: logs-collector
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: px-backup-telemetry
+      app.kubernetes.io/name: logs-collector
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: px-backup-telemetry
+        app.kubernetes.io/name: logs-collector
+        app.kubernetes.io/instance: {{ .Release.Name | quote }}
+        app.kubernetes.io/managed-by: {{ .Release.Service | quote }}
+        helm.sh/chart: {{ include "px-central.chart" . }}
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    spec:
+      serviceAccountName: px-backup-telemetry-logs-collector
+      containers:
+      # Container 1: Log Collector
+      - name: log-collector
+        image: {{ .Values.pxbackup.telemetry.logsCollector.image.registry }}/{{ .Values.pxbackup.telemetry.logsCollector.image.imageName }}:{{ .Values.pxbackup.telemetry.logsCollector.image.tag }}
+        imagePullPolicy: {{ .Values.pxbackup.telemetry.logsCollector.image.imagePullPolicy | default "IfNotPresent" }}
+        command: ["/bin/bash", "/scripts/collect-logs.sh"]
+        securityContext:
+          runAsUser: 1111
+        volumeMounts:
+        - name: log-collector-script
+          mountPath: /scripts
+          readOnly: true
+        - name: log-storage
+          mountPath: /var/cores
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+      
+      # Container 2: Log Upload Service
+      - name: log-upload-service
+        image: {{ .Values.pxbackup.telemetry.logsCollector.logUploadImage.registry | default "docker.io" }}/{{ .Values.pxbackup.telemetry.logsCollector.logUploadImage.imageName }}:{{ .Values.pxbackup.telemetry.logsCollector.logUploadImage.tag }}
+        imagePullPolicy: {{ .Values.pxbackup.telemetry.logsCollector.logUploadImage.imagePullPolicy | default "IfNotPresent" }}
+        ports:
+        - name: grpc
+          containerPort: 9090
+          protocol: TCP
+        env:
+        - name: CONFIG_FILE
+          value: "/config/ccm.properties"
+        - name: APPLIANCE_ID
+          valueFrom:
+            configMapKeyRef:
+              name: px-backup-telemetry-config
+              key: appliance-id
+        - name: APPLIANCE_NAME
+          value: "px-backup-{{ .Release.Namespace }}"
+        securityContext:
+          runAsUser: 1111
+        volumeMounts:
+        - name: log-storage
+          mountPath: /var/cores
+        - name: log-upload-config
+          mountPath: /config
+          readOnly: true
+        - name: log-upload-cache
+          mountPath: /var/cache/ccm
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+      
+      # Container 3: Envoy Proxy
+      - name: envoy
+        image: {{ .Values.pxbackup.telemetry.logsCollector.envoyImage.registry }}/{{ .Values.pxbackup.telemetry.logsCollector.envoyImage.imageName }}:{{ .Values.pxbackup.telemetry.logsCollector.envoyImage.tag }}
+        imagePullPolicy: {{ .Values.pxbackup.telemetry.logsCollector.envoyImage.imagePullPolicy | default "IfNotPresent" }}
+        args:
+        - envoy
+        - --base-id
+        - "3"
+        - --config-path
+        - /etc/envoy/envoy-config.yaml
+        ports:
+        - name: logs-proxy
+          containerPort: 12002
+          protocol: TCP
+        - name: admin
+          containerPort: 9901
+          protocol: TCP
+        securityContext:
+          runAsUser: 1111
+        volumeMounts:
+        - name: envoy-config
+          mountPath: /etc/envoy/envoy-config.yaml
+          subPath: envoy-config.yaml
+          readOnly: true
+        - name: envoy-sds-config
+          mountPath: /etc/envoy/tls_certificate_sds_secret.yaml
+          subPath: tls_certificate_sds_secret.yaml
+          readOnly: true
+        - name: telemetry-certs
+          mountPath: /appliance-cert
+          readOnly: true
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+      
+      volumes:
+      - name: log-collector-script
+        configMap:
+          name: px-backup-telemetry-log-collector-script
+          defaultMode: 0755
+      - name: log-storage
+        emptyDir: {}  # Shared between log-collector and log-upload-service
+      - name: log-upload-config
+        configMap:
+          name: px-backup-telemetry-logs-upload-config
+      - name: log-upload-cache
+        emptyDir: {}  # For SQLite bookkeeping
+      - name: envoy-config
+        configMap:
+          name: px-backup-telemetry-logs-envoy-config
+      - name: envoy-sds-config
+        configMap:
+          name: px-backup-telemetry-logs-envoy-sds-config
+      - name: telemetry-certs
+        secret:
+          secretName: pure-telemetry-certs
+          optional: true  # Secret is created by registration pod at runtime
+{{- end }}
+
