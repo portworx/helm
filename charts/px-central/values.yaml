@@ -141,6 +141,72 @@ pxbackup:
   usePlatformRbac: false
   encryptMongoDB: false
 
+  # Telemetry configuration for PX-Backup
+  telemetry:
+    enabled: false
+
+    # Endpoints - can be overridden for custom environments
+    # OSB endpoint for registration (base URL only, path will be appended by code)
+    osbEndpoint: "https://master-staging.portworx.dev"
+    # Pure1 registration endpoint (for certificate registration)
+    registerEndpoint: "register.staging-cloud-support.purestorage.com"
+    # Pure1 REST API endpoint (for metrics and logs upload)
+    restEndpoint: "rest.staging-cloud-support.purestorage.com"
+
+    # Registration pod configuration
+    registration:
+      image:
+        imageName: ccm-go
+        tag: "1.4.30"
+        imagePullPolicy: IfNotPresent
+      coServerImage:
+        registry: pure-artifactory.dev.purestorage.com
+        repo: px-docker-dev-virtual/bk
+        imageName: px-backup-co-server
+        tag: "latest"
+        imagePullPolicy: IfNotPresent
+      envoyImage:
+        registry: docker.io
+        imageName: portworx/telemetry-envoy
+        tag: "1.1.18"
+        imagePullPolicy: IfNotPresent
+
+    # Metrics collector configuration
+    metricsCollector:
+      enabled: true
+      scrapeInterval: 10  # seconds
+      batchSize: 5  # number of scrapes to batch before sending
+      image:
+        registry: docker.io
+        imageName: purestorage/realtime-metrics
+        tag: "1.0.23"
+        imagePullPolicy: IfNotPresent
+      envoyImage:
+        registry: docker.io
+        imageName: purestorage/telemetry-envoy
+        tag: "1.0.0"
+        imagePullPolicy: IfNotPresent
+
+    # Logs collector configuration
+    logsCollector:
+      enabled: true
+      collectionInterval: 3600  # seconds (1 hour)
+      image:
+        registry: docker.io
+        imageName: bitnami/kubectl
+        tag: "latest"
+        imagePullPolicy: IfNotPresent
+      logUploadImage:
+        registry: docker.io
+        imageName: portworx/log-upload
+        tag: "px-1.1.46"
+        imagePullPolicy: IfNotPresent
+      envoyImage:
+        registry: docker.io
+        imageName: purestorage/telemetry-envoy
+        tag: "1.0.0"
+        imagePullPolicy: IfNotPresent
+
 pxlicenseserver:
   enabled: false
   internal:
