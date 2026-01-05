@@ -1,0 +1,176 @@
+{{/* PX-Backup Telemetry Registration Deployment */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
+{{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: px-backup-telemetry-registration
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+    app.kubernetes.io/name: registration
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: px-backup-telemetry-registration
+  template:
+    metadata:
+      labels:
+        app: px-backup-telemetry-registration
+        app.kubernetes.io/component: px-backup-telemetry
+        app.kubernetes.io/name: registration
+{{- include "px-central.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: px-backup-telemetry
+      initContainers:
+      # Wait for PX-Backup to populate appliance-id in ConfigMap
+      - name: wait-for-appliance-id
+        image: {{ .Values.images.keycloakInitContainerImage.registry }}/{{ .Values.images.keycloakInitContainerImage.repo }}/{{ .Values.images.keycloakInitContainerImage.imageName }}:{{ .Values.images.keycloakInitContainerImage.tag }}
+        command:
+        - sh
+        - -c
+        - |
+          echo "Waiting for appliance-id to be populated in ConfigMap..."
+          while true; do
+            APPLIANCE_ID=$(cat /config/appliance-id 2>/dev/null || echo "")
+            if [ -n "$APPLIANCE_ID" ] && [ "$APPLIANCE_ID" != "" ]; then
+              echo "Found appliance-id: $APPLIANCE_ID"
+              # Update Envoy config with actual appliance ID
+              sed "s/APPLIANCE_ID_PLACEHOLDER/$APPLIANCE_ID/g" /envoy-template/envoy-config-register.yaml > /envoy-config/envoy-config-register.yaml
+              echo "Envoy config updated with appliance ID"
+              # Write appliance ID for CCM-Go
+              echo -n "$APPLIANCE_ID" > /var/cache/appliance_id
+              echo "Appliance ID file created"
+              break
+            fi
+            echo "appliance-id not yet populated, waiting..."
+            sleep 5
+          done
+        volumeMounts:
+        - name: telemetry-config
+          mountPath: /config
+        - name: envoy-template
+          mountPath: /envoy-template
+        - name: envoy-config
+          mountPath: /envoy-config
+        - name: appliance-id
+          mountPath: /var/cache
+      containers:
+      # CCM-Go - Registration service
+      - name: registration
+        image: {{ .Values.images.pxBackupImage.registry }}/{{ .Values.images.pxBackupImage.repo }}/{{ .Values.pxbackup.telemetry.registration.image.imageName }}:{{ .Values.pxbackup.telemetry.registration.image.tag }}
+        imagePullPolicy: {{ .Values.pxbackup.telemetry.registration.image.imagePullPolicy | default "IfNotPresent" }}
+        env:
+        - name: CONFIG
+          value: "/etc/ccm/config_properties_px.yaml"
+        - name: APPLIANCE_ID
+          valueFrom:
+            configMapKeyRef:
+              name: px-backup-telemetry-config
+              key: appliance-id
+        - name: APPLIANCE_NAME
+          value: "px-backup-{{ .Release.Namespace }}"
+        - name: REFRESH_TOKEN
+          value: ""
+        securityContext:
+          runAsUser: 1111
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+        volumeMounts:
+        - name: registration-config
+          mountPath: /etc/ccm
+        - name: cert-secret
+          mountPath: /etc/pwx/ccm/cert
+        - name: appliance-id
+          mountPath: /var/cache
+      # CO-Server - Certificate operations
+      - name: co-server
+        image: {{ .Values.pxbackup.telemetry.registration.coServerImage.registry }}/{{ .Values.pxbackup.telemetry.registration.coServerImage.repo }}/{{ .Values.pxbackup.telemetry.registration.coServerImage.imageName }}:{{ .Values.pxbackup.telemetry.registration.coServerImage.tag }}
+        imagePullPolicy: {{ .Values.pxbackup.telemetry.registration.coServerImage.imagePullPolicy | default "IfNotPresent" }}
+        env:
+        - name: CERT_SECRET_NAME
+          value: "pure-telemetry-certs"
+        - name: CERT_SECRET_NAMESPACE
+          value: {{ .Release.Namespace | quote }}
+        ports:
+        - containerPort: 9030
+          name: grpc
+        securityContext:
+          runAsUser: 1111
+        resources:
+          requests:
+            cpu: 50m
+            memory: 32Mi
+          limits:
+            memory: 64Mi
+        volumeMounts:
+        - name: cert-secret
+          mountPath: /etc/pwx/ccm/cert
+      # Envoy - mTLS proxy
+      - name: envoy
+        image: {{ .Values.pxbackup.telemetry.registration.envoyImage.registry }}/{{ .Values.pxbackup.telemetry.registration.envoyImage.imageName }}:{{ .Values.pxbackup.telemetry.registration.envoyImage.tag }}
+        imagePullPolicy: {{ .Values.pxbackup.telemetry.registration.envoyImage.imagePullPolicy | default "IfNotPresent" }}
+        env:
+        - name: APPLIANCE_ID
+          valueFrom:
+            configMapKeyRef:
+              name: px-backup-telemetry-config
+              key: appliance-id
+        - name: PRODUCT_VERSION
+          value: {{ .Values.pxbackup.version | quote }}
+        args:
+        - envoy
+        - --base-id
+        - "5"
+        - --config-path
+        - /etc/envoy/envoy-config-register.yaml
+        ports:
+        - containerPort: 9901
+          name: admin
+        - containerPort: 12001
+          name: registration
+        - containerPort: 12002
+          name: renewal
+        securityContext:
+          runAsUser: 1111
+        resources:
+          requests:
+            cpu: 50m
+            memory: 32Mi
+          limits:
+            memory: 64Mi
+        volumeMounts:
+        - name: envoy-config
+          mountPath: /etc/envoy
+        - name: cert-secret
+          mountPath: /etc/pwx/ccm/cert
+      volumes:
+      - name: telemetry-config
+        configMap:
+          name: px-backup-telemetry-config
+      - name: registration-config
+        configMap:
+          name: px-backup-telemetry-registration-config
+      - name: envoy-template
+        configMap:
+          name: px-backup-telemetry-registration-proxy-config
+      - name: envoy-config
+        emptyDir: {}
+      - name: appliance-id
+        emptyDir: {}
+      - name: cert-secret
+        secret:
+          secretName: pure-telemetry-certs
+          optional: true
+{{- end }}
+

@@ -1,0 +1,34 @@
+{{/* PX-Backup Telemetry ConfigMap */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
+{{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) }}
+{{- $existingConfigMap := lookup "v1" "ConfigMap" .Release.Namespace "px-backup-telemetry-config" }}
+{{- $existingApplianceId := "" }}
+{{- if $existingConfigMap }}
+  {{- $existingApplianceId = index $existingConfigMap.data "appliance-id" | default "" }}
+{{- end }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: px-backup-telemetry-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+{{- include "px-central.labels" . | nindent 4 }}
+  annotations:
+    # Prevent Helm from recreating this ConfigMap on upgrade
+    # The appliance-id field is populated by PX-Backup at runtime
+    "helm.sh/resource-policy": keep
+data:
+  # Appliance ID will be populated by PX-Backup server after initialization
+  # This is the ONLY field that PX-Backup code updates
+  # Preserve existing value during upgrades using lookup function
+  appliance-id: {{ $existingApplianceId | quote }}
+
+  # All other fields are set by Helm and are read-only
+  product_name: "px-backup"
+  product_version: {{ .Values.images.pxBackupImage.tag | quote }}
+  osb_endpoint: {{ .Values.pxbackup.telemetry.osbEndpoint | quote }}
+{{- end }}
+

@@ -1,0 +1,147 @@
+{{/* PX-Backup Telemetry Metrics Collector Deployment */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
+{{- $metricsEnabled := .Values.pxbackup.telemetry.metricsCollector.enabled | default true }}
+{{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) (eq $metricsEnabled true) }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: px-backup-telemetry-metrics-collector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+    app.kubernetes.io/name: metrics-collector
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: px-backup-telemetry-metrics-collector
+  template:
+    metadata:
+      labels:
+        app: px-backup-telemetry-metrics-collector
+        app.kubernetes.io/component: px-backup-telemetry
+        app.kubernetes.io/name: metrics-collector
+{{- include "px-central.labels" . | nindent 8 }}
+    spec:
+      serviceAccountName: px-backup-telemetry
+      initContainers:
+      # Init container 1: Wait for certificate using cert_checker (PX-Enterprise pattern)
+      - name: cert-checker
+        image: {{ .Values.pxbackup.telemetry.metricsCollector.envoyImage.registry }}/{{ .Values.pxbackup.telemetry.metricsCollector.envoyImage.imageName }}:{{ .Values.pxbackup.telemetry.metricsCollector.envoyImage.tag }}
+        imagePullPolicy: {{ .Values.pxbackup.telemetry.metricsCollector.envoyImage.imagePullPolicy | default "IfNotPresent" }}
+        args:
+        - "cert_checker"
+        env:
+        - name: K8S_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        securityContext:
+          runAsUser: 1111
+      # Init container 2: Update Envoy config with appliance-id
+      - name: update-envoy-config
+        image: {{ .Values.images.keycloakInitContainerImage.registry }}/{{ .Values.images.keycloakInitContainerImage.repo }}/{{ .Values.images.keycloakInitContainerImage.imageName}}:{{ .Values.images.keycloakInitContainerImage.tag }}
+        command:
+        - sh
+        - -c
+        - |
+          echo "Waiting for appliance-id to be populated..."
+          while true; do
+            APPLIANCE_ID=$(cat /config/appliance-id 2>/dev/null || echo "")
+            if [ -n "$APPLIANCE_ID" ] && [ "$APPLIANCE_ID" != "" ]; then
+              echo "Found appliance-id: $APPLIANCE_ID"
+              # Update Envoy config with actual appliance ID
+              sed "s/APPLIANCE_ID_PLACEHOLDER/$APPLIANCE_ID/g" /envoy-template/envoy-config.yaml > /envoy-config/envoy-config.yaml
+              echo "Envoy config updated with appliance ID: $APPLIANCE_ID"
+              break
+            fi
+            echo "appliance-id not yet populated, waiting..."
+            sleep 5
+          done
+          echo "Initialization complete"
+        volumeMounts:
+        - name: telemetry-config
+          mountPath: /config
+        - name: envoy-template
+          mountPath: /envoy-template
+        - name: envoy-config
+          mountPath: /envoy-config
+      containers:
+      # Realtime Metrics Collector
+      - name: collector
+        image: {{ .Values.pxbackup.telemetry.metricsCollector.image.registry }}/{{ .Values.pxbackup.telemetry.metricsCollector.image.imageName }}:{{ .Values.pxbackup.telemetry.metricsCollector.image.tag }}
+        imagePullPolicy: {{ .Values.pxbackup.telemetry.metricsCollector.image.imagePullPolicy | default "IfNotPresent" }}
+        env:
+        - name: CONFIG
+          value: "config/px-backup.yaml"
+        securityContext:
+          runAsUser: 1111
+        resources:
+          requests:
+            cpu: 200m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+        volumeMounts:
+        - name: collector-config
+          mountPath: /config
+          readOnly: true
+      # Envoy - mTLS proxy for Pure1
+      - name: envoy
+        image: {{ .Values.pxbackup.telemetry.metricsCollector.envoyImage.registry }}/{{ .Values.pxbackup.telemetry.metricsCollector.envoyImage.imageName }}:{{ .Values.pxbackup.telemetry.metricsCollector.envoyImage.tag }}
+        imagePullPolicy: {{ .Values.pxbackup.telemetry.metricsCollector.envoyImage.imagePullPolicy | default "IfNotPresent" }}
+        args:
+        - envoy
+        - --base-id
+        - "4"
+        - --config-path
+        - /config/envoy-config.yaml
+        ports:
+        - containerPort: 9901
+          name: admin
+        - containerPort: 10000
+          name: proxy
+        securityContext:
+          runAsUser: 1111
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+        volumeMounts:
+        - name: envoy-config
+          mountPath: /config
+          readOnly: true
+        - name: cert-secret
+          mountPath: /appliance-cert
+          readOnly: true
+        - name: tls-config
+          mountPath: /etc/envoy
+          readOnly: true
+      volumes:
+      - name: telemetry-config
+        configMap:
+          name: px-backup-telemetry-config
+      - name: collector-config
+        configMap:
+          name: px-backup-telemetry-metrics-collector-config
+      - name: envoy-template
+        configMap:
+          name: px-backup-telemetry-metrics-envoy-config
+      - name: envoy-config
+        emptyDir: {}  # Init container writes updated config here
+      - name: tls-config
+        configMap:
+          name: px-backup-telemetry-metrics-tls-config
+      - name: cert-secret
+        secret:
+          secretName: pure-telemetry-certs
+          optional: true  # Secret is created by registration pod at runtime
+{{- end }}
+
