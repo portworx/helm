@@ -65,8 +65,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 
 | Parameter | Description | Default
 |--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| `imageVersion` | Version of the PX image | 3.5.0 |
-| `pxOperatorImageVersion` | Version of the PX operator image | 25.5.0 |
+| `imageVersion` | Version of the PX image | 3.5.1 |
+| `pxOperatorImageVersion` | Version of the PX operator image | 25.5.1 |
 | `verboseOperatorLogs` | Enable verbose logging for the Portworx operator | true |
 | `openshiftInstall` | Installing on Openshift? | false |
 | `nonDisruptivek8sUpgrade` | Used to disable or enable smart and parallel kubetnetes node upgrades. By default, S&P upgrades are disabled. To enable them, set this to true | false |
@@ -135,7 +135,6 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `kubeVirtStorageClasses.pxRwxFileKubevirt` | Enables creation of the `px-rwx-file-kubevirt` StorageClass, which provides RWX access using a file-based backend for KubeVirt virtual machines. | false |
 | `kubeVirtStorageClasses.pxRwxBlockKubevirt` | Enables creation of the `px-rwx-block-kubevirt` StorageClass, which provides RWX access using a block-based backend for KubeVirt workloads. | false |
 | `kubeVirtStorageClasses.pxCdiScratch` | Enables creation of the `px-cdi-scratch` StorageClass used by the Containerized Data Importer (CDI) for temporary scratch space during VM image imports or uploads. | false |
-
 | `autopilot.enabled` | Enable AutoPilot | true |
 | `autopilot.image` | Specify AutoPilot image | "" |
 | `autopilot.lockImage` | Enables locking AutoPilot to the given image | false |
@@ -151,6 +150,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `etcd.key` | Location of certificate key for etcd authentication Should be /path/to/servery.key (Depricated : use `kvdb.authSecretName`)| "none" |
 | `consul.token` | ACL token value used for Consul authentication. (example: 398073a8-5091-4d9c-871a-bbbeb030d1f6) (Depricated : use `kvdb.authSecretName`) (Depricated : use `kvdb.authSecretName`) |
 | `volumes` | Specifies volumes for Portworx by defining a name, mount path, mount propagation (None, HostToContainer, Bidirectional), and whether the volume is read-only. For secrets, provide the secret name and map specific keys to paths. Supported volume types include Host, Secret, and ConfigMap | [] |
+| `taintBasedScheduling.enabled` | Enables taint-based scheduling for Portworx. Applies taints on Px nodes, adds tolerations to Portworx components, and enables Stork to add tolerations to application pods using Px backend | None |
 | `tolerations` | Specifies tolerations for scheduling Portworx pods. | [] |
 | `nodeAffinity` | Specifies node affinity rules for Portworx pods. | {} |
 | `nodesConfiguration` | Override certain cluster-level configurations for individual or groups of nodes, including network, storage, environment variables, and runtime options. | [] |

@@ -651,5 +651,9 @@ spec:
     credentials:
       {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- if or (eq .Values.taintBasedScheduling.enabled true) (eq .Values.taintBasedScheduling.enabled false) }}
+  taintBasedScheduling:
+    enabled: {{ .Values.taintBasedScheduling.enabled }}
+  {{- end}}
 
 {{- end }}

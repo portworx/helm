@@ -4,8 +4,8 @@ deployOperator: true                    # Deploy the Portworx operator
 deployCluster: true                     # Deploy the Portworx cluster
 verboseOperatorLogs: false              # Enable verbose logging for the Portworx operator.
 
-imageVersion: 3.5.0                    # Version of the PX Image.
-pxOperatorImageVersion: 25.5.0         # Version of the PX operator image.
+imageVersion: 3.5.1                    # Version of the PX Image.
+pxOperatorImageVersion: 25.5.1         # Version of the PX operator image.
 
 openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
 isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
@@ -248,6 +248,11 @@ volumes:                              # Add volumes to Portworx container. Suppo
   #     items:
   #     - key: objectstore.pem
   #       path: objectstore.pem
+
+taintBasedScheduling:
+  enabled:        # Enables taint-based scheduling for Portworx.
+                  # Applies taints on Px nodes, adds tolerations to Portworx components,
+                  # and enables Stork to add tolerations to application pods using Px backend
 
 tolerations:                          # Add tolerations
   # - key: "key"

@@ -22,9 +22,11 @@ spec:
   stork:
     enabled: true
   monitoring:
-    prometheus:
-      exportMetrics: true
+    telemetry:
+      enabled: true
   csi:
     enabled: true
   autopilot:
+    enabled: true
+  taintBasedScheduling:
     enabled: true
