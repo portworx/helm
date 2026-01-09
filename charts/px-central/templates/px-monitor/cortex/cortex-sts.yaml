@@ -620,8 +620,6 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: pxcentral-consul-data
-        labels:
-{{- include "px-central.partOfLabel" . | nindent 10 }}
       spec:
         accessModes: ["ReadWriteOnce"]
         {{- if .Values.persistentStorage.storageClassName }}

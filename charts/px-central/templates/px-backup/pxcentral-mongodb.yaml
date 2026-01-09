@@ -248,8 +248,6 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: pxc-mongodb-data
-        labels:
-{{- include "px-central.partOfLabel" . | nindent 10 }}
       spec:
         accessModes:
           - "ReadWriteOnce"

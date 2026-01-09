@@ -39,14 +39,18 @@ app.kubernetes.io/instance: {{.Release.Name | quote }}
 app.kubernetes.io/managed-by: {{.Release.Service | quote }}
 helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}"
 app.kubernetes.io/version: {{ .Chart.Version | quote }}
+{{- if .Values.pxbackup.enabled }}
 app.kubernetes.io/part-of: px-backup
+{{- end }}
 {{- end }}
 
 {{/*
 Part-of label for nested templates
 */}}
 {{- define "px-central.partOfLabel" -}}
+{{- if .Values.pxbackup.enabled }}
 app.kubernetes.io/part-of: px-backup
+{{- end }}
 {{- end }}
 
 {{/*

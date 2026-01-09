@@ -428,8 +428,6 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: pxcentral-keycloak-data-postgres18
-        labels:
-{{- include "px-central.partOfLabel" . | nindent 10 }}
       spec:
         accessModes:
           - "ReadWriteOnce"
@@ -679,8 +677,6 @@ spec:
   volumeClaimTemplates:
     - metadata:
         name: theme
-        labels:
-{{- include "px-central.partOfLabel" . | nindent 10 }}
       spec:
         accessModes:
           - "ReadWriteOnce"
