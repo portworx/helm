@@ -238,13 +238,13 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-backend-private
-    tag: 2.11.0-staging
+    tag: PB-13872
     module: pxCentral
   pxcentralMiddlewareImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend-private
-    tag: 2.11.0-staging
+    tag: PB-13274
     module: pxCentral
   postInstallSetupImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
