@@ -96,7 +96,7 @@ rules:
   - apiGroups: ["monitoring.coreos.com"]
     resources: ["alertmanagerconfigs"]
     verbs: ["get","create","delete","update","list","deletecollection"]
-{{- if eq $nfsEnabled true }}
+{{- if or (eq $nfsEnabled true) .Values.pxbackup.telemetry.enabled }}
   - apiGroups: [""]
     resources: ["persistentvolumeclaims"]
     verbs: ["get", "create", "delete", "update", "list"]
@@ -212,6 +212,10 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
         - name: PX_BACKUP_DEFAULT_ORG
           value: {{ .Values.pxbackup.orgName }}
         {{- if .Values.pxbackup.telemetry.enabled }}
@@ -279,6 +283,10 @@ spec:
           timeoutSeconds: 1
           periodSeconds: 60
         volumeMounts:
+        {{- if .Values.pxbackup.telemetry.enabled }}
+          - mountPath: /var/cores
+            name: diagnostics-storage
+        {{- end }}
         {{- if .Values.caCertsSecretName }}
           - mountPath: /tmp/certs
             readOnly: true
@@ -295,7 +303,73 @@ spec:
         - start
         - --datastoreEndpoints=mongodb://$MONGODB_USERNAME:$MONGODB_PASSWORD@pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017/?authSource=px-backup&replicaSet=rs0
         - --mongo-migration={{.Values.pxbackup.mongoMigration}}
+      {{- if .Values.pxbackup.telemetry.enabled }}
+      # Sidecar: log-upload-service
+      - name: log-upload-service
+        image: {{ printf "%s/%s:%s" .Values.pxbackup.telemetry.logsCollector.logUploadImage.registry .Values.pxbackup.telemetry.logsCollector.logUploadImage.imageName .Values.pxbackup.telemetry.logsCollector.logUploadImage.tag }}
+        imagePullPolicy: {{ .Values.pxbackup.telemetry.logsCollector.logUploadImage.imagePullPolicy }}
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: APPLIANCE_ID
+          valueFrom:
+            configMapKeyRef:
+              name: px-backup-telemetry
+              key: appliance-id
+              optional: true
+        - name: PURE1_CERT_PATH
+          value: /etc/pwx/pure1
+        - name: LOG_UPLOAD_PORT
+          value: "0"
+        - name: LOG_UPLOAD_REST_PORT
+          value: "9091"
+        volumeMounts:
+        - name: diagnostics-storage
+          mountPath: /var/cores
+        - name: log-upload-config
+          mountPath: /etc/ccm
+        - name: pure1-cert
+          mountPath: /etc/pwx/pure1
+          readOnly: true
+        ports:
+        - containerPort: 9091
+          protocol: TCP
+          name: http
+      # Sidecar: envoy proxy
+      - name: envoy
+        image: {{ printf "%s/%s:%s" .Values.pxbackup.telemetry.logsCollector.envoyImage.registry .Values.pxbackup.telemetry.logsCollector.envoyImage.imageName .Values.pxbackup.telemetry.logsCollector.envoyImage.tag }}
+        imagePullPolicy: {{ .Values.pxbackup.telemetry.logsCollector.envoyImage.imagePullPolicy }}
+        volumeMounts:
+        - name: envoy-config
+          mountPath: /etc/envoy
+          readOnly: true
+        - name: pure1-cert
+          mountPath: /etc/pwx/pure1
+          readOnly: true
+        ports:
+        - containerPort: 9092
+          protocol: TCP
+          name: envoy-proxy
+      {{- end }}
       volumes:
+      {{- if .Values.pxbackup.telemetry.enabled }}
+        - name: diagnostics-storage
+          emptyDir: {}
+        - name: log-upload-config
+          configMap:
+            name: px-backup-log-upload-config
+            optional: true
+        - name: envoy-config
+          configMap:
+            name: px-backup-envoy-config
+            optional: true
+        - name: pure1-cert
+          secret:
+            secretName: pure1-cert
+            optional: true
+      {{- end }}
       {{- if .Values.caCertsSecretName }}
         - name: ssl-cert-dir
           secret:
