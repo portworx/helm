@@ -45,7 +45,7 @@ data:
     productName: "portworx"
     certStoreType: "kvstore"
     kvStore:
-      serverAddress: "localhost:9030"
+      serverAddress: "px-backup.{{ .Release.Namespace }}.svc.cluster.local:10002"
     k8s:
       certSecretName: "pure-telemetry-certs"
       certSecretNamespace: {{ .Release.Namespace | quote }}
