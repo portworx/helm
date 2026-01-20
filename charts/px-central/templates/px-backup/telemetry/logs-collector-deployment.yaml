@@ -14,6 +14,49 @@ metadata:
     app.kubernetes.io/name: logs-collector
 {{- include "px-central.labels" . | nindent 4 }}
 ---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: px-backup-telemetry-logs-collector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+    app.kubernetes.io/name: logs-collector
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  resourceNames: ["px-backup-telemetry-config", "px-backup-telemetry-logs-envoy-config"]
+  verbs: ["get", "patch", "update"]
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["secrets"]
+  resourceNames: ["pure-telemetry-certs"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: px-backup-telemetry-logs-collector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+    app.kubernetes.io/name: logs-collector
+{{- include "px-central.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: px-backup-telemetry-logs-collector
+subjects:
+- kind: ServiceAccount
+  name: px-backup-telemetry-logs-collector
+  namespace: {{ .Release.Namespace }}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -42,6 +85,139 @@ spec:
         app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
     spec:
       serviceAccountName: px-backup-telemetry-logs-collector
+      initContainers:
+      # Init container 1: Update Envoy ConfigMap with appliance-id (fixes Issue #2)
+      - name: update-envoy-config
+        image: bitnami/kubectl:latest
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "Waiting for appliance-id to be available..."
+
+          # Wait for appliance-id to be populated (max 5 minutes)
+          for i in {1..60}; do
+            APPLIANCE_ID=$(kubectl get configmap -n {{ .Release.Namespace }} px-backup-telemetry-config -o jsonpath='{.data.appliance-id}' 2>/dev/null || echo "")
+            if [ -n "$APPLIANCE_ID" ] && [ "$APPLIANCE_ID" != "null" ] && [ "$APPLIANCE_ID" != "unknown" ]; then
+              echo "Found appliance-id: $APPLIANCE_ID"
+              break
+            fi
+            echo "Waiting for appliance-id... (attempt $i/60)"
+            sleep 5
+          done
+
+          if [ -z "$APPLIANCE_ID" ] || [ "$APPLIANCE_ID" == "null" ] || [ "$APPLIANCE_ID" == "unknown" ]; then
+            echo "ERROR: appliance-id not found after 5 minutes"
+            exit 1
+          fi
+
+          # Update Envoy ConfigMap with the correct appliance-id
+          echo "Updating Envoy ConfigMap with appliance-id: $APPLIANCE_ID"
+          kubectl get configmap -n {{ .Release.Namespace }} px-backup-telemetry-logs-envoy-config -o yaml | \
+            sed "s/value: \"unknown\"/value: \"$APPLIANCE_ID\"/" | \
+            kubectl apply -f -
+
+          echo "Envoy ConfigMap updated successfully"
+        securityContext:
+          runAsUser: 1111
+
+      # Init container 2: Wait for PX-Backup pod, then wait for appliance-id (fixes Issue #1)
+      - name: wait-for-appliance-id
+        image: bitnami/kubectl:latest
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "=== Step 1: Waiting for PX-Backup pod to be ready ==="
+
+          # Wait for PX-Backup pod to be ready (max 5 minutes)
+          for i in {1..60}; do
+            PX_BACKUP_READY=$(kubectl get pods -n {{ .Release.Namespace }} -l app=px-backup -o jsonpath='{.items[0].status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "")
+
+            if [ "$PX_BACKUP_READY" = "True" ]; then
+              echo "✓ PX-Backup pod is ready"
+              break
+            fi
+
+            echo "  Waiting for PX-Backup pod to be ready... (attempt $i/60)"
+            sleep 5
+          done
+
+          if [ "$PX_BACKUP_READY" != "True" ]; then
+            echo "✗ ERROR: PX-Backup pod is not ready after 5 minutes"
+            echo "✗ Please check PX-Backup pod status"
+            exit 1
+          fi
+
+          echo ""
+          echo "=== Step 2: Waiting for appliance-id to be populated ==="
+
+          # Wait for appliance-id to be populated (max 2 minutes after PX-Backup is ready)
+          for i in {1..24}; do
+            APPLIANCE_ID=$(kubectl get configmap -n {{ .Release.Namespace }} px-backup-telemetry-config -o jsonpath='{.data.appliance-id}' 2>/dev/null || echo "")
+
+            if [ -n "$APPLIANCE_ID" ] && [ "$APPLIANCE_ID" != "null" ] && [ "$APPLIANCE_ID" != "unknown" ]; then
+              echo "✓ Appliance-id is ready: $APPLIANCE_ID"
+              echo "✓ Proceeding to certificate wait..."
+              exit 0
+            fi
+
+            echo "  Waiting for appliance-id... (attempt $i/24)"
+            sleep 5
+          done
+
+          echo "✗ ERROR: Timeout waiting for appliance-id after 2 minutes"
+          echo "✗ PX-Backup pod is ready but appliance-id was not populated"
+          echo "✗ Please check PX-Backup logs for telemetry initialization errors"
+          exit 1
+        securityContext:
+          runAsUser: 1111
+
+      # Init container 3: Wait for Pure1 certificate to be issued (NEW - prevents premature uploads)
+      - name: wait-for-certificate
+        image: bitnami/kubectl:latest
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo ""
+          echo "=== Step 3: Waiting for Pure1 certificate to be issued ==="
+
+          # Wait for Pure1 certificate to be issued (max 3 minutes after appliance-id)
+          for i in {1..36}; do
+            # Check if the secret exists and has a certificate
+            CERT=$(kubectl get secret -n {{ .Release.Namespace }} pure-telemetry-certs -o jsonpath='{.data.cert}' 2>/dev/null || echo "")
+
+            if [ -n "$CERT" ]; then
+              echo "✓ Pure1 certificate is available"
+
+              # Verify certificate is valid (not empty after base64 decode)
+              CERT_DECODED=$(echo "$CERT" | base64 -d 2>/dev/null || echo "")
+              if [ -n "$CERT_DECODED" ]; then
+                echo "✓ Certificate is valid and ready for use"
+                echo "✓ Log collector can now upload logs to Pure1"
+                echo ""
+                echo "✅ All initialization steps complete!"
+                exit 0
+              fi
+            fi
+
+            echo "  Waiting for Pure1 certificate... (attempt $i/36)"
+            sleep 5
+          done
+
+          echo "✗ ERROR: Timeout waiting for Pure1 certificate after 3 minutes"
+          echo "✗ Appliance-id is available but certificate was not issued"
+          echo "✗ Please check registration pod logs for Pure1 registration errors"
+          exit 1
+        securityContext:
+          runAsUser: 1111
       containers:
       # Container 1: Log Collector
       - name: log-collector
@@ -92,6 +268,8 @@ spec:
           readOnly: true
         - name: log-upload-cache
           mountPath: /var/cache/ccm
+        - name: phonehome-cache
+          mountPath: /var/cache
         resources:
           requests:
             memory: "128Mi"
@@ -151,6 +329,8 @@ spec:
           name: px-backup-telemetry-logs-upload-config
       - name: log-upload-cache
         emptyDir: {}  # For SQLite bookkeeping
+      - name: phonehome-cache
+        emptyDir: {}  # For phonehome.sent tracking file (fixes Issue #3)
       - name: envoy-config
         configMap:
           name: px-backup-telemetry-logs-envoy-config

@@ -21,7 +21,7 @@ metadata:
     app.kubernetes.io/component: px-backup-telemetry
 {{- include "px-central.labels" . | nindent 4 }}
 rules:
-  # ConfigMap access for telemetry configuration
+  # ConfigMap access for telemetry configuration (read-only)
   - apiGroups: [""]
     resources: ["configmaps"]
     verbs: ["get", "list", "watch"]
