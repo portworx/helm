@@ -29,38 +29,76 @@ spec:
     spec:
       serviceAccountName: px-backup-telemetry
       initContainers:
-      # Wait for PX-Backup to populate appliance-id in ConfigMap
+      # Wait for PX-Backup pod to be ready, then wait for appliance-id
       - name: wait-for-appliance-id
-        image: {{ .Values.images.keycloakInitContainerImage.registry }}/{{ .Values.images.keycloakInitContainerImage.repo }}/{{ .Values.images.keycloakInitContainerImage.imageName }}:{{ .Values.images.keycloakInitContainerImage.tag }}
+        image: bitnami/kubectl:latest
+        imagePullPolicy: IfNotPresent
         command:
         - sh
         - -c
         - |
-          echo "Waiting for appliance-id to be populated in ConfigMap..."
-          while true; do
-            APPLIANCE_ID=$(cat /config/appliance-id 2>/dev/null || echo "")
-            if [ -n "$APPLIANCE_ID" ] && [ "$APPLIANCE_ID" != "" ]; then
-              echo "Found appliance-id: $APPLIANCE_ID"
-              # Update Envoy config with actual appliance ID
-              sed "s/APPLIANCE_ID_PLACEHOLDER/$APPLIANCE_ID/g" /envoy-template/envoy-config-register.yaml > /envoy-config/envoy-config-register.yaml
-              echo "Envoy config updated with appliance ID"
-              # Write appliance ID for CCM-Go
-              echo -n "$APPLIANCE_ID" > /var/cache/appliance_id
-              echo "Appliance ID file created"
+          set -e
+          echo "=== Step 1: Waiting for PX-Backup pod to be ready ==="
+
+          # Wait for PX-Backup pod to be ready (max 5 minutes)
+          for i in $(seq 1 60); do
+            PX_BACKUP_READY=$(kubectl get pods -n {{ .Release.Namespace }} -l app=px-backup -o jsonpath='{.items[0].status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "")
+
+            if [ "$PX_BACKUP_READY" = "True" ]; then
+              echo "✓ PX-Backup pod is ready"
               break
             fi
-            echo "appliance-id not yet populated, waiting..."
+
+            echo "Waiting for PX-Backup pod to be ready... (attempt $i/60)"
             sleep 5
           done
+
+          if [ "$PX_BACKUP_READY" != "True" ]; then
+            echo "✗ ERROR: PX-Backup pod is not ready after 5 minutes"
+            echo "✗ Please check PX-Backup pod status"
+            exit 1
+          fi
+
+          echo ""
+          echo "=== Step 2: Waiting for appliance-id to be populated ==="
+
+          # Wait for appliance-id (max 2 minutes after PX-Backup is ready)
+          for i in $(seq 1 24); do
+            APPLIANCE_ID=$(kubectl get configmap -n {{ .Release.Namespace }} px-backup-telemetry-config -o jsonpath='{.data.appliance-id}' 2>/dev/null || echo "")
+
+            # Check if appliance-id is valid (not empty, not null, not unknown)
+            if [ -n "$APPLIANCE_ID" ] && [ "$APPLIANCE_ID" != "null" ] && [ "$APPLIANCE_ID" != "unknown" ]; then
+              echo "✓ Found valid appliance-id: $APPLIANCE_ID"
+
+              # Update Envoy config with actual appliance ID
+              sed "s/APPLIANCE_ID_PLACEHOLDER/$APPLIANCE_ID/g" /envoy-template/envoy-config-register.yaml > /envoy-config/envoy-config-register.yaml
+              echo "✓ Envoy config updated with appliance ID"
+
+              # Write appliance ID for CCM-Go
+              echo -n "$APPLIANCE_ID" > /var/cache/appliance_id
+              echo "✓ Appliance ID file created"
+              echo ""
+              echo "✓ Initialization complete - ready for Pure1 registration"
+              exit 0
+            fi
+
+            echo "Waiting for appliance-id... (attempt $i/24)"
+            sleep 5
+          done
+
+          echo "✗ ERROR: Timeout waiting for appliance-id after 2 minutes"
+          echo "✗ PX-Backup pod is ready but appliance-id was not populated"
+          echo "✗ Please check PX-Backup logs for telemetry initialization errors"
+          exit 1
         volumeMounts:
-        - name: telemetry-config
-          mountPath: /config
         - name: envoy-template
           mountPath: /envoy-template
         - name: envoy-config
           mountPath: /envoy-config
         - name: appliance-id
           mountPath: /var/cache
+        securityContext:
+          runAsUser: 1111
       containers:
       # CCM-Go - Registration service
       - name: registration
@@ -93,29 +131,6 @@ spec:
           mountPath: /etc/pwx/ccm/cert
         - name: appliance-id
           mountPath: /var/cache
-      # CO-Server - Certificate operations
-      - name: co-server
-        image: {{ .Values.pxbackup.telemetry.registration.coServerImage.registry }}/{{ .Values.pxbackup.telemetry.registration.coServerImage.repo }}/{{ .Values.pxbackup.telemetry.registration.coServerImage.imageName }}:{{ .Values.pxbackup.telemetry.registration.coServerImage.tag }}
-        imagePullPolicy: {{ .Values.pxbackup.telemetry.registration.coServerImage.imagePullPolicy | default "IfNotPresent" }}
-        env:
-        - name: CERT_SECRET_NAME
-          value: "pure-telemetry-certs"
-        - name: CERT_SECRET_NAMESPACE
-          value: {{ .Release.Namespace | quote }}
-        ports:
-        - containerPort: 9030
-          name: grpc
-        securityContext:
-          runAsUser: 1111
-        resources:
-          requests:
-            cpu: 50m
-            memory: 32Mi
-          limits:
-            memory: 64Mi
-        volumeMounts:
-        - name: cert-secret
-          mountPath: /etc/pwx/ccm/cert
       # Envoy - mTLS proxy
       - name: envoy
         image: {{ .Values.pxbackup.telemetry.registration.envoyImage.registry }}/{{ .Values.pxbackup.telemetry.registration.envoyImage.imageName }}:{{ .Values.pxbackup.telemetry.registration.envoyImage.tag }}
