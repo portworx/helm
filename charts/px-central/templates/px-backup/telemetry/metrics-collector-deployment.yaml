@@ -43,27 +43,60 @@ spec:
               fieldPath: metadata.namespace
         securityContext:
           runAsUser: 1111
-      # Init container 2: Update Envoy config with appliance-id
+      # Init container 2: Wait for PX-Backup pod, then update Envoy config with appliance-id
       - name: update-envoy-config
-        image: {{ .Values.images.keycloakInitContainerImage.registry }}/{{ .Values.images.keycloakInitContainerImage.repo }}/{{ .Values.images.keycloakInitContainerImage.imageName}}:{{ .Values.images.keycloakInitContainerImage.tag }}
+        image: bitnami/kubectl:latest
+        imagePullPolicy: IfNotPresent
         command:
         - sh
         - -c
         - |
-          echo "Waiting for appliance-id to be populated..."
-          while true; do
-            APPLIANCE_ID=$(cat /config/appliance-id 2>/dev/null || echo "")
-            if [ -n "$APPLIANCE_ID" ] && [ "$APPLIANCE_ID" != "" ]; then
-              echo "Found appliance-id: $APPLIANCE_ID"
-              # Update Envoy config with actual appliance ID
-              sed "s/APPLIANCE_ID_PLACEHOLDER/$APPLIANCE_ID/g" /envoy-template/envoy-config.yaml > /envoy-config/envoy-config.yaml
-              echo "Envoy config updated with appliance ID: $APPLIANCE_ID"
+          set -e
+          echo "=== Step 1: Waiting for PX-Backup pod to be ready ==="
+
+          # Wait for PX-Backup pod to be ready (max 5 minutes)
+          for i in $(seq 1 60); do
+            PX_BACKUP_READY=$(kubectl get pods -n {{ .Release.Namespace }} -l app=px-backup -o jsonpath='{.items[0].status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "")
+
+            if [ "$PX_BACKUP_READY" = "True" ]; then
+              echo "✓ PX-Backup pod is ready"
               break
             fi
-            echo "appliance-id not yet populated, waiting..."
+
+            echo "  Waiting for PX-Backup pod to be ready... (attempt $i/60)"
             sleep 5
           done
-          echo "Initialization complete"
+
+          if [ "$PX_BACKUP_READY" != "True" ]; then
+            echo "✗ ERROR: PX-Backup pod is not ready after 5 minutes"
+            echo "✗ Please check PX-Backup pod status"
+            exit 1
+          fi
+
+          echo ""
+          echo "=== Step 2: Waiting for appliance-id to be populated ==="
+
+          # Wait for appliance-id (max 2 minutes after PX-Backup is ready)
+          for i in $(seq 1 24); do
+            APPLIANCE_ID=$(cat /config/appliance-id 2>/dev/null || echo "")
+
+            if [ -n "$APPLIANCE_ID" ] && [ "$APPLIANCE_ID" != "null" ] && [ "$APPLIANCE_ID" != "unknown" ]; then
+              echo "✓ Found appliance-id: $APPLIANCE_ID"
+              # Update Envoy config with actual appliance ID
+              sed "s/APPLIANCE_ID_PLACEHOLDER/$APPLIANCE_ID/g" /envoy-template/envoy-config.yaml > /envoy-config/envoy-config.yaml
+              echo "✓ Envoy config updated with appliance ID"
+              echo "✓ Proceeding to certificate wait..."
+              exit 0
+            fi
+
+            echo "  Waiting for appliance-id... (attempt $i/24)"
+            sleep 5
+          done
+
+          echo "✗ ERROR: Timeout waiting for appliance-id after 2 minutes"
+          echo "✗ PX-Backup pod is ready but appliance-id was not populated"
+          echo "✗ Please check PX-Backup logs for telemetry initialization errors"
+          exit 1
         volumeMounts:
         - name: telemetry-config
           mountPath: /config
@@ -71,6 +104,46 @@ spec:
           mountPath: /envoy-template
         - name: envoy-config
           mountPath: /envoy-config
+
+      # Init container 3: Wait for Pure1 certificate to be issued (NEW - prevents premature uploads)
+      - name: wait-for-certificate
+        image: bitnami/kubectl:latest
+        imagePullPolicy: IfNotPresent
+        command:
+        - sh
+        - -c
+        - |
+          set -e
+          echo ""
+          echo "=== Step 3: Waiting for Pure1 certificate to be issued ==="
+
+          # Wait for Pure1 certificate to be issued (max 3 minutes after appliance-id)
+          for i in $(seq 1 36); do
+            # Check if the secret exists and has a certificate
+            CERT=$(kubectl get secret -n {{ .Release.Namespace }} pure-telemetry-certs -o jsonpath='{.data.cert}' 2>/dev/null || echo "")
+
+            if [ -n "$CERT" ]; then
+              echo "✓ Pure1 certificate is available"
+
+              # Verify certificate is valid (not empty after base64 decode)
+              CERT_DECODED=$(echo "$CERT" | base64 -d 2>/dev/null || echo "")
+              if [ -n "$CERT_DECODED" ]; then
+                echo "✓ Certificate is valid and ready for use"
+                echo "✓ Metrics collector can now upload metrics to Pure1"
+                echo ""
+                echo "✅ All initialization steps complete!"
+                exit 0
+              fi
+            fi
+
+            echo "  Waiting for Pure1 certificate... (attempt $i/36)"
+            sleep 5
+          done
+
+          echo "✗ ERROR: Timeout waiting for Pure1 certificate after 3 minutes"
+          echo "✗ Appliance-id is available but certificate was not issued"
+          echo "✗ Please check registration pod logs for Pure1 registration errors"
+          exit 1
       containers:
       # Realtime Metrics Collector
       - name: collector
