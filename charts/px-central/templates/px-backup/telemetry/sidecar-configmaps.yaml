@@ -12,13 +12,28 @@ metadata:
     app.kubernetes.io/component: px-backup-telemetry
 {{- include "px-central.labels" . | nindent 4 }}
 data:
-  ccm.yaml: |
-    pure1:
-      registration_endpoint: {{ .Values.pxbackup.telemetry.osbEndpoint }}/api/v2/register
-      api_endpoint: {{ .Values.pxbackup.telemetry.osbEndpoint }}/api/v2
-      proxy_endpoint: http://localhost:9092
-      cert_path: /etc/pwx/pure1
-      log_level: info
+  ccm.properties: |
+    {
+      "product_name": "px-backup",
+      "port": "8080",
+      "rest_port": "9091",
+      "envoy_host": "localhost",
+      "envoy_port": "9092",
+      "logupload": {
+        "logfile_patterns": ["/var/cores/*"],
+        "skip_patterns": [],
+        "additional_files": [],
+        "phonehome_hour_range": 8760,
+        "max_chunk_size": 5242880,
+        "hourly_timestamp_format": "2006010215",
+        "daily_timestamp_format": "20060102",
+        "compression_type": "gzip"
+      },
+      "bookkeeping": {
+        "logupload_book_path": "/var/cache/ccm/log_upload.book",
+        "logupload_map_path": "/var/cache/ccm/log_upload.map"
+      }
+    }
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -36,8 +51,11 @@ data:
       address:
         socket_address:
           protocol: TCP
-          address: 0.0.0.0
-          port_value: 9092
+          address: 127.0.0.1
+          port_value: 9093
+    node:
+      id: "id_rest"
+      cluster: "cluster_rest"
     static_resources:
       listeners:
       - name: listener_0
@@ -62,6 +80,19 @@ data:
                   routes:
                   - match:
                       prefix: "/"
+                    request_headers_to_add:
+                    - header:
+                        key: "product-name"
+                        value: "portworx"
+                    - header:
+                        key: "appliance-id"
+                        value: "APPLIANCE_ID_PLACEHOLDER"
+                    - header:
+                        key: "component-sn"
+                        value: "px-backup-log-upload"
+                    - header:
+                        key: "product-version"
+                        value: "{{ .Values.images.pxBackupImage.tag }}"
                     route:
                       cluster: pure1_cluster
                       timeout: 300s
@@ -82,21 +113,34 @@ data:
             - endpoint:
                 address:
                   socket_address:
-                    address: master-staging.portworx.dev
+                    address: rest.staging-cloud-support.purestorage.com
                     port_value: 443
         transport_socket:
           name: envoy.transport_sockets.tls
           typed_config:
             "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+            sni: rest.staging-cloud-support.purestorage.com
             common_tls_context:
-              tls_certificates:
-              - certificate_chain:
-                  filename: /etc/pwx/pure1/client.crt
-                private_key:
-                  filename: /etc/pwx/pure1/client.key
+              tls_certificate_sds_secret_configs:
+                name: tls_sds
+                sds_config:
+                  path: /etc/envoy/tls_certificate_sds_secret.yaml
               validation_context:
                 trusted_ca:
-                  filename: /etc/pwx/pure1/ca.crt
+                  filename: /etc/ssl/certs/ca-certificates.crt
+                match_typed_subject_alt_names:
+                - san_type: DNS
+                  matcher:
+                    exact: rest.staging-cloud-support.purestorage.com
+  tls_certificate_sds_secret.yaml: |
+    resources:
+      - "@type": "type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.Secret"
+        name: tls_sds
+        tls_certificate:
+          certificate_chain:
+            filename: /etc/pwx/pure1/cert
+          private_key:
+            filename: /etc/pwx/pure1/private_key
 ---
 {{- end }}
 

@@ -145,6 +145,10 @@ pxbackup:
   telemetry:
     enabled: false
 
+    # Reporting interval in minutes (default: 60 minutes)
+    # Set to lower value for testing (e.g., 10 for 10 minutes)
+    reportingIntervalMins: 60
+
     # Endpoints - can be overridden for custom environments
     # OSB endpoint for registration (base URL only, path will be appended by code)
     osbEndpoint: "https://master-staging.portworx.dev"
@@ -199,7 +203,7 @@ pxbackup:
       logUploadImage:
         registry: docker.io
         imageName: portworx/log-upload
-        tag: "px-1.1.46"
+        tag: "px-1.1.94"
         imagePullPolicy: IfNotPresent
       envoyImage:
         registry: docker.io

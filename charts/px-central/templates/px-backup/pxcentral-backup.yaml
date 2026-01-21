@@ -150,6 +150,8 @@ metadata:
   name: px-backup
   namespace: {{ .Release.Namespace }}
 spec:
+  # Allow traffic to px-backup pod even when not Ready (e.g., during telemetry initialization when envoy sidecar may not be ready yet)
+  publishNotReadyAddresses: true
   ports:
   - protocol: TCP
     port: 10002
@@ -206,6 +208,129 @@ spec:
                 values:
                 - "false"
               {{- end }}
+      {{- if .Values.pxbackup.telemetry.enabled }}
+      initContainers:
+      # Native Sidecar: Envoy proxy (waits for appliance-id, then starts)
+      # Using restartPolicy: Always makes this a sidecar that doesn't block subsequent containers
+      - name: envoy
+        image: {{ printf "%s/%s:%s" .Values.pxbackup.telemetry.logsCollector.envoyImage.registry .Values.pxbackup.telemetry.logsCollector.envoyImage.imageName .Values.pxbackup.telemetry.logsCollector.envoyImage.tag }}
+        imagePullPolicy: {{ .Values.pxbackup.telemetry.logsCollector.envoyImage.imagePullPolicy }}
+        restartPolicy: Always
+        command:
+        - sh
+        - -c
+        - |
+          set -e
+          echo "=== Starting Envoy sidecar ==="
+
+          # Wait for appliance-id to be generated (max 5 minutes)
+          echo "Waiting for appliance-id..."
+          for i in $(seq 1 60); do
+            if [ -f /telemetry-config/appliance-id ]; then
+              APPLIANCE_ID=$(cat /telemetry-config/appliance-id 2>/dev/null || echo "")
+              if [ -n "$APPLIANCE_ID" ] && [ "$APPLIANCE_ID" != "null" ] && [ "$APPLIANCE_ID" != "unknown" ]; then
+                echo "✓ Found appliance-id: $APPLIANCE_ID"
+                # Update config with actual appliance-id
+                sed "s/APPLIANCE_ID_PLACEHOLDER/$APPLIANCE_ID/g" /envoy-template/envoy.yaml > /etc/envoy/envoy.yaml
+                sed "s/APPLIANCE_ID_PLACEHOLDER/$APPLIANCE_ID/g" /envoy-template/tls_certificate_sds_secret.yaml > /etc/envoy/tls_certificate_sds_secret.yaml
+                echo "✓ Envoy config initialized with appliance-id: $APPLIANCE_ID"
+                break
+              fi
+            fi
+            sleep 5
+          done
+
+          # If timeout, use placeholder (shouldn't happen in normal operation)
+          if [ ! -f /etc/envoy/envoy.yaml ]; then
+            echo "⚠ Timeout waiting for appliance-id, using placeholder"
+            cp /envoy-template/envoy.yaml /etc/envoy/envoy.yaml
+            cp /envoy-template/tls_certificate_sds_secret.yaml /etc/envoy/tls_certificate_sds_secret.yaml
+          fi
+
+          # Start Envoy
+          echo "Starting Envoy..."
+          exec envoy -c /etc/envoy/envoy.yaml
+        ports:
+        - containerPort: 9092
+          name: envoy-proxy
+          protocol: TCP
+        - containerPort: 9901
+          name: admin
+          protocol: TCP
+        volumeMounts:
+        - name: envoy-config
+          mountPath: /envoy-template
+          readOnly: true
+        - name: envoy-config-runtime
+          mountPath: /etc/envoy
+        - name: pure1-cert
+          mountPath: /etc/pwx/pure1
+          readOnly: true
+        - name: px-backup-telemetry-config
+          mountPath: /telemetry-config
+          readOnly: true
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+
+      # Native Sidecar: Log upload service (if enabled)
+      {{- if .Values.pxbackup.telemetry.logsCollector.enabled }}
+      - name: log-upload-service
+        image: {{ printf "%s/%s:%s" .Values.pxbackup.telemetry.logsCollector.logUploadImage.registry .Values.pxbackup.telemetry.logsCollector.logUploadImage.imageName .Values.pxbackup.telemetry.logsCollector.logUploadImage.tag }}
+        imagePullPolicy: {{ .Values.pxbackup.telemetry.logsCollector.logUploadImage.imagePullPolicy }}
+        restartPolicy: Always
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: APPLIANCE_ID
+          valueFrom:
+            configMapKeyRef:
+              name: px-backup-telemetry-config
+              key: appliance-id
+              optional: true
+        - name: COMPONENT_NAME
+          value: "px-backup"
+        - name: VERSION
+          value: {{ .Values.images.pxBackupImage.tag | quote }}
+        - name: CONTROLLER_SN
+          valueFrom:
+            fieldRef:
+              fieldPath: spec.nodeName
+        - name: PURE1_CERT_PATH
+          value: /etc/pwx/pure1
+        - name: LOG_UPLOAD_PORT
+          value: "8080"
+        - name: LOG_UPLOAD_REST_PORT
+          value: "9091"
+        volumeMounts:
+        - name: diagnostics-storage
+          mountPath: /var/cores
+        - name: log-upload-config
+          mountPath: /config
+        - name: pure1-cert
+          mountPath: /etc/pwx/pure1
+          readOnly: true
+        - name: cache-storage
+          mountPath: /var/cache/ccm
+        ports:
+        - containerPort: 9091
+          protocol: TCP
+          name: http
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "50m"
+          limits:
+            memory: "128Mi"
+            cpu: "100m"
+      {{- end }}
+      {{- end }}
       containers:
       - env:
         - name: PX_BACKUP_NAMESPACE
@@ -223,6 +348,8 @@ spec:
           value: "true"
         - name: OSB_ENDPOINT
           value: {{ .Values.pxbackup.telemetry.osbEndpoint | quote }}
+        - name: BILLING_INTERVAL_MINS
+          value: {{ .Values.pxbackup.telemetry.reportingIntervalMins | default "60" | quote }}
         {{- end }}
         - name: BACKUP_DELETE_WORKER
           value: "{{ .Values.pxbackup.backupDeleteWorker }}"
@@ -265,6 +392,7 @@ spec:
         image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxBackupImage.registry .Values.images.registry) (default .Values.images.pxBackupImage.repo .Values.images.repo) .Values.images.pxBackupImage.imageName .Values.images.pxBackupImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         name: px-backup
+
         ports:
         - containerPort: 10002
           protocol: TCP
@@ -286,6 +414,14 @@ spec:
         {{- if .Values.pxbackup.telemetry.enabled }}
           - mountPath: /var/cores
             name: diagnostics-storage
+          - mountPath: /telemetry-config
+            name: px-backup-telemetry-config
+            readOnly: true
+          - mountPath: /envoy-template
+            name: envoy-config
+            readOnly: true
+          - mountPath: /etc/envoy
+            name: envoy-config-runtime
         {{- end }}
         {{- if .Values.caCertsSecretName }}
           - mountPath: /tmp/certs
@@ -303,56 +439,6 @@ spec:
         - start
         - --datastoreEndpoints=mongodb://$MONGODB_USERNAME:$MONGODB_PASSWORD@pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017/?authSource=px-backup&replicaSet=rs0
         - --mongo-migration={{.Values.pxbackup.mongoMigration}}
-      {{- if .Values.pxbackup.telemetry.enabled }}
-      # Sidecar: log-upload-service
-      - name: log-upload-service
-        image: {{ printf "%s/%s:%s" .Values.pxbackup.telemetry.logsCollector.logUploadImage.registry .Values.pxbackup.telemetry.logsCollector.logUploadImage.imageName .Values.pxbackup.telemetry.logsCollector.logUploadImage.tag }}
-        imagePullPolicy: {{ .Values.pxbackup.telemetry.logsCollector.logUploadImage.imagePullPolicy }}
-        env:
-        - name: NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-        - name: APPLIANCE_ID
-          valueFrom:
-            configMapKeyRef:
-              name: px-backup-telemetry
-              key: appliance-id
-              optional: true
-        - name: PURE1_CERT_PATH
-          value: /etc/pwx/pure1
-        - name: LOG_UPLOAD_PORT
-          value: "0"
-        - name: LOG_UPLOAD_REST_PORT
-          value: "9091"
-        volumeMounts:
-        - name: diagnostics-storage
-          mountPath: /var/cores
-        - name: log-upload-config
-          mountPath: /etc/ccm
-        - name: pure1-cert
-          mountPath: /etc/pwx/pure1
-          readOnly: true
-        ports:
-        - containerPort: 9091
-          protocol: TCP
-          name: http
-      # Sidecar: envoy proxy
-      - name: envoy
-        image: {{ printf "%s/%s:%s" .Values.pxbackup.telemetry.logsCollector.envoyImage.registry .Values.pxbackup.telemetry.logsCollector.envoyImage.imageName .Values.pxbackup.telemetry.logsCollector.envoyImage.tag }}
-        imagePullPolicy: {{ .Values.pxbackup.telemetry.logsCollector.envoyImage.imagePullPolicy }}
-        volumeMounts:
-        - name: envoy-config
-          mountPath: /etc/envoy
-          readOnly: true
-        - name: pure1-cert
-          mountPath: /etc/pwx/pure1
-          readOnly: true
-        ports:
-        - containerPort: 9092
-          protocol: TCP
-          name: envoy-proxy
-      {{- end }}
       volumes:
       {{- if .Values.pxbackup.telemetry.enabled }}
         - name: diagnostics-storage
@@ -365,10 +451,18 @@ spec:
           configMap:
             name: px-backup-envoy-config
             optional: true
+        - name: envoy-config-runtime
+          emptyDir: {}
+        - name: px-backup-telemetry-config
+          configMap:
+            name: px-backup-telemetry-config
+            optional: true
         - name: pure1-cert
           secret:
-            secretName: pure1-cert
+            secretName: pure-telemetry-certs
             optional: true
+        - name: cache-storage
+          emptyDir: {}
       {{- end }}
       {{- if .Values.caCertsSecretName }}
         - name: ssl-cert-dir
