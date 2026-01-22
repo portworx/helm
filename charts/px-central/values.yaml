@@ -136,7 +136,7 @@ pxbackup:
   backupDeleteWorker: 5
   volDeleteWorker: 5
   backupInfoMetricsBackfillHours: 24
-  version: 2.10.1
+  version: 2.10.2
   skipValidations: false
   usePlatformRbac: false
   encryptMongoDB: false
@@ -226,31 +226,31 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 2.10.1
+    tag: 2.10.2
     module: pxCentral
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 2.10.1
+    tag: 2.10.2
     module: pxCentral
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 2.10.1
+    tag: 2.10.2
     module: pxCentral
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 2.10.1
+    tag: 2.10.2
     module: pxCentral
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 2.10.1
+    tag: 2.10.2
     module: pxCentral
   keycloakBackendImage:
     registry: docker.io
@@ -268,7 +268,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: keycloak-login-theme
-    tag: 2.10.1
+    tag: 2.10.2
     module: pxCentral
   keycloakInitContainerImage:
     registry: docker.io
@@ -286,7 +286,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-hook
-    tag: 2.10.1
+    tag: 2.10.2
     module: pxCentral
   mysqlInitImage:
     registry: docker.io
@@ -300,13 +300,13 @@ images:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 2.10.1
+    tag: 2.10.2
     module: pxBackup
   mongodbImage:
     registry: docker.io
     repo: portworx
     imageName: mongodb
-    tag: 8.0.12-debian-12-r0
+    tag: 8.0.17
     module: pxBackup
 
   ## Images required for enabling px-license-server
@@ -421,5 +421,5 @@ images:
       mongodb5: 5.0.24-debian-11-r20
       mongodb6: 6.0.13-debian-11-r21
       mongodb7: 7.0.15-debian-12-r2
-      mongodb8: 8.0.12-debian-12-r0
+      mongodb8: 8.0.17
     module: pxBackup
