@@ -121,7 +121,11 @@ metadata:
     app.kubernetes.io/component: px-backup
 {{- include "px-central.labels" . | nindent 4 }}
 data:
+  {{- if .Values.pxbackup.telemetry.enabled }}
+  enable: "true"
+  {{- else }}
   enable: "false"
+  {{- end }}
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -247,6 +251,28 @@ spec:
             cp /envoy-template/tls_certificate_sds_secret.yaml /etc/envoy/tls_certificate_sds_secret.yaml
           fi
 
+          # Wait for TLS certificates to be created by registration pod (max 5 minutes)
+          echo "Waiting for TLS certificates..."
+          for i in $(seq 1 60); do
+            if [ -f /etc/pwx/pure1/cert ] && [ -f /etc/pwx/pure1/private_key ]; then
+              # Verify files are not empty
+              if [ -s /etc/pwx/pure1/cert ] && [ -s /etc/pwx/pure1/private_key ]; then
+                echo "✓ Found TLS certificates (cert and private_key)"
+                break
+              fi
+            fi
+            sleep 5
+          done
+
+          # Check if certificates exist before starting Envoy
+          if [ ! -f /etc/pwx/pure1/cert ] || [ ! -f /etc/pwx/pure1/private_key ]; then
+            echo "⚠ WARNING: TLS certificates not found after 5 minutes"
+            echo "⚠ Envoy will start but uploads to Pure1 will fail until certificates are available"
+            echo "⚠ The registration pod should create certificates shortly"
+          else
+            echo "✓ TLS certificates are ready"
+          fi
+
           # Start Envoy
           echo "Starting Envoy..."
           exec envoy -c /etc/envoy/envoy.yaml
@@ -283,6 +309,33 @@ spec:
         image: {{ printf "%s/%s:%s" .Values.pxbackup.telemetry.logsCollector.logUploadImage.registry .Values.pxbackup.telemetry.logsCollector.logUploadImage.imageName .Values.pxbackup.telemetry.logsCollector.logUploadImage.tag }}
         imagePullPolicy: {{ .Values.pxbackup.telemetry.logsCollector.logUploadImage.imagePullPolicy }}
         restartPolicy: Always
+        command:
+        - sh
+        - -c
+        - |
+          set -e
+          echo "=== Starting log-upload-service sidecar ==="
+
+          # Wait for appliance-id to be generated (max 5 minutes)
+          echo "Waiting for appliance-id..."
+          for i in $(seq 1 60); do
+            if [ -f /telemetry-config/appliance-id ]; then
+              APPLIANCE_ID=$(cat /telemetry-config/appliance-id 2>/dev/null || echo "")
+              if [ -n "$APPLIANCE_ID" ] && [ "$APPLIANCE_ID" != "null" ] && [ "$APPLIANCE_ID" != "unknown" ]; then
+                echo "✓ Found appliance-id: $APPLIANCE_ID"
+                # Copy appliance-id to /var/cache/appliance_id for log-upload-service
+                mkdir -p /var/cache
+                echo "$APPLIANCE_ID" > /var/cache/appliance_id
+                echo "✓ Copied appliance-id to /var/cache/appliance_id"
+                break
+              fi
+            fi
+            sleep 5
+          done
+
+          # Start log-upload-service
+          echo "Starting log-upload-service..."
+          exec /app/log-upload
         env:
         - name: NAMESPACE
           valueFrom:
@@ -317,18 +370,21 @@ spec:
           mountPath: /etc/pwx/pure1
           readOnly: true
         - name: cache-storage
-          mountPath: /var/cache/ccm
+          mountPath: /var/cache
+        - name: px-backup-telemetry-config
+          mountPath: /telemetry-config
+          readOnly: true
         ports:
         - containerPort: 9091
           protocol: TCP
           name: http
         resources:
           requests:
-            memory: "64Mi"
-            cpu: "50m"
-          limits:
-            memory: "128Mi"
+            memory: "256Mi"
             cpu: "100m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
       {{- end }}
       {{- end }}
       containers:

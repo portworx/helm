@@ -23,7 +23,7 @@ data:
         "logfile_patterns": ["/var/cores/*"],
         "skip_patterns": [],
         "additional_files": [],
-        "phonehome_hour_range": 8760,
+        "phonehome_hour_range": 168,
         "max_chunk_size": 5242880,
         "hourly_timestamp_format": "2006010215",
         "daily_timestamp_format": "20060102",

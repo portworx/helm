@@ -187,8 +187,8 @@ pxbackup:
         imagePullPolicy: IfNotPresent
       envoyImage:
         registry: docker.io
-        imageName: purestorage/telemetry-envoy
-        tag: "1.0.0"
+        imageName: portworx/telemetry-envoy
+        tag: "1.1.18"
         imagePullPolicy: IfNotPresent
 
     # Logs collector configuration
@@ -207,8 +207,8 @@ pxbackup:
         imagePullPolicy: IfNotPresent
       envoyImage:
         registry: docker.io
-        imageName: purestorage/telemetry-envoy
-        tag: "1.0.0"
+        imageName: portworx/telemetry-envoy
+        tag: "1.1.18"
         imagePullPolicy: IfNotPresent
 
 pxlicenseserver:
