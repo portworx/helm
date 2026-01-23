@@ -1,8 +1,8 @@
 name: portworx
-version: 8.0.1
+version: 8.0.2
 description: A Helm chart for installing Portworx on Kubernetes.
 kubeVersion: ">=1.26.0-0"
-appVersion: "3.5.1"
+appVersion: "3.5.2"
 apiVersion: v1
 keywords:
   - Storage
@@ -15,7 +15,7 @@ keywords:
   - portworx
   - amd64
   - Commercial
-home: https://portworx.com/
+home: https://www.purestorage.com/products/cloud-native-applications/portworx.html
 sources:
   - https://github.com/portworx/helm
 icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/k8s-porx.png
