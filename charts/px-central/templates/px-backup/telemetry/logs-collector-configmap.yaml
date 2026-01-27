@@ -21,11 +21,17 @@ data:
 
     LOG_DIR="/var/cores"
     NAMESPACE="{{ .Release.Namespace }}"
-    POD_LABEL="app=px-backup"
+    POD_LABEL="app.kubernetes.io/part-of=px-backup"
     INTERVAL={{ .Values.pxbackup.telemetry.logsCollector.collectionInterval | default 3600 }}
+
+    # Exclude patterns (regex) - pods matching these patterns will be excluded from log collection
+    # Excludes: PostgreSQL, MySQL, frontend, install hooks, maintenance jobs, prometheus, alertmanager, telemetry pods
+    EXCLUDE_PATTERNS="postgresql|mysql|frontend|post-install|maintenance-repo|prometheus|alertmanager|telemetry"
 
     echo "PX-Backup Log Collector started"
     echo "Collection interval: ${INTERVAL} seconds"
+    echo "Pod label selector: ${POD_LABEL}"
+    echo "Exclude patterns: ${EXCLUDE_PATTERNS}"
 
     # Install grpcurl if not present
     if ! command -v grpcurl &> /dev/null; then
@@ -39,43 +45,117 @@ data:
     collect_logs() {
         # Use 10-digit timestamp (YYYYMMDDHH) - hour-based format required by log-upload-service
         TIMESTAMP=$(date +%Y%m%d%H)
-        LOG_FILE="${LOG_DIR}/px-backup-logs-${TIMESTAMP}.log"
 
         echo "$(date): Collecting logs with timestamp $TIMESTAMP"
 
-        # Get all PX-Backup pods
-        PODS=$(kubectl get pods -n "$NAMESPACE" -l "$POD_LABEL" -o jsonpath='{.items[*].metadata.name}')
+        # Get all pods matching the label selector
+        ALL_PODS=$(kubectl get pods -n "$NAMESPACE" -l "$POD_LABEL" -o jsonpath='{.items[*].metadata.name}')
 
-        if [ -z "$PODS" ]; then
-            echo "No PX-Backup pods found"
+        if [ -z "$ALL_PODS" ]; then
+            echo "No pods found matching label: $POD_LABEL"
             return
         fi
 
-        # Collect logs from each pod
-        for POD in $PODS; do
-            echo "=== Logs from pod: $POD ===" >> "$LOG_FILE"
-            kubectl logs -n "$NAMESPACE" "$POD" --since=${INTERVAL}s >> "$LOG_FILE" 2>&1 || true
-            echo "" >> "$LOG_FILE"
+        echo "Found pods: $ALL_PODS"
+
+        # Filter out excluded pods based on exclude patterns
+        FILTERED_PODS=""
+        EXCLUDED_COUNT=0
+        INCLUDED_COUNT=0
+
+        for POD in $ALL_PODS; do
+            # Check if pod matches any exclude pattern
+            if echo "$POD" | grep -qE "$EXCLUDE_PATTERNS"; then
+                echo "  Excluding pod: $POD (matches exclude pattern)"
+                EXCLUDED_COUNT=$((EXCLUDED_COUNT + 1))
+            else
+                FILTERED_PODS="$FILTERED_PODS $POD"
+                INCLUDED_COUNT=$((INCLUDED_COUNT + 1))
+            fi
         done
 
-        # Compress the log file
-        if [ -f "$LOG_FILE" ]; then
-            gzip -f "$LOG_FILE"
-            echo "Created: ${LOG_FILE}.gz"
+        echo "Pods to collect: $INCLUDED_COUNT, Excluded: $EXCLUDED_COUNT"
 
-            # Trigger log upload via gRPC
-            echo "Triggering log upload..."
-            /tmp/grpcurl/grpcurl -plaintext localhost:9090 com.purestorage.parts.loguploader.LogUploadService/UploadLog && {
-                echo "Upload triggered successfully"
-            } || {
-                echo "Warning: Failed to trigger upload, will retry next cycle"
-            }
+        if [ -z "$FILTERED_PODS" ]; then
+            echo "No pods remaining after filtering"
+            return
         fi
+
+        # Collect logs from each pod into separate files
+        for POD in $FILTERED_PODS; do
+            LOG_FILE="${LOG_DIR}/px-backup-logs-${POD}-${TIMESTAMP}.log"
+
+            echo "  Collecting logs from pod: $POD"
+            kubectl logs -n "$NAMESPACE" "$POD" --since=${INTERVAL}s > "$LOG_FILE" 2>&1 || {
+                echo "  Warning: Failed to collect logs from pod: $POD"
+                rm -f "$LOG_FILE"
+                continue
+            }
+
+            # Compress the log file if it has content
+            if [ -f "$LOG_FILE" ] && [ -s "$LOG_FILE" ]; then
+                gzip -f "$LOG_FILE"
+                FILE_SIZE=$(ls -lh "${LOG_FILE}.gz" | awk '{print $5}')
+                echo "  Created: ${LOG_FILE}.gz (${FILE_SIZE})"
+            else
+                echo "  Warning: Log file is empty for pod: $POD"
+                rm -f "$LOG_FILE"
+            fi
+        done
+
+        echo "Log collection completed"
+    }
+
+    collect_reporting_data() {
+        # Use same 10-digit timestamp as logs (YYYYMMDDHH)
+        TIMESTAMP=$(date +%Y%m%d%H)
+        REPORTING_FILE="${LOG_DIR}/px-backup-reporting-${TIMESTAMP}.log"
+
+        echo "$(date): Collecting reporting data with timestamp $TIMESTAMP"
+
+        # Get px-backup pod name - use specific label to get the main px-backup pod
+        PX_BACKUP_POD=$(kubectl get pods -n "$NAMESPACE" -l "app=px-backup" -o jsonpath='{.items[0].metadata.name}')
+
+        if [ -z "$PX_BACKUP_POD" ]; then
+            echo "Warning: No px-backup pod found, skipping reporting data collection"
+            return
+        fi
+
+        echo "  Fetching reporting data from pod: $PX_BACKUP_POD"
+
+        # Call Reporting API from within px-backup pod
+        kubectl exec -n "$NAMESPACE" "$PX_BACKUP_POD" -- \
+            curl -s http://localhost:10001/v1/reporting/data > "$REPORTING_FILE" 2>&1 && {
+
+            # Verify file has content
+            if [ -f "$REPORTING_FILE" ] && [ -s "$REPORTING_FILE" ]; then
+                # Compress the reporting file
+                gzip -f "$REPORTING_FILE"
+                FILE_SIZE=$(ls -lh "${REPORTING_FILE}.gz" | awk '{print $5}')
+                echo "  Created: ${REPORTING_FILE}.gz (${FILE_SIZE})"
+            else
+                echo "  Warning: Reporting data file is empty"
+                rm -f "$REPORTING_FILE"
+            fi
+        } || {
+            echo "  Warning: Failed to fetch reporting data from Reporting API"
+            rm -f "$REPORTING_FILE"
+        }
     }
 
     # Main loop
     while true; do
         collect_logs
+        collect_reporting_data
+
+        # Trigger log upload via gRPC (uploads both logs and reporting data)
+        echo "Triggering log upload..."
+        /tmp/grpcurl/grpcurl -plaintext localhost:9090 com.purestorage.parts.loguploader.LogUploadService/UploadLog && {
+            echo "Upload triggered successfully"
+        } || {
+            echo "Warning: Failed to trigger upload, will retry next cycle"
+        }
+
         echo "Sleeping for ${INTERVAL} seconds..."
         sleep ${INTERVAL}
     done
@@ -230,7 +310,8 @@ data:
       "envoy_port": "12002",
       "logupload": {
         "logfile_patterns": [
-          "/var/cores/px-backup-logs-*.log.gz"
+          "/var/cores/px-backup-logs-*.log.gz",
+          "/var/cores/px-backup-reporting-*.log.gz"
         ],
         "phonehome_hour_range": 744,
         "always_scan_range_days": 7,
