@@ -123,9 +123,9 @@ data:
 
         echo "  Fetching reporting data from pod: $PX_BACKUP_POD"
 
-        # Call Reporting API from within px-backup pod
+        # Call Reporting API from within px-backup pod and extract inner JSON with jq
         kubectl exec -n "$NAMESPACE" "$PX_BACKUP_POD" -- \
-            curl -s http://localhost:10001/v1/reporting/data > "$REPORTING_FILE" 2>&1 && {
+            curl -s http://localhost:10001/v1/reporting/data | jq -r '.json_data' > "$REPORTING_FILE" 2>&1 && {
 
             # Verify file has content
             if [ -f "$REPORTING_FILE" ] && [ -s "$REPORTING_FILE" ]; then
