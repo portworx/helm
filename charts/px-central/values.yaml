@@ -191,6 +191,7 @@ pxbackup:
     logsCollector:
       enabled: true
       collectionInterval: 3600  # seconds (1 hour)
+      startupDelay: 60  # seconds - delay before first collection to allow pods to stabilize after helm upgrade
       image:
         registry: docker.io
         imageName: bitnami/kubectl
