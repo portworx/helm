@@ -138,7 +138,28 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				SetValues: map[string]string{
 					"monitoring.prometheus.enabled":       "false",
 					"monitoring.prometheus.exportMetrics": "false",
-					"monitoring.telemetry":                "false",
+					"monitoring.telemetry.enabled":        "false",
+				},
+			},
+		},
+		{
+			name:           "TestTelemetryEnabledMetricsCollectorDisabled",
+			resultFileName: "storagecluster_telemetry_enabled_metrics_collector_disabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"monitoring.telemetry.enabled":                  "true",
+					"monitoring.telemetry.metricsCollector.enabled": "false",
+				},
+			},
+		},
+		{
+			name:           "TestMetricsCollectorWithCustomImage",
+			resultFileName: "storagecluster_metrics_collector_custom_image.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"monitoring.telemetry.enabled":                  "true",
+					"monitoring.telemetry.metricsCollector.enabled": "true",
+					"monitoring.telemetry.metricsCollector.image":   "custom-registry/metrics-collector:v1.2.3",
 				},
 			},
 		},

@@ -28,6 +28,8 @@ spec:
   monitoring:
     telemetry:
       enabled: true
+      metricsCollector:
+        enabled: true
   csi:
     enabled: true
   autopilot:

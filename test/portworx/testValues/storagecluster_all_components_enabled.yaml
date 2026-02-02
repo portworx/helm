@@ -11,8 +11,12 @@ csi:
 autopilot: 
   enabled: true
 monitoring:
-  prometheus:                         
-    enabled: true 
-    exportMetrics: true                  
-  telemetry: true                   
-  grafana: true      
+  prometheus:
+    enabled: true
+    exportMetrics: true
+  telemetry:
+    enabled: true
+    metricsCollector:
+      enabled: true
+      image: ""
+  grafana: true
