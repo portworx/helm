@@ -1,0 +1,132 @@
+{{/* PX-Backup Telemetry Logs Collector ConfigMaps */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
+{{- $logsEnabled := .Values.pxbackup.telemetry.logsCollector.enabled | default true }}
+{{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) (eq $logsEnabled true) }}
+---
+# Envoy Proxy Configuration for Logs Upload
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: px-backup-telemetry-logs-envoy-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+    app.kubernetes.io/name: logs-collector
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  envoy-config.yaml: |
+    admin:
+      address:
+        socket_address:
+          address: 127.0.0.1
+          port_value: 9901
+    # Node identification (required for SDS)
+    node:
+      id: "id_logs"
+      cluster: "cluster_logs"
+    static_resources:
+      listeners:
+      - name: listener_logs
+        address:
+          socket_address:
+            address: 127.0.0.1
+            port_value: 12002
+        filter_chains:
+        - filters:
+          - name: envoy.filters.network.http_connection_manager
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+              stat_prefix: ingress_http
+              codec_type: AUTO
+              route_config:
+                name: local_route
+                virtual_hosts:
+                - name: local_service
+                  domains: ["*"]
+                  routes:
+                  - match:
+                      prefix: "/"
+                    route:
+                      cluster: service_logs
+              http_filters:
+              - name: envoy.filters.http.router
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+          transport_socket:
+            name: envoy.transport_sockets.tls
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
+              common_tls_context:
+                tls_certificate_sds_secret_configs:
+                - name: tls_sds
+                  sds_config:
+                    path: /etc/envoy/tls_certificate_sds_secret.yaml
+      clusters:
+      - name: service_logs
+        connect_timeout: 30s
+        type: LOGICAL_DNS
+        dns_lookup_family: V4_ONLY
+        lb_policy: ROUND_ROBIN
+        load_assignment:
+          cluster_name: service_logs
+          endpoints:
+          - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: phonehome.portworx.com
+                    port_value: 443
+        transport_socket:
+          name: envoy.transport_sockets.tls
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+            sni: phonehome.portworx.com
+---
+# Envoy SDS (Secret Discovery Service) Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: px-backup-telemetry-logs-envoy-sds-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+    app.kubernetes.io/name: logs-collector
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  tls_certificate_sds_secret.yaml: |
+    resources:
+    - "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.Secret
+      name: tls_sds
+      tls_certificate:
+        certificate_chain:
+          filename: /appliance-cert/cert
+        private_key:
+          filename: /appliance-cert/key
+---
+# Log Upload Service Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: px-backup-telemetry-logs-upload-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+    app.kubernetes.io/name: logs-collector
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  ccm.properties: |
+    {
+      "product_name": "portworx",
+      "port": "9090",
+      "envoy_port": "12002",
+      "logupload": {
+        "logfile_patterns": [
+          "/var/cores/px-backup-logs-*.log.gz",
+          "/var/cores/px-backup-reporting-*.log.gz"
+        ],
+        "logfile_retention_count": 5
+      }
+    }
+{{- end }}
+
