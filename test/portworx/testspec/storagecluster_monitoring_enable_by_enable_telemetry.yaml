@@ -28,5 +28,8 @@ spec:
   monitoring:
     telemetry:
       enabled: true
+      metricsCollector:
+        enabled: true
+        image: custom-registry/metrics-collector:v1.2.3
   csi:
     enabled: false

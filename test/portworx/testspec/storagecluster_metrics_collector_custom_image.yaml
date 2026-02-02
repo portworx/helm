@@ -26,16 +26,9 @@ spec:
       enabled: true
       metricsCollector:
         enabled: true
+        image: custom-registry/metrics-collector:v1.2.3
   csi:
     enabled: true
   autopilot:
     enabled: true
-  placement:
-    nodeAffinity:
-     requiredDuringSchedulingIgnoredDuringExecution:
-       nodeSelectorTerms:
-       - matchExpressions:
-         - key: px-schedule
-           operator: NotIn
-           values:
-           - "false"
+

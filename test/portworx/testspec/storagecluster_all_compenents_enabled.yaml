@@ -30,6 +30,8 @@ spec:
       replicas: 1
     telemetry:
       enabled: true
+      metricsCollector:
+        enabled: true
     grafana:
       enabled: true
   csi:
