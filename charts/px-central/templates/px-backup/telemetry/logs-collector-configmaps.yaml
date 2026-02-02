@@ -53,15 +53,6 @@ data:
               - name: envoy.filters.http.router
                 typed_config:
                   "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
-          transport_socket:
-            name: envoy.transport_sockets.tls
-            typed_config:
-              "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.DownstreamTlsContext
-              common_tls_context:
-                tls_certificate_sds_secret_configs:
-                - name: tls_sds
-                  sds_config:
-                    path: /etc/envoy/tls_certificate_sds_secret.yaml
       clusters:
       - name: service_logs
         connect_timeout: 30s
@@ -82,6 +73,21 @@ data:
           typed_config:
             "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
             sni: phonehome.portworx.com
+            common_tls_context:
+              # Client certificate configuration using SDS
+              tls_certificate_sds_secret_configs:
+              - name: tls_sds
+                sds_config:
+                  # Path to SDS configuration file
+                  path: /etc/envoy/tls_certificate_sds_secret.yaml
+              # Server certificate validation
+              validation_context:
+                trusted_ca:
+                  filename: /etc/ssl/certs/ca-certificates.crt
+                match_typed_subject_alt_names:
+                - san_type: DNS
+                  matcher:
+                    exact: phonehome.portworx.com
 ---
 # Envoy SDS (Secret Discovery Service) Configuration
 apiVersion: v1
@@ -102,7 +108,7 @@ data:
         certificate_chain:
           filename: /appliance-cert/cert
         private_key:
-          filename: /appliance-cert/key
+          filename: /appliance-cert/private_key
 ---
 # Log Upload Service Configuration
 apiVersion: v1
@@ -127,6 +133,6 @@ data:
         ],
         "logfile_retention_count": 5
       }
-    }
+    } 
 {{- end }}
 
