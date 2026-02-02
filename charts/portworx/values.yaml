@@ -183,7 +183,7 @@ monitoring:
     enabled: true                     # Enable telemetry
     metricsCollector:
       enabled: true                     # Enable metrics collector
-      image: ""                         # Metrics collector image
+#      image: ""                         # Metrics collector image, optional field
   grafana: false                      # Enable grafana
 
 
