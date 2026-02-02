@@ -494,9 +494,17 @@ spec:
       {{- end }}
     {{- end }}
 
-    {{- if .Values.monitoring.telemetry }}
+    {{- if .Values.monitoring.telemetry.enabled }}
     telemetry:
       enabled: true
+      {{- if .Values.monitoring.telemetry.metricsCollector.enabled }}
+      metricsCollector:
+        enabled: true
+        {{- if .Values.monitoring.telemetry.metricsCollector.image }}
+        image: {{ .Values.monitoring.telemetry.metricsCollector.image }}
+        {{- end }}
+      {{- end }}
+      image: {{ .Values.monitoring.telemetry.image }}
     {{- end }}
 
     {{- if .Values.monitoring.grafana }}
