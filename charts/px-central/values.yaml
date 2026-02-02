@@ -187,21 +187,27 @@ pxbackup:
         tag: "1.1.18"
         imagePullPolicy: IfNotPresent
 
-    # Logs collector configuration
+    # Logs collector configuration (now using Go binary instead of shell script)
     logsCollector:
       enabled: true
       collectionInterval: 3600  # seconds (1 hour)
       startupDelay: 60  # seconds - delay before first collection to allow pods to stabilize after helm upgrade
-      image:
-        registry: docker.io
-        imageName: bitnami/kubectl
-        tag: "latest"
-        imagePullPolicy: IfNotPresent
+      # Exclude pods matching these patterns (comma-separated)
+      # Default: exclude monitoring and frontend pods
+      excludePodPatterns: "alertmanager,prometheus,frontend"
+      # Data collector image (Go binary that collects logs + reporting data)
+      dataCollectorImage:
+        registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/bk
+        imageName: telemetry-data-collector
+        tag: "1.0.0"
+        imagePullPolicy: Always
+      # Log upload service image (gRPC service for uploading to Pure1)
       logUploadImage:
         registry: docker.io
         imageName: portworx/log-upload
         tag: "px-1.1.46"
         imagePullPolicy: IfNotPresent
+      # Envoy proxy image (handles mTLS to Pure1)
       envoyImage:
         registry: docker.io
         imageName: portworx/telemetry-envoy
