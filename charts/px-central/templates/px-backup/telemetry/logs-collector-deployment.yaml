@@ -222,17 +222,54 @@ spec:
         securityContext:
           runAsUser: 1111
       containers:
-      # Container 1: Log Collector
-      - name: log-collector
-        image: {{ .Values.pxbackup.telemetry.logsCollector.image.registry }}/{{ .Values.pxbackup.telemetry.logsCollector.image.imageName }}:{{ .Values.pxbackup.telemetry.logsCollector.image.tag }}
-        imagePullPolicy: {{ .Values.pxbackup.telemetry.logsCollector.image.imagePullPolicy | default "IfNotPresent" }}
-        command: ["/bin/bash", "/scripts/collect-logs.sh"]
+      # Container 1: Telemetry Data Collector (Go binary)
+      - name: data-collector
+        image: {{ .Values.pxbackup.telemetry.logsCollector.dataCollectorImage.registry }}/{{ .Values.pxbackup.telemetry.logsCollector.dataCollectorImage.imageName }}:{{ .Values.pxbackup.telemetry.logsCollector.dataCollectorImage.tag }}
+        imagePullPolicy: {{ .Values.pxbackup.telemetry.logsCollector.dataCollectorImage.imagePullPolicy | default "IfNotPresent" }}
+        env:
+        # Kubernetes configuration
+        - name: NAMESPACE
+          value: {{ .Release.Namespace | quote }}
+        - name: PXBACKUP_POD_LABEL
+          value: "app.kubernetes.io/part-of=px-backup"
+
+        # Collection configuration
+        - name: COLLECTION_INTERVAL
+          value: {{ .Values.pxbackup.telemetry.logsCollector.collectionInterval | default 3600 }}s
+        - name: STARTUP_DELAY
+          value: {{ .Values.pxbackup.telemetry.logsCollector.startupDelay | default 60 }}s
+        - name: LOG_TAIL_LINES
+          value: "10000"
+
+        # Reporting API configuration
+        - name: REPORTING_API_URL
+          value: "http://px-backup.{{ .Release.Namespace }}.svc.cluster.local:10001/v1/reporting/data"
+        - name: REPORTING_API_TIMEOUT
+          value: "30s"
+
+        # Upload service configuration (gRPC to log-upload-service sidecar)
+        - name: UPLOAD_SERVICE_ADDR
+          value: "localhost:9090"
+        - name: UPLOAD_SERVICE_TIMEOUT
+          value: "5s"
+
+        # Log storage configuration
+        - name: LOG_DIR
+          value: "/var/cores"
+        - name: CLEANUP_AGE
+          value: "72h"
+
+        # Log exclusion patterns (for filtering log lines within pods)
+        - name: EXCLUDE_PATTERNS
+          value: ""
+
+        # Pod exclusion patterns (for excluding entire pods from collection)
+        - name: EXCLUDE_POD_PATTERNS
+          value: {{ .Values.pxbackup.telemetry.logsCollector.excludePodPatterns | default "alertmanager,prometheus,frontend" | quote }}
+
         securityContext:
           runAsUser: 1111
         volumeMounts:
-        - name: log-collector-script
-          mountPath: /scripts
-          readOnly: true
         - name: log-storage
           mountPath: /var/cores
         resources:
@@ -321,10 +358,6 @@ spec:
             cpu: "200m"
       
       volumes:
-      - name: log-collector-script
-        configMap:
-          name: px-backup-telemetry-log-collector-script
-          defaultMode: 0755
       - name: log-storage
         emptyDir: {}  # Shared between log-collector and log-upload-service
       - name: log-upload-config
