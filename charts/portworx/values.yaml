@@ -179,7 +179,11 @@ monitoring:
     # Provide securityContext fields as defined by Kubernetes (https://kubernetes.io/docs/tasks/configure-pod-container/security-context/)
       # runAsNonRoot: false
       # runAsUser: 1000
-  telemetry: true                    # Enable telemetry
+  telemetry:
+    enabled: true                     # Enable telemetry
+    metricsCollector:
+      enabled: true                     # Enable metrics collector
+#      image: ""                         # Metrics collector image, optional field
   grafana: false                      # Enable grafana
 
 

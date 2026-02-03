@@ -448,7 +448,7 @@ spec:
   {{- end }}
 
   {{- $promethusEnabled := or $prometheus.exportMetrics $prometheus.enabled}}
-  {{- $monitoringEnabled := or $promethusEnabled .Values.monitoring.telemetry $prometheus.enabled .Values.grafana }}
+  {{- $monitoringEnabled := or $promethusEnabled .Values.monitoring.telemetry.enabled $prometheus.enabled .Values.grafana }}
   {{- if $monitoringEnabled }}
   monitoring:
     {{- if $promethusEnabled }}
@@ -494,9 +494,16 @@ spec:
       {{- end }}
     {{- end }}
 
-    {{- if .Values.monitoring.telemetry }}
+    {{- if .Values.monitoring.telemetry.enabled }}
     telemetry:
       enabled: true
+      {{- if .Values.monitoring.telemetry.metricsCollector.enabled }}
+      metricsCollector:
+        enabled: true
+        {{- if .Values.monitoring.telemetry.metricsCollector.image }}
+        image: {{ .Values.monitoring.telemetry.metricsCollector.image }}
+        {{- end }}
+      {{- end }}
     {{- end }}
 
     {{- if .Values.monitoring.grafana }}

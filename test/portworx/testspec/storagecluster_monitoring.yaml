@@ -60,6 +60,8 @@ spec:
         name: additional-volume
     telemetry:
       enabled: true
+      metricsCollector:
+        enabled: true
     grafana:
       enabled: true
   csi:
