@@ -1,6 +1,6 @@
 {{/* PX-Backup Telemetry Registration ConfigMaps */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
-{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
+{{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) }}
 ---
 # CCM-Go Configuration
@@ -109,7 +109,7 @@ data:
                         key: "product-version"
                         value: {{ .Values.pxbackup.version | quote }}
                     route:
-                      host_rewrite_literal: {{ .Values.pxbackup.telemetry.registerEndpoint }}
+                      host_rewrite_literal: {{ .Values.telemetry.registerEndpoint }}
                       cluster: cluster_register_cloud_support
       clusters:
       - name: cluster_register_cloud_support
@@ -123,13 +123,13 @@ data:
             - endpoint:
                 address:
                   socket_address:
-                    address: {{ .Values.pxbackup.telemetry.registerEndpoint }}
+                    address: {{ .Values.telemetry.registerEndpoint }}
                     port_value: 443
         transport_socket:
           name: envoy.transport_sockets.tls
           typed_config:
             "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
-            sni: {{ .Values.pxbackup.telemetry.registerEndpoint }}
+            sni: {{ .Values.telemetry.registerEndpoint }}
             common_tls_context:
               tls_certificates:
               - certificate_chain:
@@ -140,6 +140,6 @@ data:
                 match_typed_subject_alt_names:
                 - san_type: DNS
                   matcher:
-                    exact: {{ .Values.pxbackup.telemetry.registerEndpoint }}
+                    exact: {{ .Values.telemetry.registerEndpoint }}
 {{- end }}
 
