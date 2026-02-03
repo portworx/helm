@@ -105,6 +105,62 @@ istio:
 linkerd:
   enabled: false
 
+# Telemetry configuration for PX-Backup
+# Collects and uploads metrics, logs, and reporting data to Pure1
+# All telemetry images are defined in the 'images' section below
+telemetry:
+  enabled: false
+
+  # Environment: staging or production
+  # Controls which set of endpoints to use for telemetry data upload
+  environment: staging
+
+  # Endpoints configuration for different environments
+  endpoints:
+    staging:
+      # OSB endpoint for registration (base URL only, path will be appended by code)
+      osb: "https://master-staging.portworx.dev"
+      # Pure1 registration endpoint (for certificate registration)
+      register: "register.staging-cloud-support.purestorage.com"
+      # Pure1 REST API endpoint (for metrics and logs upload)
+      rest: "rest.staging-cloud-support.purestorage.com"
+    production:
+      # OSB endpoint for registration
+      osb: "https://master.portworx.com"
+      # Pure1 registration endpoint (for certificate registration)
+      register: "register.cloud-support.purestorage.com"
+      # Pure1 REST API endpoint (for metrics and logs upload)
+      rest: "rest.cloud-support.purestorage.com"
+
+  # Legacy endpoint fields (for backward compatibility with existing templates)
+  # These are set based on the 'environment' field above
+  # TODO: Update templates to use .Values.telemetry.endpoints[.Values.telemetry.environment].* instead
+  osbEndpoint: "https://master-staging.portworx.dev"
+  registerEndpoint: "register.staging-cloud-support.purestorage.com"
+  restEndpoint: "rest.staging-cloud-support.purestorage.com"
+
+  # Registration pod configuration
+  # Registers PX-Backup instance with Pure1 and obtains mTLS certificates
+  registration:
+    enabled: true
+
+  # Metrics collector configuration
+  # Collects real-time metrics from PX-Backup and uploads to Pure1
+  metricsCollector:
+    enabled: true
+    scrapeInterval: 10  # seconds
+    batchSize: 5  # number of scrapes to batch before sending
+
+  # Logs collector configuration
+  # Collects pod logs and reporting data, uploads to Pure1
+  logsCollector:
+    enabled: true
+    collectionInterval: 3600  # seconds (1 hour)
+    startupDelay: 60  # seconds - delay before first collection to allow pods to stabilize
+    # Exclude pods matching these patterns (comma-separated)
+    # Default: exclude monitoring, frontend, and telemetry pods to avoid circular dependencies
+    excludePodPatterns: "alertmanager,prometheus,frontend,lh-middleware,telemetry"
+
 isUpgrade: false
 isOpenshift: false
 isArgoCD: false
@@ -140,79 +196,6 @@ pxbackup:
   skipValidations: false
   usePlatformRbac: false
   encryptMongoDB: false
-
-  # Telemetry configuration for PX-Backup
-  telemetry:
-    enabled: false
-
-    # Endpoints - can be overridden for custom environments
-    # OSB endpoint for registration (base URL only, path will be appended by code)
-    osbEndpoint: "https://master-staging.portworx.dev"
-    # Pure1 registration endpoint (for certificate registration)
-    registerEndpoint: "register.staging-cloud-support.purestorage.com"
-    # Pure1 REST API endpoint (for metrics and logs upload)
-    restEndpoint: "rest.staging-cloud-support.purestorage.com"
-
-    # Registration pod configuration
-    registration:
-      image:
-        imageName: ccm-go
-        tag: "1.4.30"
-        imagePullPolicy: IfNotPresent
-      coServerImage:
-        registry: pure-artifactory.dev.purestorage.com
-        repo: px-docker-dev-virtual/bk
-        imageName: px-backup-co-server
-        tag: "latest"
-        imagePullPolicy: IfNotPresent
-      envoyImage:
-        registry: docker.io
-        imageName: portworx/telemetry-envoy
-        tag: "1.1.18"
-        imagePullPolicy: IfNotPresent
-
-    # Metrics collector configuration
-    metricsCollector:
-      enabled: true
-      scrapeInterval: 10  # seconds
-      batchSize: 5  # number of scrapes to batch before sending
-      image:
-        registry: docker.io
-        imageName: purestorage/realtime-metrics
-        tag: "1.0.23"
-        imagePullPolicy: IfNotPresent
-      envoyImage:
-        registry: docker.io
-        imageName: portworx/telemetry-envoy
-        tag: "1.1.18"
-        imagePullPolicy: IfNotPresent
-
-    # Logs collector configuration (now using Go binary instead of shell script)
-    logsCollector:
-      enabled: true
-      collectionInterval: 3600  # seconds (1 hour)
-      startupDelay: 60  # seconds - delay before first collection to allow pods to stabilize after helm upgrade
-      # Exclude pods matching these patterns (comma-separated)
-      # Default: exclude monitoring and frontend pods
-      excludePodPatterns: "alertmanager,prometheus,frontend"
-      # Data collector image (Go binary that collects logs + reporting data)
-      dataCollectorImage:
-        registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/bk
-        imageName: telemetry-data-collector
-        tag: "1.0.0"
-        imagePullPolicy: Always
-      # Log upload service image (gRPC service for uploading to Pure1)
-      logUploadImage:
-        registry: docker.io
-        imageName: portworx/log-upload
-        tag: "px-1.1.46"
-        imagePullPolicy: IfNotPresent
-      # Envoy proxy image (handles mTLS to Pure1)
-      envoyImage:
-        registry: docker.io
-        imageName: portworx/telemetry-envoy
-        tag: "1.1.18"
-        imagePullPolicy: IfNotPresent
 
 pxlicenseserver:
   enabled: false
@@ -380,6 +363,50 @@ images:
     repo: portworx
     imageName: mongodb
     tag: 8.0.17
+    module: pxBackup
+
+  ## Images required for PX-Backup Telemetry
+  # Telemetry init container image (kubectl for Kubernetes API operations)
+  telemetryInitContainerImage:
+    registry: docker.io
+    repo: bitnami
+    imageName: kubectl
+    tag: "latest"
+    module: pxBackup
+  # Telemetry Envoy proxy (mTLS communication with Pure1)
+  telemetryEnvoyImage:
+    registry: docker.io
+    repo: portworx
+    imageName: telemetry-envoy
+    tag: "1.1.18"
+    module: pxBackup
+  # Telemetry registration service (CCM-Go)
+  telemetryRegistrationImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
+    imageName: ccm-go
+    tag: "1.4.30"
+    module: pxBackup
+  # Telemetry metrics collector (realtime metrics)
+  telemetryMetricsCollectorImage:
+    registry: docker.io
+    repo: purestorage
+    imageName: realtime-metrics
+    tag: "1.0.23"
+    module: pxBackup
+  # Telemetry data collector (Go binary for log collection)
+  telemetryDataCollectorImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
+    repo: portworx
+    imageName: telemetry-data-collector
+    tag: "2.11.0-staging"
+    module: pxBackup
+  # Telemetry log upload service (gRPC service for Pure1 upload)
+  telemetryLogUploadImage:
+    registry: docker.io
+    repo: portworx
+    imageName: log-upload
+    tag: "px-1.1.94"
     module: pxBackup
 
   ## Images required for enabling px-license-server
