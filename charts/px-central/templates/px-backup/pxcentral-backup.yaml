@@ -214,11 +214,11 @@ spec:
               fieldPath: metadata.namespace
         - name: PX_BACKUP_DEFAULT_ORG
           value: {{ .Values.pxbackup.orgName }}
-        {{- if .Values.pxbackup.telemetry.enabled }}
+        {{- if .Values.telemetry.enabled }}
         - name: TELEMETRY_ENABLED
           value: "true"
         - name: OSB_ENDPOINT
-          value: {{ .Values.pxbackup.telemetry.osbEndpoint | quote }}
+          value: {{ .Values.telemetry.osbEndpoint | quote }}
         {{- end }}
         - name: BACKUP_DELETE_WORKER
           value: "{{ .Values.pxbackup.backupDeleteWorker }}"
