@@ -1,6 +1,6 @@
 {{/* PX-Backup Telemetry RBAC */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
-{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
+{{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) }}
 ---
 apiVersion: v1
@@ -62,7 +62,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ---
 # RBAC for Logs Collector
-{{- $logsEnabled := .Values.pxbackup.telemetry.logsCollector.enabled | default true }}
+{{- $logsEnabled := .Values.telemetry.logsCollector.enabled | default true }}
 {{- if eq $logsEnabled true }}
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1

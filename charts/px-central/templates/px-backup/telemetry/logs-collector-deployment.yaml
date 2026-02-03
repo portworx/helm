@@ -1,7 +1,7 @@
 {{/* PX-Backup Telemetry Logs Collector Deployment */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
-{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
-{{- $logsEnabled := .Values.pxbackup.telemetry.logsCollector.enabled | default true }}
+{{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
+{{- $logsEnabled := .Values.telemetry.logsCollector.enabled | default true }}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) (eq $logsEnabled true) }}
 ---
 apiVersion: v1
@@ -91,8 +91,8 @@ spec:
       initContainers:
       # Init container 1: Update Envoy ConfigMap with appliance-id (fixes Issue #2)
       - name: update-envoy-config
-        image: bitnami/kubectl:latest
-        imagePullPolicy: IfNotPresent
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryInitContainerImage.registry .Values.images.registry) (default .Values.images.telemetryInitContainerImage.repo .Values.images.repo) .Values.images.telemetryInitContainerImage.imageName .Values.images.telemetryInitContainerImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         command:
         - /bin/bash
         - -c
@@ -119,7 +119,7 @@ spec:
           # Update Envoy ConfigMap with the correct appliance-id
           echo "Updating Envoy ConfigMap with appliance-id: $APPLIANCE_ID"
           kubectl get configmap -n {{ .Release.Namespace }} px-backup-telemetry-logs-envoy-config -o yaml | \
-            sed "s/value: \"unknown\"/value: \"$APPLIANCE_ID\"/" | \
+            sed "s/value: \"APPLIANCE_ID_PLACEHOLDER\"/value: \"$APPLIANCE_ID\"/" | \
             kubectl apply -f -
 
           echo "Envoy ConfigMap updated successfully"
@@ -128,8 +128,8 @@ spec:
 
       # Init container 2: Wait for PX-Backup pod, then wait for appliance-id (fixes Issue #1)
       - name: wait-for-appliance-id
-        image: bitnami/kubectl:latest
-        imagePullPolicy: IfNotPresent
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryInitContainerImage.registry .Values.images.registry) (default .Values.images.telemetryInitContainerImage.repo .Values.images.repo) .Values.images.telemetryInitContainerImage.imageName .Values.images.telemetryInitContainerImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         command:
         - /bin/bash
         - -c
@@ -182,8 +182,8 @@ spec:
 
       # Init container 3: Wait for Pure1 certificate to be issued (NEW - prevents premature uploads)
       - name: wait-for-certificate
-        image: bitnami/kubectl:latest
-        imagePullPolicy: IfNotPresent
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryInitContainerImage.registry .Values.images.registry) (default .Values.images.telemetryInitContainerImage.repo .Values.images.repo) .Values.images.telemetryInitContainerImage.imageName .Values.images.telemetryInitContainerImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         command:
         - /bin/bash
         - -c
@@ -203,10 +203,10 @@ spec:
               # Verify certificate is valid (not empty after base64 decode)
               CERT_DECODED=$(echo "$CERT" | base64 -d 2>/dev/null || echo "")
               if [ -n "$CERT_DECODED" ]; then
-                echo "✓ Certificate is valid and ready for use"
-                echo "✓ Log collector can now upload logs to Pure1"
+                echo " Certificate is valid and ready for use"
+                echo " Log collector can now upload logs to Pure1"
                 echo ""
-                echo "✅ All initialization steps complete!"
+                echo " All initialization steps complete!"
                 exit 0
               fi
             fi
@@ -224,8 +224,8 @@ spec:
       containers:
       # Container 1: Telemetry Data Collector (Go binary)
       - name: data-collector
-        image: {{ .Values.pxbackup.telemetry.logsCollector.dataCollectorImage.registry }}/{{ .Values.pxbackup.telemetry.logsCollector.dataCollectorImage.imageName }}:{{ .Values.pxbackup.telemetry.logsCollector.dataCollectorImage.tag }}
-        imagePullPolicy: {{ .Values.pxbackup.telemetry.logsCollector.dataCollectorImage.imagePullPolicy | default "IfNotPresent" }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryDataCollectorImage.registry .Values.images.registry) (default .Values.images.telemetryDataCollectorImage.repo .Values.images.repo) .Values.images.telemetryDataCollectorImage.imageName .Values.images.telemetryDataCollectorImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
         # Kubernetes configuration
         - name: NAMESPACE
@@ -235,9 +235,9 @@ spec:
 
         # Collection configuration
         - name: COLLECTION_INTERVAL
-          value: {{ .Values.pxbackup.telemetry.logsCollector.collectionInterval | default 3600 }}s
+          value: {{ .Values.telemetry.logsCollector.collectionInterval | default 3600 }}s
         - name: STARTUP_DELAY
-          value: {{ .Values.pxbackup.telemetry.logsCollector.startupDelay | default 60 }}s
+          value: {{ .Values.telemetry.logsCollector.startupDelay | default 60 }}s
         - name: LOG_TAIL_LINES
           value: "10000"
 
@@ -265,7 +265,7 @@ spec:
 
         # Pod exclusion patterns (for excluding entire pods from collection)
         - name: EXCLUDE_POD_PATTERNS
-          value: {{ .Values.pxbackup.telemetry.logsCollector.excludePodPatterns | default "alertmanager,prometheus,frontend" | quote }}
+          value: {{ .Values.telemetry.logsCollector.excludePodPatterns | default "alertmanager,prometheus,frontend,lh-middleware,telemetry" | quote }}
 
         securityContext:
           runAsUser: 1111
@@ -282,8 +282,8 @@ spec:
       
       # Container 2: Log Upload Service
       - name: log-upload-service
-        image: {{ .Values.pxbackup.telemetry.logsCollector.logUploadImage.registry | default "docker.io" }}/{{ .Values.pxbackup.telemetry.logsCollector.logUploadImage.imageName }}:{{ .Values.pxbackup.telemetry.logsCollector.logUploadImage.tag }}
-        imagePullPolicy: {{ .Values.pxbackup.telemetry.logsCollector.logUploadImage.imagePullPolicy | default "IfNotPresent" }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryLogUploadImage.registry .Values.images.registry) (default .Values.images.telemetryLogUploadImage.repo .Values.images.repo) .Values.images.telemetryLogUploadImage.imageName .Values.images.telemetryLogUploadImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         ports:
         - name: grpc
           containerPort: 9090
@@ -320,8 +320,8 @@ spec:
       
       # Container 3: Envoy Proxy
       - name: envoy
-        image: {{ .Values.pxbackup.telemetry.logsCollector.envoyImage.registry }}/{{ .Values.pxbackup.telemetry.logsCollector.envoyImage.imageName }}:{{ .Values.pxbackup.telemetry.logsCollector.envoyImage.tag }}
-        imagePullPolicy: {{ .Values.pxbackup.telemetry.logsCollector.envoyImage.imagePullPolicy | default "IfNotPresent" }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryEnvoyImage.registry .Values.images.registry) (default .Values.images.telemetryEnvoyImage.repo .Values.images.repo) .Values.images.telemetryEnvoyImage.imageName .Values.images.telemetryEnvoyImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         args:
         - envoy
         - --base-id

@@ -1,7 +1,7 @@
 {{/* PX-Backup Telemetry Logs Collector ConfigMaps */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
-{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
-{{- $logsEnabled := .Values.pxbackup.telemetry.logsCollector.enabled | default true }}
+{{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
+{{- $logsEnabled := .Values.telemetry.logsCollector.enabled | default true }}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) (eq $logsEnabled true) }}
 ---
 # Envoy Proxy Configuration for Logs Upload
@@ -47,7 +47,26 @@ data:
                   routes:
                   - match:
                       prefix: "/"
+                    # Add headers to identify the product and cluster
+                    request_headers_to_add:
+                    # Product name - using "portworx" (same as PX-Enterprise)
+                    - header:
+                        key: "product-name"
+                        value: "portworx"
+                    # Appliance ID - will be replaced by init container
+                    - header:
+                        key: "appliance-id"
+                        value: "APPLIANCE_ID_PLACEHOLDER"
+                    # Component serial number - identifies this as logs collector
+                    - header:
+                        key: "component-sn"
+                        value: "px-backup-logs-collector"
+                    # Product version - PX-Backup version
+                    - header:
+                        key: "product-version"
+                        value: {{ .Values.pxbackup.version | quote }}
                     route:
+                      host_rewrite_literal: {{ .Values.telemetry.restEndpoint }}
                       cluster: service_logs
               http_filters:
               - name: envoy.filters.http.router
@@ -66,13 +85,13 @@ data:
             - endpoint:
                 address:
                   socket_address:
-                    address: phonehome.portworx.com
+                    address: {{ .Values.telemetry.restEndpoint }}
                     port_value: 443
         transport_socket:
           name: envoy.transport_sockets.tls
           typed_config:
             "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
-            sni: phonehome.portworx.com
+            sni: {{ .Values.telemetry.restEndpoint }}
             common_tls_context:
               # Client certificate configuration using SDS
               tls_certificate_sds_secret_configs:
@@ -87,7 +106,7 @@ data:
                 match_typed_subject_alt_names:
                 - san_type: DNS
                   matcher:
-                    exact: phonehome.portworx.com
+                    exact: {{ .Values.telemetry.restEndpoint }}
 ---
 # Envoy SDS (Secret Discovery Service) Configuration
 apiVersion: v1
@@ -131,8 +150,11 @@ data:
           "/var/cores/px-backup-logs-*.log.gz",
           "/var/cores/px-backup-reporting-*.log.gz"
         ],
-        "logfile_retention_count": 5
+        "logfile_retention_count": 5,
+        "phonehome_hour_range": 744,
+        "always_scan_range_days": 7,
+        "max_retry_per_hour": 5
       }
-    } 
+    }
 {{- end }}
 

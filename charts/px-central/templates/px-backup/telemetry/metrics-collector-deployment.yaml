@@ -1,7 +1,7 @@
 {{/* PX-Backup Telemetry Metrics Collector Deployment */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
-{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
-{{- $metricsEnabled := .Values.pxbackup.telemetry.metricsCollector.enabled | default true }}
+{{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
+{{- $metricsEnabled := .Values.telemetry.metricsCollector.enabled | default true }}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) (eq $metricsEnabled true) }}
 ---
 apiVersion: apps/v1
@@ -32,8 +32,8 @@ spec:
       initContainers:
       # Init container 1: Wait for certificate using cert_checker (PX-Enterprise pattern)
       - name: cert-checker
-        image: {{ .Values.pxbackup.telemetry.metricsCollector.envoyImage.registry }}/{{ .Values.pxbackup.telemetry.metricsCollector.envoyImage.imageName }}:{{ .Values.pxbackup.telemetry.metricsCollector.envoyImage.tag }}
-        imagePullPolicy: {{ .Values.pxbackup.telemetry.metricsCollector.envoyImage.imagePullPolicy | default "IfNotPresent" }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryEnvoyImage.registry .Values.images.registry) (default .Values.images.telemetryEnvoyImage.repo .Values.images.repo) .Values.images.telemetryEnvoyImage.imageName .Values.images.telemetryEnvoyImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         args:
         - "cert_checker"
         env:
@@ -45,8 +45,8 @@ spec:
           runAsUser: 1111
       # Init container 2: Wait for PX-Backup pod, then update Envoy config with appliance-id
       - name: update-envoy-config
-        image: bitnami/kubectl:latest
-        imagePullPolicy: IfNotPresent
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryInitContainerImage.registry .Values.images.registry) (default .Values.images.telemetryInitContainerImage.repo .Values.images.repo) .Values.images.telemetryInitContainerImage.imageName .Values.images.telemetryInitContainerImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         command:
         - sh
         - -c
@@ -107,8 +107,8 @@ spec:
 
       # Init container 3: Wait for Pure1 certificate to be issued (NEW - prevents premature uploads)
       - name: wait-for-certificate
-        image: bitnami/kubectl:latest
-        imagePullPolicy: IfNotPresent
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryInitContainerImage.registry .Values.images.registry) (default .Values.images.telemetryInitContainerImage.repo .Values.images.repo) .Values.images.telemetryInitContainerImage.imageName .Values.images.telemetryInitContainerImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         command:
         - sh
         - -c
@@ -147,8 +147,8 @@ spec:
       containers:
       # Realtime Metrics Collector
       - name: collector
-        image: {{ .Values.pxbackup.telemetry.metricsCollector.image.registry }}/{{ .Values.pxbackup.telemetry.metricsCollector.image.imageName }}:{{ .Values.pxbackup.telemetry.metricsCollector.image.tag }}
-        imagePullPolicy: {{ .Values.pxbackup.telemetry.metricsCollector.image.imagePullPolicy | default "IfNotPresent" }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryMetricsCollectorImage.registry .Values.images.registry) (default .Values.images.telemetryMetricsCollectorImage.repo .Values.images.repo) .Values.images.telemetryMetricsCollectorImage.imageName .Values.images.telemetryMetricsCollectorImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
         - name: CONFIG
           value: "config/px-backup.yaml"
@@ -166,8 +166,8 @@ spec:
           readOnly: true
       # Envoy - mTLS proxy for Pure1
       - name: envoy
-        image: {{ .Values.pxbackup.telemetry.metricsCollector.envoyImage.registry }}/{{ .Values.pxbackup.telemetry.metricsCollector.envoyImage.imageName }}:{{ .Values.pxbackup.telemetry.metricsCollector.envoyImage.tag }}
-        imagePullPolicy: {{ .Values.pxbackup.telemetry.metricsCollector.envoyImage.imagePullPolicy | default "IfNotPresent" }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryEnvoyImage.registry .Values.images.registry) (default .Values.images.telemetryEnvoyImage.repo .Values.images.repo) .Values.images.telemetryEnvoyImage.imageName .Values.images.telemetryEnvoyImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         args:
         - envoy
         - --base-id
