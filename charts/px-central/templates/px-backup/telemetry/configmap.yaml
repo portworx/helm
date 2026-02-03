@@ -1,6 +1,6 @@
 {{/* PX-Backup Telemetry ConfigMap */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
-{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
+{{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) }}
 {{- $existingConfigMap := lookup "v1" "ConfigMap" .Release.Namespace "px-backup-telemetry-config" }}
 {{- $existingApplianceId := "" }}
@@ -29,6 +29,6 @@ data:
   # All other fields are set by Helm and are read-only
   product_name: "px-backup"
   product_version: {{ .Values.images.pxBackupImage.tag | quote }}
-  osb_endpoint: {{ .Values.pxbackup.telemetry.osbEndpoint | quote }}
+  osb_endpoint: {{ .Values.telemetry.osbEndpoint | quote }}
 {{- end }}
 

@@ -1,6 +1,6 @@
 {{/* PX-Backup Telemetry Registration Deployment */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
-{{- $telemetryEnabled := .Values.pxbackup.telemetry.enabled | default false }}
+{{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) }}
 ---
 apiVersion: apps/v1
@@ -31,8 +31,8 @@ spec:
       initContainers:
       # Wait for PX-Backup pod to be ready, then wait for appliance-id
       - name: wait-for-appliance-id
-        image: bitnami/kubectl:latest
-        imagePullPolicy: IfNotPresent
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryInitContainerImage.registry .Values.images.registry) (default .Values.images.telemetryInitContainerImage.repo .Values.images.repo) .Values.images.telemetryInitContainerImage.imageName .Values.images.telemetryInitContainerImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         command:
         - sh
         - -c
@@ -102,8 +102,8 @@ spec:
       containers:
       # CCM-Go - Registration service
       - name: registration
-        image: {{ .Values.images.pxBackupImage.registry }}/{{ .Values.images.pxBackupImage.repo }}/{{ .Values.pxbackup.telemetry.registration.image.imageName }}:{{ .Values.pxbackup.telemetry.registration.image.tag }}
-        imagePullPolicy: {{ .Values.pxbackup.telemetry.registration.image.imagePullPolicy | default "IfNotPresent" }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryRegistrationImage.registry .Values.images.registry) (default .Values.images.telemetryRegistrationImage.repo .Values.images.repo) .Values.images.telemetryRegistrationImage.imageName .Values.images.telemetryRegistrationImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
         - name: CONFIG
           value: "/etc/ccm/config_properties_px.yaml"
@@ -133,8 +133,8 @@ spec:
           mountPath: /var/cache
       # Envoy - mTLS proxy
       - name: envoy
-        image: {{ .Values.pxbackup.telemetry.registration.envoyImage.registry }}/{{ .Values.pxbackup.telemetry.registration.envoyImage.imageName }}:{{ .Values.pxbackup.telemetry.registration.envoyImage.tag }}
-        imagePullPolicy: {{ .Values.pxbackup.telemetry.registration.envoyImage.imagePullPolicy | default "IfNotPresent" }}
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryEnvoyImage.registry .Values.images.registry) (default .Values.images.telemetryEnvoyImage.repo .Values.images.repo) .Values.images.telemetryEnvoyImage.imageName .Values.images.telemetryEnvoyImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
         - name: APPLIANCE_ID
           valueFrom:
