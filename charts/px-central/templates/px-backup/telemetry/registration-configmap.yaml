@@ -31,7 +31,7 @@ data:
       useApplianceId: true
       accountType: "UNKNOWN"
     standalone:
-      applianceIdPath: "/var/cache/appliance_id"
+      # Note: CCM-Go reads appliance-id from APPLIANCE_ID environment variable, not from file
       generateApplianceIdEnabled: false
     envoy:
       protocol: "http"
