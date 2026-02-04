@@ -21,11 +21,6 @@ metadata:
     app.kubernetes.io/component: px-backup-telemetry
 {{- include "px-central.labels" . | nindent 4 }}
 rules:
-  # ConfigMap access for telemetry configuration (read-only)
-  - apiGroups: [""]
-    resources: ["configmaps"]
-    verbs: ["get", "list", "watch"]
-    resourceNames: ["px-backup-telemetry-config"]
   # Secret access for Pure1 certificates
   - apiGroups: [""]
     resources: ["secrets"]
@@ -35,10 +30,6 @@ rules:
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["create"]
-  # Pod access for metrics scraping
-  - apiGroups: [""]
-    resources: ["pods"]
-    verbs: ["get", "list", "watch"]
   # Service access for endpoint discovery
   - apiGroups: [""]
     resources: ["services", "endpoints"]
@@ -78,11 +69,6 @@ rules:
   - apiGroups: [""]
     resources: ["pods", "pods/log"]
     verbs: ["get", "list"]
-  # ConfigMap access for telemetry configuration
-  - apiGroups: [""]
-    resources: ["configmaps"]
-    verbs: ["get", "list", "watch"]
-    resourceNames: ["px-backup-telemetry-config"]
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
