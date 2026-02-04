@@ -28,77 +28,6 @@ spec:
 {{- include "px-central.labels" . | nindent 8 }}
     spec:
       serviceAccountName: px-backup-telemetry
-      initContainers:
-      # Wait for PX-Backup pod to be ready, then wait for appliance-id
-      - name: wait-for-appliance-id
-        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryInitContainerImage.registry .Values.images.registry) (default .Values.images.telemetryInitContainerImage.repo .Values.images.repo) .Values.images.telemetryInitContainerImage.imageName .Values.images.telemetryInitContainerImage.tag }}
-        imagePullPolicy: {{ .Values.images.pullPolicy }}
-        command:
-        - sh
-        - -c
-        - |
-          set -e
-          echo "=== Step 1: Waiting for PX-Backup pod to be ready ==="
-
-          # Wait for PX-Backup pod to be ready (max 5 minutes)
-          for i in $(seq 1 60); do
-            PX_BACKUP_READY=$(kubectl get pods -n {{ .Release.Namespace }} -l app=px-backup -o jsonpath='{.items[0].status.conditions[?(@.type=="Ready")].status}' 2>/dev/null || echo "")
-
-            if [ "$PX_BACKUP_READY" = "True" ]; then
-              echo "✓ PX-Backup pod is ready"
-              break
-            fi
-
-            echo "Waiting for PX-Backup pod to be ready... (attempt $i/60)"
-            sleep 5
-          done
-
-          if [ "$PX_BACKUP_READY" != "True" ]; then
-            echo "✗ ERROR: PX-Backup pod is not ready after 5 minutes"
-            echo "✗ Please check PX-Backup pod status"
-            exit 1
-          fi
-
-          echo ""
-          echo "=== Step 2: Waiting for appliance-id to be populated ==="
-
-          # Wait for appliance-id (max 2 minutes after PX-Backup is ready)
-          for i in $(seq 1 24); do
-            APPLIANCE_ID=$(kubectl get configmap -n {{ .Release.Namespace }} px-backup-telemetry-config -o jsonpath='{.data.appliance-id}' 2>/dev/null || echo "")
-
-            # Check if appliance-id is valid (not empty, not null, not unknown)
-            if [ -n "$APPLIANCE_ID" ] && [ "$APPLIANCE_ID" != "null" ] && [ "$APPLIANCE_ID" != "unknown" ]; then
-              echo "✓ Found valid appliance-id: $APPLIANCE_ID"
-
-              # Update Envoy config with actual appliance ID
-              sed "s/APPLIANCE_ID_PLACEHOLDER/$APPLIANCE_ID/g" /envoy-template/envoy-config-register.yaml > /envoy-config/envoy-config-register.yaml
-              echo "✓ Envoy config updated with appliance ID"
-
-              # Write appliance ID for CCM-Go
-              echo -n "$APPLIANCE_ID" > /var/cache/appliance_id
-              echo "✓ Appliance ID file created"
-              echo ""
-              echo "✓ Initialization complete - ready for Pure1 registration"
-              exit 0
-            fi
-
-            echo "Waiting for appliance-id... (attempt $i/24)"
-            sleep 5
-          done
-
-          echo "✗ ERROR: Timeout waiting for appliance-id after 2 minutes"
-          echo "✗ PX-Backup pod is ready but appliance-id was not populated"
-          echo "✗ Please check PX-Backup logs for telemetry initialization errors"
-          exit 1
-        volumeMounts:
-        - name: envoy-template
-          mountPath: /envoy-template
-        - name: envoy-config
-          mountPath: /envoy-config
-        - name: appliance-id
-          mountPath: /var/cache
-        securityContext:
-          runAsUser: 1111
       containers:
       # CCM-Go - Registration service
       - name: registration
@@ -112,6 +41,7 @@ spec:
             configMapKeyRef:
               name: px-backup-telemetry-config
               key: appliance-id
+              optional: false  # Pod won't start until ConfigMap key exists
         - name: APPLIANCE_NAME
           value: "px-backup-{{ .Release.Namespace }}"
         - name: REFRESH_TOKEN
@@ -129,8 +59,6 @@ spec:
           mountPath: /etc/ccm
         - name: cert-secret
           mountPath: /etc/pwx/ccm/cert
-        - name: appliance-id
-          mountPath: /var/cache
       # Envoy - mTLS proxy
       - name: envoy
         image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryEnvoyImage.registry .Values.images.registry) (default .Values.images.telemetryEnvoyImage.repo .Values.images.repo) .Values.images.telemetryEnvoyImage.imageName .Values.images.telemetryEnvoyImage.tag }}
@@ -141,6 +69,7 @@ spec:
             configMapKeyRef:
               name: px-backup-telemetry-config
               key: appliance-id
+              optional: false  # Pod won't start until ConfigMap key exists
         - name: PRODUCT_VERSION
           value: {{ .Values.pxbackup.version | quote }}
         args:
@@ -173,16 +102,14 @@ spec:
       - name: telemetry-config
         configMap:
           name: px-backup-telemetry-config
+          optional: false  # Pod won't start until ConfigMap exists
       - name: registration-config
         configMap:
           name: px-backup-telemetry-registration-config
-      - name: envoy-template
+      - name: envoy-config
         configMap:
           name: px-backup-telemetry-registration-proxy-config
-      - name: envoy-config
-        emptyDir: {}
-      - name: appliance-id
-        emptyDir: {}
+          optional: false  # Pod won't start until Envoy ConfigMap exists
       - name: cert-secret
         secret:
           secretName: pure-telemetry-certs
