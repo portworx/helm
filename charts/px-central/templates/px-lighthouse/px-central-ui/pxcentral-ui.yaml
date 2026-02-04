@@ -52,6 +52,7 @@ data:
 
     server {
       listen  8080;
+      #IPV6_LISTEN_PLACEHOLDER
       server_name localhost;
       server_tokens off;
       location / {
@@ -386,6 +387,9 @@ spec:
           volumeMounts:
             - name: frontend-nginx-configs
               mountPath: /etc/nginx/conf.d
+            - name: frontend-nginx-configmap
+              mountPath: /etc/nginx/configmap
+              readOnly: true
           {{- if .Values.proxy.configSecretName }}
             - mountPath: /etc/ssl/certs/proxy-ca.pem
               subPath: proxy-ca.pem
@@ -396,9 +400,11 @@ spec:
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
-      {{- end }} 
+      {{- end }}
       volumes:
         - name: frontend-nginx-configs
+          emptyDir: {}
+        - name: frontend-nginx-configmap
           configMap:
             name: pxcentral-frontend-nginx-config
       {{- if .Values.proxy.configSecretName }}
@@ -623,6 +629,7 @@ metadata:
   name: pxcentral-mysql
   namespace: {{ .Release.Namespace }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   selector:
     run: pxcentral-mysql
   ports:
@@ -640,6 +647,7 @@ metadata:
     app.kubernetes.io/component: pxcentral-frontend
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   selector:
     run: pxcentral-frontend
   ports:
@@ -658,6 +666,7 @@ metadata:
     app.kubernetes.io/component: pxcentral-backend
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   selector:
     run: pxcentral-backend
   ports:
@@ -680,6 +689,7 @@ metadata:
     {{- include "pxcentral.render" (dict "value" .Values.service.pxCentralUIServiceAnnotations "context" $) | nindent 4 }}
     {{- end }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   type: {{ .Values.service.pxCentralUIServiceType }}
   selector:
     run: pxcentral-frontend
@@ -703,6 +713,7 @@ metadata:
     {{- include "pxcentral.render" (dict "value" .Values.service.pxBackupUIServiceAnnotations "context" $) | nindent 4 }}
     {{- end }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   type: {{ .Values.service.pxBackupUIServiceType }}
   selector:
     run: pxcentral-frontend
