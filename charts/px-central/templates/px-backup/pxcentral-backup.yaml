@@ -150,6 +150,7 @@ metadata:
   name: px-backup
   namespace: {{ .Release.Namespace }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   ports:
   - protocol: TCP
     port: 10002

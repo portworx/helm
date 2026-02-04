@@ -263,6 +263,7 @@ metadata:
     app.kubernetes.io/component: px-backup
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   type: ClusterIP
   ports:
     - name: http-web

@@ -186,6 +186,7 @@ metadata:
     app: postgresql
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   type: ClusterIP
   clusterIP: None
   ports:
@@ -205,6 +206,7 @@ metadata:
     app.kubernetes.io/component: keycloak
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   type: ClusterIP
   ports:
     - name: tcp-postgresql
@@ -224,6 +226,7 @@ metadata:
     service: headless
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   type: ClusterIP
   clusterIP: None
   ports:
@@ -248,6 +251,7 @@ metadata:
     service: http
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   ports:
     - name: http
       port: 80
@@ -580,6 +584,8 @@ spec:
                 name: pxcentral-keycloak-postgresql
           - name: KC_PROXY_HEADERS
             value: xforwarded
+          - name: JAVA_OPTS_APPEND
+            value: "-Djava.net.preferIPv6Addresses=true"
           {{- if .Values.caCertsSecretName }}
           - name: X509_CA_BUNDLE
             value: /tmp/certs/*
@@ -632,7 +638,7 @@ spec:
               path: /auth/realms/master
               port: http
             initialDelaySeconds: 30
-            timeoutSeconds: 1
+            timeoutSeconds: 5
           resources:
             {}
       terminationGracePeriodSeconds: 60
