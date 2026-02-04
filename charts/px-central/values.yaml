@@ -366,13 +366,6 @@ images:
     module: pxBackup
 
   ## Images required for PX-Backup Telemetry
-  # Telemetry init container image (kubectl for Kubernetes API operations)
-  telemetryInitContainerImage:
-    registry: docker.io
-    repo: bitnami
-    imageName: kubectl
-    tag: "latest"
-    module: pxBackup
   # Telemetry Envoy proxy (mTLS communication with Pure1)
   telemetryEnvoyImage:
     registry: docker.io
