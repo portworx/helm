@@ -2,6 +2,19 @@
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) }}
+{{- /* Lookup existing ConfigMap to preserve appliance-id during upgrades */ -}}
+{{- $existingRegistrationEnvoyConfigMap := lookup "v1" "ConfigMap" .Release.Namespace "px-backup-telemetry-registration-proxy-config" }}
+{{- $applianceID := "APPLIANCE_ID_PLACEHOLDER" }}
+{{- if $existingRegistrationEnvoyConfigMap }}
+  {{- $existingRegistrationConfig := index $existingRegistrationEnvoyConfigMap.data "envoy-config-register.yaml" | default "" }}
+  {{- if $existingRegistrationConfig }}
+    {{- /* Extract appliance-id using regex (UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx) */ -}}
+    {{- $match := regexFind "key: \"appliance-id\"\\s+value: \"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"" $existingRegistrationConfig }}
+    {{- if $match }}
+      {{- $applianceID = regexReplaceAll "key: \"appliance-id\"\\s+value: \"([0-9a-f-]+)\"" $match "${1}" }}
+    {{- end }}
+  {{- end }}
+{{- end }}
 ---
 # CCM-Go Configuration
 apiVersion: v1
@@ -99,9 +112,10 @@ data:
                     - header:
                         key: "product-name"
                         value: "portworx"
+                    # Appliance ID - preserved during upgrades using Helm lookup function
                     - header:
                         key: "appliance-id"
-                        value: "APPLIANCE_ID_PLACEHOLDER"
+                        value: {{ $applianceID | quote }}
                     - header:
                         key: "component-sn"
                         value: "px-backup-registration"
