@@ -3,6 +3,19 @@
 {{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
 {{- $logsEnabled := .Values.telemetry.logsCollector.enabled | default true }}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) (eq $logsEnabled true) }}
+{{- /* Lookup existing ConfigMap to preserve appliance-id during upgrades */ -}}
+{{- $existingLogsEnvoyConfigMap := lookup "v1" "ConfigMap" .Release.Namespace "px-backup-telemetry-logs-envoy-config" }}
+{{- $applianceID := "APPLIANCE_ID_PLACEHOLDER" }}
+{{- if $existingLogsEnvoyConfigMap }}
+  {{- $existingLogsConfig := index $existingLogsEnvoyConfigMap.data "envoy-config.yaml" | default "" }}
+  {{- if $existingLogsConfig }}
+    {{- /* Extract appliance-id using regex (UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx) */ -}}
+    {{- $match := regexFind "key: \"appliance-id\"\\s+value: \"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"" $existingLogsConfig }}
+    {{- if $match }}
+      {{- $applianceID = regexReplaceAll "key: \"appliance-id\"\\s+value: \"([0-9a-f-]+)\"" $match "${1}" }}
+    {{- end }}
+  {{- end }}
+{{- end }}
 ---
 # Envoy Proxy Configuration for Logs Upload
 apiVersion: v1
@@ -49,14 +62,14 @@ data:
                       prefix: "/"
                     # Add headers to identify the product and cluster
                     request_headers_to_add:
-                    # Product name - using "portworx" (same as PX-Enterprise)
+                    # Product name
                     - header:
                         key: "product-name"
                         value: "portworx"
-                    # Appliance ID - will be replaced by init container
+                    # Appliance ID - preserved during upgrades using Helm lookup function
                     - header:
                         key: "appliance-id"
-                        value: "APPLIANCE_ID_PLACEHOLDER"
+                        value: {{ $applianceID | quote }}
                     # Component serial number - identifies this as logs collector
                     - header:
                         key: "component-sn"

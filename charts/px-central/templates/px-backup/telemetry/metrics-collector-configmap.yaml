@@ -3,6 +3,19 @@
 {{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
 {{- $metricsEnabled := .Values.telemetry.metricsCollector.enabled | default true }}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) (eq $metricsEnabled true) }}
+{{- /* Lookup existing ConfigMap to preserve appliance-id during upgrades */ -}}
+{{- $existingMetricsEnvoyConfigMap := lookup "v1" "ConfigMap" .Release.Namespace "px-backup-telemetry-metrics-envoy-config" }}
+{{- $applianceID := "APPLIANCE_ID_PLACEHOLDER" }}
+{{- if $existingMetricsEnvoyConfigMap }}
+  {{- $existingMetricsConfig := index $existingMetricsEnvoyConfigMap.data "envoy-config.yaml" | default "" }}
+  {{- if $existingMetricsConfig }}
+    {{- /* Extract appliance-id using regex (UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx) */ -}}
+    {{- $match := regexFind "key: \"appliance-id\"\\s+value: \"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"" $existingMetricsConfig }}
+    {{- if $match }}
+      {{- $applianceID = regexReplaceAll "key: \"appliance-id\"\\s+value: \"([0-9a-f-]+)\"" $match "${1}" }}
+    {{- end }}
+  {{- end }}
+{{- end }}
 ---
 # Prometheus Metrics Collector Configuration
 apiVersion: v1
@@ -86,14 +99,14 @@ data:
                       prefix: "/"
                     # Add headers to identify the product and cluster
                     request_headers_to_add:
-                    # Product name - using "portworx" (same as PX-Enterprise)
+                    # Product name
                     - header:
                         key: "product-name"
                         value: "portworx"
-                    # Appliance ID - will be replaced by init container
+                    # Appliance ID - preserved during upgrades using Helm lookup function
                     - header:
                         key: "appliance-id"
-                        value: "APPLIANCE_ID_PLACEHOLDER"
+                        value: {{ $applianceID | quote }}
                     # Component serial number - identifies this as metrics collector
                     - header:
                         key: "component-sn"
