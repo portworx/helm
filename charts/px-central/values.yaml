@@ -140,6 +140,7 @@ pxbackup:
   skipValidations: false
   usePlatformRbac: false
   encryptMongoDB: false
+  federated: false
 
 pxlicenseserver:
   enabled: false

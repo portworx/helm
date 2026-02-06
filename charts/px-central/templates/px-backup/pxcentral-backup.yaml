@@ -242,6 +242,10 @@ spec:
           value: "{{ .Values.pxbackup.usePxBackupEmailAlertTemplate }}"
         - name: SOFT_LICENSING_PERIOD
           value: "36160"
+        {{- if .Values.pxbackup.federated }}
+        - name: PX_BACKUP_FEDERATED
+          value: "true"
+        {{- end }}
         {{- include "serviceMesh.env" . | nindent 8 }}
         - name: AIRGAP_REPORTING_PERIOD
           value: "90"
