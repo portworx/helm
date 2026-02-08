@@ -10,8 +10,8 @@ metadata:
   name: px-backup-telemetry-metrics-collector
   namespace: {{ .Release.Namespace }}
   labels:
-    app.kubernetes.io/component: px-backup-telemetry
-    app.kubernetes.io/name: metrics-collector
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: metrics-collector
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
   replicas: 1
@@ -19,14 +19,14 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app: px-backup-telemetry-metrics-collector
+      app.kubernetes.io/name: px-backup-telemetry
+      app.kubernetes.io/component: metrics-collector
   template:
     metadata:
       labels:
-        app: px-backup-telemetry-metrics-collector
-        app.kubernetes.io/component: px-backup-telemetry
-        app.kubernetes.io/name: metrics-collector
 {{- include "px-central.labels" . | nindent 8 }}
+        app.kubernetes.io/name: px-backup-telemetry
+        app.kubernetes.io/component: metrics-collector
     spec:
       serviceAccountName: px-backup-telemetry
       containers:

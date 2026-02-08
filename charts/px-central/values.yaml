@@ -139,6 +139,10 @@ telemetry:
   registerEndpoint: "register.staging-cloud-support.purestorage.com"
   restEndpoint: "rest.staging-cloud-support.purestorage.com"
 
+  # OSB plan ID for registration (e.g., "px-backup", "px-backup-enterprise")
+  # This identifies the service plan when registering with Portworx Essentials
+  planId: "px-backup"
+
   # Registration pod configuration
   # Registers PX-Backup instance with Pure1 and obtains mTLS certificates
   registration:
