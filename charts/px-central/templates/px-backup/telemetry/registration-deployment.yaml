@@ -9,8 +9,8 @@ metadata:
   name: px-backup-telemetry-registration
   namespace: {{ .Release.Namespace }}
   labels:
-    app.kubernetes.io/component: px-backup-telemetry
-    app.kubernetes.io/name: registration
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: registration
 {{- include "px-central.labels" . | nindent 4 }}
 spec:
   replicas: 1
@@ -18,14 +18,14 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      app: px-backup-telemetry-registration
+      app.kubernetes.io/name: px-backup-telemetry
+      app.kubernetes.io/component: registration
   template:
     metadata:
       labels:
-        app: px-backup-telemetry-registration
-        app.kubernetes.io/component: px-backup-telemetry
-        app.kubernetes.io/name: registration
 {{- include "px-central.labels" . | nindent 8 }}
+        app.kubernetes.io/name: px-backup-telemetry
+        app.kubernetes.io/component: registration
     spec:
       serviceAccountName: px-backup-telemetry
       containers:
