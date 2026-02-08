@@ -219,6 +219,8 @@ spec:
           value: "true"
         - name: OSB_ENDPOINT
           value: {{ .Values.telemetry.osbEndpoint | quote }}
+        - name: OSB_PLAN_ID
+          value: {{ .Values.telemetry.planId | default "px-backup" | quote }}
         {{- end }}
         - name: BACKUP_DELETE_WORKER
           value: "{{ .Values.pxbackup.backupDeleteWorker }}"
