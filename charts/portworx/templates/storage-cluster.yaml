@@ -195,6 +195,10 @@ spec:
     {{- end }}
   {{- end }}
 
+  {{- if .Values.priorityClassName }}
+  priorityClassName: {{ .Values.priorityClassName }}
+  {{- end }}
+
   kvdb:
   {{- if and (eq $internalKVDB true) (empty $etcdEndPoints) }}
     internal: true

@@ -274,6 +274,13 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestPriorityClass",
+			resultFileName: "storagecluster_priority_class.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_priority_class.yaml"},
+			},
+		},
+		{
 			name:           "TestCustomMetadata",
 			resultFileName: "storagecluster_custom_metadata.yaml",
 			helmOption: &helm.Options{

@@ -32,6 +32,13 @@ func TestComponentK8sConfigHelmTemplate(t *testing.T) {
 				ValuesFiles: []string{"./testValues/componentk8sconfigs.yaml"},
 			},
 		},
+		{
+			name:           "componentK8sConfigGlobalConfigPriorityClass",
+			resultFileName: "componentk8sconfig_global_config_priority_class.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/componentk8sconfig_global_config_priority_class.yaml"},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
