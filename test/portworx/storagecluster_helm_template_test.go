@@ -458,7 +458,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			name:           "TestKubeVirtStorageClasses",
 			resultFileName: "storagecluster_kubevirt_storageclasses.yaml",
 			helmOption: &helm.Options{
-				ValuesFiles: []string{"storagecluster_kubevirt_storageclasses.yaml"},
+				ValuesFiles: []string{"./testValues/storagecluster_kubevirt_storageclasses.yaml"},
 			},
 		},
 		{

@@ -6,10 +6,9 @@ metadata:
   annotations:
   labels:
     heritage: "Helm"
-    release: "myrelease"
-    chart: "portworx-7.0.3"
+    release: "my-release"
     app.kubernetes.io/managed-by: "Helm"
-    app.kubernetes.io/instance: "myrelease"
+    app.kubernetes.io/instance: "my-release"
 spec:
   image: portworx/oci-monitor:3.5.2
   imagePullPolicy: Always

@@ -74,9 +74,9 @@ customMetadata:                       # Configure custom labels and annotation f
     pod:
       storage: ""
     service:
-      portworxApi: ""
-      portworxService: ""
-      portworxKVDBService: ""
+      portworx-api: ""
+      portworx-service: ""
+      portworx-kvdb-service: ""
   labels:                            
     service: 
       portworx-api: ""
