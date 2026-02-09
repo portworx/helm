@@ -281,6 +281,13 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestOcpDynamicPlugin",
+			resultFileName: "storagecluster_ocp_dynamic_plugin.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_ocp_dynamic_plugin.yaml"},
+			},
+		},
+		{
 			name:           "TestCustomMetadata",
 			resultFileName: "storagecluster_custom_metadata.yaml",
 			helmOption: &helm.Options{

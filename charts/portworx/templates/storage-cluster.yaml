@@ -667,4 +667,17 @@ spec:
     enabled: {{ .Values.taintBasedScheduling.enabled }}
   {{- end}}
 
+  {{- if or .Values.ocpDynamicPlugin.cacheAgentImage .Values.ocpDynamicPlugin.pluginImage .Values.ocpDynamicPlugin.proxyImage }}
+  ocpDynamicPlugin:
+    {{- if .Values.ocpDynamicPlugin.cacheAgentImage }}
+    cacheAgentImage: {{ .Values.ocpDynamicPlugin.cacheAgentImage }}
+    {{- end }}
+    {{- if .Values.ocpDynamicPlugin.pluginImage }}
+    pluginImage: {{ .Values.ocpDynamicPlugin.pluginImage }}
+    {{- end }}
+    {{- if .Values.ocpDynamicPlugin.proxyImage }}
+    proxyImage: {{ .Values.ocpDynamicPlugin.proxyImage }}
+    {{- end }}
+  {{- end }}
+
 {{- end }}

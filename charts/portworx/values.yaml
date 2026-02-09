@@ -221,6 +221,10 @@ autopilot:
   #   type: ""                          # Type is the type of data provider. For instance, prometheus
   #   params: ""                        # Pass params to provider. Example: url=http://datadog:9090;auth=foobar
 
+ocpDynamicPlugin:
+  cacheAgentImage: ""                   # Cache agent image
+  pluginImage: ""                       # Plugin image
+  proxyImage: ""                        # Proxy image
 
 internalKVDB: true                   # internal KVDB
 kvdbDevice: none                      # specify a separate device to store KVDB data, only used when internalKVDB is set to true
@@ -360,10 +364,10 @@ componentK8sConfig:
   #       containerConfigs:                                          # Configuration applied at container level
   #         - containerNames: ["autopilot"]                          # List of container names inside the workload
   #           resources:                                             # Resource requirements for the containers
-  #             requests:              
+  #             requests:
   #               cpu: "100m"
   #               memory: "128Mi"
-  #             limits:               
+  #             limits:
   #               cpu: "200m"
   #               memory: "256Mi"
   #       priorityClass: ""                                        # Priority class assigned to the workloads
