@@ -1,0 +1,6 @@
+pxfslibsUpdate:
+  enabled: true
+  onDemandTrigger: "2026-02-09T12:00:00Z"
+  autoDelete: true
+  schedule: "0 2 * * *"
+

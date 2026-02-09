@@ -115,6 +115,14 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `customRegistryURL`                                        | Custom Docker registry | "" |
 | `registrySecret`                                           | Registry secret | "" |
 | `imagePullPolicy`                                          | ImagePullPolicy specifies the image pull policy for all the images deployed by the operator. The possible values can be `Always` or `IfNotPresent`. | "Always" |
+| `priorityClassName`                                        | PriorityClass to be set for Portworx pods. This applies only to Portworx pods. To apply priority class for all components, use ComponentK8sConfig CR. | "" |
+| `pxfslibsUpdate.enabled`                                   | Enable pxfslibs update feature | false |
+| `pxfslibsUpdate.onDemandTrigger`                           | On-demand trigger for pxfslibs update. Set a timestamp in RFC3339 format to trigger the update (e.g., "2026-02-09T12:00:00Z") | "" |
+| `pxfslibsUpdate.autoDelete`                                | Auto delete the pxfslibs update job after completion | true |
+| `pxfslibsUpdate.schedule`                                  | Schedule the pxfslibs update job in cronjob format (e.g., "0 2 * * *" for daily at 2 AM) | "" |
+| `ocpDynamicPlugin.cacheAgentImage`                         | Cache agent image for OpenShift dynamic plugin | "" |
+| `ocpDynamicPlugin.pluginImage`                             | Plugin image for OpenShift dynamic plugin | "" |
+| `ocpDynamicPlugin.proxyImage`                              | Proxy image for OpenShift dynamic plugin | "" |
 | `monitoring.prometheus.enabled`                            | Enable or disable Prometheus | false |
 | `monitoring.prometheus.exportMetrics`                      | Expose the Portworx metrics to an external or operator deployed Prometheus | false |
 | `monitoring.prometheus.alertManager`                       | Enable or disable alertmanager | false |
@@ -164,6 +172,10 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `updateStrategy.minReadySeconds`                           | Minimum number of seconds that a pod should be ready before the next batch of pods is updated during a rolling update | 1 |
 | `updateStrategy.disruption.allow`                          | This field is used to enable or disable smart and parallel upgrade. Smart upgrade is disabled by default, Enable it by setting to false. we can use the `maxUnavailable` field to control the maximum number of Portworx nodes that can be upgraded at a time | None |
 | `updateStrategy.autoUpdateComponents`                      | Specifies the update strategy for the component images. Valid values: None, Once, Always | None |
+| `componentK8sConfig.enabled`                               | Enables or disables creation of ComponentK8sConfig CR for component-level Kubernetes configuration | false |
+| `componentK8sConfig.name`                                  | Name of the ComponentK8sConfig resource | "portworx-k8s-config" |
+| `componentK8sConfig.globalConfig`                          | Global configuration that applies to all Portworx components unless overridden by component-specific configuration. Supports annotations, labels, placement (nodeAffinity, tolerations), and priorityClass. Note: Global configuration cannot set container resource requests and limits. | {} |
+| `componentK8sConfig.components`                            | List of component-specific configurations. Each component can specify componentNames (e.g., "Autopilot", "CSI", "Portworx API") and workloadConfigs with workloadNames, annotations, labels, containerConfigs (resources), priorityClass, and placement settings. | [] |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 

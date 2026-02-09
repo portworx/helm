@@ -680,4 +680,17 @@ spec:
     {{- end }}
   {{- end }}
 
+  {{- if .Values.pxfslibsUpdate.enabled }}
+  pxfslibsUpdate:
+    enabled: true
+    {{- if .Values.pxfslibsUpdate.onDemandTrigger }}
+    onDemandTrigger: {{ .Values.pxfslibsUpdate.onDemandTrigger }}
+    {{- end }}
+    {{- if or (eq .Values.pxfslibsUpdate.autoDelete true) (eq .Values.pxfslibsUpdate.autoDelete false) }}
+    autoDelete: {{ .Values.pxfslibsUpdate.autoDelete }}
+    {{- end }}
+    {{- if .Values.pxfslibsUpdate.schedule }}
+    schedule: {{ .Values.pxfslibsUpdate.schedule }}
+    {{- end }}
+  {{- end }}
 {{- end }}

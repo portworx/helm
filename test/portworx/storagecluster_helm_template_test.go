@@ -288,6 +288,13 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestPxfslibsUpdate",
+			resultFileName: "storagecluster_pxfslibs_update.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_pxfslibs_update.yaml"},
+			},
+		},
+		{
 			name:           "TestCustomMetadata",
 			resultFileName: "storagecluster_custom_metadata.yaml",
 			helmOption: &helm.Options{
