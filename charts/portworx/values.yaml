@@ -149,7 +149,7 @@ priorityClassName:                    # PriorityClass to be set of Px pods, it a
 pxfslibsUpdate:
   enabled: false                     # Enable pxfslibs update
   onDemandTrigger: ""                # On-Demand trigger, set a timestamp in RFC3339 format to trigger the update
-  autoDelete: true                   # Auto delete the pxfslibs update job after completion
+  autoDelete: false                  # Auto delete the pxfslibs update job after completion
   schedule: ""                       # Schedule the pxfslibs update job in cronjob format
 
 monitoring:
