@@ -218,9 +218,9 @@ spec:
         - name: TELEMETRY_ENABLED
           value: "true"
         - name: OSB_ENDPOINT
-          value: {{ .Values.telemetry.osbEndpoint | quote }}
+          value: {{ index .Values.telemetry.endpoints .Values.telemetry.environment "osb" | quote }}
         - name: OSB_PLAN_ID
-          value: {{ .Values.telemetry.planId | default "px-backup" | quote }}
+          value: {{ index .Values.telemetry.endpoints .Values.telemetry.environment "planId" | quote }}
         {{- end }}
         - name: BACKUP_DELETE_WORKER
           value: "{{ .Values.pxbackup.backupDeleteWorker }}"

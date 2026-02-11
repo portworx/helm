@@ -107,7 +107,6 @@ linkerd:
 
 # Telemetry configuration for PX-Backup
 # Collects and uploads metrics, logs, and reporting data to Pure1
-# All telemetry images are defined in the 'images' section below
 telemetry:
   enabled: false
 
@@ -120,33 +119,21 @@ telemetry:
     staging:
       # OSB endpoint for registration (base URL only, path will be appended by code)
       osb: "https://master-staging.portworx.dev"
+      # OSB plan ID for registration
+      planId: "px-backup"
       # Pure1 registration endpoint (for certificate registration)
       register: "register.staging-cloud-support.purestorage.com"
       # Pure1 REST API endpoint (for metrics and logs upload)
       rest: "rest.staging-cloud-support.purestorage.com"
     production:
       # OSB endpoint for registration
-      osb: "https://master.portworx.com"
+      osb: "https://pxessentials.portworx.com"
+      # OSB plan ID for registration
+      planId: "px-backup"
       # Pure1 registration endpoint (for certificate registration)
       register: "register.cloud-support.purestorage.com"
       # Pure1 REST API endpoint (for metrics and logs upload)
       rest: "rest.cloud-support.purestorage.com"
-
-  # Legacy endpoint fields (for backward compatibility with existing templates)
-  # These are set based on the 'environment' field above
-  # TODO: Update templates to use .Values.telemetry.endpoints[.Values.telemetry.environment].* instead
-  osbEndpoint: "https://master-staging.portworx.dev"
-  registerEndpoint: "register.staging-cloud-support.purestorage.com"
-  restEndpoint: "rest.staging-cloud-support.purestorage.com"
-
-  # OSB plan ID for registration (e.g., "px-backup", "px-backup-enterprise")
-  # This identifies the service plan when registering with Portworx Essentials
-  planId: "px-backup"
-
-  # Registration pod configuration
-  # Registers PX-Backup instance with Pure1 and obtains mTLS certificates
-  registration:
-    enabled: true
 
   # Metrics collector configuration
   # Collects real-time metrics from PX-Backup and uploads to Pure1

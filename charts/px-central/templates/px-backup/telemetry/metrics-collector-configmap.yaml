@@ -116,7 +116,7 @@ data:
                         key: "product-version"
                         value: {{ .Values.pxbackup.version | quote }}
                     route:
-                      host_rewrite_literal: {{ .Values.telemetry.restEndpoint }}
+                      host_rewrite_literal: {{ index .Values.telemetry.endpoints .Values.telemetry.environment "rest" }}
                       cluster: cluster_cloud_support
       clusters:
       - name: cluster_cloud_support
@@ -130,13 +130,13 @@ data:
             - endpoint:
                 address:
                   socket_address:
-                    address: {{ .Values.telemetry.restEndpoint }}
+                    address: {{ index .Values.telemetry.endpoints .Values.telemetry.environment "rest" }}
                     port_value: 443
         transport_socket:
           name: envoy.transport_sockets.tls
           typed_config:
             "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
-            sni: {{ .Values.telemetry.restEndpoint }}
+            sni: {{ index .Values.telemetry.endpoints .Values.telemetry.environment "rest" }}
             common_tls_context:
               # Client certificate configuration using SDS
               tls_certificate_sds_secret_configs:
@@ -151,7 +151,7 @@ data:
                 match_typed_subject_alt_names:
                 - san_type: DNS
                   matcher:
-                    exact: {{ .Values.telemetry.restEndpoint }}
+                    exact: {{ index .Values.telemetry.endpoints .Values.telemetry.environment "rest" }}
 ---
 # TLS Certificate SDS Configuration
 apiVersion: v1
