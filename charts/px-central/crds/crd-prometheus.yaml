@@ -7,6 +7,7 @@ metadata:
     app: prometheus-operator
   annotations:
     "helm.sh/hook": crd-install
+    argocd.argoproj.io/sync-options: ServerSideApply=true
 spec:
   group: monitoring.coreos.com
   names:

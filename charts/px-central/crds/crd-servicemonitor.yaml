@@ -5,6 +5,7 @@ metadata:
   annotations:
     controller-gen.kubebuilder.io/version: v0.4.1
     helm.sh/hook: crd-install
+    argocd.argoproj.io/sync-options: ServerSideApply=true
   name: servicemonitors.monitoring.coreos.com
 spec:
   group: monitoring.coreos.com
