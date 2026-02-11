@@ -5698,6 +5698,20 @@ spec:
                         description: LogUploaderImage is docker image of the log-upload-service
                           container.
                         type: string
+                      metricsCollector:
+                        description: MetricsCollector is the spec for configuring
+                          metrics collector for telemetry
+                        properties:
+                          enabled:
+                            default: true
+                            description: Enabled decides whether metrics collector
+                              needs to be enabled or not, by default it is true
+                            type: boolean
+                          image:
+                            description: Image is docker image of the `collector`
+                              container of the px-telemetry-metrics-collector deployment
+                            type: string
+                        type: object
                       resources:
                         description: |-
                           Resources define resources requests and limits for telemetry pods.
