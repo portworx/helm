@@ -684,13 +684,13 @@ spec:
   pxfslibsUpdate:
     enabled: true
     {{- if .Values.pxfslibsUpdate.onDemandTrigger }}
-    onDemandTrigger: {{ .Values.pxfslibsUpdate.onDemandTrigger }}
+    onDemandTrigger: {{ .Values.pxfslibsUpdate.onDemandTrigger | quote}}
     {{- end }}
     {{- if or (eq .Values.pxfslibsUpdate.autoDelete true) (eq .Values.pxfslibsUpdate.autoDelete false) }}
     autoDelete: {{ .Values.pxfslibsUpdate.autoDelete }}
     {{- end }}
     {{- if .Values.pxfslibsUpdate.schedule }}
-    schedule: {{ .Values.pxfslibsUpdate.schedule }}
+    schedule: {{ .Values.pxfslibsUpdate.schedule | quote}}
     {{- end }}
   {{- end }}
 {{- end }}
