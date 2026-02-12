@@ -2,9 +2,10 @@
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) }}
-{{- /* Lookup existing ConfigMap to preserve appliance-id during upgrades */ -}}
+{{- /* Lookup existing ConfigMap to preserve appliance-id and endpoints during upgrades */ -}}
 {{- $existingRegistrationEnvoyConfigMap := lookup "v1" "ConfigMap" .Release.Namespace "px-backup-telemetry-registration-proxy-config" }}
 {{- $applianceID := "APPLIANCE_ID_PLACEHOLDER" }}
+{{- $registerEndpoint := "ENDPOINT_REGISTER_PLACEHOLDER" }}
 {{- if $existingRegistrationEnvoyConfigMap }}
   {{- $existingRegistrationConfig := index $existingRegistrationEnvoyConfigMap.data "envoy-config-register.yaml" | default "" }}
   {{- if $existingRegistrationConfig }}
@@ -12,6 +13,11 @@
     {{- $match := regexFind "key: \"appliance-id\"\\s+value: \"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"" $existingRegistrationConfig }}
     {{- if $match }}
       {{- $applianceID = regexReplaceAll "key: \"appliance-id\"\\s+value: \"([0-9a-f-]+)\"" $match "${1}" }}
+    {{- end }}
+    {{- /* Extract register endpoint from existing config */ -}}
+    {{- $endpointMatch := regexFind "address: register\\.[a-z-]+\\.purestorage\\.com" $existingRegistrationConfig }}
+    {{- if $endpointMatch }}
+      {{- $registerEndpoint = regexReplaceAll "address: ([a-z.-]+)" $endpointMatch "${1}" }}
     {{- end }}
   {{- end }}
 {{- end }}
@@ -123,7 +129,7 @@ data:
                         key: "product-version"
                         value: {{ .Values.pxbackup.version | quote }}
                     route:
-                      host_rewrite_literal: {{ index .Values.telemetry.endpoints .Values.telemetry.environment "register" }}
+                      host_rewrite_literal: {{ $registerEndpoint }}
                       cluster: cluster_register_cloud_support
       clusters:
       - name: cluster_register_cloud_support
@@ -137,13 +143,13 @@ data:
             - endpoint:
                 address:
                   socket_address:
-                    address: {{ index .Values.telemetry.endpoints .Values.telemetry.environment "register" }}
+                    address: {{ $registerEndpoint }}
                     port_value: 443
         transport_socket:
           name: envoy.transport_sockets.tls
           typed_config:
             "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
-            sni: {{ index .Values.telemetry.endpoints .Values.telemetry.environment "register" }}
+            sni: {{ $registerEndpoint }}
             common_tls_context:
               tls_certificates:
               - certificate_chain:
@@ -154,6 +160,6 @@ data:
                 match_typed_subject_alt_names:
                 - san_type: DNS
                   matcher:
-                    exact: {{ index .Values.telemetry.endpoints .Values.telemetry.environment "register" }}
+                    exact: {{ $registerEndpoint }}
 {{- end }}
 

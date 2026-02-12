@@ -93,8 +93,6 @@ spec:
         # Collection configuration
         - name: COLLECTION_INTERVAL
           value: {{ .Values.telemetry.logsCollector.collectionInterval | default 3600 }}s
-        - name: STARTUP_DELAY
-          value: {{ .Values.telemetry.logsCollector.startupDelay | default 60 }}s
         - name: LOG_TAIL_LINES
           value: "10000"
 

@@ -105,53 +105,6 @@ istio:
 linkerd:
   enabled: false
 
-# Telemetry configuration for PX-Backup
-# Collects and uploads metrics, logs, and reporting data to Pure1
-telemetry:
-  enabled: false
-
-  # Environment: staging or production
-  # Controls which set of endpoints to use for telemetry data upload
-  environment: staging
-
-  # Endpoints configuration for different environments
-  endpoints:
-    staging:
-      # OSB endpoint for registration (base URL only, path will be appended by code)
-      osb: "https://master-staging.portworx.dev"
-      # OSB plan ID for registration
-      planId: "px-backup"
-      # Pure1 registration endpoint (for certificate registration)
-      register: "register.staging-cloud-support.purestorage.com"
-      # Pure1 REST API endpoint (for metrics and logs upload)
-      rest: "rest.staging-cloud-support.purestorage.com"
-    production:
-      # OSB endpoint for registration
-      osb: "https://pxessentials.portworx.com"
-      # OSB plan ID for registration
-      planId: "px-backup"
-      # Pure1 registration endpoint (for certificate registration)
-      register: "register.cloud-support.purestorage.com"
-      # Pure1 REST API endpoint (for metrics and logs upload)
-      rest: "rest.cloud-support.purestorage.com"
-
-  # Metrics collector configuration
-  # Collects real-time metrics from PX-Backup and uploads to Pure1
-  metricsCollector:
-    enabled: true
-    scrapeInterval: 10  # seconds
-    batchSize: 5  # number of scrapes to batch before sending
-
-  # Logs collector configuration
-  # Collects pod logs and reporting data, uploads to Pure1
-  logsCollector:
-    enabled: true
-    collectionInterval: 3600  # seconds (1 hour)
-    startupDelay: 60  # seconds - delay before first collection to allow pods to stabilize
-    # Exclude pods matching these patterns (comma-separated)
-    # Default: exclude monitoring, frontend, and telemetry pods to avoid circular dependencies
-    excludePodPatterns: "alertmanager,prometheus,frontend,lh-middleware,telemetry"
-
 isUpgrade: false
 isOpenshift: false
 isArgoCD: false
@@ -210,6 +163,20 @@ pxmonitor:
   cortex:
     alertmanager:
       advertiseAddress: ""
+
+# Telemetry configuration for PX-Backup
+telemetry:
+  enabled: false
+  environment: staging # Environment: staging or production
+  metricsCollector:
+    enabled: true
+    scrapeInterval: 10  # seconds
+    batchSize: 5  # number of scrapes to batch before sending
+  logsCollector:
+    enabled: true
+    collectionInterval: 3600  # seconds (1 hour)
+    # Exclude pods matching these patterns (comma-separated)
+    excludePodPatterns: "alertmanager,prometheus,frontend,lh-middleware,telemetry"
 
 service:
   pxCentralUIServiceType: "LoadBalancer"
@@ -357,40 +324,35 @@ images:
     module: pxBackup
 
   ## Images required for PX-Backup Telemetry
-  # Telemetry Envoy proxy (mTLS communication with Pure1)
   telemetryEnvoyImage:
     registry: docker.io
     repo: portworx
     imageName: telemetry-envoy
-    tag: "1.1.18"
+    tag: 1.1.18
     module: pxBackup
-  # Telemetry registration service (CCM-Go)
   telemetryRegistrationImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: ccm-go
-    tag: "1.4.30"
+    tag: 1.4.30
     module: pxBackup
-  # Telemetry metrics collector (realtime metrics)
   telemetryMetricsCollectorImage:
     registry: docker.io
     repo: purestorage
     imageName: realtime-metrics
-    tag: "1.0.23"
+    tag: 1.0.23
     module: pxBackup
-  # Telemetry data collector (Go binary for log collection)
   telemetryDataCollectorImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: telemetry-data-collector
-    tag: "2.11.0-staging"
+    tag: 2.11.0-staging
     module: pxBackup
-  # Telemetry log upload service (gRPC service for Pure1 upload)
   telemetryLogUploadImage:
     registry: docker.io
     repo: portworx
     imageName: log-upload
-    tag: "px-1.1.94"
+    tag: px-1.1.94
     module: pxBackup
 
   ## Images required for enabling px-license-server
