@@ -5,7 +5,7 @@ deployCluster: true                     # Deploy the Portworx cluster
 verboseOperatorLogs: false              # Enable verbose logging for the Portworx operator.
 
 imageVersion: 3.5.2                    # Version of the PX Image.
-pxOperatorImageVersion: 25.5.1         # Version of the PX operator image.
+pxOperatorImageVersion: 25.6.0         # Version of the PX operator image.
 
 openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
 isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
@@ -74,9 +74,9 @@ customMetadata:                       # Configure custom labels and annotation f
     pod:
       storage: ""
     service:
-      portworxApi: ""
-      portworxService: ""
-      portworxKVDBService: ""
+      portworx-api: ""
+      portworx-service: ""
+      portworx-kvdb-service: ""
   labels:                            
     service: 
       portworx-api: ""
@@ -143,7 +143,14 @@ licenseSecret:
 
 imagePullPolicy:                      # ImagePullPolicy specifies the image pull policy for all the images deployed by the operator. 
                                       # The possible values can be `Always` or `IfNotPresent`. Default value is `Always`.
+priorityClassName:                    # PriorityClass to be set of Px pods, it applies only to Portworx pods.
+                                      # To apply priority class for all components use ComponentK8sConfig CR.
 
+pxfslibsUpdate:
+  enabled: false                     # Enable pxfslibs update
+  onDemandTrigger: ""                # On-Demand trigger, set a timestamp in RFC3339 format to trigger the update
+  autoDelete: false                  # Auto delete the pxfslibs update job after completion
+  schedule: ""                       # Schedule the pxfslibs update job in cronjob format
 
 monitoring:
   prometheus:                         
@@ -220,6 +227,10 @@ autopilot:
   #   type: ""                          # Type is the type of data provider. For instance, prometheus
   #   params: ""                        # Pass params to provider. Example: url=http://datadog:9090;auth=foobar
 
+ocpDynamicPlugin:
+  cacheAgentImage: ""                   # Cache agent image
+  pluginImage: ""                       # Plugin image
+  proxyImage: ""                        # Proxy image
 
 internalKVDB: true                   # internal KVDB
 kvdbDevice: none                      # specify a separate device to store KVDB data, only used when internalKVDB is set to true
@@ -330,7 +341,24 @@ updateStrategy:
 
 componentK8sConfig:
   enabled: false                                          # Enables or disables creation of ComponentK8sConfig CR
-  name: portworx-k8s-config                               # Name of the ComponentK8sConfig resource
+  name: portworx-k8s-config                                # Name of the ComponentK8sConfig resource
+#   globalConfig:                                          # Global configuration applies to all components, if not overridden by component specific configuration
+#     annotations:                                        # you can't set global configuration for container resource requests and limits.
+#       example-annotation: "true"
+#     labels:
+#       example-label: "value"
+#     placement:
+#       nodeAffinity:
+#         requiredDuringSchedulingIgnoredDuringExecution:
+#           nodeSelectorTerms:
+#             - matchExpressions:
+#               - key: px/enabled
+#                 operator: NotIn
+#                 values: ["false"]
+#       tolerations:
+#         - key: test-key
+#           operator: Exists
+#     priorityClass: ""
   components:
   # - componentNames: ["Autopilot","CSI","Portworx API"]   # List of Portworx components this config applies to
   #   workloadConfigs:
@@ -342,13 +370,13 @@ componentK8sConfig:
   #       containerConfigs:                                          # Configuration applied at container level
   #         - containerNames: ["autopilot"]                          # List of container names inside the workload
   #           resources:                                             # Resource requirements for the containers
-  #             requests:              
+  #             requests:
   #               cpu: "100m"
   #               memory: "128Mi"
-  #             limits:               
+  #             limits:
   #               cpu: "200m"
   #               memory: "256Mi"
-  #
+  #       priorityClass: ""                                        # Priority class assigned to the workloads
   #       placement:                                               # Placement configuration for the workloads
   #         tolerations:                                           # Tolerations that allow workloads to run on tainted nodes
   #           - key: test-key

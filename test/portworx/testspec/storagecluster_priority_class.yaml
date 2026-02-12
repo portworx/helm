@@ -12,6 +12,7 @@ metadata:
 spec:
   image: portworx/oci-monitor:3.5.2
   imagePullPolicy: Always
+  priorityClassName: px-high-priority
 
   kvdb:
     internal: true
@@ -28,9 +29,6 @@ spec:
         enabled: true
   csi:
     enabled: true
-    kubeVirtStorageClasses:
-      pxCdiScratch: true
-      pxRwxBlockKubevirt: true
-      pxRwxFileKubevirt: true
   autopilot:
     enabled: true
+

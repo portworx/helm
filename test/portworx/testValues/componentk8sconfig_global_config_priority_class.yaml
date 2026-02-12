@@ -1,0 +1,30 @@
+componentK8sConfig:
+  enabled: true
+  name: portworx-k8s-config
+  globalConfig:
+    annotations:
+      global-annotation: "true"
+    labels:
+      global-label: "global-value"
+    priorityClass: "system-cluster-critical"
+    placement:
+      tolerations:
+        - key: global-key
+          operator: Exists
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+              - key: px/enabled
+                operator: NotIn
+                values: ["false"]
+  components:
+  - componentNames: ["Autopilot"]
+    workloadConfigs:
+      - workloadNames: ["autopilot"]
+        priorityClass: "autopilot-priority"
+        annotations:
+          workload-annotation: "true"
+        labels:
+          workload-label: "workload-value"
+

@@ -195,6 +195,10 @@ spec:
     {{- end }}
   {{- end }}
 
+  {{- if .Values.priorityClassName }}
+  priorityClassName: {{ .Values.priorityClassName }}
+  {{- end }}
+
   kvdb:
   {{- if and (eq $internalKVDB true) (empty $etcdEndPoints) }}
     internal: true
@@ -663,4 +667,30 @@ spec:
     enabled: {{ .Values.taintBasedScheduling.enabled }}
   {{- end}}
 
+  {{- if or .Values.ocpDynamicPlugin.cacheAgentImage .Values.ocpDynamicPlugin.pluginImage .Values.ocpDynamicPlugin.proxyImage }}
+  ocpDynamicPlugin:
+    {{- if .Values.ocpDynamicPlugin.cacheAgentImage }}
+    cacheAgentImage: {{ .Values.ocpDynamicPlugin.cacheAgentImage }}
+    {{- end }}
+    {{- if .Values.ocpDynamicPlugin.pluginImage }}
+    pluginImage: {{ .Values.ocpDynamicPlugin.pluginImage }}
+    {{- end }}
+    {{- if .Values.ocpDynamicPlugin.proxyImage }}
+    proxyImage: {{ .Values.ocpDynamicPlugin.proxyImage }}
+    {{- end }}
+  {{- end }}
+
+  {{- if .Values.pxfslibsUpdate.enabled }}
+  pxfslibsUpdate:
+    enabled: true
+    {{- if .Values.pxfslibsUpdate.onDemandTrigger }}
+    onDemandTrigger: {{ .Values.pxfslibsUpdate.onDemandTrigger | quote}}
+    {{- end }}
+    {{- if or (eq .Values.pxfslibsUpdate.autoDelete true) (eq .Values.pxfslibsUpdate.autoDelete false) }}
+    autoDelete: {{ .Values.pxfslibsUpdate.autoDelete }}
+    {{- end }}
+    {{- if .Values.pxfslibsUpdate.schedule }}
+    schedule: {{ .Values.pxfslibsUpdate.schedule | quote}}
+    {{- end }}
+  {{- end }}
 {{- end }}
