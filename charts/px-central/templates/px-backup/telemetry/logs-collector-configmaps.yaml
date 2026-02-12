@@ -3,9 +3,10 @@
 {{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
 {{- $logsEnabled := .Values.telemetry.logsCollector.enabled | default true }}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) (eq $logsEnabled true) }}
-{{- /* Lookup existing ConfigMap to preserve appliance-id during upgrades */ -}}
+{{- /* Lookup existing ConfigMap to preserve appliance-id and endpoints during upgrades */ -}}
 {{- $existingLogsEnvoyConfigMap := lookup "v1" "ConfigMap" .Release.Namespace "px-backup-telemetry-logs-envoy-config" }}
 {{- $applianceID := "APPLIANCE_ID_PLACEHOLDER" }}
+{{- $restEndpoint := "ENDPOINT_REST_PLACEHOLDER" }}
 {{- if $existingLogsEnvoyConfigMap }}
   {{- $existingLogsConfig := index $existingLogsEnvoyConfigMap.data "envoy-config.yaml" | default "" }}
   {{- if $existingLogsConfig }}
@@ -13,6 +14,11 @@
     {{- $match := regexFind "key: \"appliance-id\"\\s+value: \"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"" $existingLogsConfig }}
     {{- if $match }}
       {{- $applianceID = regexReplaceAll "key: \"appliance-id\"\\s+value: \"([0-9a-f-]+)\"" $match "${1}" }}
+    {{- end }}
+    {{- /* Extract rest endpoint from existing config */ -}}
+    {{- $endpointMatch := regexFind "address: rest\\.[a-z-]+\\.purestorage\\.com" $existingLogsConfig }}
+    {{- if $endpointMatch }}
+      {{- $restEndpoint = regexReplaceAll "address: ([a-z.-]+)" $endpointMatch "${1}" }}
     {{- end }}
   {{- end }}
 {{- end }}
@@ -79,7 +85,7 @@ data:
                         key: "product-version"
                         value: {{ .Values.pxbackup.version | quote }}
                     route:
-                      host_rewrite_literal: {{ index .Values.telemetry.endpoints .Values.telemetry.environment "rest" }}
+                      host_rewrite_literal: {{ $restEndpoint }}
                       cluster: service_logs
               http_filters:
               - name: envoy.filters.http.router
@@ -98,13 +104,13 @@ data:
             - endpoint:
                 address:
                   socket_address:
-                    address: {{ index .Values.telemetry.endpoints .Values.telemetry.environment "rest" }}
+                    address: {{ $restEndpoint }}
                     port_value: 443
         transport_socket:
           name: envoy.transport_sockets.tls
           typed_config:
             "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
-            sni: {{ index .Values.telemetry.endpoints .Values.telemetry.environment "rest" }}
+            sni: {{ $restEndpoint }}
             common_tls_context:
               # Client certificate configuration using SDS
               tls_certificate_sds_secret_configs:
@@ -119,7 +125,7 @@ data:
                 match_typed_subject_alt_names:
                 - san_type: DNS
                   matcher:
-                    exact: {{ index .Values.telemetry.endpoints .Values.telemetry.environment "rest" }}
+                    exact: {{ $restEndpoint }}
 ---
 # Envoy SDS (Secret Discovery Service) Configuration
 apiVersion: v1
