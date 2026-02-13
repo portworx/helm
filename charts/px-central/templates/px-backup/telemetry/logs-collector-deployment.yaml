@@ -93,30 +93,16 @@ spec:
         # Collection configuration
         - name: COLLECTION_INTERVAL
           value: {{ .Values.telemetry.logsCollector.collectionInterval | default 3600 }}s
-        - name: LOG_TAIL_LINES
-          value: "10000"
 
         # Reporting API configuration
         - name: REPORTING_API_URL
           value: "http://px-backup.{{ .Release.Namespace }}.svc.cluster.local:10001/v1/reporting/data"
-        - name: REPORTING_API_TIMEOUT
-          value: "30s"
 
-        # Upload service configuration (gRPC to log-upload-service sidecar)
-        - name: UPLOAD_SERVICE_ADDR
-          value: "localhost:9090"
-        - name: UPLOAD_SERVICE_TIMEOUT
-          value: "5s"
-
-        # REST API configuration (enabled for testing)
-        - name: UPLOAD_USE_REST_API
-          value: "true"
-        - name: UPLOAD_SERVICE_REST_URL
+        # Upload service configuration (REST API to log-upload-service sidecar)
+        - name: UPLOAD_SERVICE_URL
           value: "http://localhost:8080"
 
         # Log storage configuration
-        - name: LOG_DIR
-          value: "/var/cores"
         - name: CLEANUP_AGE
           value: "72h"
 
@@ -162,7 +148,6 @@ spec:
               key: appliance-id
         - name: APPLIANCE_NAME
           value: "px-backup-{{ .Release.Namespace }}"
-        # Enable REST API on port 8080
         - name: LOG_UPLOAD_REST_PORT
           value: "8080"
         securityContext:
@@ -233,7 +218,7 @@ spec:
       - name: log-upload-cache
         emptyDir: {}  # For SQLite bookkeeping
       - name: phonehome-cache
-        emptyDir: {}  # For phonehome.sent tracking file (fixes Issue #3)
+        emptyDir: {}  # For phonehome.sent tracking file
       - name: envoy-config
         configMap:
           name: px-backup-telemetry-logs-envoy-config
