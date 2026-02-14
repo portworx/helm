@@ -106,10 +106,6 @@ spec:
         - name: CLEANUP_AGE
           value: "72h"
 
-        # Log exclusion patterns (for filtering log lines within pods)
-        - name: EXCLUDE_PATTERNS
-          value: ""
-
         # Pod exclusion patterns (for excluding entire pods from collection)
         - name: EXCLUDE_POD_PATTERNS
           value: {{ .Values.telemetry.logsCollector.excludePodPatterns | default "alertmanager,prometheus,frontend,lh-middleware,telemetry" | quote }}
