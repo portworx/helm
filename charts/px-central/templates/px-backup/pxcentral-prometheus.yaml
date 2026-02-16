@@ -506,7 +506,7 @@ spec:
 
 ---
 # ServiceMonitor for px-backup's dedicated Prometheus dashboard
-# Only created when dedicated monitoring system is enabled
+# Created when dedicated monitoring system is enabled (deployDedicatedMonitoringSystem=true)
 # Includes metric drops to optimize for dashboard use
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -535,11 +535,11 @@ spec:
       sourceLabels:
       - __name__
     - action: drop
-      regex: (pxbackup_backup_duration_seconds|pxbackup_backup_resource_count|pxbackup_backup_schedule_status|pxbackup_backup_size_bytes|pxbackup_backup_volume_count|pxbackup_backuplocation_metrics|pxbackup_cloudcred_metrics|pxbackup_schedpolicy_metrics|pxbackup_restore_duration_seconds|pxbackup_restore_resource_count|pxbackup_restore_size_bytes|pxbackup_restore_volume_count|pxbackup_backup_object_info|pxbackup_backup_volume_info|pxbackup_virtual_machine_info|pxbackup_virtual_machine_resource_info)
+      regex: (pxbackup_backup_duration_seconds|pxbackup_backup_resource_count|pxbackup_backup_schedule_status|pxbackup_backup_size_bytes|pxbackup_backup_volume_count|pxbackup_backuplocation_metrics|pxbackup_cloudcred_metrics|pxbackup_schedpolicy_metrics|pxbackup_restore_duration_seconds|pxbackup_restore_resource_count|pxbackup_restore_size_bytes|pxbackup_restore_volume_count|pxbackup_backup_object_info|pxbackup_backup_volume_info|pxbackup_virtual_machine_info|pxbackup_virtual_machine_resource_info|pxbackup_namespace_resource_type_info|pxbackup_namespace_resource_info)
       sourceLabels:
       - __name__
     port: http-rest-api
-    {{- if and .Values.istio.enabled (eq $deployDedicatedMonitoringSystem true) }}
+    {{- if .Values.istio.enabled }}
     scheme: https
     tlsConfig:
       caFile: /etc/prom-certs/root-cert.pem
@@ -553,14 +553,66 @@ spec:
   selector:
     matchLabels:
       app: px-backup
+{{- else if eq $enableExternalMetricsScraping false }}
+---
+# ServiceMonitor for px-backup's dashboard Prometheus or external monitoring
+# Created when dedicated monitoring is disabled AND external scraping is disabled
+# This handles the case: deployDedicatedMonitoringSystem=false, enableExternalMetricsScraping=false
+# Allows external Prometheus to discover and scrape px-backup metrics
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  namespace: {{ .Release.Namespace }}
+  name: px-backup-dashboard-prometheus-sm
+  labels:
+    name: px-backup-dashboard-prometheus-sm
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  endpoints:
+  - metricRelabelings:
+    - action: labeldrop
+      regex: (instance|pod)
+    - action: drop
+      regex: process_.*
+      sourceLabels:
+      - __name__
+    - action: drop
+      regex: go_.*
+      sourceLabels:
+      - __name__
+    - action: drop
+      regex: grpc_.*
+      sourceLabels:
+      - __name__
+    - action: drop
+      regex: (pxbackup_backup_duration_seconds|pxbackup_backup_resource_count|pxbackup_backup_schedule_status|pxbackup_backup_size_bytes|pxbackup_backup_volume_count|pxbackup_backuplocation_metrics|pxbackup_cloudcred_metrics|pxbackup_schedpolicy_metrics|pxbackup_restore_duration_seconds|pxbackup_restore_resource_count|pxbackup_restore_size_bytes|pxbackup_restore_volume_count|pxbackup_backup_object_info|pxbackup_backup_volume_info|pxbackup_virtual_machine_info|pxbackup_virtual_machine_resource_info|pxbackup_namespace_resource_type_info|pxbackup_namespace_resource_info)
+      sourceLabels:
+      - __name__
+    port: http-rest-api
+    {{- if .Values.istio.enabled }}
+    scheme: https
+    tlsConfig:
+      caFile: /etc/istio-output-certs/root-cert.pem
+      certFile: /etc/istio-output-certs/cert-chain.pem
+      insecureSkipVerify: true
+      keyFile: /etc/istio-output-certs/key.pem
+    {{- end }}
+    targetPort: 10001
+  namespaceSelector:
+    any: true
+  selector:
+    matchLabels:
+      app: px-backup
 {{- end}}
 
-{{- if $enableExternalMetricsScraping }}
+{{- if eq $enableExternalMetricsScraping true }}
 ---
 # ServiceMonitor for external monitoring systems (e.g., central monitoring namespace)
 # Drops noisy metrics (process/go/grpc) and legacy pxbackup metrics
 # But KEEPS detailed metrics for comprehensive monitoring
 # External Prometheus should select this using label: prometheus=external-monitoring
+# Can coexist with px-backup-dashboard-prometheus-sm when both monitoring systems are enabled
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
@@ -589,7 +641,7 @@ spec:
       sourceLabels:
       - __name__
     - action: drop
-      regex: (pxbackup_backup_duration_seconds|pxbackup_backup_resource_count|pxbackup_backup_schedule_status|pxbackup_backup_size_bytes|pxbackup_backup_volume_count|pxbackup_backuplocation_metrics|pxbackup_cloudcred_metrics|pxbackup_schedpolicy_metrics|pxbackup_restore_duration_seconds|pxbackup_restore_resource_count|pxbackup_restore_size_bytes|pxbackup_restore_volume_count|pxbackup_namespace_resource_info|pxbackup_namespace_resource_type_info)
+      regex: (pxbackup_backup_duration_seconds|pxbackup_backup_resource_count|pxbackup_backup_schedule_status|pxbackup_backup_size_bytes|pxbackup_backup_volume_count|pxbackup_backuplocation_metrics|pxbackup_cloudcred_metrics|pxbackup_schedpolicy_metrics|pxbackup_restore_duration_seconds|pxbackup_restore_resource_count|pxbackup_restore_size_bytes|pxbackup_restore_volume_count)
       sourceLabels:
       - __name__
     # NOTE: Detailed metrics are NOT dropped for external monitoring
