@@ -165,7 +165,14 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "200m"
-      
+        # Health probe - verifies log-upload-service is ready (same as px-e)
+        readinessProbe:
+          grpc:
+            port: 9090
+          periodSeconds: 150
+          failureThreshold: 3
+          timeoutSeconds: 2
+
       # Container 3: Envoy Proxy
       - name: envoy
         image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryEnvoyImage.registry .Values.images.registry) (default .Values.images.telemetryEnvoyImage.repo .Values.images.repo) .Values.images.telemetryEnvoyImage.imageName .Values.images.telemetryEnvoyImage.tag }}
@@ -204,7 +211,17 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "200m"
-      
+        # Health probe - verifies envoy can reach upstream (Pure1)
+        # Auto-recovers from 503 UH errors by making pod not ready
+        readinessProbe:
+          httpGet:
+            host: 127.0.0.1
+            path: /ping-trusted
+            port: 12002
+          periodSeconds: 150
+          failureThreshold: 3
+          timeoutSeconds: 2
+
       volumes:
       - name: log-storage
         emptyDir: {}  # Shared between log-collector and log-upload-service

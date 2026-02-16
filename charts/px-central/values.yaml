@@ -338,9 +338,9 @@ images:
     module: pxBackup
   telemetryMetricsCollectorImage:
     registry: docker.io
-    repo: purestorage
+    repo: portworx
     imageName: realtime-metrics
-    tag: 1.0.23
+    tag: 1.0.32
     module: pxBackup
   telemetryDataCollectorImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual

@@ -54,6 +54,21 @@ spec:
             memory: 64Mi
           limits:
             memory: 128Mi
+        # Health probes - same as px-e telemetry registration
+        livenessProbe:
+          httpGet:
+            path: /status/environment
+            port: 12011
+          periodSeconds: 150
+          failureThreshold: 3
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            path: /status/environment
+            port: 12011
+          periodSeconds: 150
+          failureThreshold: 3
+          timeoutSeconds: 1
         volumeMounts:
         - name: registration-config
           mountPath: /etc/ccm
