@@ -65,6 +65,9 @@ data:
     certStoreType: "kvstore"
     kvStore:
       serverAddress: "px-backup.{{ .Release.Namespace }}.svc.cluster.local:10002"
+    httpServer:
+      port: "12011"
+      enabled: false
     k8s:
       certSecretName: "pure-telemetry-certs"
       certSecretNamespace: {{ .Release.Namespace | quote }}
