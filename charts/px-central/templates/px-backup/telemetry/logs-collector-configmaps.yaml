@@ -3,25 +3,16 @@
 {{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
 {{- $logsEnabled := .Values.telemetry.logsCollector.enabled | default true }}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) (eq $logsEnabled true) }}
-{{- /* Lookup existing ConfigMap to preserve appliance-id and endpoints during upgrades */ -}}
-{{- $existingLogsEnvoyConfigMap := lookup "v1" "ConfigMap" .Release.Namespace "px-backup-telemetry-logs-envoy-config" }}
-{{- $applianceID := "APPLIANCE_ID_PLACEHOLDER" }}
-{{- $restEndpoint := "ENDPOINT_REST_PLACEHOLDER" }}
-{{- if $existingLogsEnvoyConfigMap }}
-  {{- $existingLogsConfig := index $existingLogsEnvoyConfigMap.data "envoy-config.yaml" | default "" }}
-  {{- if $existingLogsConfig }}
-    {{- /* Extract appliance-id using regex (UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx) */ -}}
-    {{- $match := regexFind "key: \"appliance-id\"\\s+value: \"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"" $existingLogsConfig }}
-    {{- if $match }}
-      {{- $applianceID = regexReplaceAll "key: \"appliance-id\"\\s+value: \"([0-9a-f-]+)\"" $match "${1}" }}
-    {{- end }}
-    {{- /* Extract rest endpoint from existing config */ -}}
-    {{- $endpointMatch := regexFind "address: rest\\.[a-z-]+\\.purestorage\\.com" $existingLogsConfig }}
-    {{- if $endpointMatch }}
-      {{- $restEndpoint = regexReplaceAll "address: ([a-z.-]+)" $endpointMatch "${1}" }}
-    {{- end }}
-  {{- end }}
-{{- end }}
+{{- /* Lookup existing values to preserve during upgrades */ -}}
+{{- $applianceID := include "telemetry.lookupApplianceID" (dict
+    "configMapName" "px-backup-telemetry-logs-envoy-config"
+    "configKey" "envoy-config.yaml"
+    "namespace" .Release.Namespace) | trim }}
+{{- $restEndpoint := include "telemetry.lookupEndpoint" (dict
+    "configMapName" "px-backup-telemetry-logs-envoy-config"
+    "configKey" "envoy-config.yaml"
+    "namespace" .Release.Namespace
+    "placeholder" "ENDPOINT_REST_PLACEHOLDER") | trim }}
 ---
 # Envoy Proxy Configuration for Logs Upload
 apiVersion: v1
