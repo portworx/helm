@@ -2,25 +2,16 @@
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) }}
-{{- /* Lookup existing ConfigMap to preserve appliance-id and endpoints during upgrades */ -}}
-{{- $existingRegistrationEnvoyConfigMap := lookup "v1" "ConfigMap" .Release.Namespace "px-backup-telemetry-registration-proxy-config" }}
-{{- $applianceID := "APPLIANCE_ID_PLACEHOLDER" }}
-{{- $registerEndpoint := "ENDPOINT_REGISTER_PLACEHOLDER" }}
-{{- if $existingRegistrationEnvoyConfigMap }}
-  {{- $existingRegistrationConfig := index $existingRegistrationEnvoyConfigMap.data "envoy-config-register.yaml" | default "" }}
-  {{- if $existingRegistrationConfig }}
-    {{- /* Extract appliance-id using regex (UUID format: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx) */ -}}
-    {{- $match := regexFind "key: \"appliance-id\"\\s+value: \"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"" $existingRegistrationConfig }}
-    {{- if $match }}
-      {{- $applianceID = regexReplaceAll "key: \"appliance-id\"\\s+value: \"([0-9a-f-]+)\"" $match "${1}" }}
-    {{- end }}
-    {{- /* Extract register endpoint from existing config */ -}}
-    {{- $endpointMatch := regexFind "address: register\\.[a-z-]+\\.purestorage\\.com" $existingRegistrationConfig }}
-    {{- if $endpointMatch }}
-      {{- $registerEndpoint = regexReplaceAll "address: ([a-z.-]+)" $endpointMatch "${1}" }}
-    {{- end }}
-  {{- end }}
-{{- end }}
+{{- /* Lookup existing values to preserve during upgrades */ -}}
+{{- $applianceID := include "telemetry.lookupApplianceID" (dict
+    "configMapName" "px-backup-telemetry-registration-proxy-config"
+    "configKey" "envoy-config-register.yaml"
+    "namespace" .Release.Namespace) | trim }}
+{{- $registerEndpoint := include "telemetry.lookupEndpoint" (dict
+    "configMapName" "px-backup-telemetry-registration-proxy-config"
+    "configKey" "envoy-config-register.yaml"
+    "namespace" .Release.Namespace
+    "placeholder" "ENDPOINT_REGISTER_PLACEHOLDER") | trim }}
 ---
 # CCM-Go Configuration
 apiVersion: v1
