@@ -4,11 +4,11 @@
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) }}
 {{- /* Lookup existing values to preserve during upgrades */ -}}
 {{- $applianceID := include "telemetry.lookupApplianceID" (dict
-    "configMapName" "px-backup-telemetry-registration-proxy-config"
+    "configMapName" "px-backup-telemetry-registration-envoy-config"
     "configKey" "envoy-config-register.yaml"
     "namespace" .Release.Namespace) | trim }}
 {{- $registerEndpoint := include "telemetry.lookupEndpoint" (dict
-    "configMapName" "px-backup-telemetry-registration-proxy-config"
+    "configMapName" "px-backup-telemetry-registration-envoy-config"
     "configKey" "envoy-config-register.yaml"
     "namespace" .Release.Namespace
     "placeholder" "ENDPOINT_REGISTER_PLACEHOLDER") | trim }}
@@ -67,7 +67,7 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: px-backup-telemetry-registration-proxy-config
+  name: px-backup-telemetry-registration-envoy-config
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup-telemetry

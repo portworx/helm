@@ -123,7 +123,7 @@ spec:
           name: px-backup-telemetry-registration-config
       - name: envoy-config
         configMap:
-          name: px-backup-telemetry-registration-proxy-config
+          name: px-backup-telemetry-registration-envoy-config
           optional: false  # Pod won't start until Envoy ConfigMap exists
       - name: cert-secret
         secret:
