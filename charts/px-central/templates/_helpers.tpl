@@ -174,3 +174,48 @@ Usage:
         {{- tpl (.value | toYaml) .context }}
     {{- end }}
 {{- end -}}
+
+{{/*
+=============================================================================
+Telemetry Helper Templates
+=============================================================================
+*/}}
+
+{{/*
+Extract appliance-id from existing telemetry ConfigMap during upgrades.
+Returns the existing appliance-id if found, otherwise returns placeholder.
+*/}}
+{{- define "telemetry.lookupApplianceID" -}}
+{{- $existingConfigMap := lookup "v1" "ConfigMap" .namespace .configMapName }}
+{{- $applianceID := "APPLIANCE_ID_PLACEHOLDER" }}
+{{- if $existingConfigMap }}
+  {{- $existingConfig := index $existingConfigMap.data .configKey | default "" }}
+  {{- if $existingConfig }}
+    {{- $match := regexFind "key: \"appliance-id\"\\s+value: \"[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\"" $existingConfig }}
+    {{- if $match }}
+      {{- $applianceID = regexReplaceAll "key: \"appliance-id\"\\s+value: \"([0-9a-f-]+)\"" $match "${1}" }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- $applianceID }}
+{{- end -}}
+
+{{/*
+Extract endpoint from existing telemetry ConfigMap during upgrades.
+Returns the existing endpoint if found, otherwise returns the provided placeholder.
+Each ConfigMap contains only one Pure1 endpoint, so no need to distinguish types.
+*/}}
+{{- define "telemetry.lookupEndpoint" -}}
+{{- $existingConfigMap := lookup "v1" "ConfigMap" .namespace .configMapName }}
+{{- $endpoint := .placeholder }}
+{{- if $existingConfigMap }}
+  {{- $existingConfig := index $existingConfigMap.data .configKey | default "" }}
+  {{- if $existingConfig }}
+    {{- $match := regexFind "address: [a-z0-9.-]+\\.purestorage\\.com" $existingConfig }}
+    {{- if $match }}
+      {{- $endpoint = regexReplaceAll "address: ([a-z0-9.-]+)" $match "${1}" }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- $endpoint }}
+{{- end -}}
