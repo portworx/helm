@@ -496,6 +496,30 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				SetValues: map[string]string{"taintBasedScheduling": "false"},
 			},
 		},
+		{
+			name:           "TestClusterDiagsEnabled",
+			resultFileName: "storagecluster_cluster_diags_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{"clusterDiags.enabled": "true"},
+			},
+		},
+		{
+			name:           "TestClusterDiagsDisabled",
+			resultFileName: "storagecluster_cluster_diags_disabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{"clusterDiags.enabled": "false"},
+			},
+		},
+		{
+			name:           "TestClusterDiagsWithImage",
+			resultFileName: "storagecluster_cluster_diags_with_image.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"clusterDiags.enabled": "true",
+					"clusterDiags.image":   "portworx/px-diag:1.0.0",
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {
