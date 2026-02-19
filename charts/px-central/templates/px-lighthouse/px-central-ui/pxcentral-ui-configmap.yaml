@@ -20,3 +20,4 @@ data:
   OIDC_SCOPES: openid
   HIDE_KUBE_CONFIG: "False"
   USE_PLATFORM_RBAC: "{{ .Values.pxbackup.usePlatformRbac }}"
+  PX_BACKUP_FEDERATED : "{{ .Values.pxbackup.federated }}"
