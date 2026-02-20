@@ -269,6 +269,10 @@ taintBasedScheduling:
                   # Applies taints on Px nodes, adds tolerations to Portworx components,
                   # and enables Stork to add tolerations to application pods using Px backend
 
+clusterDiags:
+  enabled: true                       # Enabled decides whether cluster diags needs to be enabled
+  image: ""                           # image is docker image of the cluster diags container
+
 tolerations:                          # Add tolerations
   # - key: "key"
   #   operator: "Equal|Exists"

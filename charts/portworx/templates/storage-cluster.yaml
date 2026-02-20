@@ -693,4 +693,12 @@ spec:
     schedule: {{ .Values.pxfslibsUpdate.schedule | quote}}
     {{- end }}
   {{- end }}
+  {{- if or (eq .Values.clusterDiags.enabled true) (eq .Values.clusterDiags.enabled false) }}
+  clusterDiags:
+    enabled: {{ .Values.clusterDiags.enabled }}
+    {{- if ne .Values.clusterDiags.image "" }}
+    image: {{ .Values.clusterDiags.image }}
+    {{- end }}
+  {{- end }}
+
 {{- end }}
