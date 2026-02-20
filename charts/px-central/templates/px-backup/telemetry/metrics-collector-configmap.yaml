@@ -173,5 +173,8 @@ data:
           # This is mounted from the px-backup-telemetry-certs secret
           private_key:
             filename: /appliance-cert/private_key
+          # Watch directory for certificate changes
+          watched_directory:
+            path: /appliance-cert
 {{- end }}
 
