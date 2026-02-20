@@ -271,7 +271,7 @@ taintBasedScheduling:
 
 clusterDiags:
   enabled: true                       # Enabled decides whether cluster diags needs to be enabled
-#  image:                               image is docker image of the cluster diags container
+  image: ""                           # image is docker image of the cluster diags container
 
 tolerations:                          # Add tolerations
   # - key: "key"

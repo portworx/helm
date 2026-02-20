@@ -696,7 +696,7 @@ spec:
   {{- if or (eq .Values.clusterDiags.enabled true) (eq .Values.clusterDiags.enabled false) }}
   clusterDiags:
     enabled: {{ .Values.clusterDiags.enabled }}
-    {{- if .Values.clusterDiags.image }}
+    {{- if ne .Values.clusterDiags.image "" }}
     image: {{ .Values.clusterDiags.image }}
     {{- end }}
   {{- end }}
