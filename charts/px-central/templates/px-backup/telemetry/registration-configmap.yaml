@@ -1,0 +1,159 @@
+{{/* PX-Backup Telemetry Registration ConfigMaps */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
+{{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) }}
+{{- /* Lookup existing values to preserve during upgrades */ -}}
+{{- $applianceID := include "telemetry.lookupApplianceID" (dict
+    "configMapName" "px-backup-telemetry-registration-envoy-config"
+    "configKey" "envoy-config-register.yaml"
+    "namespace" .Release.Namespace) | trim }}
+{{- $registerEndpoint := include "telemetry.lookupEndpoint" (dict
+    "configMapName" "px-backup-telemetry-registration-envoy-config"
+    "configKey" "envoy-config-register.yaml"
+    "namespace" .Release.Namespace
+    "placeholder" "ENDPOINT_REGISTER_PLACEHOLDER") | trim }}
+---
+# CCM-Go Configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: px-backup-telemetry-registration-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  config_properties_px.yaml: |
+    actKeyRequired: false
+    cert:
+      keySize: 2048
+      renewWindowInDays: 30
+      registrationEnabled: true
+      renewEnabled: true
+      keyAlgorithm: "RSA"
+      noRelCertEnabled: true
+      release:
+        staging:
+          private: "/opt/ccm/cert/rel_priv_staging.pem"
+        production:
+          private: "/opt/ccm/cert/rel_priv.pem"
+    subscription:
+      useApplianceId: true
+      accountType: "UNKNOWN"
+    standalone:
+      # Note: CCM-Go reads appliance-id from APPLIANCE_ID environment variable, not from file
+      generateApplianceIdEnabled: false
+    envoy:
+      protocol: "http"
+      registrationHost: "localhost"
+      registrationPort: "12001"
+      renewalHost: "localhost"
+      renewalPort: "12002"
+    cloud:
+      auth:
+        version: "1.0"
+    productName: "portworx"
+    certStoreType: "kvstore"
+    kvStore:
+      serverAddress: "px-backup.{{ .Release.Namespace }}.svc.cluster.local:10002"
+    httpServer:
+      port: "12011"
+      enabled: false
+    k8s:
+      certSecretName: "pure-telemetry-certs"
+      certSecretNamespace: {{ .Release.Namespace | quote }}
+---
+# Envoy Proxy Configuration for Registration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: px-backup-telemetry-registration-envoy-config
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  envoy-config-register.yaml: |
+    admin:
+      address:
+        socket_address:
+          address: 127.0.0.1
+          port_value: 9901
+    static_resources:
+      listeners:
+      - name: listener_register_cloud_support
+        address:
+          socket_address:
+            address: 127.0.0.1
+            port_value: 12001
+        filter_chains:
+        - filters:
+          - name: envoy.filters.network.http_connection_manager
+            typed_config:
+              "@type": type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager
+              stat_prefix: ingress_http
+              access_log:
+              - name: envoy.access_loggers.stdout
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.access_loggers.stream.v3.StdoutAccessLog
+              http_filters:
+              - name: envoy.filters.http.router
+                typed_config:
+                  "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
+              route_config:
+                name: local_route
+                virtual_hosts:
+                - name: local_service
+                  domains: ["*"]
+                  routes:
+                  - match:
+                      prefix: "/"
+                    request_headers_to_add:
+                    - header:
+                        key: "product-name"
+                        value: "portworx"
+                    # Appliance ID - preserved during upgrades using Helm lookup function
+                    - header:
+                        key: "appliance-id"
+                        value: {{ $applianceID | quote }}
+                    - header:
+                        key: "component-sn"
+                        value: "px-backup-registration"
+                    - header:
+                        key: "product-version"
+                        value: {{ .Values.pxbackup.version | quote }}
+                    route:
+                      host_rewrite_literal: {{ $registerEndpoint }}
+                      cluster: cluster_register_cloud_support
+      clusters:
+      - name: cluster_register_cloud_support
+        type: STRICT_DNS
+        dns_lookup_family: V4_ONLY
+        lb_policy: ROUND_ROBIN
+        load_assignment:
+          cluster_name: cluster_register_cloud_support
+          endpoints:
+          - lb_endpoints:
+            - endpoint:
+                address:
+                  socket_address:
+                    address: {{ $registerEndpoint }}
+                    port_value: 443
+        transport_socket:
+          name: envoy.transport_sockets.tls
+          typed_config:
+            "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
+            sni: {{ $registerEndpoint }}
+            common_tls_context:
+              tls_certificates:
+              - certificate_chain:
+                private_key:
+              validation_context:
+                trusted_ca:
+                  filename: /etc/ssl/certs/ca-certificates.crt
+                match_typed_subject_alt_names:
+                - san_type: DNS
+                  matcher:
+                    exact: {{ $registerEndpoint }}
+{{- end }}
+

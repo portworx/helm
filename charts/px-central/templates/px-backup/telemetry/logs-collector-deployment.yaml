@@ -1,0 +1,247 @@
+{{/* PX-Backup Telemetry Logs Collector Deployment */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
+{{- $logsEnabled := .Values.telemetry.logsCollector.enabled | default true }}
+{{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) (eq $logsEnabled true) }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-backup-telemetry-logs-collector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: logs-collector
+{{- include "px-central.labels" . | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: px-backup-telemetry-logs-collector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: logs-collector
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  resourceNames: ["pure-telemetry-certs"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list"]
+- apiGroups: [""]
+  resources: ["pods/exec"]
+  verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: px-backup-telemetry-logs-collector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: logs-collector
+{{- include "px-central.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: px-backup-telemetry-logs-collector
+subjects:
+- kind: ServiceAccount
+  name: px-backup-telemetry-logs-collector
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: px-backup-telemetry-logs-collector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: logs-collector
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: px-backup-telemetry
+      app.kubernetes.io/component: logs-collector
+  template:
+    metadata:
+      labels:
+{{- include "px-central.labels" . | nindent 8 }}
+        app.kubernetes.io/name: px-backup-telemetry
+        app.kubernetes.io/component: logs-collector
+    spec:
+      serviceAccountName: px-backup-telemetry-logs-collector
+      containers:
+      # Container 1: Telemetry Data Collector (Go binary)
+      - name: data-collector
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryDataCollectorImage.registry .Values.images.registry) (default .Values.images.telemetryDataCollectorImage.repo .Values.images.repo) .Values.images.telemetryDataCollectorImage.imageName .Values.images.telemetryDataCollectorImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        env:
+        # Kubernetes configuration (using standard px-backup pattern)
+        - name: PX_BACKUP_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+
+        # Collection configuration
+        - name: COLLECTION_INTERVAL
+          value: {{ .Values.telemetry.logsCollector.collectionInterval | default 3600 }}s
+
+        # Reporting API configuration
+        - name: REPORTING_API_URL
+          value: "http://px-backup.{{ .Release.Namespace }}.svc.cluster.local:10001/v1/reporting/data"
+
+        # Upload service configuration (REST API to log-upload-service sidecar)
+        - name: UPLOAD_SERVICE_URL
+          value: "http://localhost:8080"
+
+        # Log storage configuration
+        - name: CLEANUP_AGE
+          value: "72h"
+
+        # Pod exclusion patterns (for excluding entire pods from collection)
+        - name: EXCLUDE_POD_PATTERNS
+          value: {{ .Values.telemetry.logsCollector.excludePodPatterns | default "alertmanager,prometheus,frontend,lh-middleware,telemetry" | quote }}
+
+        securityContext:
+          runAsUser: 1111
+        volumeMounts:
+        - name: log-storage
+          mountPath: /var/cores
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+      
+      # Container 2: Log Upload Service
+      - name: log-upload-service
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryLogUploadImage.registry .Values.images.registry) (default .Values.images.telemetryLogUploadImage.repo .Values.images.repo) .Values.images.telemetryLogUploadImage.imageName .Values.images.telemetryLogUploadImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        ports:
+        - name: grpc
+          containerPort: 9090
+          protocol: TCP
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        env:
+        - name: CONFIG_FILE
+          value: "/config/ccm.properties"
+        - name: APPLIANCE_ID
+          valueFrom:
+            configMapKeyRef:
+              name: px-backup-telemetry-config
+              key: appliance-id
+        - name: APPLIANCE_NAME
+          value: "px-backup-{{ .Release.Namespace }}"
+        - name: LOG_UPLOAD_REST_PORT
+          value: "8080"
+        securityContext:
+          runAsUser: 1111
+        volumeMounts:
+        - name: log-storage
+          mountPath: /var/cores
+        - name: log-upload-config
+          mountPath: /config
+          readOnly: true
+        - name: log-upload-cache
+          mountPath: /var/cache/ccm
+        - name: phonehome-cache
+          mountPath: /var/cache
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        # Health probe - verifies log-upload-service is ready (same as px-e)
+        readinessProbe:
+          grpc:
+            port: 9090
+          periodSeconds: 150
+          failureThreshold: 3
+          timeoutSeconds: 2
+
+      # Container 3: Envoy Proxy
+      - name: envoy
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryEnvoyImage.registry .Values.images.registry) (default .Values.images.telemetryEnvoyImage.repo .Values.images.repo) .Values.images.telemetryEnvoyImage.imageName .Values.images.telemetryEnvoyImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        args:
+        - envoy
+        - --base-id
+        - "3"
+        - --config-path
+        - /etc/envoy/envoy-config.yaml
+        ports:
+        - name: logs-proxy
+          containerPort: 12002
+          protocol: TCP
+        - name: admin
+          containerPort: 9901
+          protocol: TCP
+        securityContext:
+          runAsUser: 1111
+        volumeMounts:
+        - name: envoy-config
+          mountPath: /etc/envoy/envoy-config.yaml
+          subPath: envoy-config.yaml
+          readOnly: true
+        - name: envoy-sds-config
+          mountPath: /etc/envoy/tls_certificate_sds_secret.yaml
+          subPath: tls_certificate_sds_secret.yaml
+          readOnly: true
+        - name: telemetry-certs
+          mountPath: /appliance-cert
+          readOnly: true
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        # Health probe - verifies envoy can reach upstream (Pure1)
+        # Auto-recovers from 503 UH errors by making pod not ready
+        readinessProbe:
+          httpGet:
+            host: 127.0.0.1
+            path: /ping-trusted
+            port: 12002
+          periodSeconds: 150
+          failureThreshold: 3
+          timeoutSeconds: 2
+
+      volumes:
+      - name: log-storage
+        emptyDir: {}  # Shared between log-collector and log-upload-service
+      - name: log-upload-config
+        configMap:
+          name: px-backup-telemetry-logs-upload-config
+      - name: log-upload-cache
+        emptyDir: {}  # For SQLite bookkeeping
+      - name: phonehome-cache
+        emptyDir: {}  # For phonehome.sent tracking file
+      - name: envoy-config
+        configMap:
+          name: px-backup-telemetry-logs-envoy-config
+          optional: false  # Pod won't start until Envoy ConfigMap exists
+      - name: envoy-sds-config
+        configMap:
+          name: px-backup-telemetry-logs-envoy-sds-config
+      - name: telemetry-certs
+        secret:
+          secretName: pure-telemetry-certs
+          optional: false  # Pod won't start until certificate exists
+{{- end }}
+

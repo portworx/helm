@@ -164,6 +164,20 @@ pxmonitor:
     alertmanager:
       advertiseAddress: ""
 
+# Telemetry configuration for PX-Backup
+telemetry:
+  enabled: false
+  environment: staging # Environment: staging or production
+  metricsCollector:
+    enabled: true
+    scrapeInterval: 10  # seconds
+    batchSize: 5  # number of scrapes to batch before sending
+  logsCollector:
+    enabled: true
+    collectionInterval: 3600  # seconds (1 hour)
+    # Exclude pods matching these patterns (comma-separated)
+    excludePodPatterns: "alertmanager,prometheus,frontend,lh-middleware,telemetry"
+
 service:
   pxCentralUIServiceType: "LoadBalancer"
   ## To set the LoadBalancer service type to internal only
@@ -307,6 +321,38 @@ images:
     repo: portworx
     imageName: mongodb
     tag: 8.0.17
+    module: pxBackup
+
+  ## Images required for PX-Backup Telemetry
+  telemetryEnvoyImage:
+    registry: docker.io
+    repo: portworx
+    imageName: telemetry-envoy
+    tag: 1.1.18
+    module: pxBackup
+  telemetryRegistrationImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
+    imageName: ccm-go
+    tag: 1.4.30
+    module: pxBackup
+  telemetryMetricsCollectorImage:
+    registry: docker.io
+    repo: portworx
+    imageName: realtime-metrics
+    tag: 1.0.32
+    module: pxBackup
+  telemetryDataCollectorImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
+    repo: portworx
+    imageName: telemetry-data-collector
+    tag: 2.11.0-staging
+    module: pxBackup
+  telemetryLogUploadImage:
+    registry: docker.io
+    repo: portworx
+    imageName: log-upload
+    tag: px-1.1.94
     module: pxBackup
 
   ## Images required for enabling px-license-server

@@ -1,0 +1,133 @@
+{{/* PX-Backup Telemetry Registration Deployment */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
+{{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: px-backup-telemetry-registration
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: registration
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: px-backup-telemetry
+      app.kubernetes.io/component: registration
+  template:
+    metadata:
+      labels:
+{{- include "px-central.labels" . | nindent 8 }}
+        app.kubernetes.io/name: px-backup-telemetry
+        app.kubernetes.io/component: registration
+    spec:
+      serviceAccountName: px-backup-telemetry
+      containers:
+      # CCM-Go - Registration service
+      - name: registration
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryRegistrationImage.registry .Values.images.registry) (default .Values.images.telemetryRegistrationImage.repo .Values.images.repo) .Values.images.telemetryRegistrationImage.imageName .Values.images.telemetryRegistrationImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        env:
+        - name: CONFIG
+          value: "/etc/ccm/config_properties_px.yaml"
+        - name: APPLIANCE_ID
+          valueFrom:
+            configMapKeyRef:
+              name: px-backup-telemetry-config
+              key: appliance-id
+              optional: false  # Pod won't start until ConfigMap key exists
+        - name: APPLIANCE_NAME
+          value: "px-backup-{{ .Release.Namespace }}"
+        - name: REFRESH_TOKEN
+          value: ""
+        securityContext:
+          runAsUser: 1111
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+        # Health probes - same as px-e telemetry registration
+        livenessProbe:
+          httpGet:
+            path: /status/environment
+            port: 12011
+          periodSeconds: 150
+          failureThreshold: 3
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            path: /status/environment
+            port: 12011
+          periodSeconds: 150
+          failureThreshold: 3
+          timeoutSeconds: 1
+        volumeMounts:
+        - name: registration-config
+          mountPath: /etc/ccm
+        - name: cert-secret
+          mountPath: /etc/pwx/ccm/cert
+      # Envoy - mTLS proxy
+      - name: envoy
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryEnvoyImage.registry .Values.images.registry) (default .Values.images.telemetryEnvoyImage.repo .Values.images.repo) .Values.images.telemetryEnvoyImage.imageName .Values.images.telemetryEnvoyImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        env:
+        - name: APPLIANCE_ID
+          valueFrom:
+            configMapKeyRef:
+              name: px-backup-telemetry-config
+              key: appliance-id
+              optional: false  # Pod won't start until ConfigMap key exists
+        - name: PRODUCT_VERSION
+          value: {{ .Values.pxbackup.version | quote }}
+        args:
+        - envoy
+        - --base-id
+        - "5"
+        - --config-path
+        - /etc/envoy/envoy-config-register.yaml
+        ports:
+        - containerPort: 9901
+          name: admin
+        - containerPort: 12001
+          name: registration
+        - containerPort: 12002
+          name: renewal
+        securityContext:
+          runAsUser: 1111
+        resources:
+          requests:
+            cpu: 50m
+            memory: 32Mi
+          limits:
+            memory: 64Mi
+        volumeMounts:
+        - name: envoy-config
+          mountPath: /etc/envoy
+        - name: cert-secret
+          mountPath: /etc/pwx/ccm/cert
+      volumes:
+      - name: telemetry-config
+        configMap:
+          name: px-backup-telemetry-config
+          optional: false  # Pod won't start until ConfigMap exists
+      - name: registration-config
+        configMap:
+          name: px-backup-telemetry-registration-config
+      - name: envoy-config
+        configMap:
+          name: px-backup-telemetry-registration-envoy-config
+          optional: false  # Pod won't start until Envoy ConfigMap exists
+      - name: cert-secret
+        secret:
+          secretName: pure-telemetry-certs
+          optional: true
+{{- end }}
+
