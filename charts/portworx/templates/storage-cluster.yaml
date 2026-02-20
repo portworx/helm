@@ -160,17 +160,18 @@ spec:
 
   {{- if $hasMetadata}}
   metadata:
-    {{- $components := .Values.customMetadata.labels }}
+    {{- if $hasLabels }}
     labels:
-    {{- range $type, $objects := $components }}
-      {{- range $name, $value := $objects }}
-        {{- if $value }}
-        {{ printf "%s/%s" $type $name | replace "_" "-" }}:
-          {{- $pairs := $value | split ";" }}
-          {{- range $pair := $pairs }}
-            {{- $kv := $pair | split "=" }}
-            {{- if eq (len $kv) 2 }}
-            {{ $kv._0 | trim }}: {{ $kv._1 | trim | quote }}
+      {{- range $type, $objects := $labels }}
+        {{- range $name, $value := $objects }}
+          {{- if $value }}
+          {{ printf "%s/%s" $type $name | replace "_" "-" }}:
+            {{- $pairs := $value | split ";" }}
+            {{- range $pair := $pairs }}
+              {{- $kv := $pair | split "=" }}
+              {{- if eq (len $kv) 2 }}
+              {{ $kv._0 | trim }}: {{ $kv._1 | trim | quote }}
+              {{- end }}
             {{- end }}
           {{- end }}
         {{- end }}
