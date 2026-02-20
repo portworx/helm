@@ -138,6 +138,9 @@ data:
           filename: /appliance-cert/cert
         private_key:
           filename: /appliance-cert/private_key
+        # Watch directory for certificate changes
+        watched_directory:
+          path: /appliance-cert
 ---
 # Log Upload Service Configuration
 apiVersion: v1
