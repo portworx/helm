@@ -501,9 +501,9 @@ spec:
     {{- if .Values.monitoring.telemetry.enabled }}
     telemetry:
       enabled: true
-      {{- if .Values.monitoring.telemetry.metricsCollector.enabled }}
+      {{- if or (eq .Values.monitoring.telemetry.metricsCollector.enabled true) (eq .Values.monitoring.telemetry.metricsCollector.enabled false) }}
       metricsCollector:
-        enabled: true
+        enabled: {{ .Values.monitoring.telemetry.metricsCollector.enabled }}
         {{- if .Values.monitoring.telemetry.metricsCollector.image }}
         image: {{ .Values.monitoring.telemetry.metricsCollector.image }}
         {{- end }}
