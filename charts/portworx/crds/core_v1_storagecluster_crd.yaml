@@ -219,6 +219,10 @@ spec:
                       DEPRECATED: This is no longer needed to lock an image. The new behavior is to
                       use the image as it is, if present, else use a default image.
                     type: boolean
+                  prometheusAlerts:
+                    description: PrometheusAlerts indicates whether prometheus alerts
+                      are enabled
+                    type: boolean
                   providers:
                     description: Providers is a list of input data providers for autopilot
                       if it needs any
@@ -2167,11 +2171,6 @@ spec:
                     description: Image is docker image of the cluster diags container
                     type: string
                 type: object
-              clusterDomain:
-                description: |-
-                  ClusterDomain specifies the cluster domain for the selected nodes in a sync DR setup.
-                  If this field is empty, it is not sync DR setup
-                type: string
               csi:
                 description: CSI configurations for setting up CSI
                 properties:
@@ -2327,8 +2326,9 @@ spec:
                       storage cluster nodes
                     properties:
                       nodeAffinity:
-                        description: NodeAffinity is used to restrict Portwox on certain
-                          nodes. It works similarly to the [Kubernetes node affinity](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L2692)
+                        description: NodeAffinity is used to restrict Portworx on
+                          certain nodes. It works similarly to the [Kubernetes node
+                          affinity](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L2692)
                           feature.
                         properties:
                           preferredDuringSchedulingIgnoredDuringExecution:
@@ -5831,9 +5831,8 @@ spec:
                           type: string
                       type: object
                     clusterDomain:
-                      description: |-
-                        ClusterDomain specifies the cluster domain for the selected nodes in a sync DR setup.
-                        If this field is empty, it is not sync DR setup
+                      description: ClusterDomain specifies the cluster domain for
+                        the selected nodes in a Two Node Arbiter setup.
                       type: string
                     env:
                       description: Env is a list of [Kubernetes like environment variables](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L1826).
@@ -6095,11 +6094,28 @@ spec:
                       type: object
                   type: object
                 type: array
+              ocpDynamicPlugin:
+                description: OCPDynamicPlugin contains configuration for the OCP console
+                  dynamic plugin.
+                properties:
+                  cacheAgentImage:
+                    description: CacheAgentImage is the desired image for the OCP
+                      dynamic plugin cache-agent.
+                    type: string
+                  pluginImage:
+                    description: PluginImage is the desired image for the OCP console
+                      dynamic plugin UI.
+                    type: string
+                  proxyImage:
+                    description: ProxyImage is the desired image for the OCP dynamic
+                      plugin proxy.
+                    type: string
+                type: object
               placement:
                 description: Placement configuration for the storage cluster pods
                 properties:
                   nodeAffinity:
-                    description: NodeAffinity is used to restrict Portwox on certain
+                    description: NodeAffinity is used to restrict Portworx on certain
                       nodes. It works similarly to the [Kubernetes node affinity](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L2692)
                       feature.
                     properties:
@@ -6409,6 +6425,31 @@ spec:
                 description: PriorityClassName to be passed to Podspec of px pods
                   for it to be scheduled accordingly
                 type: string
+              pxfslibsUpdate:
+                description: PxlibsUpdate defines the configuration for the deployment
+                  of pxlibs-update deamonset.
+                properties:
+                  autoDelete:
+                    description: |-
+                      AutoDelete determines whether the pxlibs-update deamonset should be deleted after successful completion.
+                      If set to false, the job will remain available for debugging or reuse.
+                    type: boolean
+                  enabled:
+                    default: false
+                    type: boolean
+                  image:
+                    description: Image specifies the container image to be used for
+                      the pxlibs-update.
+                    type: string
+                  onDemandTrigger:
+                    description: OnDemandTrigger represents a manual trigger time
+                      run the pxlibs-update deamonset on demand.
+                    type: string
+                  schedule:
+                    description: Schedule specifies the cron expression for scheduling
+                      periodic execution of the pxlibs-update deamonset.
+                    type: string
+                type: object
               resources:
                 description: Resource requirements for portworx container in  a storage
                   cluster pod, e.g. CPU and memory requests or limits
@@ -6477,12 +6518,55 @@ spec:
                   the runtime options.
                 type: object
                 x-kubernetes-preserve-unknown-fields: true
+              secretProviderPerFeature:
+                description: |-
+                  SecretProviderPerFeature allows configuring different secrets providers for specific features.
+                  This is an optional field that enables using multiple secrets providers within the same deployment.
+                  Each field represents a feature with its own validation constraints.
+                  If a feature is not configured here, it will use the default SecretsProvider.
+                  Example:
+                    secretProviderPerFeature:
+                      volumeEncryption: k8s
+                      cloudProviderCred: vault
+                properties:
+                  cloudProviderCred:
+                    description: CloudProviderCred specifies the secret provider for
+                      cloud provider credentials
+                    enum:
+                      - k8s
+                      - vault
+                    type: string
+                  cloudSnap:
+                    description: CloudSnap specifies the secret provider for cloud
+                      snapshot feature
+                    enum:
+                      - k8s
+                      - vault
+                      - vault-transit
+                      - aws-kms
+                      - kvdb
+                      - gcloud-kms
+                      - azure-kv
+                      - ibm-kp
+                    type: string
+                  volumeEncryption:
+                    description: VolumeEncryption specifies the secret provider for
+                      volume encryption feature
+                    enum:
+                      - k8s
+                      - vault
+                      - vault-transit
+                      - aws-kms
+                      - kvdb
+                      - gcloud-kms
+                      - azure-kv
+                      - ibm-kp
+                    type: string
+                type: object
               secretsProvider:
-                description: SecretsProvider is the name of secret provider Portworx
-                  uses to store your credentials. To use features like cloud snapshots
-                  or volume encryption, you must configure a secret store provider.
-                  Refer to the [Secret store management page](/portworx-enterprise/operations/key-management)for
-                  more details.
+                description: |-
+                  SecretsProvider is the name of secret provider Portworx uses to store your credentials. To use features like cloud snapshots or volume encryption, you must configure a secret store provider. Refer to the [Secret store management page](/portworx-enterprise/operations/key-management)for more details.
+                  This serves as the default provider when no feature-specific provider is configured.
                 type: string
               security:
                 description: Security configurations for specifying PX-Security configurations.
@@ -10563,6 +10647,10 @@ spec:
                   autopilot:
                     description: Desired image for autopilot.
                     type: string
+                  cacheAgent:
+                    description: CacheAgent specifies the image for the dynamic plugin
+                      cache-agent component.
+                    type: string
                   certManagerAcmeSolver:
                     description: Desired image for cert-manager acmesolver.
                     type: string
@@ -10653,6 +10741,9 @@ spec:
                   prometheusOperator:
                     description: Desired image for Prometheus operator.
                     type: string
+                  pxLibUpdate:
+                    description: Desired image for pxfslibs deamonset
+                    type: string
                   stork:
                     description: Desired image for stork.
                     type: string
@@ -10674,6 +10765,58 @@ spec:
                   of where the StorageCluster is in its lifecycle. The condition array
                   contains more detailed information about the state of the cluster.
                 type: string
+              pxfslibsUpdate:
+                description: PxLibsUpdate represents the current status of the pxfslibs
+                  update daemonset triggger
+                properties:
+                  scheduleInfo:
+                    description: ScheduleInfo contains timing details for the scheduled
+                      pxfslibs daemonset.
+                    properties:
+                      lastScheduledTime:
+                        description: LastScheduledTime indicates the timestamp when
+                          the pxfslibs daemonset was last scheduled to run.
+                        format: date-time
+                        type: string
+                      nextScheduleTime:
+                        description: NextScheduleTime represents the next expected
+                          time when the pxfslibs daemonset will run.
+                        format: date-time
+                        type: string
+                    type: object
+                  triggers:
+                    description: Triggers lists the statuses of recent PxFsLibs update
+                      triggers.
+                    items:
+                      description: |-
+                        PxfslibsUpdateTriggerStatus represents the status of an individual PxFsLibs update trigger.
+                        A trigger can be generated by schedule, manual on-demand request, installation, or upgrade event.
+                      properties:
+                        lastTransitionTime:
+                          description: LastTransitionTime is the last time the trigger
+                            status transitioned from one phase to another.
+                          format: date-time
+                          type: string
+                        message:
+                          description: Message provides a human-readable message describing
+                            the current state or result of the trigger.
+                          type: string
+                        phase:
+                          description: Phase indicates the current phase of this trigger
+                            (Scheduled, Running, Completed, etc.).
+                          type: string
+                        triggerTime:
+                          description: TriggerTime specifies when the trigger was
+                            scheduled or executed.
+                          format: date-time
+                          type: string
+                        type:
+                          description: Type specifies the trigger type, e.g., "Cron",
+                            "OnDemand", "Install", or "Update".
+                          type: string
+                      type: object
+                    type: array
+                type: object
               reason:
                 description: Reason is CamelCase messages split with commas indicating
                   details about why the StorageCluster is in this state.

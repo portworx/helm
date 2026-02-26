@@ -28,9 +28,9 @@ spec:
         enabled: true
   csi:
     enabled: true
-    kubeVirtStorageClasses:
-      pxCdiScratch: true
-      pxRwxBlockKubevirt: true
-      pxRwxFileKubevirt: true
   autopilot:
     enabled: true
+  clusterDiags:
+    enabled: true
+    image: portworx/px-diag:1.0.0
+

@@ -28,9 +28,10 @@ spec:
         enabled: true
   csi:
     enabled: true
-    kubeVirtStorageClasses:
-      pxCdiScratch: true
-      pxRwxBlockKubevirt: true
-      pxRwxFileKubevirt: true
   autopilot:
     enabled: true
+
+  ocpDynamicPlugin:
+    cacheAgentImage: portworx/cache-agent:1.0.0
+    pluginImage: portworx/ocp-plugin:2.0.0
+

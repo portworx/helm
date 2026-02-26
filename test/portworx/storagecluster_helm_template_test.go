@@ -274,6 +274,27 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestPriorityClass",
+			resultFileName: "storagecluster_priority_class.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_priority_class.yaml"},
+			},
+		},
+		{
+			name:           "TestOcpDynamicPlugin",
+			resultFileName: "storagecluster_ocp_dynamic_plugin.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_ocp_dynamic_plugin.yaml"},
+			},
+		},
+		{
+			name:           "TestPxfslibsUpdate",
+			resultFileName: "storagecluster_pxfslibs_update.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_pxfslibs_update.yaml"},
+			},
+		},
+		{
 			name:           "TestCustomMetadata",
 			resultFileName: "storagecluster_custom_metadata.yaml",
 			helmOption: &helm.Options{
@@ -458,7 +479,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			name:           "TestKubeVirtStorageClasses",
 			resultFileName: "storagecluster_kubevirt_storageclasses.yaml",
 			helmOption: &helm.Options{
-				ValuesFiles: []string{"storagecluster_kubevirt_storageclasses.yaml"},
+				ValuesFiles: []string{"./testValues/storagecluster_kubevirt_storageclasses.yaml"},
 			},
 		},
 		{
@@ -473,6 +494,30 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			resultFileName: "storagecluster_taint_based_scheduling_disabled.yaml",
 			helmOption: &helm.Options{
 				SetValues: map[string]string{"taintBasedScheduling": "false"},
+			},
+		},
+		{
+			name:           "TestClusterDiagsEnabled",
+			resultFileName: "storagecluster_cluster_diags_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{"clusterDiags.enabled": "true"},
+			},
+		},
+		{
+			name:           "TestClusterDiagsDisabled",
+			resultFileName: "storagecluster_cluster_diags_disabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{"clusterDiags.enabled": "false"},
+			},
+		},
+		{
+			name:           "TestClusterDiagsWithImage",
+			resultFileName: "storagecluster_cluster_diags_with_image.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"clusterDiags.enabled": "true",
+					"clusterDiags.image":   "portworx/px-diag:1.0.0",
+				},
 			},
 		},
 	}

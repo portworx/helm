@@ -63,107 +63,119 @@ helm install --debug --name my-release --set clusterName=$(uuidgen) ./helm/chart
 
 The following tables lists the configurable parameters of the Portworx chart and their default values.
 
-| Parameter | Description | Default
-|--------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| `imageVersion` | Version of the PX image | 3.5.1 |
-| `pxOperatorImageVersion` | Version of the PX operator image | 25.5.1 |
-| `verboseOperatorLogs` | Enable verbose logging for the Portworx operator | true |
-| `openshiftInstall` | Installing on Openshift? | false |
-| `nonDisruptivek8sUpgrade` | Used to disable or enable smart and parallel kubetnetes node upgrades. By default, S&P upgrades are disabled. To enable them, set this to true | false |
-| `skipHealthChecks` | Used to skip health checks. By default, health checks are enabled. Set this to true to disable health checks | false | 
-| `pksInstall` | Installing on Pivotal Container service? | false |
-| `EKSInstall` | Installing EKS (Amazon Elastic Container service) | false |
-| `AKSInstall` | Installing on AKS (Azure Kubernetes service) | false |
-| `GKEInstall` | Installing on GKE (Google Kubernetes Engine) | false |
-| `clusterAnnotations` | Semicolon-separated list of annotations to apply on the StorageCluster resource | "" |
-| `etcdEndPoint` | (REQUIRED) etcd endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>". Multiple Urls should be semi-colon seperated example: etcd:http://<your-etcd-endpoint1>;etcd:http://<your-etcd-endpoint2> | "" |
-| `clusterName` | Portworx Cluster Name | "mycluster" |
-| `usefileSystemDrive` | Should Portworx use an unmounted drive even with a filesystem ? | false |
-| `usedrivesAndPartitions` | Should Portworx use the drives as well as partitions on the disk ? | false |
-| `drives` | Semi-colon seperated list of drives to be used for storage (example: "/dev/sda;/dev/sdb") | "none" |
-| `provider` | Specifies the cloud provider name, such as: pure, azure, aws, gce, vsphere, if using cloud storage. | "" |
-| `journalDevice` | Journal device for Portworx metadata | "" |
-| `cacheDevices` | semi-colon seperated list of cache devices Portworx should use. | "" |
-| `initialStorageNodes` | InitialStorageNodes specifies the number of storage nodes to be provisioned in the cluster. This field is only used when the cluster is being created  | 0 |
-| `maxStorageNodes` | Specifies the maximum number of storage nodes. If this number is reached, and a new node is added, Portworx doesn't provision drives for the new node. Instead, Portworx starts the node as a compute-only node. As a best practice, it is recommended to use the `maxStorageNodesPerZone` field | 0 |
-| `systemMetadataDevice` | Specifies the device Portworx uses to store metadata. | "" |
-| `secretType` | Secrets store to be used can be AWS KMS/KVDB/Vault/K8s/IBM Key Protect | k8s |
-| `dataInterface` | Name of the interface <ethX> | "none" |
-| `managementInterface` | Name of the interface <ethX> | "none" |
-| `serviceType` | Kubernetes service type for services deployed by the Operator. Direct Values like 'LoadBalancer', 'NodePort' will change all services. To change the types of specific services, value can be specified as 'portworx-service:LoadBalancer;portworx-api:ClusterIP'| "none" |
-| `runtimeOptions` | semi-colon seperated list of key-value pairs that overwrite the runtime options.| "" |
-| `featureGates` | semi-colon seperated list of key-value specifying which Portworx features should be enabled or disabled | "" |
-| `security.enabled` | Enables or disables Security at any given time | false |
-| `security.auth.guestAccess` | Determines how the guest role will be updated in your cluster. Options are Enabled, Disabled, or Managed | "Enabled" |
-| `security.auth.selfSigned.tokenLifetime` | Time till operator-generated tokens will be alive until being refreshed | "" |
-| `security.auth.selfSigned.issuer` | The issuer name to be used when configuring PX-Security | "" |
-| `security.auth.selfSigned.sharedSecret` | The Kubernetes secret name for retrieving and storing your shared secret. | "" |
-| `resources` | Configure Portworx container usage such as memory and CPU usage.| {} |
-| `customMetadata.annotations.pod.storage` | Custom annotations for Portworx pods | "" |
-| `customMetadata.annotations.service.portworxApi` | Custom annotations for portwork-api service | "" |
-| `customMetadata.annotations.service.portworxService` | Custom annotations for portwork-service | "" |
-| `customMetadata.annotations.service.portworxKVDBService` | Custom annotations for portworx-kvdb-service | "" |
-| `customMetadata.labels` | Labels to be applied to components managed by the operator. Use `"*"` to define global labels. If both global and component-specific labels are defined, the component-specific key-value pairs take precedence. | "" |
-| `envVars` | semi-colon-separated list of environment variables that will be exported to portworx. (example: MYENV1=val1;MYENV2=val2) ( Depricated : use `envs` to set environment variables) | "none" |
-| `envs` | Add environment variables to the Portworx container in all Kubernetes-supported formats | [] |
-| `disableStorageClass` | Disable installation of default Portworx StorageClasses. | false |
-| `stork.enabled` | [Storage Orchestration for Hyperconvergence](https://github.com/libopenstorage/stork). | true |
-| `stork.storkVersion` | The version of stork | "" |
-| `stork.args` | Pass arguments to Stork container | "" |
-| `stork.volumes` | Add volumes to Stork container | [] |
-| `stork.env` | List of Kubernetes like environment variables passed to Stork | [] |
-| `customRegistryURL` | Custom Docker registry | "" |
-| `registrySecret` | Registry secret | "" |
-| `imagePullPolicy` | ImagePullPolicy specifies the image pull policy for all the images deployed by the operator. The possible values can be `Always` or `IfNotPresent`. | "Always" |
-| `monitoring.prometheus.enabled` | Enable or disable Prometheus | false |
-| `monitoring.prometheus.exportMetrics` | Expose the Portworx metrics to an external or operator deployed Prometheus | false |
-| `monitoring.prometheus.alertManager` | Enable or disable alertmanager | false |
-| `monitoring.prometheus.resources` | Configure stork container resources such memory and cpu | {} |
-| `monitoring.prometheus.replicas` | Number of prometheus replicas that will be deployed | 1 |
-| `monitoring.prometheus.retention` | Time period for which prometheus retains historical matrics | "24h" |
-| `monitoring.prometheus.retentionSize` | Maximum amount of disk space that Prometheus can use to store historical metrics. Example: "10GiB","50MiB" | "" |
-| `monitoring.prometheus.storage` | Storage type that Prometheus will use for storing data | {} |
-| `monitoring.prometheus.volumes` | Additional volumes for the prometheus statefulSet | [] |
-| `monitoring.prometheus.volumeMounts` | Additional VolumeMounts for the Prometheus StatefulSet | [] |
-| `monitoring.prometheus.securityContext.runAsNonRoot` | Enable prometheus container run as a non-root user | false |
-| `monitoring.telemetry` | Enable or disable telemetry | true |
-| `monitoring.grafana` | Enable or disable grafana | false |
-| `csi.enabled` | Enables CSI | true |
-| `csi.topology.enabled` | Enable CSI topology feature gate | false |
-| `csi.installSnapshotController` | Install CSI Snapshot Controller | false |
-| `csi.seLinuxMount` | SELinuxMount specifies whether the CSI driver supports the "-o context" mount option. It overrides the seLinuxMount value in the CSI driver | true |
-| `kubeVirtStorageClasses.pxRwxFileKubevirt` | Enables creation of the `px-rwx-file-kubevirt` StorageClass, which provides RWX access using a file-based backend for KubeVirt virtual machines. | false |
-| `kubeVirtStorageClasses.pxRwxBlockKubevirt` | Enables creation of the `px-rwx-block-kubevirt` StorageClass, which provides RWX access using a block-based backend for KubeVirt workloads. | false |
-| `kubeVirtStorageClasses.pxCdiScratch` | Enables creation of the `px-cdi-scratch` StorageClass used by the Containerized Data Importer (CDI) for temporary scratch space during VM image imports or uploads. | false |
-| `autopilot.enabled` | Enable AutoPilot | true |
-| `autopilot.image` | Specify AutoPilot image | "" |
-| `autopilot.lockImage` | Enables locking AutoPilot to the given image | false |
-| `autopilot.args` | semicolon sperated list to Override or add new AutoPilot arguments | "" |
-| `autopilot.env` | List of Kubernetes like environment variables passed to Autopilot | [] |
-| `internalKVDB` | Internal KVDB store | true |
-| `kvdbDevice` | specify a separate device to store KVDB data, only used when internalKVDB is set to true | "" |
-| `kvdb.authSecretName` | Name of the secret for configuring secure KVDB (https://docs.portworx.com/portworx-enterprise/operations/kvdb-for-portworx/external-kvdb#secure-your-etcd-communication)| "none" |
-| `etcd.credentials` | Username and password for etcd authentication in the form user:password (Depricated : use `kvdb.authSecretName`) | "none":"none" |
-| `etcd.certPath` | Base path where the certificates are placed. (example: if the certificates ca,.crt and the .key are in /etc/pwx/etcdcerts the value should be provided as /etc/pwx/etcdcerts Refer: https://docs.portworx.com/scheduler/kubernetes/etcd-certs-using-secrets.html) (Depricated : use `kvdb.authSecretName`) | "none" |
-| `etcd.ca` | Location of CA file for etcd authentication. Should be /path/to/server.ca (Depricated : use `kvdb.authSecretName`)| "none" |
-| `etcd.cert` | Location of certificate for etcd authentication. Should be /path/to/server.crt (Depricated : use `kvdb.authSecretName`) | "none" |
-| `etcd.key` | Location of certificate key for etcd authentication Should be /path/to/servery.key (Depricated : use `kvdb.authSecretName`)| "none" |
-| `consul.token` | ACL token value used for Consul authentication. (example: 398073a8-5091-4d9c-871a-bbbeb030d1f6) (Depricated : use `kvdb.authSecretName`) (Depricated : use `kvdb.authSecretName`) |
-| `volumes` | Specifies volumes for Portworx by defining a name, mount path, mount propagation (None, HostToContainer, Bidirectional), and whether the volume is read-only. For secrets, provide the secret name and map specific keys to paths. Supported volume types include Host, Secret, and ConfigMap | [] |
-| `taintBasedScheduling.enabled` | Enables taint-based scheduling for Portworx. Applies taints on Px nodes, adds tolerations to Portworx components, and enables Stork to add tolerations to application pods using Px backend | None |
-| `tolerations` | Specifies tolerations for scheduling Portworx pods. | [] |
-| `nodeAffinity` | Specifies node affinity rules for Portworx pods. | {} |
-| `nodesConfiguration` | Override certain cluster-level configurations for individual or groups of nodes, including network, storage, environment variables, and runtime options. | [] |
-| `clusterToken.create` | Determines whether a cluster token should be created. | false |
-| `clusterToken.secretName` | Name of the Kubernetes secret to be created for the cluster token. Requires clusterToken.create to be true. | "px-vol-encryption" |
-| `clusterToken.serviceAccountName` | Service account name to use for the post-install hook to create the cluster token. | "px-create-cluster-token" |
-| `deleteStrategy.type` | Optional: Specifies the delete strategy for the Portworx cluster. Valid values: Uninstall, UninstallAndWipe | "" |
-| `deleteStrategy.ignoreVolumes` | Optional: Indicates whether to ignore volumes when deleting the portworx cluster | "" |
-| `updateStrategy.type` | Specifies the update strategy for the Portworx cluster. Supported values: RollingUpdate, OnDelete | "" |
-| `updateStrategy.maxUnavailable` | Maximum number of nodes that can be unavailable during a rolling update | 1 |
-| `updateStrategy.minReadySeconds` | Minimum number of seconds that a pod should be ready before the next batch of pods is updated during a rolling update | 1 |
-| `updateStrategy.disruption.allow` | This field is used to enable or disable smart and parallel upgrade. Smart upgrade is disabled by default, Enable it by setting to false. we can use the `maxUnavailable` field to control the maximum number of Portworx nodes that can be upgraded at a time | None |
-| `updateStrategy.autoUpdateComponents` | Specifies the update strategy for the component images. Valid values: None, Once, Always | None |
+| Parameter                                                  | Description | Default
+|------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
+| `imageVersion`                                             | Version of the PX image | 3.5.1 |
+| `pxOperatorImageVersion`                                   | Version of the PX operator image | 25.5.1 |
+| `verboseOperatorLogs`                                      | Enable verbose logging for the Portworx operator | true |
+| `openshiftInstall`                                         | Installing on Openshift? | false |
+| `nonDisruptivek8sUpgrade`                                  | Used to disable or enable smart and parallel kubetnetes node upgrades. By default, S&P upgrades are disabled. To enable them, set this to true | false |
+| `skipHealthChecks`                                         | Used to skip health checks. By default, health checks are enabled. Set this to true to disable health checks | false | 
+| `pksInstall`                                               | Installing on Pivotal Container service? | false |
+| `EKSInstall`                                               | Installing EKS (Amazon Elastic Container service) | false |
+| `AKSInstall`                                               | Installing on AKS (Azure Kubernetes service) | false |
+| `GKEInstall`                                               | Installing on GKE (Google Kubernetes Engine) | false |
+| `clusterAnnotations`                                       | Semicolon-separated list of annotations to apply on the StorageCluster resource | "" |
+| `etcdEndPoint`                                             | (REQUIRED) etcd endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>". Multiple Urls should be semi-colon seperated example: etcd:http://<your-etcd-endpoint1>;etcd:http://<your-etcd-endpoint2> | "" |
+| `clusterName`                                              | Portworx Cluster Name | "mycluster" |
+| `usefileSystemDrive`                                       | Should Portworx use an unmounted drive even with a filesystem ? | false |
+| `usedrivesAndPartitions`                                   | Should Portworx use the drives as well as partitions on the disk ? | false |
+| `drives`                                                   | Semi-colon seperated list of drives to be used for storage (example: "/dev/sda;/dev/sdb") | "none" |
+| `provider`                                                 | Specifies the cloud provider name, such as: pure, azure, aws, gce, vsphere, if using cloud storage. | "" |
+| `journalDevice`                                            | Journal device for Portworx metadata | "" |
+| `cacheDevices`                                             | semi-colon seperated list of cache devices Portworx should use. | "" |
+| `initialStorageNodes`                                      | InitialStorageNodes specifies the number of storage nodes to be provisioned in the cluster. This field is only used when the cluster is being created  | 0 |
+| `maxStorageNodes`                                          | Specifies the maximum number of storage nodes. If this number is reached, and a new node is added, Portworx doesn't provision drives for the new node. Instead, Portworx starts the node as a compute-only node. As a best practice, it is recommended to use the `maxStorageNodesPerZone` field | 0 |
+| `systemMetadataDevice`                                     | Specifies the device Portworx uses to store metadata. | "" |
+| `secretType`                                               | Secrets store to be used can be AWS KMS/KVDB/Vault/K8s/IBM Key Protect | k8s |
+| `dataInterface`                                            | Name of the interface <ethX> | "none" |
+| `managementInterface`                                      | Name of the interface <ethX> | "none" |
+| `serviceType`                                              | Kubernetes service type for services deployed by the Operator. Direct Values like 'LoadBalancer', 'NodePort' will change all services. To change the types of specific services, value can be specified as 'portworx-service:LoadBalancer;portworx-api:ClusterIP'| "none" |
+| `runtimeOptions`                                           | semi-colon seperated list of key-value pairs that overwrite the runtime options.| "" |
+| `featureGates`                                             | semi-colon seperated list of key-value specifying which Portworx features should be enabled or disabled | "" |
+| `security.enabled`                                         | Enables or disables Security at any given time | false |
+| `security.auth.guestAccess`                                | Determines how the guest role will be updated in your cluster. Options are Enabled, Disabled, or Managed | "Enabled" |
+| `security.auth.selfSigned.tokenLifetime`                   | Time till operator-generated tokens will be alive until being refreshed | "" |
+| `security.auth.selfSigned.issuer`                          | The issuer name to be used when configuring PX-Security | "" |
+| `security.auth.selfSigned.sharedSecret`                    | The Kubernetes secret name for retrieving and storing your shared secret. | "" |
+| `resources`                                                | Configure Portworx container usage such as memory and CPU usage.| {} |
+| `customMetadata.annotations.pod.storage`                   | Custom annotations for Portworx pods | "" |
+| `customMetadata.annotations.service.portworx-api`          | Custom annotations for portwork-api service | "" |
+| `customMetadata.annotations.service.portworx-service`      | Custom annotations for portwork-service | "" |
+| `customMetadata.annotations.service.portworx-kvdb-service` | Custom annotations for portworx-kvdb-service | "" |
+| `customMetadata.labels`                                    | Labels to be applied to components managed by the operator. Use `"*"` to define global labels. If both global and component-specific labels are defined, the component-specific key-value pairs take precedence. | "" |
+| `envVars`                                                  | semi-colon-separated list of environment variables that will be exported to portworx. (example: MYENV1=val1;MYENV2=val2) ( Depricated : use `envs` to set environment variables) | "none" |
+| `envs`                                                     | Add environment variables to the Portworx container in all Kubernetes-supported formats | [] |
+| `disableStorageClass`                                      | Disable installation of default Portworx StorageClasses. | false |
+| `stork.enabled`                                            | [Storage Orchestration for Hyperconvergence](https://github.com/libopenstorage/stork). | true |
+| `stork.storkVersion`                                       | The version of stork | "" |
+| `stork.args`                                               | Pass arguments to Stork container | "" |
+| `stork.volumes`                                            | Add volumes to Stork container | [] |
+| `stork.env`                                                | List of Kubernetes like environment variables passed to Stork | [] |
+| `customRegistryURL`                                        | Custom Docker registry | "" |
+| `registrySecret`                                           | Registry secret | "" |
+| `imagePullPolicy`                                          | ImagePullPolicy specifies the image pull policy for all the images deployed by the operator. The possible values can be `Always` or `IfNotPresent`. | "Always" |
+| `priorityClassName`                                        | PriorityClass to be set for Portworx pods. This applies only to Portworx pods. To apply priority class for all components, use ComponentK8sConfig CR. | "" |
+| `pxfslibsUpdate.enabled`                                   | Enable pxfslibs update feature | false |
+| `pxfslibsUpdate.onDemandTrigger`                           | On-demand trigger for pxfslibs update. Set a timestamp in RFC3339 format to trigger the update (e.g., "2026-02-09T12:00:00Z") | "" |
+| `pxfslibsUpdate.autoDelete`                                | Auto delete the pxfslibs update job after completion | true |
+| `pxfslibsUpdate.schedule`                                  | Schedule the pxfslibs update job in cronjob format (e.g., "0 2 * * *" for daily at 2 AM) | "" |
+| `ocpDynamicPlugin.cacheAgentImage`                         | Cache agent image for OpenShift dynamic plugin | "" |
+| `ocpDynamicPlugin.pluginImage`                             | Plugin image for OpenShift dynamic plugin | "" |
+| `ocpDynamicPlugin.proxyImage`                              | Proxy image for OpenShift dynamic plugin | "" |
+| `monitoring.prometheus.enabled`                            | Enable or disable Prometheus | false |
+| `monitoring.prometheus.exportMetrics`                      | Expose the Portworx metrics to an external or operator deployed Prometheus | false |
+| `monitoring.prometheus.alertManager`                       | Enable or disable alertmanager | false |
+| `monitoring.prometheus.resources`                          | Configure stork container resources such memory and cpu | {} |
+| `monitoring.prometheus.replicas`                           | Number of prometheus replicas that will be deployed | 1 |
+| `monitoring.prometheus.retention`                          | Time period for which prometheus retains historical matrics | "24h" |
+| `monitoring.prometheus.retentionSize`                      | Maximum amount of disk space that Prometheus can use to store historical metrics. Example: "10GiB","50MiB" | "" |
+| `monitoring.prometheus.storage`                            | Storage type that Prometheus will use for storing data | {} |
+| `monitoring.prometheus.volumes`                            | Additional volumes for the prometheus statefulSet | [] |
+| `monitoring.prometheus.volumeMounts`                       | Additional VolumeMounts for the Prometheus StatefulSet | [] |
+| `monitoring.prometheus.securityContext.runAsNonRoot`       | Enable prometheus container run as a non-root user | false |
+| `monitoring.telemetry`                                     | Enable or disable telemetry | true |
+| `monitoring.grafana`                                       | Enable or disable grafana | false |
+| `csi.enabled`                                              | Enables CSI | true |
+| `csi.topology.enabled`                                     | Enable CSI topology feature gate | false |
+| `csi.installSnapshotController`                            | Install CSI Snapshot Controller | false |
+| `csi.seLinuxMount`                                         | SELinuxMount specifies whether the CSI driver supports the "-o context" mount option. It overrides the seLinuxMount value in the CSI driver | true |
+| `kubeVirtStorageClasses.pxRwxFileKubevirt`                 | Enables creation of the `px-rwx-file-kubevirt` StorageClass, which provides RWX access using a file-based backend for KubeVirt virtual machines. | false |
+| `kubeVirtStorageClasses.pxRwxBlockKubevirt`                | Enables creation of the `px-rwx-block-kubevirt` StorageClass, which provides RWX access using a block-based backend for KubeVirt workloads. | false |
+| `kubeVirtStorageClasses.pxCdiScratch`                      | Enables creation of the `px-cdi-scratch` StorageClass used by the Containerized Data Importer (CDI) for temporary scratch space during VM image imports or uploads. | false |
+| `autopilot.enabled`                                        | Enable AutoPilot | true |
+| `autopilot.image`                                          | Specify AutoPilot image | "" |
+| `autopilot.lockImage`                                      | Enables locking AutoPilot to the given image | false |
+| `autopilot.args`                                           | semicolon sperated list to Override or add new AutoPilot arguments | "" |
+| `autopilot.env`                                            | List of Kubernetes like environment variables passed to Autopilot | [] |
+| `internalKVDB`                                             | Internal KVDB store | true |
+| `kvdbDevice`                                               | specify a separate device to store KVDB data, only used when internalKVDB is set to true | "" |
+| `kvdb.authSecretName`                                      | Name of the secret for configuring secure KVDB (https://docs.portworx.com/portworx-enterprise/operations/kvdb-for-portworx/external-kvdb#secure-your-etcd-communication)| "none" |
+| `etcd.credentials`                                         | Username and password for etcd authentication in the form user:password (Depricated : use `kvdb.authSecretName`) | "none":"none" |
+| `etcd.certPath`                                            | Base path where the certificates are placed. (example: if the certificates ca,.crt and the .key are in /etc/pwx/etcdcerts the value should be provided as /etc/pwx/etcdcerts Refer: https://docs.portworx.com/scheduler/kubernetes/etcd-certs-using-secrets.html) (Depricated : use `kvdb.authSecretName`) | "none" |
+| `etcd.ca`                                                  | Location of CA file for etcd authentication. Should be /path/to/server.ca (Depricated : use `kvdb.authSecretName`)| "none" |
+| `etcd.cert`                                                | Location of certificate for etcd authentication. Should be /path/to/server.crt (Depricated : use `kvdb.authSecretName`) | "none" |
+| `etcd.key`                                                 | Location of certificate key for etcd authentication Should be /path/to/servery.key (Depricated : use `kvdb.authSecretName`)| "none" |
+| `consul.token`                                             | ACL token value used for Consul authentication. (example: 398073a8-5091-4d9c-871a-bbbeb030d1f6) (Depricated : use `kvdb.authSecretName`) (Depricated : use `kvdb.authSecretName`) |
+| `volumes`                                                  | Specifies volumes for Portworx by defining a name, mount path, mount propagation (None, HostToContainer, Bidirectional), and whether the volume is read-only. For secrets, provide the secret name and map specific keys to paths. Supported volume types include Host, Secret, and ConfigMap | [] |
+| `taintBasedScheduling.enabled`                             | Enables taint-based scheduling for Portworx. Applies taints on Px nodes, adds tolerations to Portworx components, and enables Stork to add tolerations to application pods using Px backend | None |
+| `tolerations`                                              | Specifies tolerations for scheduling Portworx pods. | [] |
+| `nodeAffinity`                                             | Specifies node affinity rules for Portworx pods. | {} |
+| `nodesConfiguration`                                       | Override certain cluster-level configurations for individual or groups of nodes, including network, storage, environment variables, and runtime options. | [] |
+| `clusterToken.create`                                      | Determines whether a cluster token should be created. | false |
+| `clusterToken.secretName`                                  | Name of the Kubernetes secret to be created for the cluster token. Requires clusterToken.create to be true. | "px-vol-encryption" |
+| `clusterToken.serviceAccountName`                          | Service account name to use for the post-install hook to create the cluster token. | "px-create-cluster-token" |
+| `deleteStrategy.type`                                      | Optional: Specifies the delete strategy for the Portworx cluster. Valid values: Uninstall, UninstallAndWipe | "" |
+| `deleteStrategy.ignoreVolumes`                             | Optional: Indicates whether to ignore volumes when deleting the portworx cluster | "" |
+| `updateStrategy.type`                                      | Specifies the update strategy for the Portworx cluster. Supported values: RollingUpdate, OnDelete | "" |
+| `updateStrategy.maxUnavailable`                            | Maximum number of nodes that can be unavailable during a rolling update | 1 |
+| `updateStrategy.minReadySeconds`                           | Minimum number of seconds that a pod should be ready before the next batch of pods is updated during a rolling update | 1 |
+| `updateStrategy.disruption.allow`                          | This field is used to enable or disable smart and parallel upgrade. Smart upgrade is disabled by default, Enable it by setting to false. we can use the `maxUnavailable` field to control the maximum number of Portworx nodes that can be upgraded at a time | None |
+| `updateStrategy.autoUpdateComponents`                      | Specifies the update strategy for the component images. Valid values: None, Once, Always | None |
+| `componentK8sConfig.enabled`                               | Enables or disables creation of ComponentK8sConfig CR for component-level Kubernetes configuration | false |
+| `componentK8sConfig.name`                                  | Name of the ComponentK8sConfig resource | "portworx-k8s-config" |
+| `componentK8sConfig.globalConfig`                          | Global configuration that applies to all Portworx components unless overridden by component-specific configuration. Supports annotations, labels, placement (nodeAffinity, tolerations), and priorityClass. Note: Global configuration cannot set container resource requests and limits. | {} |
+| `componentK8sConfig.components`                            | List of component-specific configurations. Each component can specify componentNames (e.g., "Autopilot", "CSI", "Portworx API") and workloadConfigs with workloadNames, annotations, labels, containerConfigs (resources), priorityClass, and placement settings. | [] |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
