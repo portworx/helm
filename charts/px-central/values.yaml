@@ -311,10 +311,10 @@ images:
 
   ## Images required for enabling px-backup
   pxBackupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: px-backup-base
-    tag: 2.11.0-staging
+    tag: telemetry-2.11.0-staging
     module: pxBackup
   mongodbImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -346,7 +346,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: telemetry-data-collector
-    tag: 2.11.0-staging
+    tag: telemetry-2.11.0-staging
     module: pxBackup
   telemetryLogUploadImage:
     registry: docker.io
