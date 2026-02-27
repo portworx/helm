@@ -211,8 +211,10 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "200m"
+        {{- if and (not .Values.istio.enabled) (not .Values.linkerd.enabled) }}
         # Health probe - verifies envoy can reach upstream (Pure1)
-        # Auto-recovers from 503 UH errors by making pod not ready
+        # Disabled when Istio/Linkerd is enabled because service mesh sidecar injectors
+        # rewrite probes to go through their proxy, which fails for our telemetry envoy
         readinessProbe:
           httpGet:
             host: 127.0.0.1
@@ -221,6 +223,7 @@ spec:
           periodSeconds: 150
           failureThreshold: 3
           timeoutSeconds: 2
+        {{- end }}
 
       volumes:
       - name: log-storage
