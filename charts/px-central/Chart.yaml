@@ -13,6 +13,6 @@ keywords:
 name: px-central
 sources:
 - https://github.com/portworx/helm/tree/master/charts/px-central
-version: 2.11.0
-appVersion: 2.11.0-staging
+version: 3.0.0
+appVersion: 3.0.0-staging
 name: px-central

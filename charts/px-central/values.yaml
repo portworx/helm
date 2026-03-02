@@ -142,6 +142,35 @@ pxbackup:
   encryptMongoDB: false
   federated: false
 
+  # Gardener Shoot Discovery and Kubeconfig Auto-Refresh settings
+  gardener:
+    # Enable/disable Gardener Shoot discovery feature environment variables
+    enabled: false
+
+    # Discovery Engine settings
+    discovery:
+      # How often to scan Gardener for new Shoot clusters (seconds)
+      intervalSeconds: 1800  # 30 minutes
+
+    # Kubeconfig settings
+    kubeconfig:
+      # TTL for kubeconfig requested from Gardener (seconds)
+      expirationSeconds: 86400  # 24 hours
+
+    # Expiry Monitor Worker (EMW) settings
+    emw:
+      # How often EMW checks for clusters needing refresh (seconds)
+      checkIntervalSeconds: 300  # 5 minutes
+      # Number of concurrent refresh workers
+      workerCount: 10
+
+    # Refresh threshold settings
+    # Formula: refresh_at = expiration - max(min, min(max, ttl * percentage))
+    refreshThreshold:
+      percentage: 0.20  # 20% of TTL
+      minSeconds: 1800  # 30 minutes
+      maxSeconds: 14400 # 4 hours
+
 pxlicenseserver:
   enabled: false
   internal:

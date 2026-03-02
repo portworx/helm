@@ -246,6 +246,22 @@ spec:
         - name: PX_BACKUP_FEDERATED
           value: "true"
         {{- end }}
+        {{- if .Values.pxbackup.gardener.enabled }}
+        - name: GARDENER_KUBECONFIG_EXPIRATION_SECONDS
+          value: {{ .Values.pxbackup.gardener.kubeconfig.expirationSeconds | default 86400 | quote }}
+        - name: GARDENER_EMW_CHECK_INTERVAL_SECONDS
+          value: {{ .Values.pxbackup.gardener.emw.checkIntervalSeconds | default 300 | quote }}
+        - name: GARDENER_DISCOVERY_INTERVAL_SECONDS
+          value: {{ .Values.pxbackup.gardener.discovery.intervalSeconds | default 1800 | quote }}
+        - name: GARDENER_EMW_WORKER_COUNT
+          value: {{ .Values.pxbackup.gardener.emw.workerCount | default 10 | quote }}
+        - name: GARDENER_REFRESH_THRESHOLD_PERCENT
+          value: {{ .Values.pxbackup.gardener.refreshThreshold.percentage | default 0.20 | quote }}
+        - name: GARDENER_MIN_REFRESH_THRESHOLD_SECONDS
+          value: {{ .Values.pxbackup.gardener.refreshThreshold.minSeconds | default 1800 | quote }}
+        - name: GARDENER_MAX_REFRESH_THRESHOLD_SECONDS
+          value: {{ .Values.pxbackup.gardener.refreshThreshold.maxSeconds | default 14400 | quote }}
+        {{- end }}
         {{- include "serviceMesh.env" . | nindent 8 }}
         - name: AIRGAP_REPORTING_PERIOD
           value: "90"
