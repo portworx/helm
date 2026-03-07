@@ -94,9 +94,9 @@ spec:
         - name: COLLECTION_INTERVAL
           value: {{ .Values.telemetry.logsCollector.collectionInterval | default 3600 }}s
 
-        # Reporting API configuration
-        - name: REPORTING_API_URL
-          value: "http://px-backup.{{ .Release.Namespace }}.svc.cluster.local:10001/v1/reporting/data"
+        # Reporting API configuration (gRPC)
+        - name: REPORTING_API_ADDR
+          value: "px-backup.{{ .Release.Namespace }}.svc.cluster.local:10002"
 
         # Upload service configuration (REST API to log-upload-service sidecar)
         - name: UPLOAD_SERVICE_URL
