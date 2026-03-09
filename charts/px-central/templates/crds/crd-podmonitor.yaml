@@ -1,25 +1,29 @@
-# https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.47.0/example/prometheus-operator-crd/monitoring.coreos.com_servicemonitors.yaml
+{{/*
+Conditional CRD installation for Helm 4 SSA compatibility.
+Only installs the CRD if it doesn't already exist in the cluster.
+This preserves the full OpenAPI validation schema.
+
+For ArgoCD deployments with pre-existing CRDs, set installCRDs: "false"
+*/}}
+{{- if eq (include "px-central.shouldInstallCRD" (dict "crdName" "podmonitors.monitoring.coreos.com" "context" .)) "true" }}
+# https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/v0.47.0/example/prometheus-operator-crd/monitoring.coreos.com_podmonitors.yaml
 apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
-  annotations:
-    controller-gen.kubebuilder.io/version: v0.4.1
-    helm.sh/hook: crd-install
-  name: servicemonitors.monitoring.coreos.com
+  name: podmonitors.monitoring.coreos.com
+  labels:
+    app: prometheus-operator
 spec:
   group: monitoring.coreos.com
   names:
-    kind: ServiceMonitor
-    listKind: ServiceMonitorList
-    plural: servicemonitors
-    singular: servicemonitor
-  preserveUnknownFields: false
+    kind: PodMonitor
+    plural: podmonitors
   scope: Namespaced
   versions:
   - name: v1
     schema:
       openAPIV3Schema:
-        description: ServiceMonitor defines monitoring for a set of services.
+        description: PodMonitor defines monitoring for a set of pods.
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
@@ -30,15 +34,30 @@ spec:
           metadata:
             type: object
           spec:
-            description: Specification of desired Service selection for target discovery by Prometheus.
+            description: Specification of desired Pod selection for target discovery by Prometheus.
             properties:
-              endpoints:
-                description: A list of endpoints allowed as part of this ServiceMonitor.
+              jobLabel:
+                description: The label to use to retrieve the job name from.
+                type: string
+              namespaceSelector:
+                description: Selector to select which namespaces the Endpoints objects are discovered from.
+                properties:
+                  any:
+                    description: Boolean describing whether all namespaces are selected in contrast to a list restricting them.
+                    type: boolean
+                  matchNames:
+                    description: List of namespace names.
+                    items:
+                      type: string
+                    type: array
+                type: object
+              podMetricsEndpoints:
+                description: A list of endpoints allowed as part of this PodMonitor.
                 items:
-                  description: Endpoint defines a scrapeable endpoint serving Prometheus metrics.
+                  description: PodMetricsEndpoint defines a scrapeable endpoint of a Kubernetes Pod serving Prometheus metrics.
                   properties:
                     basicAuth:
-                      description: 'BasicAuth allow an endpoint to authenticate over basic authentication More info: https://prometheus.io/docs/operating/configuration/#endpoints'
+                      description: 'BasicAuth allow an endpoint to authenticate over basic authentication. More info: https://prometheus.io/docs/operating/configuration/#endpoint'
                       properties:
                         password:
                           description: The secret in the service monitor namespace that contains the password for authentication.
@@ -71,11 +90,8 @@ spec:
                           - key
                           type: object
                       type: object
-                    bearerTokenFile:
-                      description: File to read bearer token for scraping targets.
-                      type: string
                     bearerTokenSecret:
-                      description: Secret to mount to read bearer token for scraping targets. The secret needs to be in the same namespace as the service monitor and accessible by the Prometheus Operator.
+                      description: Secret to mount to read bearer token for scraping targets. The secret needs to be in the same namespace as the pod monitor and accessible by the Prometheus Operator.
                       properties:
                         key:
                           description: The key of the secret to select from.  Must be a valid secret key.
@@ -140,7 +156,7 @@ spec:
                       description: HTTP path to scrape for metrics.
                       type: string
                     port:
-                      description: Name of the service port this endpoint refers to. Mutually exclusive with targetPort.
+                      description: Name of the pod port this endpoint refers to. Mutually exclusive with targetPort.
                       type: string
                     proxyUrl:
                       description: ProxyURL eg http://proxyserver:2195 Directs scrapes to proxy through this endpoint.
@@ -186,10 +202,10 @@ spec:
                       anyOf:
                       - type: integer
                       - type: string
-                      description: Name or number of the target port of the Pod behind the Service, the port must be specified with container port property. Mutually exclusive with port.
+                      description: 'Deprecated: Use ''port'' instead.'
                       x-kubernetes-int-or-string: true
                     tlsConfig:
-                      description: TLS configuration to use when scraping the endpoint
+                      description: TLS configuration to use when scraping the endpoint.
                       properties:
                         ca:
                           description: Struct containing the CA cert to use for the targets.
@@ -225,9 +241,6 @@ spec:
                               - key
                               type: object
                           type: object
-                        caFile:
-                          description: Path to the CA cert in the Prometheus container to use for the targets.
-                          type: string
                         cert:
                           description: Struct containing the client cert file for the targets.
                           properties:
@@ -262,15 +275,9 @@ spec:
                               - key
                               type: object
                           type: object
-                        certFile:
-                          description: Path to the client cert file in the Prometheus container for the targets.
-                          type: string
                         insecureSkipVerify:
                           description: Disable target certificate validation.
                           type: boolean
-                        keyFile:
-                          description: Path to the client key file in the Prometheus container for the targets.
-                          type: string
                         keySecret:
                           description: Secret containing the client key file for the targets.
                           properties:
@@ -292,21 +299,6 @@ spec:
                       type: object
                   type: object
                 type: array
-              jobLabel:
-                description: The label to use to retrieve the job name from.
-                type: string
-              namespaceSelector:
-                description: Selector to select which namespaces the Endpoints objects are discovered from.
-                properties:
-                  any:
-                    description: Boolean describing whether all namespaces are selected in contrast to a list restricting them.
-                    type: boolean
-                  matchNames:
-                    description: List of namespace names.
-                    items:
-                      type: string
-                    type: array
-                type: object
               podTargetLabels:
                 description: PodTargetLabels transfers labels on the Kubernetes Pod onto the target.
                 items:
@@ -317,7 +309,7 @@ spec:
                 format: int64
                 type: integer
               selector:
-                description: Selector to select Endpoints objects.
+                description: Selector to select Pod objects.
                 properties:
                   matchExpressions:
                     description: matchExpressions is a list of label selector requirements. The requirements are ANDed.
@@ -346,17 +338,12 @@ spec:
                     description: matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is "key", the operator is "In", and the values array contains only "value". The requirements are ANDed.
                     type: object
                 type: object
-              targetLabels:
-                description: TargetLabels transfers labels on the Kubernetes Service onto the target.
-                items:
-                  type: string
-                type: array
               targetLimit:
                 description: TargetLimit defines a limit on the number of scraped targets that will be accepted.
                 format: int64
                 type: integer
             required:
-            - endpoints
+            - podMetricsEndpoints
             - selector
             type: object
         required:
@@ -364,3 +351,4 @@ spec:
         type: object
     served: true
     storage: true
+{{- end }}
