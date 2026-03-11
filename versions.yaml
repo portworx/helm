@@ -1,12 +1,12 @@
 pxCentralVersion: 2.11.0
 modules:
   pxCentral:
-    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api:2.11.0"
-    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend:2.11.0"
-    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend:2.11.0"
-    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend:2.11.0"
-    pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup:2.11.0"
-    pxcentralOnpremPreSetup: "docker.io/portworx/pxcentral-onprem-hook:2.11.0"
+    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:2.11.0-staging"
+    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:PB-14303"
+    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:PB-14303"
+    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:PB-14303"
+    pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:2.11.0-staging"
+    pxcentralOnpremPreSetup: "docker.io/portworx/pxcentral-onprem-hook-base:2.11.0-staging"
     postgresql: "docker.io/portworx/postgresql:18"
     keycloak: "docker.io/portworx/keycloak:26.4.7_v2"
     keycloakLoginTheme: "docker.io/portworx/keycloak-login-theme:2.11.0"
