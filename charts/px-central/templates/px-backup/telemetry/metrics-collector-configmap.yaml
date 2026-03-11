@@ -37,7 +37,8 @@ data:
       staticConfig:
         targets:
         - name: px-backup
-          url: http://px-backup.{{ .Release.Namespace }}.svc.cluster.local:10001/metrics
+          # Use /telemetry/metrics endpoint which respects runtime pause/resume flag
+          url: http://px-backup.{{ .Release.Namespace }}.svc.cluster.local:10001/telemetry/metrics
     
     # Forward configuration
     forwardConfig:
