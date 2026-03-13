@@ -66,6 +66,7 @@ spec:
         app.kubernetes.io/instance: {{.Release.Name }}
         app.kubernetes.io/managed-by: {{.Release.Service }}
         app.kubernetes.io/component: pxc-backup-mongodb
+{{- include "px-central.partOfLabel" . | nindent 8 }}
     spec:
       affinity:
         nodeAffinity:

@@ -136,7 +136,7 @@ pxbackup:
   backupDeleteWorker: 5
   volDeleteWorker: 5
   backupInfoMetricsBackfillHours: 24
-  version: 2.10.2
+  version: 2.11.0
   skipValidations: false
   usePlatformRbac: false
   encryptMongoDB: false
@@ -226,49 +226,49 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 2.10.2
+    tag: 2.11.0
     module: pxCentral
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 2.10.2
+    tag: 2.11.0
     module: pxCentral
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 2.10.2
+    tag: 2.11.0
     module: pxCentral
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 2.10.2
+    tag: 2.11.0
     module: pxCentral
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 2.10.2
+    tag: 2.11.0
     module: pxCentral
   keycloakBackendImage:
     registry: docker.io
     repo: portworx
     imageName: postgresql
-    tag: 17.4.0-debian-12-r19
+    tag: "18"
     module: pxCentral
   keycloakFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: keycloak
-    tag: 26.2.4_v2
+    tag: 26.4.7_v2
     module: pxCentral
   keycloakLoginThemeImage:
     registry: docker.io
     repo: portworx
     imageName: keycloak-login-theme
-    tag: 2.10.2
+    tag: 2.11.0
     module: pxCentral
   keycloakInitContainerImage:
     registry: docker.io
@@ -280,13 +280,13 @@ images:
     registry: docker.io
     repo: portworx
     imageName: mysql
-    tag: 8.0.43
+    tag: 8.0.44
     module: pxCentral
   preSetupHookImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-hook
-    tag: 2.10.2
+    tag: 2.11.0
     module: pxCentral
   mysqlInitImage:
     registry: docker.io
@@ -300,7 +300,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 2.10.2
+    tag: 2.11.0
     module: pxBackup
   mongodbImage:
     registry: docker.io
@@ -364,25 +364,25 @@ images:
     registry: docker.io
     repo: portworx
     imageName: prometheus
-    tag: v3.6.0
+    tag: v3.8.1
     module: pxBackup
   pxBackupAlertmanagerImage:
     registry: docker.io
     repo: portworx
     imageName: alertmanager
-    tag: v0.28.0
+    tag: v0.30.0
     module: pxBackup
   pxBackupPrometheusOperatorImage:
     registry: docker.io
     repo: portworx
     imageName: prometheus-operator
-    tag: v0.85.0
+    tag: v0.87.1
     module: pxBackup
   pxBackupPrometheusConfigReloaderImage:
     registry: docker.io
     repo: portworx
     imageName: prometheus-config-reloader
-    tag: v0.85.0
+    tag: v0.87.1
     module: pxBackup
   prometheusConfigReloadrImage:
     registry: docker.io
