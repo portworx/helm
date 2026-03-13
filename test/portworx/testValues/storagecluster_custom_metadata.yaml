@@ -1,4 +1,11 @@
-customMetadata:                      
+customMetadata:
+  annotations:
+    pod:
+      storage: "application=my-app;environment=testing"
+    service:
+      portworx-api: "application=my-app;environment=testing"
+      portworx-service: "application=my-app;environment=testing"
+      portworx-kvdb-service: "application=my-app;environment=testing"
   labels:                          
     service: 
       portworx-api: "application=my-app;environment=testing"

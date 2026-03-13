@@ -1,0 +1,35 @@
+kind: StorageCluster
+apiVersion: core.libopenstorage.org/v1
+metadata:
+  name: "mycluster"
+  namespace: portworx
+  annotations:
+  labels:
+    heritage: "Helm"
+    release: "my-release"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "my-release"
+spec:
+  image: portworx/oci-monitor:3.5.2
+  imagePullPolicy: Always
+
+  kvdb:
+    internal: true
+  storage:
+    useAll: true
+  secretsProvider: k8s
+  
+  stork:
+    enabled: true
+  monitoring:
+    telemetry:
+      enabled: true
+      metricsCollector:
+        enabled: true
+  csi:
+    enabled: true
+  autopilot:
+    enabled: true
+  clusterDiags:
+    enabled: true
+

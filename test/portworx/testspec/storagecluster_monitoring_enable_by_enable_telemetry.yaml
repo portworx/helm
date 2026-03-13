@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-release"
 spec:
-  image: portworx/oci-monitor:3.5.0
+  image: portworx/oci-monitor:3.5.2
   imagePullPolicy: Always
 
   kvdb:
@@ -28,5 +28,8 @@ spec:
   monitoring:
     telemetry:
       enabled: true
+      metricsCollector:
+        enabled: true
+        image: custom-registry/metrics-collector:v1.2.3
   csi:
     enabled: false

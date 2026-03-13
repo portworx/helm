@@ -138,7 +138,28 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				SetValues: map[string]string{
 					"monitoring.prometheus.enabled":       "false",
 					"monitoring.prometheus.exportMetrics": "false",
-					"monitoring.telemetry":                "false",
+					"monitoring.telemetry.enabled":        "false",
+				},
+			},
+		},
+		{
+			name:           "TestTelemetryEnabledMetricsCollectorDisabled",
+			resultFileName: "storagecluster_telemetry_enabled_metrics_collector_disabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"monitoring.telemetry.enabled":                  "true",
+					"monitoring.telemetry.metricsCollector.enabled": "false",
+				},
+			},
+		},
+		{
+			name:           "TestMetricsCollectorWithCustomImage",
+			resultFileName: "storagecluster_metrics_collector_custom_image.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"monitoring.telemetry.enabled":                  "true",
+					"monitoring.telemetry.metricsCollector.enabled": "true",
+					"monitoring.telemetry.metricsCollector.image":   "custom-registry/metrics-collector:v1.2.3",
 				},
 			},
 		},
@@ -250,6 +271,27 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			resultFileName: "storagecluster_portworx_container_resources.yaml",
 			helmOption: &helm.Options{
 				ValuesFiles: []string{"./testValues/storagecluster_portworx_container_resources.yaml"},
+			},
+		},
+		{
+			name:           "TestPriorityClass",
+			resultFileName: "storagecluster_priority_class.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_priority_class.yaml"},
+			},
+		},
+		{
+			name:           "TestOcpDynamicPlugin",
+			resultFileName: "storagecluster_ocp_dynamic_plugin.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_ocp_dynamic_plugin.yaml"},
+			},
+		},
+		{
+			name:           "TestPxfslibsUpdate",
+			resultFileName: "storagecluster_pxfslibs_update.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_pxfslibs_update.yaml"},
 			},
 		},
 		{
@@ -437,7 +479,45 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			name:           "TestKubeVirtStorageClasses",
 			resultFileName: "storagecluster_kubevirt_storageclasses.yaml",
 			helmOption: &helm.Options{
-				ValuesFiles: []string{"storagecluster_kubevirt_storageclasses.yaml"},
+				ValuesFiles: []string{"./testValues/storagecluster_kubevirt_storageclasses.yaml"},
+			},
+		},
+		{
+			name:           "TestTaintBasedSchedulingEnabled",
+			resultFileName: "storagecluster_taint_based_scheduling_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{"taintBasedScheduling.enabled": "true"},
+			},
+		},
+		{
+			name:           "TestTaintBasedSchedulingDisabled",
+			resultFileName: "storagecluster_taint_based_scheduling_disabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{"taintBasedScheduling": "false"},
+			},
+		},
+		{
+			name:           "TestClusterDiagsEnabled",
+			resultFileName: "storagecluster_cluster_diags_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{"clusterDiags.enabled": "true"},
+			},
+		},
+		{
+			name:           "TestClusterDiagsDisabled",
+			resultFileName: "storagecluster_cluster_diags_disabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{"clusterDiags.enabled": "false"},
+			},
+		},
+		{
+			name:           "TestClusterDiagsWithImage",
+			resultFileName: "storagecluster_cluster_diags_with_image.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"clusterDiags.enabled": "true",
+					"clusterDiags.image":   "portworx/px-diag:1.0.0",
+				},
 			},
 		},
 	}

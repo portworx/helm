@@ -2,6 +2,131 @@ apiVersion: v1
 entries:
   portworx:
   - apiVersion: v1
+    appVersion: 3.5.2
+    created: "2026-03-02T14:55:11.38409038Z"
+    description: A Helm chart for installing Portworx on Kubernetes.
+    digest: 8defe5838b883b55f452d903538fd145a036ef31183a476e29650c5977f9ab70
+    home: https://www.purestorage.com/products/cloud-native-applications/portworx.html
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/k8s-porx.png
+    keywords:
+    - Storage
+    - ICP
+    - IKS
+    - persistent disk
+    - pvc
+    - cloud native storage
+    - persistent storage
+    - portworx
+    - amd64
+    - Commercial
+    kubeVersion: '>=1.26.0-0'
+    name: portworx
+    sources:
+    - https://github.com/portworx/helm
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/master/stable/portworx-8.2.1.tgz
+    version: 8.2.1
+  - apiVersion: v1
+    appVersion: 3.5.2
+    created: "2026-03-02T14:55:11.377183513Z"
+    description: A Helm chart for installing Portworx on Kubernetes.
+    digest: 74bb965502a323d0d35a20c0f6ac8e950ef0cf123d367f8e97a2662dd513d5dc
+    home: https://www.purestorage.com/products/cloud-native-applications/portworx.html
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/k8s-porx.png
+    keywords:
+    - Storage
+    - ICP
+    - IKS
+    - persistent disk
+    - pvc
+    - cloud native storage
+    - persistent storage
+    - portworx
+    - amd64
+    - Commercial
+    kubeVersion: '>=1.26.0-0'
+    name: portworx
+    sources:
+    - https://github.com/portworx/helm
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/master/stable/portworx-8.2.0.tgz
+    version: 8.2.0
+  - apiVersion: v1
+    appVersion: 3.5.2
+    created: "2026-03-02T14:55:11.367728985Z"
+    description: A Helm chart for installing Portworx on Kubernetes.
+    digest: 91734a4b8fe9218dbb6e339bd21a35a993a6f90acdaf6f6de9973818154680b7
+    home: https://www.purestorage.com/products/cloud-native-applications/portworx.html
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/k8s-porx.png
+    keywords:
+    - Storage
+    - ICP
+    - IKS
+    - persistent disk
+    - pvc
+    - cloud native storage
+    - persistent storage
+    - portworx
+    - amd64
+    - Commercial
+    kubeVersion: '>=1.26.0-0'
+    name: portworx
+    sources:
+    - https://github.com/portworx/helm
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/master/stable/portworx-8.1.0.tgz
+    version: 8.1.0
+  - apiVersion: v1
+    appVersion: 3.5.2
+    created: "2026-03-02T14:55:11.36091538Z"
+    description: A Helm chart for installing Portworx on Kubernetes.
+    digest: 7f771ef91378bc4b06841ed222f36637295f11fde2ce0346d073fdc57d5340b0
+    home: https://www.purestorage.com/products/cloud-native-applications/portworx.html
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/k8s-porx.png
+    keywords:
+    - Storage
+    - ICP
+    - IKS
+    - persistent disk
+    - pvc
+    - cloud native storage
+    - persistent storage
+    - portworx
+    - amd64
+    - Commercial
+    kubeVersion: '>=1.26.0-0'
+    name: portworx
+    sources:
+    - https://github.com/portworx/helm
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/master/stable/portworx-8.0.2.tgz
+    version: 8.0.2
+  - apiVersion: v1
+    appVersion: 3.5.1
+    created: "2026-03-02T14:55:11.352077882Z"
+    description: A Helm chart for installing Portworx on Kubernetes.
+    digest: ea8f1ce57998b1cfaaa42f9a6edc9035fe11a478222e171d571085890075b185
+    home: https://portworx.com/
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/k8s-porx.png
+    keywords:
+    - Storage
+    - ICP
+    - IKS
+    - persistent disk
+    - pvc
+    - cloud native storage
+    - persistent storage
+    - portworx
+    - amd64
+    - Commercial
+    kubeVersion: '>=1.26.0-0'
+    name: portworx
+    sources:
+    - https://github.com/portworx/helm
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/master/stable/portworx-8.0.1.tgz
+    version: 8.0.1
+  - apiVersion: v1
     appVersion: 3.5.0
     created: "2026-03-09T11:58:19.9656+05:30"
     description: A Helm chart for installing Portworx on Kubernetes.

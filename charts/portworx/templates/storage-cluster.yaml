@@ -195,6 +195,10 @@ spec:
     {{- end }}
   {{- end }}
 
+  {{- if .Values.priorityClassName }}
+  priorityClassName: {{ .Values.priorityClassName }}
+  {{- end }}
+
   kvdb:
   {{- if and (eq $internalKVDB true) (empty $etcdEndPoints) }}
     internal: true
@@ -448,7 +452,7 @@ spec:
   {{- end }}
 
   {{- $promethusEnabled := or $prometheus.exportMetrics $prometheus.enabled}}
-  {{- $monitoringEnabled := or $promethusEnabled .Values.monitoring.telemetry $prometheus.enabled .Values.grafana }}
+  {{- $monitoringEnabled := or $promethusEnabled .Values.monitoring.telemetry.enabled $prometheus.enabled .Values.grafana }}
   {{- if $monitoringEnabled }}
   monitoring:
     {{- if $promethusEnabled }}
@@ -494,9 +498,16 @@ spec:
       {{- end }}
     {{- end }}
 
-    {{- if .Values.monitoring.telemetry }}
+    {{- if .Values.monitoring.telemetry.enabled }}
     telemetry:
       enabled: true
+      {{- if or (eq .Values.monitoring.telemetry.metricsCollector.enabled true) (eq .Values.monitoring.telemetry.metricsCollector.enabled false) }}
+      metricsCollector:
+        enabled: {{ .Values.monitoring.telemetry.metricsCollector.enabled }}
+        {{- if .Values.monitoring.telemetry.metricsCollector.image }}
+        image: {{ .Values.monitoring.telemetry.metricsCollector.image }}
+        {{- end }}
+      {{- end }}
     {{- end }}
 
     {{- if .Values.monitoring.grafana }}
@@ -650,6 +661,44 @@ spec:
   workloadIdentity:
     credentials:
       {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- if or (eq .Values.taintBasedScheduling.enabled true) (eq .Values.taintBasedScheduling.enabled false) }}
+  taintBasedScheduling:
+    enabled: {{ .Values.taintBasedScheduling.enabled }}
+  {{- end}}
+
+  {{- if or .Values.ocpDynamicPlugin.cacheAgentImage .Values.ocpDynamicPlugin.pluginImage .Values.ocpDynamicPlugin.proxyImage }}
+  ocpDynamicPlugin:
+    {{- if .Values.ocpDynamicPlugin.cacheAgentImage }}
+    cacheAgentImage: {{ .Values.ocpDynamicPlugin.cacheAgentImage }}
+    {{- end }}
+    {{- if .Values.ocpDynamicPlugin.pluginImage }}
+    pluginImage: {{ .Values.ocpDynamicPlugin.pluginImage }}
+    {{- end }}
+    {{- if .Values.ocpDynamicPlugin.proxyImage }}
+    proxyImage: {{ .Values.ocpDynamicPlugin.proxyImage }}
+    {{- end }}
+  {{- end }}
+
+  {{- if .Values.pxfslibsUpdate.enabled }}
+  pxfslibsUpdate:
+    enabled: true
+    {{- if .Values.pxfslibsUpdate.onDemandTrigger }}
+    onDemandTrigger: {{ .Values.pxfslibsUpdate.onDemandTrigger | quote}}
+    {{- end }}
+    {{- if or (eq .Values.pxfslibsUpdate.autoDelete true) (eq .Values.pxfslibsUpdate.autoDelete false) }}
+    autoDelete: {{ .Values.pxfslibsUpdate.autoDelete }}
+    {{- end }}
+    {{- if .Values.pxfslibsUpdate.schedule }}
+    schedule: {{ .Values.pxfslibsUpdate.schedule | quote}}
+    {{- end }}
+  {{- end }}
+  {{- if or (eq .Values.clusterDiags.enabled true) (eq .Values.clusterDiags.enabled false) }}
+  clusterDiags:
+    enabled: {{ .Values.clusterDiags.enabled }}
+    {{- if ne .Values.clusterDiags.image "" }}
+    image: {{ .Values.clusterDiags.image }}
+    {{- end }}
   {{- end }}
 
 {{- end }}
