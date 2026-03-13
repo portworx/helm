@@ -161,7 +161,8 @@ data:
       "logupload": {
         "logfile_patterns": [
           "/var/cores/px-backup-logs-*.log.gz",
-          "/var/cores/px-backup-reporting-*.log.gz"
+          "/var/cores/px-backup-reporting-*.log.gz",
+          "/var/cores/px-backup-metrics-*.log.gz"
         ],
         "logfile_retention_count": 5,
         "phonehome_hour_range": 744,

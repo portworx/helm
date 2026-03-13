@@ -145,9 +145,6 @@ data:
             "@type": type.googleapis.com/envoy.extensions.transport_sockets.tls.v3.UpstreamTlsContext
             sni: {{ $registerEndpoint }}
             common_tls_context:
-              tls_certificates:
-              - certificate_chain:
-                private_key:
               validation_context:
                 trusted_ca:
                   filename: /etc/ssl/certs/ca-certificates.crt
