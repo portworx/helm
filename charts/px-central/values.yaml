@@ -277,7 +277,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-post-setup-base
-    tag: 2.11.0-staging
+    tag: 324-merge
     module: pxCentral
   keycloakBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -313,7 +313,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-hook-base
-    tag: 2.11.0-staging
+    tag: 324-merge
     module: pxCentral
   mysqlInitImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
