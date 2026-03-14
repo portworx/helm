@@ -580,6 +580,8 @@ spec:
                 name: pxcentral-keycloak-postgresql
           - name: KC_PROXY_HEADERS
             value: xforwarded
+          - name: JAVA_OPTS_APPEND
+            value: "-Djava.net.preferIPv6Addresses=true"
           {{- if .Values.caCertsSecretName }}
           - name: X509_CA_BUNDLE
             value: /tmp/certs/*
@@ -632,7 +634,7 @@ spec:
               path: /auth/realms/master
               port: http
             initialDelaySeconds: 30
-            timeoutSeconds: 1
+            timeoutSeconds: 5
           resources:
             {}
       terminationGracePeriodSeconds: 60
