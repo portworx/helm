@@ -80,7 +80,7 @@ spec:
       serviceAccountName: px-backup-telemetry-logs-collector
       containers:
       # Container 1: Telemetry Data Collector (Go binary)
-      - name: data-collector
+      - name: log-collector
         image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryDataCollectorImage.registry .Values.images.registry) (default .Values.images.telemetryDataCollectorImage.repo .Values.images.repo) .Values.images.telemetryDataCollectorImage.imageName .Values.images.telemetryDataCollectorImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
