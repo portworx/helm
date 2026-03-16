@@ -478,6 +478,42 @@ stringData:
                 </div>
               </li>
             </ul>
+            {{- else if eq .Labels.alertname "ClusterCountLimitAlert" }}
+            <div
+                class="pb-16"
+                style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: Cluster Count Limit Reached
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 15px;
+                font-weight: 700;
+                "
+                >
+                Alert details:
+            </div>
+            <ul>
+              <li>
+                <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Current Clusters:</div>
+                <div>{{ .Labels.current_count }}</div>
+                </div>
+              </li>
+              <li>
+                <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Maximum Clusters:</div>
+                <div>{{ .Labels.max_count }}</div>
+                </div>
+              </li>
+              <li>
+                <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Status:</div>
+                <div>{{ .Labels.error_reason }}</div>
+                </div>
+              </li>
+            </ul>
             {{- end }}
             {{ end }}
 
