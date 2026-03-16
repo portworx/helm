@@ -1,6 +1,7 @@
 {{/* PX-Backup Telemetry Registration Deployment */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) }}
 ---
 apiVersion: apps/v1
@@ -46,8 +47,10 @@ spec:
           value: "px-backup-{{ .Release.Namespace }}"
         - name: REFRESH_TOKEN
           value: ""
+        {{- if not $isOpenshiftCluster }}
         securityContext:
           runAsUser: 1111
+        {{- end }}
         resources:
           requests:
             cpu: 100m
@@ -101,8 +104,10 @@ spec:
           name: registration
         - containerPort: 12002
           name: renewal
+        {{- if not $isOpenshiftCluster }}
         securityContext:
           runAsUser: 1111
+        {{- end }}
         resources:
           requests:
             cpu: 50m

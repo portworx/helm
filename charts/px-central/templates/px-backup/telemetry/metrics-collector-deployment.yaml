@@ -2,6 +2,7 @@
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
 {{- $metricsEnabled := .Values.telemetry.metricsCollector.enabled | default true }}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) (eq $metricsEnabled true) }}
 ---
 apiVersion: apps/v1
@@ -37,8 +38,10 @@ spec:
         env:
         - name: CONFIG
           value: "config/px-backup.yaml"
+        {{- if not $isOpenshiftCluster }}
         securityContext:
           runAsUser: 1111
+        {{- end }}
         resources:
           requests:
             cpu: 200m
@@ -65,8 +68,10 @@ spec:
           name: admin
         - containerPort: 10000
           name: proxy
+        {{- if not $isOpenshiftCluster }}
         securityContext:
           runAsUser: 1111
+        {{- end }}
         resources:
           requests:
             cpu: 100m
