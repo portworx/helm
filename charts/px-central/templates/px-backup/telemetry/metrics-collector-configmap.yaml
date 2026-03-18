@@ -1,7 +1,7 @@
 {{/* PX-Backup Telemetry Metrics Collector ConfigMaps */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
-{{- $metricsEnabled := .Values.telemetry.metricsCollector.enabled | default true }}
+{{- $metricsEnabled := .Values.telemetry.metricsCollector.enabled | default false }}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) (eq $metricsEnabled true) }}
 {{- /* Lookup existing values to preserve during upgrades */ -}}
 {{- $applianceID := include "telemetry.lookupApplianceID" (dict

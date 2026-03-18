@@ -170,7 +170,7 @@ telemetry:
   enabled: false
   environment: production # Environment: staging or production
   metricsCollector:
-    enabled: true
+    enabled: false
     scrapeInterval: 10  # seconds
   logsCollector:
     enabled: true
