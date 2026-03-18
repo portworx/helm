@@ -168,11 +168,10 @@ pxmonitor:
 # Telemetry configuration for PX-Backup
 telemetry:
   enabled: false
-  environment: staging # Environment: staging or production
+  environment: production # Environment: staging or production
   metricsCollector:
     enabled: true
     scrapeInterval: 10  # seconds
-    batchSize: 5  # number of scrapes to batch before sending
   logsCollector:
     enabled: true
     collectionInterval: 3600  # seconds (1 hour)

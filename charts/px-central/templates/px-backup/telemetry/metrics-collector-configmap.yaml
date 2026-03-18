@@ -29,10 +29,7 @@ data:
     scrapeConfig:
       # How often to scrape metrics (seconds)
       interval: {{ .Values.telemetry.metricsCollector.scrapeInterval | default 10 }}
-      
-      # How many scrapes to batch before sending to Pure1
-      batchSize: {{ .Values.telemetry.metricsCollector.batchSize | default 5 }}
-      
+
       # Static target configuration
       staticConfig:
         targets:
