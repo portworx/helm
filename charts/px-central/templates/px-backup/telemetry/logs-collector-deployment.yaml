@@ -1,7 +1,7 @@
 {{/* PX-Backup Telemetry Logs Collector Deployment */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
-{{- $logsEnabled := .Values.telemetry.logsCollector.enabled | default true }}
+{{- $logsEnabled := .Values.telemetry.logsCollector.enabled | default false }}
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) (eq $logsEnabled true) }}
 ---
