@@ -407,6 +407,9 @@ spec:
       {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
     {{- end }}
     {{- end }}
+    {{- if eq .Values.stork.restrictDataProtectionRBAC true }}
+    restrictDataProtectionRBAC: true
+    {{- end }}
     {{- else }}
     enabled: false
     {{- end }}

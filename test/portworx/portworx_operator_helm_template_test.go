@@ -45,6 +45,16 @@ func TestPortworxOperatorHelmTemplate(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:           "TestRestrictDataProtectionRBAC",
+			resultFileName: "portworx_operator_restrict_data_protection_rbac.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"stork.restrictDataProtectionRBAC": "true",
+					"internalKVDB":                     "true",
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

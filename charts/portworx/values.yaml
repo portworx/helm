@@ -136,6 +136,9 @@ stork:                                # Use Stork https://docs.portworx.com/port
   args:                               # Pass arguments to Stork container. Example: verbose=true;webhook-controller=false
   volumes:                            # Add volumes to Stork container. Refer the top level volumes for schema.
   env:                                # A list of Kubernetes like environment variables passed to Stork.
+  restrictDataProtectionRBAC:         # Restricts Stork and Operator RBAC to minimum permissions (Tier-0).
+                                      # When true, Operator ClusterRole uses least-privilege rules instead of wildcard,
+                                      # and Stork data-protection workflows (backup/restore/DR) are restricted.
 
 customRegistryURL:
 registrySecret:

@@ -1,37 +1,17 @@
-{{- if .Values.deployOperator }}
-{{- $registrySecret := .Values.registrySecret | default "none" }}
+---
+# Source: portworx/templates/portworx-operator.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: portworx-operator
-  namespace: {{ template "px.getDeploymentNamespace" . }}
-{{- if (semverCompare "<1.25" (.Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+(\\.\\d+)?"| trimPrefix "v"))}}
+  namespace: portworx
 ---
-apiVersion: policy/v1beta1
-kind: PodSecurityPolicy
-metadata:
-  name: px-operator
-spec:
-  allowPrivilegeEscalation: false
-  readOnlyRootFilesystem: false
-  volumes:
-    - secret
-  runAsUser:
-    rule: 'RunAsAny'
-  seLinux:
-    rule: 'RunAsAny'
-  supplementalGroups:
-    rule: 'RunAsAny'
-  fsGroup:
-    rule: 'RunAsAny'
-{{- end }}
----
+# Source: portworx/templates/portworx-operator.yaml
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: portworx-operator
 rules:
-  {{- if eq .Values.stork.restrictDataProtectionRBAC true }}
   # Tier-0 Operator ClusterRole — minimum permissions (no wildcard */*/*)
   - apiGroups: [""]
     resources: ["pods", "pods/status", "pods/log", "pods/exec"]
@@ -215,18 +195,8 @@ rules:
     resources: ["podsecuritypolicies"]
     resourceNames: ["px-restricted"]
     verbs: ["use"]
-  {{- else }}
-  - apiGroups: ["*"]
-    resources: ["*"]
-    verbs: ["*"]
-  {{- end }}
-  {{- if (semverCompare "<1.25" (.Capabilities.KubeVersion.GitVersion | regexFind "^v\\d+\\.\\d+(\\.\\d+)?"| trimPrefix "v"))}}
-  - apiGroups: ["policy"]
-    resources: ["podsecuritypolicies"]
-    resourceNames: ["px-operator"]
-    verbs: ["use"]
-  {{- end }}
 ---
+# Source: portworx/templates/portworx-operator.yaml
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -234,17 +204,18 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: portworx-operator
-    namespace: {{ template "px.getDeploymentNamespace" . }}
+    namespace: portworx
 roleRef:
   kind: ClusterRole
   name: portworx-operator
   apiGroup: rbac.authorization.k8s.io
 ---
+# Source: portworx/templates/portworx-operator.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: portworx-operator
-  namespace: {{ template "px.getDeploymentNamespace" . }}
+  namespace: portworx
 spec:
   strategy:
     rollingUpdate:
@@ -263,12 +234,9 @@ spec:
       containers:
         - name: portworx-operator
           imagePullPolicy: Always
-          image: {{ template "px.getPxOperatorImage" . }}:{{ required "A valid Image tag is required in the SemVer format" .Values.pxOperatorImageVersion }}
+          image: portworx/px-operator
           command:
             - /operator
-            {{- if .Values.verboseOperatorLogs }}
-            - --verbose
-            {{- end }}
             - --driver=portworx
             - --leader-elect=true
           env:
@@ -289,8 +257,4 @@ spec:
                       - portworx-operator
               topologyKey: "kubernetes.io/hostname"
       serviceAccountName: portworx-operator
-      {{- if not (eq $registrySecret "none") }}
-      imagePullSecrets: 
-      - name: {{ $registrySecret }}
-      {{- end }}
-{{- end }}
+

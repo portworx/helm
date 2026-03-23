@@ -171,6 +171,13 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestRestrictDataProtectionRBAC",
+			resultFileName: "storagecluster_restrict_data_protection_rbac.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_restrict_data_protection_rbac.yaml"},
+			},
+		},
+		{
 			name:           "TestVolumes",
 			resultFileName: "storagecluster_volumes.yaml",
 			helmOption: &helm.Options{
