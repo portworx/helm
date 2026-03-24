@@ -572,7 +572,7 @@ stringData:
                         <td style="border: 1px solid #ddd; padding: 12px; font-family: monospace; font-size: 12px;">{{ .Labels.uid }}</td>
                         <td style="border: 1px solid #ddd; padding: 12px; font-family: monospace; font-size: 12px; max-width: 200px; word-wrap: break-word;">{{ .Labels.backup_paths }}</td>
                         <td style="border: 1px solid #ddd; padding: 12px; font-family: monospace; font-size: 12px; max-width: 200px; word-wrap: break-word;">{{ .Labels.cloudsnap_ids }}</td>
-                        <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.cluster_name }} ({{ .Labels.cluster_uid }})</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.cluster }}</td>
                         <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.backup_location_name }}</td>
                     </tr>
                     {{- end }}
