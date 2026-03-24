@@ -10,7 +10,7 @@ metadata:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-release"
 spec:
-  image: portworx/oci-monitor:3.5.2
+  image: portworx/oci-monitor:3.6.0
   imagePullPolicy: Always
   metadata:
     labels:
@@ -87,9 +87,13 @@ spec:
 
   kvdb:
     internal: true
+    enableTLS: true
   storage:
     useAll: true
   secretsProvider: k8s
+  
+  certManager:
+    enabled: true
   stork:
     enabled: true
   monitoring:
@@ -100,4 +104,6 @@ spec:
   csi:
     enabled: true
   autopilot:
+    enabled: true
+  clusterDiags:
     enabled: true

@@ -4,8 +4,8 @@ deployOperator: true                    # Deploy the Portworx operator
 deployCluster: true                     # Deploy the Portworx cluster
 verboseOperatorLogs: false              # Enable verbose logging for the Portworx operator.
 
-imageVersion: 3.5.2                    # Version of the PX Image.
-pxOperatorImageVersion: 25.6.1         # Version of the PX operator image.
+imageVersion: 3.6.0                    # Version of the PX Image.
+pxOperatorImageVersion: 26.1.0         # Version of the PX operator image.
 
 openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
 isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
@@ -234,10 +234,10 @@ ocpDynamicPlugin:
 
 internalKVDB: true                   # internal KVDB
 kvdbDevice: none                      # specify a separate device to store KVDB data, only used when internalKVDB is set to true
-internalKvdbTls: false                # Enable TLS for internal KVDB
+internalKvdbTls: true                 # Enable TLS for internal KVDB
 migrateToKvdbTls: false               # Enable migration to KVDB TLS, requires internalKvdbTls to be true
 
-installCertManager: false             # Install PX managed cert-manager
+installCertManager: true              # Install PX managed cert-manager
 
 etcd:                                 # DEPRECATED: Use kvdb.authSecretName for configuring secure etcd
   credentials: none:none              # Username and password for ETCD authentication in the form user:password

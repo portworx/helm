@@ -10,14 +10,18 @@ metadata:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-release"
 spec:
-  image: portworx/oci-monitor:3.5.2
+  image: portworx/oci-monitor:3.6.0
   imagePullPolicy: Always
 
   kvdb:
     internal: true
+    enableTLS: true
   storage:
     useAll: true
   secretsProvider: k8s
+  
+  certManager:
+    enabled: true
 
   stork:
     enabled: true
@@ -32,7 +36,7 @@ spec:
     enabled: true
     image: portworx/autopilot:1.3.14
     lockImage: true
-    args: 
+    args:
       min_poll_interval: "4"
       log-level: "info"
     env:
@@ -55,3 +59,5 @@ spec:
       params:
         url: "http://datadog:9090"
         auth: "foobar"
+  clusterDiags:
+    enabled: true
