@@ -1,19 +1,19 @@
-pxCentralVersion: 2.11.0
+pxCentralVersion: 3.0.0
 modules:
   pxCentral:
-    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:2.11.0-staging"
+    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:3.0.0-dev"
     pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:PB-14303"
     pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:PB-14303"
     pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:PB-14303"
-    pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:2.11.0-staging"
-    pxcentralOnpremPreSetup: "docker.io/portworx/pxcentral-onprem-hook-base:2.11.0-staging"
+    pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:3.0.0-dev"
+    pxcentralOnpremPreSetup: "docker.io/portworx/pxcentral-onprem-hook-base:3.0.0-dev"
     postgresql: "docker.io/portworx/postgresql:18"
     keycloak: "docker.io/portworx/keycloak:26.4.7_v2"
-    keycloakLoginTheme: "docker.io/portworx/keycloak-login-theme:2.11.0"
+    keycloakLoginTheme: "docker.io/portworx/keycloak-login-theme:3.0.0-dev"
     busybox: "docker.io/portworx/busybox:1.35.0"
     mysql: "docker.io/portworx/mysql:8.0.44"
   pxBackup:
-    pxBackup: "docker.io/portworx/px-backup:2.11.0"
+    pxBackup: "docker.io/portworx/px-backup:3.0.0-dev"
     mongodb: "docker.io/portworx/mongodb:8.0.17"
     mongodb7: "docker.io/portworx/mongodb:7.0.15-debian-12-r2"
     mongodb6: "docker.io/portworx/mongodb:6.0.13-debian-11-r21"

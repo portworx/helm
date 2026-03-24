@@ -136,7 +136,7 @@ pxbackup:
   backupDeleteWorker: 5
   volDeleteWorker: 5
   backupInfoMetricsBackfillHours: 24
-  version: 2.11.0
+  version: 3.0.0-dev
   skipValidations: false
   usePlatformRbac: false
   encryptMongoDB: false
@@ -227,7 +227,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 2.11.0
+    tag: 3.0.0-dev
     module: pxCentral
   pxcentralFrontendImage:
     registry: docker.io
@@ -251,7 +251,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 2.11.0
+    tag: 3.0.0-dev
     module: pxCentral
   keycloakBackendImage:
     registry: docker.io
@@ -269,7 +269,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: keycloak-login-theme
-    tag: 2.11.0
+    tag: 3.0.0-dev
     module: pxCentral
   keycloakInitContainerImage:
     registry: docker.io
@@ -287,7 +287,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-hook
-    tag: 2.11.0
+    tag: 3.0.0-dev
     module: pxCentral
   mysqlInitImage:
     registry: docker.io
@@ -301,7 +301,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 2.11.0
+    tag: 3.0.0-dev
     module: pxBackup
   mongodbImage:
     registry: docker.io
