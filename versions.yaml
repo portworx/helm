@@ -2,9 +2,9 @@ pxCentralVersion: 3.0.0
 modules:
   pxCentral:
     pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:3.0.0-dev"
-    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:PB-14303"
-    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:PB-14303"
-    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:PB-14303"
+    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:3.0.0-dev"
+    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:3.0.0-dev"
+    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:3.0.0-dev"
     pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:3.0.0-dev"
     pxcentralOnpremPreSetup: "docker.io/portworx/pxcentral-onprem-hook-base:3.0.0-dev"
     postgresql: "docker.io/portworx/postgresql:18"
