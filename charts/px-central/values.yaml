@@ -206,7 +206,20 @@ cassandra:
     maxHeapSize:
     newHeapSize:
 
-installCRDs: false
+## =============================================================================
+## CRD Installation Control
+## =============================================================================
+##   Helm relies on the templates to install CRDs, installCRDs is controls the 
+##   of lookup funtionality of Helm during install/upgrade.
+##   ArgoCD uses `helm template` which doesn't have cluster access, so the
+##   lookup function cannot detect existing CRDs. With installCRDs: "auto",
+##   ArgoCD will ALWAYS include CRDs in the rendered output.
+##
+##   If your cluster has pre-existing CRDs (e.g., from Portworx Enterprise),
+##   you MUST set installCRDs: "false" to avoid conflicts.
+##
+##
+installCRDs: "auto"
 clusterDomain: "cluster.local"
 cassandraUsername: cassandra
 cassandraPassword: cassandra
@@ -264,7 +277,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-post-setup-base
-    tag: 2.11.0-staging
+    tag: 324-merge
     module: pxCentral
   keycloakBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -300,7 +313,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-hook-base
-    tag: 2.11.0-staging
+    tag: 324-merge
     module: pxCentral
   mysqlInitImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
