@@ -49,6 +49,7 @@ Usage: {{ include "px-central.shouldInstallCRD" (dict "crdName" "alertmanagers.m
 Returns: "true" if the CRD should be installed, "false" otherwise
 
 Logic:
+  - During upgrades: Always return "false" (CRDs were installed during initial install)
   - installCRDs: "true" or true   -> Always return "true"
   - installCRDs: "false" or false -> Always return "false"
   - installCRDs: "auto" (default) -> Use lookup to check if CRD exists
@@ -58,6 +59,10 @@ NOTE: Helm --set flag parses "false" as boolean, while values.yaml keeps it as s
       This helper handles both boolean and string types.
 */}}
 {{- define "px-central.shouldInstallCRD" -}}
+{{- /* Skip CRD installation during upgrades - CRDs were installed during initial install */ -}}
+{{- if or .context.Release.IsUpgrade .context.Values.isUpgrade -}}
+false
+{{- else -}}
 {{- /* Get installCRDs value, defaulting to "auto" if nil/empty string */ -}}
 {{- $installCRDs := .context.Values.installCRDs -}}
 {{- /* Check if installCRDs is nil or empty string (but NOT boolean false) */ -}}
@@ -80,6 +85,7 @@ false
 false
 {{- else -}}
 true
+{{- end -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
