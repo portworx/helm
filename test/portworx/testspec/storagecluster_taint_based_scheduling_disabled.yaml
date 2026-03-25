@@ -33,3 +33,5 @@ spec:
   taintBasedScheduling:
     enabled: false
   
+  clusterDiags:
+    enabled: true

@@ -45,3 +45,5 @@ spec:
            operator: NotIn
            values:
            - "false"
+  clusterDiags:
+    enabled: true

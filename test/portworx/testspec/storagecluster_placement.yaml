@@ -46,3 +46,5 @@ spec:
       key: key
       operator: Exists
       value: test-storage-node-2
+  clusterDiags:
+    enabled: true

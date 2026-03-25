@@ -37,3 +37,5 @@ spec:
         image: custom-registry/metrics-collector:v1.2.3
   csi:
     enabled: false
+  clusterDiags:
+    enabled: true

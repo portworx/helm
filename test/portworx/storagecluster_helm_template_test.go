@@ -520,6 +520,20 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:           "TestPurePlatform",
+			resultFileName: "storagecluster_pure_platform.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_pure_platform.yaml"},
+			},
+		},
+		{
+			name:           "TestPurePlatformFusionOnly",
+			resultFileName: "storagecluster_pure_platform_fusion_only.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_pure_platform_fusion_only.yaml"},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

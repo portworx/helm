@@ -43,3 +43,5 @@ spec:
         tokenLifetime: 24h
         issuer: my-issuer
         sharedSecret: px-shared-secret
+  clusterDiags:
+    enabled: true

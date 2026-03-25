@@ -38,3 +38,5 @@ spec:
     enabled: true
   runtimeOptions:
     num_io_threads: "10"
+  clusterDiags:
+    enabled: true
