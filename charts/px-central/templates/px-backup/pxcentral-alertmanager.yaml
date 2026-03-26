@@ -558,8 +558,6 @@ stringData:
                     <tr>
                         <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Backup Name</th>
                         <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Backup UID</th>
-                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Object Store Path</th>
-                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Cloudsnap IDs</th>
                         <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Original Cluster</th>
                         <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Backup Location</th>
                     </tr>
@@ -570,8 +568,6 @@ stringData:
                     <tr>
                         <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.name }}</td>
                         <td style="border: 1px solid #ddd; padding: 12px; font-family: monospace; font-size: 12px;">{{ .Labels.uid }}</td>
-                        <td style="border: 1px solid #ddd; padding: 12px; font-family: monospace; font-size: 12px; max-width: 200px; word-wrap: break-word;">{{ .Labels.backup_paths }}</td>
-                        <td style="border: 1px solid #ddd; padding: 12px; font-family: monospace; font-size: 12px; max-width: 200px; word-wrap: break-word;">{{ .Labels.cloudsnap_ids }}</td>
                         <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.cluster }}</td>
                         <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.backup_location_name }}</td>
                     </tr>
