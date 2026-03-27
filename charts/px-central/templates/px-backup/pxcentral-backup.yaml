@@ -77,7 +77,7 @@ rules:
     verbs: ["get", "create", "delete", "update", "list"]
   - apiGroups: [""]
     resources: ["configmaps"]
-    verbs: ["get", "update", "create"]
+    verbs: ["get", "update", "create", "list", "watch"]
   - apiGroups: ["batch"]
     resources: ["jobs"]
     verbs: ["get", "create", "delete", "update"]
@@ -242,6 +242,10 @@ spec:
           value: "{{ .Values.pxbackup.usePxBackupEmailAlertTemplate }}"
         - name: SOFT_LICENSING_PERIOD
           value: "36160"
+        {{- if .Values.pxbackup.federated }}
+        - name: PX_BACKUP_FEDERATED
+          value: "true"
+        {{- end }}
         {{- include "serviceMesh.env" . | nindent 8 }}
         - name: AIRGAP_REPORTING_PERIOD
           value: "90"

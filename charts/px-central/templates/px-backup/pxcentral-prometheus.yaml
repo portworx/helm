@@ -794,4 +794,21 @@ spec:
       labels:
         severity: critical
         user_id: "{{`{{ $labels.user_id }}`}}"
+
+    - alert: OrphanedBackupDataAlert
+      annotations:
+        description: >-
+          {{`Backup "{{ $labels.name }}" is stuck in deleting state because the underlying cluster
+          "{{ $labels.cluster }}" is no longer available. The backup data on backup location
+          "{{ $labels.backup_location_name }}" cannot be cleaned up automatically. To ensure full
+          data deletion, register a temporary
+          cluster associated with this backup location. Alternatively, use the --force flag to
+          remove only the backup metadata from PX-Backup; this skips physical cleanup of the
+          backup data in the object store, which must then be cleaned up manually.`}}
+        summary: {{`Backup "{{ $labels.name }}" stuck in deleting - underlying cluster "{{ $labels.cluster }}" is unavailable`}}
+      expr: pxbackup_orphaned_backup_data > 0
+      for: 1m
+      labels:
+        severity: critical
+        user_id: "{{`{{ $labels.user_id }}`}}"
 {{- end -}}

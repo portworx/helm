@@ -536,6 +536,47 @@ stringData:
             </table>
             {{- end }}
 
+            {{/* SEPARATE SECTION FOR OrphanedBackupDataAlert - OUTSIDE the main loop */}}
+            {{- $hasOrphanedBackupAlert := false }}
+            {{- range .Alerts }}
+              {{- if eq .Labels.alertname "OrphanedBackupDataAlert" }}
+                {{- $hasOrphanedBackupAlert = true }}
+              {{- end }}
+            {{- end }}
+
+            {{- if $hasOrphanedBackupAlert }}
+            <div class="pb-16" style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: Backup Stuck in Deleting State
+            </div>
+
+            <div class="pb-16" style="color: #292929; font-size: 15px; font-weight: 700;">
+                The following backups are stuck in deleting state because the underlying cluster is no longer available. To ensure full data deletion, register a temporary cluster associated with the backup location. Alternatively, use the --force flag to remove only the backup metadata from PX-Backup; this skips physical cleanup of the backup data in the object store, which must then be cleaned up manually.
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Backup Name</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Backup UID</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Original Cluster</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Backup Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range .Alerts }}
+                    {{- if eq .Labels.alertname "OrphanedBackupDataAlert" }}
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.name }}</td>
+                        <td style="border: 1px solid #ddd; padding: 12px; font-family: monospace; font-size: 12px;">{{ .Labels.uid }}</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.cluster }}</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.backup_location_name }}</td>
+                    </tr>
+                    {{- end }}
+                    {{ end }}
+                </tbody>
+            </table>
+            {{- end }}
+
             <div style="font-size: 14px" class="pb-16">
                 {{- $hasLicenseAlert := false }}
                 {{- range .Alerts }}
