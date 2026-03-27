@@ -128,7 +128,7 @@ data:
       clusters:
       - name: cluster_register_cloud_support
         type: STRICT_DNS
-        dns_lookup_family: V4_ONLY
+        dns_lookup_family: V4_PREFERRED
         lb_policy: ROUND_ROBIN
         load_assignment:
           cluster_name: cluster_register_cloud_support

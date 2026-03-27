@@ -30,6 +30,10 @@ spec:
         app.kubernetes.io/component: metrics-collector
     spec:
       serviceAccountName: px-backup-telemetry
+      {{- if not $isOpenshiftCluster }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
       containers:
       # Realtime Metrics Collector
       - name: collector
@@ -40,7 +44,7 @@ spec:
           value: "config/px-backup.yaml"
         {{- if not $isOpenshiftCluster }}
         securityContext:
-          runAsUser: 1111
+          runAsUser: 1000
         {{- end }}
         resources:
           requests:
@@ -70,7 +74,7 @@ spec:
           name: proxy
         {{- if not $isOpenshiftCluster }}
         securityContext:
-          runAsUser: 1111
+          runAsUser: 1000
         {{- end }}
         resources:
           requests:
