@@ -343,6 +343,13 @@ updateStrategy:
   autoUpdateComponents:                   # Indicates the update strategy for the component images
                                           # valid values None,Once,Always
 
+purePlatform:
+  integrationOperator:
+    image: ""
+  fusion:
+    enabled: false
+    image: ""
+
 componentK8sConfig:
   enabled: false                                          # Enables or disables creation of ComponentK8sConfig CR
   name: portworx-k8s-config                                # Name of the ComponentK8sConfig resource

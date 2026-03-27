@@ -41,3 +41,5 @@ spec:
     - cloudProvider: "aws"
       key: "eks.amazonaws.com/role-arn"
       value: "arn:aws:iam::123456789012:role/example-px-role"
+  clusterDiags:
+    enabled: true

@@ -680,6 +680,19 @@ spec:
     {{- end }}
   {{- end }}
 
+  {{- if .Values.purePlatform.fusion.enabled }}
+  purePlatform:
+    {{- if .Values.purePlatform.integrationOperator.image }}
+    integrationOperator:
+      image: {{ .Values.purePlatform.integrationOperator.image }}
+    {{- end }}
+    fusion:
+      enabled: {{ .Values.purePlatform.fusion.enabled }}
+      {{- if .Values.purePlatform.fusion.image }}
+      image: {{ .Values.purePlatform.fusion.image }}
+      {{- end }}
+  {{- end }}
+
   {{- if .Values.pxfslibsUpdate.enabled }}
   pxfslibsUpdate:
     enabled: true

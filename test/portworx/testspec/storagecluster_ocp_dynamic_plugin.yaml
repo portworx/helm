@@ -40,3 +40,5 @@ spec:
     cacheAgentImage: portworx/cache-agent:1.0.0
     pluginImage: portworx/ocp-plugin:2.0.0
 
+  clusterDiags:
+    enabled: true

@@ -39,3 +39,5 @@ spec:
     requests:
       cpu: 250m
       memory: 64Mi
+  clusterDiags:
+    enabled: true

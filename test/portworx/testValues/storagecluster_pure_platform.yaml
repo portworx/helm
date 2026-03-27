@@ -1,0 +1,7 @@
+purePlatform:
+  integrationOperator:
+    image: "portworx/integration-operator:1.0.0"
+  fusion:
+    enabled: true
+    image: "portworx/fusion:2.0.0"
+

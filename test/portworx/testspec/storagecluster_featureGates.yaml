@@ -38,3 +38,5 @@ spec:
     enabled: true
   featureGates:
     CSI: "true"
+  clusterDiags:
+    enabled: true
