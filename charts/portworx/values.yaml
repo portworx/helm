@@ -7,6 +7,11 @@ verboseOperatorLogs: false              # Enable verbose logging for the Portwor
 imageVersion: 3.5.2                    # Version of the PX Image.
 pxOperatorImageVersion: 25.6.0         # Version of the PX operator image.
 
+# Air-gapped environment flag
+# Set to true for air-gapped deployments where internet access is not available
+# When false: Uses runtime kubectl downloader (portworx/kubectl:non-airgapped)
+isAirgapped: true
+
 openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
 isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
                                         # Used to disable or enable smart and parallel kubetnetes node upgrades.
@@ -115,6 +120,8 @@ envVars: none                         # DEPRECATED: Use envs section to set env 
                                       # For eg: MYENV1=myvalue1;MYENV2=myvalue2
 
 envs:                                 # Add environment variables to the Portworx container in all Kubernetes supported formats
+  - name: "test1"
+    value: "test-va3"
   # - name: AWS_CA_BUNDLE
   #   value: "/etc/pwx/objectstore-cert/objectstore.pem"
   # - name: AWS_ACCESS_KEY_ID
@@ -137,7 +144,7 @@ stork:                                # Use Stork https://docs.portworx.com/port
   volumes:                            # Add volumes to Stork container. Refer the top level volumes for schema.
   env:                                # A list of Kubernetes like environment variables passed to Stork.
 
-customRegistryURL:
+customRegistryURL: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/hwani/portworx
 registrySecret:
 licenseSecret:
 
@@ -187,7 +194,7 @@ monitoring:
       # runAsNonRoot: false
       # runAsUser: 1000
   telemetry:
-    enabled: true                     # Enable telemetry
+    enabled: false                     # Enable telemetry
     metricsCollector:
       enabled: true                     # Enable metrics collector
 #      image: ""                         # Metrics collector image, optional field
@@ -325,7 +332,7 @@ clusterToken:
 #requirePxEnabledTag: true               # if set to true, portworx will only install on nodes with px/enabled: true label. Not required in most scenarios.
 
 deleteStrategy:                           # Optional: Delete strategy for the portworx cluster
-  type:                                   # Valid values: Uninstall, UninstallAndWipe
+  type: UninstallAndWipe                                  # Valid values: Uninstall, UninstallAndWipe
   ignoreVolumes:                          # Indicates whether to ignore volumes when deleting the portworx cluster
 
 updateStrategy:   

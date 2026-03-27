@@ -38,6 +38,28 @@ kubectl -n kube-system describe storagecluster
 
 Use `helm rollback` to rollback to Daemonset install is not supported, if there is any issue during migration please try to update values.yaml and perform `helm upgrade`. 
 
+## Air-Gapped Deployments
+
+For air-gapped environments, Portworx provides a custom kubectl image that removes dependency on third-party images (Bitnami, Alpine) and works with any Kubernetes version.
+
+### Quick Start for Air-Gap
+
+```bash
+# 1. Pull the chart (includes Dockerfile and Makefile)
+helm pull portworx/portworx --untar
+
+# 2. Build kubectl image for your K8s version
+cd portworx/docker/kubectl
+make build-airgapped KUBECTL_VERSION=1.34.4 DOCKER_HUB_REPO=registry.company.com/portworx
+
+# 3. Deploy with airgapped mode
+helm install my-release portworx/portworx -n portworx \
+  --set isAirgapped=true \
+  --set customRegistryURL=registry.company.com/portworx
+```
+
+See `docker/kubectl/README.md` in the chart for detailed instructions.
+
 ## Installing the Chart
 
 To install the chart with the release name `my-release` run the following commands substituting relevant values for your setup:

@@ -26,17 +26,25 @@ release: {{ .Release.Name | quote }}
 {{- end -}}
 
 {{- define "px.getKubectlImage" -}}
-{{- $gitVersion := default "v0.0.0" .Capabilities.KubeVersion.GitVersion -}}
-{{- $fullVersion := default "0.0.0" (
-    $gitVersion
-    | regexFind "^v\\d+\\.\\d+(\\.\\d+)?"
-    | trimPrefix "v"
-) -}}
-
-{{- if semverCompare "<1.34.0" $fullVersion -}}
-bitnamilegacy/kubectl
+{{- $customRegistryURL := .Values.customRegistryURL | default "" -}}
+{{- if .Values.isAirgapped -}}
+  {{- /* Air-gapped: Use pre-built kubectl image with fixed tag */ -}}
+  {{- if ne $customRegistryURL "" -}}
+    {{- /* Custom registry: registry.company.com/portworx/kubectl:airgapped */ -}}
+{{ $customRegistryURL }}/kubectl:airgapped
+  {{- else -}}
+    {{- /* Default: portworx/kubectl:airgapped */ -}}
+portworx/kubectl:airgapped
+  {{- end -}}
 {{- else -}}
-alpine/kubectl
+  {{- /* Non-airgapped: Use runtime kubectl downloader with fixed tag */ -}}
+  {{- if ne $customRegistryURL "" -}}
+    {{- /* Custom registry: registry.company.com/portworx/kubectl:non-airgapped */ -}}
+{{ $customRegistryURL }}/kubectl:non-airgapped
+  {{- else -}}
+    {{- /* Default: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/hwani/kubectl:non-airgapped */ -}}
+pure-artifactory.dev.purestorage.com/px-docker-dev-virtual/hwani/kubectl:non-airgapped
+  {{- end -}}
 {{- end -}}
 {{- end -}}
 

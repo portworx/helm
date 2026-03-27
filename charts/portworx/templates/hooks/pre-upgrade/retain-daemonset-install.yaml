@@ -27,11 +27,12 @@ spec:
       restartPolicy: Never
       containers:
         - name: retain-px-daemonset
-          {{- if eq $customRegistryURL "none" }}
-          image: "{{ template "px.getKubectlImage" . }}:{{ template "px.kubectlImageTag" . }}"
-          {{- else}}
-          image: "{{ $customRegistryURL }}/{{ template "px.getKubectlImage" . }}:{{ template "px.kubectlImageTag" . }}"
-          {{- end}}
+          image: "{{ template "px.getKubectlImage" . }}"
+          {{- if not .Values.isAirgapped }}
+          env:
+            - name: KUBECTL_VERSION
+              value: "{{ .Capabilities.KubeVersion.Version }}"
+          {{- end }}
           command: ['/bin/sh',
                     '-c',
                     'kubectl -n kube-system annotate DaemonSet portworx-api helm.sh/resource-policy=keep --overwrite;

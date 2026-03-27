@@ -1,43 +1,29 @@
-pxCentralVersion: 2.10.2
-modules:
-  pxCentral:
-    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api:2.10.2"
-    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend:2.10.2"
-    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend:2.10.2"
-    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend:2.10.2"
-    pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup:2.10.2"
-    pxcentralOnpremPreSetup: "docker.io/portworx/pxcentral-onprem-hook:2.10.2"
-    postgresql: "docker.io/portworx/postgresql:17.4.0-debian-12-r19"
-    keycloak: "docker.io/portworx/keycloak:26.2.4_v2"
-    keycloakLoginTheme: "docker.io/portworx/keycloak-login-theme:2.10.2"
-    busybox: "docker.io/portworx/busybox:1.35.0"
-    mysql: "docker.io/portworx/mysql:8.0.43"
-  pxBackup:
-    pxBackup: "docker.io/portworx/px-backup:2.10.2"
-    mongodb: "docker.io/portworx/mongodb:8.0.17"
-    mongodb7: "docker.io/portworx/mongodb:7.0.15-debian-12-r2"
-    mongodb6: "docker.io/portworx/mongodb:6.0.13-debian-11-r21"
-    mongodb5: "docker.io/portworx/mongodb:5.0.24-debian-11-r20"
-    kopiaExecutor: "docker.io/portworx/kopiaexecutor:1.2.22"
-    nfsExecutor: "docker.io/portworx/nfsexecutor:1.2.22"
-    filesystemCtl: "docker.io/portworx/filesystemctl:1.2.22"
-    pxBackupPrometheusImage: "docker.io/portworx/prometheus:v3.6.0"
-    pxBackupAlertmanagerImage: "docker.io/portworx/alertmanager:v0.28.0"
-    pxBackupPrometheusOperatorImage: "docker.io/portworx/prometheus-operator:v0.85.0"
-    pxBackupPrometheusConfigReloaderImage: "docker.io/portworx/prometheus-config-reloader:v0.85.0"
-  pxMonitor:
-    cortex: "docker.io/portworx/cortex:v1.13.1"
-    cassandra: "docker.io/portworx/cassandra:4.0.7-debian-11-r34"
-    nginx: "docker.io/portworx/nginx:1.23.3-alpine-slim"
-    consul: "docker.io/portworx/consul:1.14.4-debian-11-r4"
-    goDnsmasq: "docker.io/portworx/go-dnsmasq:release-1.0.7-v3"
-    grafana: "docker.io/portworx/grafana:9.1.3"
-    prometheus: "docker.io/portworx/prometheus:v2.35.0"
-    prometheusConfigReloader: "docker.io/portworx/prometheus-config-reloader:v0.56.3"
-    prometheusOperator: "docker.io/portworx/prometheus-operator:v0.56.3"
-    memcachedExporter: "docker.io/portworx/memcached-exporter:v0.10.0"
-    memcachedIndex: "docker.io/portworx/memcached:1.6.17-alpine"
-    memcached: "docker.io/portworx/memcached:1.6.17-alpine"
-    pxOperator: "docker.io/portworx/px-operator:1.10.5"
-  pxLicenseServer:
-    pxEls: "docker.io/portworx/px-els:2.8.0"
+version: 3.5.2
+components:
+  stork: openstorage/stork:26.2.0
+  autopilot: portworx/autopilot:1.4.0
+  clusterDiags: portworx/cluster-diags:3.4.2
+  csiNodeDriverRegistrar: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.15.0
+  csiProvisioner: registry.k8s.io/sig-storage/csi-provisioner:v5.3.0
+  csiResizer: registry.k8s.io/sig-storage/csi-resizer:v1.14.0
+  csiSnapshotter: registry.k8s.io/sig-storage/csi-snapshotter:v8.3.0
+  csiSnapshotController: registry.k8s.io/sig-storage/snapshot-controller:v8.3.0
+  prometheus: quay.io/prometheus/prometheus:v3.7.2
+  prometheusOperator: quay.io/prometheus-operator/prometheus-operator:v0.86.1
+  prometheusConfigReloader: quay.io/prometheus-operator/prometheus-config-reloader:v0.86.1
+  alertManager: quay.io/prometheus/alertmanager:v0.29.0
+  telemetry: portworx/ccm-go:1.4.30
+  pxLibUpdate: portworx/px-lib:pxfslibs-3.5.2.0-mver12-update
+  metricsCollector: portworx/realtime-metrics:1.0.34
+  telemetryProxy: portworx/telemetry-envoy:1.1.18
+  logUploader: portworx/log-upload:px-1.1.46
+  dynamicPlugin: portworx/portworx-dynamic-plugin:2.2.0
+  dynamicPluginProxy: nginxinc/nginx-unprivileged:alpine-slim
+  certManagerController: quay.io/jetstack/cert-manager-controller:v1.17.4
+  certManagerWebhook: quay.io/jetstack/cert-manager-webhook:v1.17.4
+  certManagerCaInjector: quay.io/jetstack/cert-manager-cainjector:v1.17.4
+  certManagerAcmeSolver: quay.io/jetstack/cert-manager-acmesolver:v1.17.4
+  kubeScheduler: registry.k8s.io/kube-scheduler-amd64:v1.33.0
+  kubeControllerManager: registry.k8s.io/kube-controller-manager-amd64:v1.33.0
+  pause: registry.k8s.io/pause:3.1
+  cacheAgent: portworx/px-cache-agent:1.0.0

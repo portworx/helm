@@ -30,11 +30,12 @@ spec:
       restartPolicy: Never
       containers:
         - name: delete-storagecluster
-          {{- if eq $customRegistryURL "none" }}
-          image: "{{ template "px.getKubectlImage" . }}:{{ template "px.kubectlImageTag" . }}"
-          {{- else}}
-          image: "{{ $customRegistryURL }}/{{ template "px.getKubectlImage" . }}:{{ template "px.kubectlImageTag" . }}"
-          {{- end}}
+          image: "{{ template "px.getKubectlImage" . }}"
+          {{- if not .Values.isAirgapped }}
+          env:
+            - name: KUBECTL_VERSION
+              value: "{{ .Capabilities.KubeVersion.Version }}"
+          {{- end }}
           command: ['/bin/sh',
                     '-c',
                     'kubectl -n {{ template "px.getDeploymentNamespace" . }} delete storagecluster {{ $clusterName }} --ignore-not-found']

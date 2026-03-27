@@ -29,14 +29,14 @@ spec:
       serviceAccountName: {{ .Values.clusterToken.serviceAccountName }}
       initContainers:
         - name: post-install-job-init
-          {{- if eq $customRegistryURL "none" }}
-          image: "{{ template "px.getKubectlImage" . }}:{{ template "px.kubectlImageTag" . }}"
-          {{- else }}
-          image: "{{ $customRegistryURL }}/{{ template "px.getKubectlImage" . }}:{{ template "px.kubectlImageTag" . }}"
-          {{- end }}
+          image: "{{ template "px.getKubectlImage" . }}"
           env:
             - name: NS
               value: {{ template "px.getDeploymentNamespace" . }}
+            {{- if not .Values.isAirgapped }}
+            - name: KUBECTL_VERSION
+              value: "{{ .Capabilities.KubeVersion.Version }}"
+            {{- end }}
           command: ["/bin/sh", "-c"]
           args:
             - |
@@ -60,16 +60,16 @@ spec:
 
       containers:
         - name: post-install-job
-          {{- if eq $customRegistryURL "none" }}
-          image: "{{ template "px.getKubectlImage" . }}:{{ template "px.kubectlImageTag" . }}"
-          {{- else }}
-          image: "{{ $customRegistryURL }}/{{ template "px.getKubectlImage" . }}:{{ template "px.kubectlImageTag" . }}"
-          {{- end }}
+          image: "{{ template "px.getKubectlImage" . }}"
           env:
             - name: NS
               value: {{ template "px.getDeploymentNamespace" . }}
             - name: KEY
               value: cluster-wide-secret-key
+            {{- if not .Values.isAirgapped }}
+            - name: KUBECTL_VERSION
+              value: "{{ .Capabilities.KubeVersion.Version }}"
+            {{- end }}
           command: ["/bin/sh", "-c"]
           args:
             - |
