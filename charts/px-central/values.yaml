@@ -21,6 +21,7 @@ persistentStorage:
   keycloakBackendVolumeSize: "10Gi"
   preUpgradeHookVolumeSize: "65Gi"
   preInstallHookVolumeSize: "2Gi"
+  telemetryVolumeSize: "10Gi"
 
 storkRequired: false
 nodeAffinityLabel: ""

@@ -85,8 +85,8 @@ data:
       clusters:
       - name: service_logs
         connect_timeout: 30s
-        type: LOGICAL_DNS
-        dns_lookup_family: V4_ONLY
+        type: STRICT_DNS
+        dns_lookup_family: V4_PREFERRED
         lb_policy: ROUND_ROBIN
         load_assignment:
           cluster_name: service_logs

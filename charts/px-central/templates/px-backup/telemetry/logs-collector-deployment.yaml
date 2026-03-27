@@ -79,6 +79,10 @@ spec:
         app.kubernetes.io/component: logs-collector
     spec:
       serviceAccountName: px-backup-telemetry-logs-collector
+      {{- if not $isOpenshiftCluster }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
       containers:
       # Container 1: Telemetry Data Collector (Go binary)
       - name: log-collector
@@ -105,7 +109,7 @@ spec:
 
         # Log storage configuration
         - name: CLEANUP_AGE
-          value: "72h"
+          value: "24h"
 
         # Pod exclusion patterns (for excluding entire pods from collection)
         - name: EXCLUDE_POD_PATTERNS
@@ -113,11 +117,12 @@ spec:
 
         {{- if not $isOpenshiftCluster }}
         securityContext:
-          runAsUser: 1111
+          runAsUser: 1000
         {{- end }}
         volumeMounts:
-        - name: log-storage
+        - name: telemetry-storage
           mountPath: /var/cores
+          subPath: cores
         resources:
           requests:
             memory: "128Mi"
@@ -151,18 +156,18 @@ spec:
           value: "8080"
         {{- if not $isOpenshiftCluster }}
         securityContext:
-          runAsUser: 1111
+          runAsUser: 1000
         {{- end }}
         volumeMounts:
-        - name: log-storage
+        - name: telemetry-storage
           mountPath: /var/cores
+          subPath: cores
         - name: log-upload-config
           mountPath: /config
           readOnly: true
-        - name: log-upload-cache
-          mountPath: /var/cache/ccm
-        - name: phonehome-cache
+        - name: telemetry-storage
           mountPath: /var/cache
+          subPath: cache
         resources:
           requests:
             memory: "128Mi"
@@ -197,7 +202,7 @@ spec:
           protocol: TCP
         {{- if not $isOpenshiftCluster }}
         securityContext:
-          runAsUser: 1111
+          runAsUser: 1000
         {{- end }}
         volumeMounts:
         - name: envoy-config
@@ -233,15 +238,13 @@ spec:
         {{- end }}
 
       volumes:
-      - name: log-storage
-        emptyDir: {}  # Shared between log-collector and log-upload-service
+      # Telemetry storage volume - single PVC with subPath for logs and cache
+      - name: telemetry-storage
+        persistentVolumeClaim:
+          claimName: px-backup-telemetry-storage
       - name: log-upload-config
         configMap:
           name: px-backup-telemetry-logs-upload-config
-      - name: log-upload-cache
-        emptyDir: {}  # For SQLite bookkeeping
-      - name: phonehome-cache
-        emptyDir: {}  # For phonehome.sent tracking file
       - name: envoy-config
         configMap:
           name: px-backup-telemetry-logs-envoy-config
@@ -253,5 +256,25 @@ spec:
         secret:
           secretName: pure-telemetry-certs
           optional: false  # Pod won't start until certificate exists
+---
+{{/* Single PVC for telemetry storage (logs in /cores, cache in /cache via subPath) */}}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: px-backup-telemetry-storage
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: logs-collector
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  {{- if .Values.persistentStorage.storageClassName }}
+  storageClassName: {{ .Values.persistentStorage.storageClassName }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .Values.persistentStorage.telemetryVolumeSize }}
 {{- end }}
 
