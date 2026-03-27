@@ -680,7 +680,7 @@ spec:
     {{- end }}
   {{- end }}
 
-  {{- if or (eq .Values.purePlatform.fusion.enabled true) (eq .Values.purePlatform.fusion.enabled false) }}
+  {{- if .Values.purePlatform.fusion.enabled }}
   purePlatform:
     {{- if .Values.purePlatform.integrationOperator.image }}
     integrationOperator:
@@ -693,9 +693,9 @@ spec:
       {{- end }}
   {{- end }}
 
-  {{- if or (eq .Values.pxfslibsUpdate.enabled true) (eq .Values.pxfslibsUpdate.enabled false) }}
+  {{- if .Values.pxfslibsUpdate.enabled }}
   pxfslibsUpdate:
-    enabled: {{ .Values.pxfslibsUpdate.enabled }}
+    enabled: true
     {{- if .Values.pxfslibsUpdate.onDemandTrigger }}
     onDemandTrigger: {{ .Values.pxfslibsUpdate.onDemandTrigger | quote}}
     {{- end }}
