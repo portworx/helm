@@ -31,7 +31,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: portworx-operator
 rules:
-  {{- if eq .Values.stork.restrictDataProtectionRBAC true }}
+  {{- if and (eq .Values.stork.restrictDataProtectionRBAC true) (ne (.Values.openshiftInstall | default false) true) }}
   # Tier-0 Operator ClusterRole — minimum permissions (no wildcard */*/*)
   - apiGroups: [""]
     resources: ["pods", "pods/status", "pods/log", "pods/exec"]
