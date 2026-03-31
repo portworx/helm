@@ -312,7 +312,7 @@ images:
 
   ## Images required for enabling px-backup
   pxBackupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: px-backup-base
     tag: feature-telemetry
@@ -344,9 +344,9 @@ images:
     tag: 1.0.32
     module: pxBackup
   telemetryDataCollectorImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: px-backup-telemetry-collector
+    imageName: px-backup-telemetry-collector-base
     tag: feature-telemetry
     module: pxBackup
   telemetryLogUploadImage:
