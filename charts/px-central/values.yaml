@@ -192,7 +192,20 @@ cassandra:
     maxHeapSize:
     newHeapSize:
 
-installCRDs: false
+## =============================================================================
+## CRD Installation Control
+## =============================================================================
+##   NOTE: CRDs are automatically SKIPPED during upgrades.
+##
+##   For FRESH INSTALLS:
+##   - "auto"  : (default) Uses lookup to detect existing CRDs
+##   - "true"  : Always install CRDs
+##   - "false" : Never install CRDs
+##
+##   ArgoCD users: lookup doesn't work with `helm template`.
+##   If external Prometheus CRDs exist, set installCRDs: "false"
+##
+installCRDs: "auto"
 clusterDomain: "cluster.local"
 cassandraUsername: cassandra
 cassandraPassword: cassandra
