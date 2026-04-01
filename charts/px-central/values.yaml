@@ -177,7 +177,7 @@ telemetry:
     enabled: true
     collectionInterval: 3600  # seconds (1 hour)
     # Exclude pods matching these patterns (comma-separated)
-    excludePodPatterns: "alertmanager,prometheus,frontend,lh-middleware,telemetry"
+    excludePodPatterns: "alertmanager,prometheus,telemetry"
 
 service:
   pxCentralUIServiceType: "LoadBalancer"

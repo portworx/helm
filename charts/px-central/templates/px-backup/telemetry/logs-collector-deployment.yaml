@@ -113,7 +113,18 @@ spec:
 
         # Pod exclusion patterns (for excluding entire pods from collection)
         - name: EXCLUDE_POD_PATTERNS
-          value: {{ .Values.telemetry.logsCollector.excludePodPatterns | default "alertmanager,prometheus,frontend,lh-middleware,telemetry" | quote }}
+          value: {{ .Values.telemetry.logsCollector.excludePodPatterns | default "alertmanager,prometheus,telemetry" | quote }}
+
+        - name: MONGODB_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: pxc-backup-mongodb
+              key: mongodb-username
+        - name: MONGODB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: pxc-backup-mongodb
+              key: mongodb-password
 
         {{- if not $isOpenshiftCluster }}
         securityContext:
