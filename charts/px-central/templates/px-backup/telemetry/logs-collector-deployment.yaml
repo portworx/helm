@@ -198,6 +198,33 @@ spec:
       - name: envoy
         image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryEnvoyImage.registry .Values.images.registry) (default .Values.images.telemetryEnvoyImage.repo .Values.images.repo) .Values.images.telemetryEnvoyImage.imageName .Values.images.telemetryEnvoyImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
+        env:
+        {{- /* Proxy environment variables for telemetry */ -}}
+        {{- if .Values.proxy.configSecretName }}
+        # Proxy with auth/CA from secret
+        - name: PX_HTTP_PROXY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.proxy.configSecretName }}
+              key: HTTP_PROXY
+              optional: true
+        - name: PX_HTTPS_PROXY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.proxy.configSecretName }}
+              key: HTTPS_PROXY
+              optional: true
+        {{- else if or .Values.proxy.http .Values.proxy.https }}
+        # Direct proxy values
+        {{- if .Values.proxy.http }}
+        - name: PX_HTTP_PROXY
+          value: {{ .Values.proxy.http | quote }}
+        {{- end }}
+        {{- if .Values.proxy.https }}
+        - name: PX_HTTPS_PROXY
+          value: {{ .Values.proxy.https | quote }}
+        {{- end }}
+        {{- end }}
         args:
         - envoy
         - --base-id
@@ -227,6 +254,12 @@ spec:
         - name: telemetry-certs
           mountPath: /appliance-cert
           readOnly: true
+        {{- if .Values.proxy.configSecretName }}
+        # Proxy CA certificate mount
+        - name: proxy-ca-cert
+          mountPath: /etc/envoy/proxy-certs
+          readOnly: true
+        {{- end }}
         resources:
           requests:
             memory: "128Mi"
@@ -267,6 +300,16 @@ spec:
         secret:
           secretName: pure-telemetry-certs
           optional: false  # Pod won't start until certificate exists
+      {{- if .Values.proxy.configSecretName }}
+      # Proxy CA certificate volume
+      - name: proxy-ca-cert
+        secret:
+          secretName: {{ .Values.proxy.configSecretName }}
+          items:
+          - key: CA
+            path: proxy-ca.crt
+          optional: true  # CA is optional even when secret exists
+      {{- end }}
 ---
 {{/* Single PVC for telemetry storage (logs in /cores, cache in /cache via subPath) */}}
 apiVersion: v1
