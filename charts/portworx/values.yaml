@@ -137,7 +137,7 @@ stork:                                # Use Stork https://docs.portworx.com/port
   volumes:                            # Add volumes to Stork container. Refer the top level volumes for schema.
   env:                                # A list of Kubernetes like environment variables passed to Stork.
   restrictDataProtectionRBAC:         # Restricts Stork and Operator RBAC to minimum permissions (Tier-0).
-                                      # When true, Operator ClusterRole uses least-privilege rules instead of wildcard,
+                                      # When true, Operator ClusterRole on non-openshift clusters uses least-privilege rules instead of wildcard,
                                       # and Stork data-protection workflows (backup/restore/DR) are restricted.
 
 customRegistryURL:
