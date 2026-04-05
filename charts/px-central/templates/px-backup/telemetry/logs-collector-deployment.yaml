@@ -271,14 +271,13 @@ spec:
         # Health probe - verifies envoy can reach upstream (Pure1)
         # Envoy listens on 0.0.0.0 (matching px-e pattern) so probe works on both K8s and OpenShift
         # Disabled when Istio/Linkerd is enabled because service mesh sidecar injectors
-        # rewrite probes to go through their proxy, which fails for our telemetry envoy
         readinessProbe:
           httpGet:
             path: /ping-trusted
             port: 12002
           periodSeconds: 150
           failureThreshold: 3
-          timeoutSeconds: 2
+          timeoutSeconds: 15
         {{- end }}
 
       volumes:
