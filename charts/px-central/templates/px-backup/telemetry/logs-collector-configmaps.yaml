@@ -76,6 +76,15 @@ data:
                     route:
                       host_rewrite_literal: {{ $restEndpoint }}
                       cluster: service_logs
+                      timeout: 60s
+                      # Retry policy for resilience during cert loading race condition
+                      retry_policy:
+                        retry_on: "5xx,reset,connect-failure,refused-stream"
+                        num_retries: 3
+                        per_try_timeout: 30s
+                        retry_back_off:
+                          base_interval: 1s
+                          max_interval: 10s
               http_filters:
               - name: envoy.filters.http.router
                 typed_config:
