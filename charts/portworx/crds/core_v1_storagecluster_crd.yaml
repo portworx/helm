@@ -2956,6 +2956,19 @@ spec:
                   pass it the name of the secret. Note that the secret should be in
                   the same namespace as the `StorageCluster` object.
                 type: string
+              kubeDatastore:
+                description: KubeDatastore contains configuration for Kubernetes datastore
+                  features
+                properties:
+                  enableDynamicPools:
+                    default: false
+                    description: |-
+                      EnableDynamicPools enables dynamic pool management for Portworx.
+                      When upgrading from PX <3.5.0 to PX >=3.6.0, this field must be false.
+                      Direct upgrade to 3.6.0 with enableDynamicPools=true is not supported.
+                      First upgrade to 3.6.0, then set enableDynamicPools=true.
+                    type: boolean
+                type: object
               kvdb:
                 description: Kvdb is the information of kvdb that storage driver uses
                 properties:
@@ -6425,6 +6438,47 @@ spec:
                 description: PriorityClassName to be passed to Podspec of px pods
                   for it to be scheduled accordingly
                 type: string
+              purePlatform:
+                description: PurePlatform contains configuration for Pure Storage
+                  platform integrations including Fusion and Integration Operator.
+                properties:
+                  fusion:
+                    description: Fusion contains Pure Storage Fusion integration configuration
+                      for the storage cluster.
+                    properties:
+                      enabled:
+                        description: Enabled flag indicates whether Fusion integration
+                          needs to be enabled for the storage cluster.
+                        type: boolean
+                      fusionAuthSecret:
+                        description: |-
+                          FusionAuthSecret is the name of the Kubernetes secret containing LDAP credentials for Fusion authentication
+                          The secret should contain keys: endpoint, username, password (for LDAP auth) or token (for legacy auth)
+                          Default: "pure-fusion-cred"
+                        type: string
+                      image:
+                        description: Image is the docker image of the Fusion controller
+                        type: string
+                      tokenRotationInterval:
+                        description: |-
+                          TokenRotationInterval for API tokens generated from LDAP credentials
+                          Format: duration string (e.g., "24h", "12h", "1h")
+                          Default: "24h" (24 hours)
+                          Minimum: "1h" (1 hour)
+                          Set to "0" to disable automatic token rotation
+                        type: string
+                    type: object
+                  integrationOperator:
+                    description: |-
+                      IntegrationOperator contains the configuration for the Portworx Integration Operator.
+                      The integration operator is deployed on OCP clusters when Fusion is enabled or Dynamic plugin is enabled.
+                    properties:
+                      image:
+                        description: Image is the docker image of the Portworx Integration
+                          Operator
+                        type: string
+                    type: object
+                type: object
               pxfslibsUpdate:
                 description: PxlibsUpdate defines the configuration for the deployment
                   of pxlibs-update deamonset.
@@ -6533,34 +6587,34 @@ spec:
                     description: CloudProviderCred specifies the secret provider for
                       cloud provider credentials
                     enum:
-                      - k8s
-                      - vault
+                    - k8s
+                    - vault
                     type: string
                   cloudSnap:
                     description: CloudSnap specifies the secret provider for cloud
                       snapshot feature
                     enum:
-                      - k8s
-                      - vault
-                      - vault-transit
-                      - aws-kms
-                      - kvdb
-                      - gcloud-kms
-                      - azure-kv
-                      - ibm-kp
+                    - k8s
+                    - vault
+                    - vault-transit
+                    - aws-kms
+                    - kvdb
+                    - gcloud-kms
+                    - azure-kv
+                    - ibm-kp
                     type: string
                   volumeEncryption:
                     description: VolumeEncryption specifies the secret provider for
                       volume encryption feature
                     enum:
-                      - k8s
-                      - vault
-                      - vault-transit
-                      - aws-kms
-                      - kvdb
-                      - gcloud-kms
-                      - azure-kv
-                      - ibm-kp
+                    - k8s
+                    - vault
+                    - vault-transit
+                    - aws-kms
+                    - kvdb
+                    - gcloud-kms
+                    - azure-kv
+                    - ibm-kp
                     type: string
                 type: object
               secretsProvider:
@@ -6878,6 +6932,21 @@ spec:
                           More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
                         type: object
                     type: object
+                  restrictDataProtectionRBAC:
+                    description: |-
+                      RestrictDataProtectionRBAC controls Stork's RBAC permissions for
+                      data protection workflows such as application backups, restores,
+                      and migrations.
+
+                      When false or omitted (default), Stork is granted full RBAC permissions
+                      required for data protection features. This is the default behavior
+                      and provides complete backup/restore/migration capabilities.
+
+                      When true, Stork's data protection RBAC is restricted to minimal
+                      permissions for core scheduler/monitoring functionality only.
+                      Use this for storage-only deployments that do not require
+                      data protection features.
+                    type: boolean
                   volumes:
                     description: Volumes is a list of extra volumes to used by stork.
                       The schema is similar to the [top-level volumes](#volume-configuration).
@@ -10708,8 +10777,14 @@ spec:
                   dynamicPluginProxy:
                     description: Desired image for dynamic plugin proxy.
                     type: string
+                  fusionController:
+                    description: Desired image for Fusion Controller.
+                    type: string
                   grafana:
                     description: Desired image for Grafana.
+                    type: string
+                  integrationOperator:
+                    description: Desired image for Portworx Integration Operator
                     type: string
                   kubeControllerManager:
                     description: Desired image for kube controller manager.

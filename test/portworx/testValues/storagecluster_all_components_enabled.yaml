@@ -2,8 +2,10 @@
 stork:
   enabled: true
 internalKVDB: true
+internalKvdbTls: true
+installCertManager: true
 
-csi: 
+csi:
   enabled: true
   topology: 
     enabled: true

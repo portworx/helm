@@ -1,0 +1,4 @@
+stork:
+  enabled: true
+  restrictDataProtectionRBAC: true
+

@@ -150,6 +150,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `autopilot.env`                                            | List of Kubernetes like environment variables passed to Autopilot | [] |
 | `internalKVDB`                                             | Internal KVDB store | true |
 | `kvdbDevice`                                               | specify a separate device to store KVDB data, only used when internalKVDB is set to true | "" |
+| `internalKvdbTls`                                          | Enable TLS for internal KVDB | true |
+| `installCertManager`                                       | Install PX managed cert-manager | true |
 | `kvdb.authSecretName`                                      | Name of the secret for configuring secure KVDB (https://docs.portworx.com/portworx-enterprise/operations/kvdb-for-portworx/external-kvdb#secure-your-etcd-communication)| "none" |
 | `etcd.credentials`                                         | Username and password for etcd authentication in the form user:password (Depricated : use `kvdb.authSecretName`) | "none":"none" |
 | `etcd.certPath`                                            | Base path where the certificates are placed. (example: if the certificates ca,.crt and the .key are in /etc/pwx/etcdcerts the value should be provided as /etc/pwx/etcdcerts Refer: https://docs.portworx.com/scheduler/kubernetes/etcd-certs-using-secrets.html) (Depricated : use `kvdb.authSecretName`) | "none" |

@@ -171,6 +171,13 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestRestrictDataProtectionRBAC",
+			resultFileName: "storagecluster_restrict_data_protection_rbac.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_restrict_data_protection_rbac.yaml"},
+			},
+		},
+		{
 			name:           "TestVolumes",
 			resultFileName: "storagecluster_volumes.yaml",
 			helmOption: &helm.Options{
@@ -518,6 +525,20 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 					"clusterDiags.enabled": "true",
 					"clusterDiags.image":   "portworx/px-diag:1.0.0",
 				},
+			},
+		},
+		{
+			name:           "TestPurePlatform",
+			resultFileName: "storagecluster_pure_platform.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_pure_platform.yaml"},
+			},
+		},
+		{
+			name:           "TestPurePlatformFusionOnly",
+			resultFileName: "storagecluster_pure_platform_fusion_only.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_pure_platform_fusion_only.yaml"},
 			},
 		},
 	}

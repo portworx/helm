@@ -10,14 +10,18 @@ metadata:
     app.kubernetes.io/managed-by: "Helm"
     app.kubernetes.io/instance: "my-release"
 spec:
-  image: portworx/oci-monitor:3.5.2
+  image: portworx/oci-monitor:3.6.0
   imagePullPolicy: Always
 
   kvdb:
     internal: true
+    enableTLS: true
   storage:
     useAll: true
   secretsProvider: k8s
+  
+  certManager:
+    enabled: true
 
   env:
   - name: PX_SECRETS_NAMESPACE
@@ -33,3 +37,5 @@ spec:
         image: custom-registry/metrics-collector:v1.2.3
   csi:
     enabled: false
+  clusterDiags:
+    enabled: true

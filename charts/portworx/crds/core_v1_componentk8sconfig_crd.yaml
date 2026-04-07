@@ -94,10 +94,10 @@ spec:
                                       description: |-
                                         Claims lists the names of resources, defined in spec.resourceClaims,
                                         that are used by this container.
-                                        
+
                                         This is an alpha field and requires enabling the
                                         DynamicResourceAllocation feature gate.
-                                        
+
                                         This field is immutable. It can only be set for containers.
                                       items:
                                         description: ResourceClaim references one
@@ -154,7 +154,7 @@ spec:
                               for each component
                             properties:
                               nodeAffinity:
-                                description: NodeAffinity is used to restrict Portwox
+                                description: NodeAffinity is used to restrict Portworx
                                   on certain nodes. It works similarly to the [Kubernetes
                                   node affinity](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L2692)
                                   feature.
@@ -432,8 +432,9 @@ spec:
                       component
                     properties:
                       nodeAffinity:
-                        description: NodeAffinity is used to restrict Portwox on certain
-                          nodes. It works similarly to the [Kubernetes node affinity](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L2692)
+                        description: NodeAffinity is used to restrict Portworx on
+                          certain nodes. It works similarly to the [Kubernetes node
+                          affinity](https://github.com/kubernetes/api/blob/master/core/v1/types.go#L2692)
                           feature.
                         properties:
                           preferredDuringSchedulingIgnoredDuringExecution:

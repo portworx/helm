@@ -407,6 +407,9 @@ spec:
       {{ $arg._0 | trim }}: {{ $arg._1 | trim | quote -}}
     {{- end }}
     {{- end }}
+    {{- if eq .Values.stork.restrictDataProtectionRBAC true }}
+    restrictDataProtectionRBAC: true
+    {{- end }}
     {{- else }}
     enabled: false
     {{- end }}
@@ -678,6 +681,19 @@ spec:
     {{- if .Values.ocpDynamicPlugin.proxyImage }}
     proxyImage: {{ .Values.ocpDynamicPlugin.proxyImage }}
     {{- end }}
+  {{- end }}
+
+  {{- if .Values.purePlatform.fusion.enabled }}
+  purePlatform:
+    {{- if .Values.purePlatform.integrationOperator.image }}
+    integrationOperator:
+      image: {{ .Values.purePlatform.integrationOperator.image }}
+    {{- end }}
+    fusion:
+      enabled: {{ .Values.purePlatform.fusion.enabled }}
+      {{- if .Values.purePlatform.fusion.image }}
+      image: {{ .Values.purePlatform.fusion.image }}
+      {{- end }}
   {{- end }}
 
   {{- if .Values.pxfslibsUpdate.enabled }}
