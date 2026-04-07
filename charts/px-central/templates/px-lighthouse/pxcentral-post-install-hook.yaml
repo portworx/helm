@@ -75,6 +75,10 @@ spec:
             {{- else }}
             value: "install"
       {{- end }}
+      {{- if .Values.pxbackup.federated }}
+          - name: PX_BACKUP_FEDERATED
+            value: "true"
+      {{- end }}
         command: ["python", "-u", "/pxcentral-post-install/pxc-post-setup.py"]
         volumeMounts:
         {{- if .Values.proxy.configSecretName }}
