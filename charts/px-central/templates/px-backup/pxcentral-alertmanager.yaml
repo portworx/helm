@@ -478,6 +478,138 @@ stringData:
                 </div>
               </li>
             </ul>
+            {{- else if eq .Labels.alertname "ClusterDiscoveryConfigFailed" }}
+            <div
+                class="pb-16"
+                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: Cluster Discovery Failed
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 15px;
+                font-weight: 700;
+                "
+                >
+                Alert details:
+            </div>
+            <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Config Name:</div>
+                <div>{{ .Labels.config_name }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Project:</div>
+                <div>{{ .Labels.project_name }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Label Selector:</div>
+                <div>{{ .Labels.label_selector }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error Type:</div>
+                <div>{{ .Labels.error_type }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
+                <div>{{ .Labels.error_reason }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div>
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
+              </div>
+              </li>
+            </ul>
+            {{- else if eq .Labels.alertname "GardenerConnectivityFailure" }}
+            <div
+                class="pb-16"
+                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: Gardener API Connectivity Failure
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 15px;
+                font-weight: 700;
+                "
+                >
+                Alert details:
+            </div>
+            <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Config Name:</div>
+                <div>{{ .Labels.config_name }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error Type:</div>
+                <div>{{ .Labels.error_type }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
+                <div>{{ .Labels.error_reason }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div>
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
+              </div>
+              </li>
+            </ul>
+            {{- else if eq .Labels.alertname "GardenerShootKubeconfigValidationFailure" }}
+            <div
+                class="pb-16"
+                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: Shoot Kubeconfig Validation Failed
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 15px;
+                font-weight: 700;
+                "
+                >
+                Alert details:
+            </div>
+            <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Cluster Name:</div>
+                <div>{{ .Labels.cluster_name }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Config Name:</div>
+                <div>{{ .Labels.config_name }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div>
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
+              </div>
+              </li>
+            </ul>
             {{- end }}
             {{ end }}
 

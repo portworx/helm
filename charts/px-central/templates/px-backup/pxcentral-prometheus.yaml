@@ -811,4 +811,41 @@ spec:
       labels:
         severity: critical
         user_id: "{{`{{ $labels.user_id }}`}}"
+
+  - name: cluster_discovery_rules
+    rules:
+    - alert: ClusterDiscoveryConfigFailed
+      annotations:
+        description: >-
+          {{`Cluster discovery config "{{ $labels.config_name }}"
+          (project: {{ $labels.project_name }}, selector: {{ $labels.label_selector }})
+          has failed. Reason: {{ $labels.error_reason }}`}}
+        summary: {{`Gardener cluster discovery failed`}}
+      expr: pxbackup_cluster_discovery_config_status == 3
+      for: 1m
+      labels:
+        severity: critical
+
+    - alert: GardenerConnectivityFailure
+      annotations:
+        description: >-
+          {{`Gardener API connectivity failed for discovery config "{{ $labels.config_name }}".
+          Reason: {{ $labels.error_reason }}`}}
+        summary: {{`Gardener API connectivity failure`}}
+      expr: pxbackup_gardener_connectivity_failure > 0
+      for: 1m
+      labels:
+        severity: critical
+
+    - alert: GardenerShootKubeconfigValidationFailure
+      annotations:
+        description: >-
+          {{`Shoot kubeconfig validation failed for cluster "{{ $labels.cluster_name }}"
+          in discovery config "{{ $labels.config_name }}".
+          Reason: {{ $labels.error_reason }}`}}
+        summary: {{`Shoot kubeconfig validation failed`}}
+      expr: pxbackup_gardener_shoot_kubeconfig_validation_failure > 0
+      for: 1m
+      labels:
+        severity: critical
 {{- end -}}
