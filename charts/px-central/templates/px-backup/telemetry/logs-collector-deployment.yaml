@@ -27,7 +27,7 @@ metadata:
 rules:
 - apiGroups: [""]
   resources: ["secrets"]
-  resourceNames: ["pure-telemetry-certs"]
+  resourceNames: ["pure-telemetry-certs", "baas-secret"]
   verbs: ["get"]
 - apiGroups: [""]
   resources: ["pods"]
