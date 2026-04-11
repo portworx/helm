@@ -180,7 +180,7 @@ data:
             common_tls_context:
               # Client certificate configuration using SDS
               tls_certificate_sds_secret_configs:
-                name: tls_sds
+              - name: tls_sds
                 sds_config:
                   path: /etc/envoy/tls_certificate_sds_secret.yaml
               validation_context:
