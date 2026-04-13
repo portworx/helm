@@ -269,8 +269,8 @@ images:
     module: pxCentral
   keycloakBackendImage:
     registry: docker.io
-    repo: library
-    imageName: postgres
+    repo: portworx
+    imageName: postgresql
     tag: "18.3"
     module: pxCentral
   keycloakFrontendImage:
@@ -293,7 +293,7 @@ images:
     module: pxCentral
   mysqlImage:
     registry: docker.io
-    repo: library
+    repo: portworx
     imageName: mysql
     tag: 8.4.8
     module: pxCentral
