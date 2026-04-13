@@ -274,10 +274,10 @@ images:
     tag: "18.3"
     module: pxCentral
   keycloakFrontendImage:
-    registry: quay.io
-    repo: keycloak
+    registry: docker.io
+    repo: portworx
     imageName: keycloak
-    tag: 26.5.7
+    tag: 26.5.7_v2
     module: pxCentral
   keycloakLoginThemeImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
