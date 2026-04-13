@@ -268,13 +268,13 @@ images:
     tag: 3.0.0-dev
     module: pxCentral
   keycloakBackendImage:
-    registry: docker.io
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: postgresql
     tag: "18.3"
     module: pxCentral
   keycloakFrontendImage:
-    registry: docker.io
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: keycloak
     tag: 26.5.7_v2
@@ -292,7 +292,7 @@ images:
     tag: 1.35.0
     module: pxCentral
   mysqlImage:
-    registry: docker.io
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: mysql
     tag: 8.4.8
