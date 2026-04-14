@@ -230,7 +230,7 @@ spec:
         - --base-id
         - "3"
         - --config-path
-        - /etc/envoy/envoy-config.yaml
+        - /etc/envoy/config/envoy-config.yaml
         ports:
         - name: logs-proxy
           containerPort: 12002
@@ -244,12 +244,10 @@ spec:
         {{- end }}
         volumeMounts:
         - name: envoy-config
-          mountPath: /etc/envoy/envoy-config.yaml
-          subPath: envoy-config.yaml
+          mountPath: /etc/envoy/config
           readOnly: true
         - name: envoy-sds-config
-          mountPath: /etc/envoy/tls_certificate_sds_secret.yaml
-          subPath: tls_certificate_sds_secret.yaml
+          mountPath: /etc/envoy/sds
           readOnly: true
         - name: telemetry-certs
           mountPath: /appliance-cert
