@@ -321,7 +321,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: mongodb
-    tag: 8.0.17
+    tag: 8.0.20
     module: pxBackup
 
   ## Images required for PX-Backup Telemetry
@@ -411,25 +411,25 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: prometheus
-    tag: v3.8.1
+    tag: v3.10.0
     module: pxBackup
   pxBackupAlertmanagerImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: alertmanager
-    tag: v0.30.0
+    tag: v0.31.1
     module: pxBackup
   pxBackupPrometheusOperatorImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: prometheus-operator
-    tag: v0.87.1
+    tag: v0.90.1
     module: pxBackup
   pxBackupPrometheusConfigReloaderImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: prometheus-config-reloader
-    tag: v0.87.1
+    tag: v0.90.1
     module: pxBackup
   prometheusConfigReloadrImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -468,5 +468,5 @@ images:
       mongodb5: 5.0.24-debian-11-r20
       mongodb6: 6.0.13-debian-11-r21
       mongodb7: 7.0.15-debian-12-r2
-      mongodb8: 8.0.17
+      mongodb8: 8.0.20
     module: pxBackup
