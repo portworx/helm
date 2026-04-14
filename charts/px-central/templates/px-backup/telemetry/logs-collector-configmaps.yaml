@@ -161,7 +161,7 @@ data:
               tls_certificate_sds_secret_configs:
               - name: tls_sds
                 sds_config:
-                  path: /etc/envoy/tls_certificate_sds_secret.yaml
+                  path: /etc/envoy/sds/tls_certificate_sds_secret.yaml
               validation_context:
                 trusted_ca:
                   filename: /etc/ssl/certs/ca-certificates.crt
