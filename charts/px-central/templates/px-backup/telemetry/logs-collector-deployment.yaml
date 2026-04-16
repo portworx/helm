@@ -83,6 +83,12 @@ spec:
       securityContext:
 {{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
       containers:
       # Container 1: Telemetry Data Collector (Go binary)
       - name: log-collector
