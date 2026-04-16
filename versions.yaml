@@ -1,19 +1,19 @@
 pxCentralVersion: 3.0.0
 modules:
   pxCentral:
-    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:3.0.0-dev"
-    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:3.0.0-dev"
-    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:3.0.0-dev"
-    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:3.0.0-dev"
-    pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:3.0.0-dev"
-    pxcentralOnpremPreSetup: "docker.io/portworx/pxcentral-onprem-hook-base:3.0.0-dev"
+    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:3.0.0-staging"
+    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:3.0.0-staging"
+    pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:3.0.0-staging"
+    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:3.0.0-staging"
+    pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:3.0.0-staging"
+    pxcentralOnpremPreSetup: "docker.io/portworx/pxcentral-onprem-hook-base:3.0.0-staging"
     postgresql: "docker.io/portworx/postgresql:18.3"
     keycloak: "docker.io/portworx/keycloak:26.5.7_v2"
-    keycloakLoginTheme: "docker.io/portworx/sb-keycloak-login-theme:3.0.0-dev"
+    keycloakLoginTheme: "docker.io/portworx/sb-keycloak-login-theme:3.0.0-staging"
     busybox: "docker.io/portworx/busybox:1.35.0"
     mysql: "docker.io/portworx/mysql:8.4.8"
   pxBackup:
-    pxBackup: "docker.io/portworx/px-backup-base:3.0.0-dev"
+    pxBackup: "docker.io/portworx/px-backup-base:3.0.0-staging"
     mongodb: "docker.io/portworx/mongodb:8.0.20"
     mongodb7: "docker.io/portworx/mongodb:7.0.15-debian-12-r2"
     mongodb6: "docker.io/portworx/mongodb:6.0.13-debian-11-r21"
@@ -28,7 +28,7 @@ modules:
     telemetryEnvoyImage: "docker.io/portworx/telemetry-envoy:1.1.18"
     telemetryRegistrationImage: "docker.io/portworx/ccm-go:1.4.37"
     telemetryMetricsCollectorImage: "docker.io/portworx/realtime-metrics:1.0.35"
-    telemetryDataCollectorImage: "docker.io/portworx/px-backup-telemetry-collector-base:3.0.0-dev"
+    telemetryDataCollectorImage: "docker.io/portworx/px-backup-telemetry-collector-base:3.0.0-staging"
     telemetryLogUploadImage: "docker.io/portworx/log-upload:px-1.1.94"
   pxMonitor:
     cortex: "docker.io/portworx/cortex:v1.13.1"
