@@ -34,6 +34,12 @@ spec:
       securityContext:
 {{ toYaml .Values.securityContext | indent 8 }}
       {{- end }}
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
       containers:
       # Realtime Metrics Collector
       - name: collector
