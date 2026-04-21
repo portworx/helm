@@ -224,8 +224,18 @@ spec:
           value: "{{ .Values.pxbackup.backupDeleteWorker }}"
         - name: VOL_DELETE_WORKER
           value: "{{ .Values.pxbackup.volDeleteWorker }}"
+        {{- if ne (.Values.pxbackup.backupInfoMetricsBackfillHours | toString) "" }}
         - name: BACKUP_INFO_METRICS_BACKFILL_HOURS
           value: "{{ .Values.pxbackup.backupInfoMetricsBackfillHours }}"
+        {{- else if .Values.pxbackup.federated }}
+        # Default for federated deployments. Mirrors DefaultFederatedBackfillHours in pkg/util/utils.go
+        - name: BACKUP_INFO_METRICS_BACKFILL_HOURS
+          value: "1"
+        {{- else }}
+        # Default for non-federated deployments. Mirrors DefaultBackfillHours in pkg/util/utils.go
+        - name: BACKUP_INFO_METRICS_BACKFILL_HOURS
+          value: "24"
+        {{- end }}
         - name: MONGODB_USERNAME
           valueFrom:
             secretKeyRef:
