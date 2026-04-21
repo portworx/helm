@@ -136,7 +136,7 @@ pxbackup:
   enableMonitorBLHealth: false
   backupDeleteWorker: 5
   volDeleteWorker: 5
-  backupInfoMetricsBackfillHours: 24
+  backupInfoMetricsBackfillHours: ""
   version: 3.0.0
   skipValidations: false
   usePlatformRbac: false
