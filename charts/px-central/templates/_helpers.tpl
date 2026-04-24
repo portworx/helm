@@ -31,6 +31,17 @@ Create chart name and version as used by the chart label.
 {{- end }}
 
 {{/*
+Suffix appended to cluster-scoped resource names (ClusterRole, ClusterRoleBinding)
+to let the chart be installed in multiple namespaces on the same cluster.
+Renders `-<suffix>` when .Values.clusterScopedSuffix is set, empty otherwise.
+*/}}
+{{- define "px-central.clusterScopedSuffix" -}}
+{{- with .Values.clusterScopedSuffix -}}
+-{{ . }}
+{{- end -}}
+{{- end -}}
+
+{{/*
 Common labels
 */}}
 {{- define "px-central.labels" -}}

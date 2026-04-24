@@ -29,6 +29,13 @@ podAntiAffinity: false
 
 caCertsSecretName: ""
 
+# Suffix appended to cluster-scoped resource names (ClusterRole, ClusterRoleBinding)
+# so the chart can be installed in multiple namespaces on the same cluster.
+# Leave empty to preserve legacy (unsuffixed) names. When installing multiple
+# releases of this chart on the same cluster, set this to a unique identifier
+# per release (for example the namespace).
+clusterScopedSuffix: ""
+
 oidc:
   centralOIDC:
     enabled: true

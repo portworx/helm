@@ -28,7 +28,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: pxcentral-prometheus
+  name: pxcentral-prometheus{{ include "px-central.clusterScopedSuffix" . }}
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-prometheus
@@ -51,7 +51,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: pxcentral-prometheus
+  name: pxcentral-prometheus{{ include "px-central.clusterScopedSuffix" . }}
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-prometheus
@@ -59,7 +59,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: pxcentral-prometheus
+  name: pxcentral-prometheus{{ include "px-central.clusterScopedSuffix" . }}
 subjects:
   - kind: ServiceAccount
     name: pxcentral-prometheus
@@ -234,7 +234,7 @@ spec:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: pxcentral-prometheus-operator
+  name: pxcentral-prometheus-operator{{ include "px-central.clusterScopedSuffix" . }}
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-prometheus
@@ -296,7 +296,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: pxcentral-prometheus-operator
+  name: pxcentral-prometheus-operator{{ include "px-central.clusterScopedSuffix" . }}
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: pxcentral-prometheus
@@ -304,7 +304,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: pxcentral-prometheus-operator
+  name: pxcentral-prometheus-operator{{ include "px-central.clusterScopedSuffix" . }}
 subjects:
   - kind: ServiceAccount
     name: pxcentral-prometheus-operator
