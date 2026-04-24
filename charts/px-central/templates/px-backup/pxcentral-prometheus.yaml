@@ -28,7 +28,7 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: pxc-prometheus-operator
+  name: pxc-prometheus-operator{{ include "px-central.clusterScopedSuffix" . }}
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
@@ -40,12 +40,12 @@ subjects:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: pxc-prometheus-operator
+  name: pxc-prometheus-operator{{ include "px-central.clusterScopedSuffix" . }}
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: pxc-prometheus-operator
+  name: pxc-prometheus-operator{{ include "px-central.clusterScopedSuffix" . }}
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
@@ -208,7 +208,7 @@ spec:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: px-backup-dashboard-prometheus
+  name: px-backup-dashboard-prometheus{{ include "px-central.clusterScopedSuffix" . }}
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
@@ -240,7 +240,7 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: px-backup-dashboard-prometheus
+  name: px-backup-dashboard-prometheus{{ include "px-central.clusterScopedSuffix" . }}
   namespace: {{ .Release.Namespace }}
   labels:
     app.kubernetes.io/component: px-backup
@@ -248,7 +248,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: px-backup-dashboard-prometheus
+  name: px-backup-dashboard-prometheus{{ include "px-central.clusterScopedSuffix" . }}
 subjects:
 - kind: ServiceAccount
   name: px-backup-dashboard-prometheus
