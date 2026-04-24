@@ -58,8 +58,10 @@ alpine/kubectl
       | trimPrefix "v"
   -}}
 {{- else -}}
-  {{- /* Alpine expects full major.minor.patch */ -}}
-  {{- $fullVersion -}}
+  {{- /* Alpine kubectl: use major.minor.0 for any patch version */ -}}
+  {{- /* e.g., K8s 1.34.4 -> kubectl tag 1.34.0 */ -}}
+  {{- $majorMinor := $gitVersion | regexFind "^v\\d+\\.\\d+" | trimPrefix "v" -}}
+  {{- printf "%s.0" $majorMinor -}}
 {{- end -}}
 {{- end -}}
 
