@@ -325,7 +325,7 @@ clusterToken:
 #requirePxEnabledTag: true               # if set to true, portworx will only install on nodes with px/enabled: true label. Not required in most scenarios.
 
 deleteStrategy:                           # Optional: Delete strategy for the portworx cluster
-  type:                                   # Valid values: Uninstall, UninstallAndWipe
+  type: UninstallAndWipe                                  # Valid values: Uninstall, UninstallAndWipe
   ignoreVolumes:                          # Indicates whether to ignore volumes when deleting the portworx cluster
 
 updateStrategy:   
