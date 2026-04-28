@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - '**'
+    paths:
+      - 'charts/**'
 
 jobs:
   helm-package:
@@ -43,7 +45,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore: package helm chart px-central [skip ci]"
+            git commit -m "chore: package helm chart px-central"
             git push origin ${{ github.ref_name }}
           fi
         env:
