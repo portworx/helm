@@ -137,6 +137,7 @@ pxbackup:
   backupDeleteWorker: 5
   volDeleteWorker: 5
   backupInfoMetricsBackfillHours: ""
+  dashboardMetricsBackfillDays: ""
   version: 3.0.0
   skipValidations: false
   usePlatformRbac: false

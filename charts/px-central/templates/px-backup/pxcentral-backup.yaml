@@ -236,6 +236,10 @@ spec:
         - name: BACKUP_INFO_METRICS_BACKFILL_HOURS
           value: "24"
         {{- end }}
+        {{- if ne (.Values.pxbackup.dashboardMetricsBackfillDays | toString) "" }}
+        - name: DASHBOARD_METRICS_BACKFILL_DAYS
+          value: "{{ .Values.pxbackup.dashboardMetricsBackfillDays }}"
+        {{- end }}
         - name: MONGODB_USERNAME
           valueFrom:
             secretKeyRef:
