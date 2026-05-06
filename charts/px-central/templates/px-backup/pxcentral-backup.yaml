@@ -154,6 +154,7 @@ metadata:
     {{- include "pxcentral.render" (dict "value" .Values.service.pxBackupServiceAnnotations "context" $) | nindent 4 }}
     {{- end }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   ports:
   - protocol: TCP
     port: 10002

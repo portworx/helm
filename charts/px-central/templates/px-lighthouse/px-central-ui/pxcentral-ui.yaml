@@ -52,6 +52,8 @@ data:
 
     server {
       listen  8080;
+      # Below is replaced by frontend.entrypoint.sh to enable IPv6 listening when IPv6 is supported
+      #IPV6_LISTEN_PLACEHOLDER
       server_name localhost;
       server_tokens off;
       access_log /var/log/nginx/access.log;
@@ -409,6 +411,9 @@ spec:
           volumeMounts:
             - name: frontend-nginx-configs
               mountPath: /etc/nginx/conf.d
+            - name: frontend-nginx-configmap
+              mountPath: /etc/nginx/configmap
+              readOnly: true
           {{- if .Values.proxy.configSecretName }}
             - mountPath: /etc/ssl/certs/proxy-ca.pem
               subPath: proxy-ca.pem
@@ -419,9 +424,11 @@ spec:
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
-      {{- end }} 
+      {{- end }}
       volumes:
         - name: frontend-nginx-configs
+          emptyDir: {}
+        - name: frontend-nginx-configmap
           configMap:
             name: pxcentral-frontend-nginx-config
       {{- if .Values.proxy.configSecretName }}
@@ -704,6 +711,7 @@ metadata:
     {{- include "pxcentral.render" (dict "value" .Values.service.pxCentralUIServiceAnnotations "context" $) | nindent 4 }}
     {{- end }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   type: {{ .Values.service.pxCentralUIServiceType }}
   {{- if and (eq .Values.service.pxCentralUIServiceType "LoadBalancer") .Values.service.pxCentralUILoadBalancerSourceRanges }}
   loadBalancerSourceRanges:
@@ -731,6 +739,7 @@ metadata:
     {{- include "pxcentral.render" (dict "value" .Values.service.pxBackupUIServiceAnnotations "context" $) | nindent 4 }}
     {{- end }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   type: {{ .Values.service.pxBackupUIServiceType }}
   {{- if and (eq .Values.service.pxBackupUIServiceType "LoadBalancer") .Values.service.pxBackupUILoadBalancerSourceRanges }}
   loadBalancerSourceRanges:
