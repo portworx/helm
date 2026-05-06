@@ -249,13 +249,13 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend-private
-    tag: 3.2.0-fc1
+    tag: pxb-ipv6
     module: pxCentral
   pxcentralBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-backend-private
-    tag: 3.2.0-fc1
+    tag: pxb-ipv6
     module: pxCentral
   pxcentralMiddlewareImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -267,7 +267,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-post-setup-base
-    tag: 3.2.0-fc1
+    tag: 321-merge
     module: pxCentral
   keycloakBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -303,7 +303,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-hook-base
-    tag: 3.2.0-fc1
+    tag: 321-merge
     module: pxCentral
   mysqlInitImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -317,7 +317,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: px-backup-base
-    tag: 3.2.0-fc1
+    tag: pxb-ipv6
     module: pxBackup
   mongodbImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
