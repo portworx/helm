@@ -1,0 +1,29 @@
+Your Release is named: {{ .Release.Name | quote }}
+PX-Backup deployed in the namespace: {{ .Release.Namespace }}
+
+--------------------------------------------------
+Monitor PX-Backup Install:
+--------------------------------------------------
+Wait for px-backup status to be in "Completed" state.
+
+    kubectl get po --namespace {{ .Release.Namespace }} -ljob-name=pxcentral-post-install-hook  -o wide | awk '{print $1, $3}' | grep -iv error
+
+--------------------------------------------------
+Access PX-Backup UI:
+--------------------------------------------------
+Using port forwarding:
+
+    kubectl port-forward service/px-backup-ui 8080:80 --namespace {{ .Release.Namespace }}
+
+To access PX-Backup:  http://localhost:8080
+
+{{- if eq .Release.IsInstall true }}
+Login with the following credentials:
+
+    Username: {{ .Values.oidc.centralOIDC.defaultUsername }}
+    Password: {{ .Values.oidc.centralOIDC.defaultPassword }}
+{{- end }}
+
+For more information: https://github.com/portworx/helm/blob/master/charts/px-backup/README.md
+
+--------------------------------------------------
