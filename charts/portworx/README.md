@@ -65,8 +65,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 
 | Parameter                                                  | Description | Default
 |------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| `imageVersion`                                             | Version of the PX image | 3.5.2 |
-| `pxOperatorImageVersion`                                   | Version of the PX operator image | 25.6.1 |
+| `imageVersion`                                             | Version of the PX image | 3.6.1 |
+| `pxOperatorImageVersion`                                   | Version of the PX operator image | 26.2.0 |
 | `verboseOperatorLogs`                                      | Enable verbose logging for the Portworx operator | true |
 | `openshiftInstall`                                         | Installing on Openshift? | false |
 | `nonDisruptivek8sUpgrade`                                  | Used to disable or enable smart and parallel kubetnetes node upgrades. By default, S&P upgrades are disabled. To enable them, set this to true | false |
@@ -178,6 +178,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `componentK8sConfig.name`                                  | Name of the ComponentK8sConfig resource | "portworx-k8s-config" |
 | `componentK8sConfig.globalConfig`                          | Global configuration that applies to all Portworx components unless overridden by component-specific configuration. Supports annotations, labels, placement (nodeAffinity, tolerations), and priorityClass. Note: Global configuration cannot set container resource requests and limits. | {} |
 | `componentK8sConfig.components`                            | List of component-specific configurations. Each component can specify componentNames (e.g., "Autopilot", "CSI", "Portworx API") and workloadConfigs with workloadNames, annotations, labels, containerConfigs (resources), priorityClass, and placement settings. | [] |
+| `workloadIdentity.credentials`                             | List of cloud workload identity credentials used to annotate the Portworx ServiceAccount for cloud provider authentication. Each entry specifies `cloudProvider` (valid values: aws, azure, gcp; currently only aws and azure are supported), `key` (annotation key, e.g. `eks.amazonaws.com/role-arn` for AWS), and `value` (annotation value, e.g. the IAM role ARN to be assumed by the ServiceAccount). | [] |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
