@@ -530,6 +530,7 @@ spec:
           image: {{ printf "%s/%s/%s:%s" (default .Values.images.mysqlImage.registry .Values.images.registry) (default .Values.images.mysqlImage.repo .Values.images.repo) .Values.images.mysqlImage.imageName .Values.images.mysqlImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           args:
+            - "--mysql-native-password=ON"
           ports:
             - containerPort: 3306
           env:
