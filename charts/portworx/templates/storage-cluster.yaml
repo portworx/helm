@@ -2,8 +2,14 @@
 {{- fail "migrateToKvdbTls requires internalKvdbTls to be enabled. Please set internalKvdbTls to true." }}
 {{- end }}
 
-{{- if and (eq .Values.stork.useWorkloadIdentity true) (empty .Values.workloadIdentity.credentials) }}
+{{- if eq (.Values.stork.useWorkloadIdentity | default false) true }}
+{{- $wiCreds := list }}
+{{- if .Values.workloadIdentity }}
+{{- $wiCreds = .Values.workloadIdentity.credentials }}
+{{- end }}
+{{- if empty $wiCreds }}
 {{- fail "stork.useWorkloadIdentity is set to true but workloadIdentity.credentials is empty. Please configure workloadIdentity.credentials when enabling stork.useWorkloadIdentity." }}
+{{- end }}
 {{- end }}
 
 {{- if and (.Values.deployCluster) (or (not (lookup "apps/v1" "DaemonSet" "kube-system" "portworx")) (default true .Values.generateStorageClusterForMigration)) }}
@@ -40,10 +46,12 @@
   {{- $volumesPresent := include "px.volumesPresent" . }}
 
   {{- $hasAzureWorkloadIdentity := false }}
+  {{- if .Values.workloadIdentity }}
   {{- range .Values.workloadIdentity.credentials }}
     {{- if eq (.cloudProvider | default "") "azure" }}
       {{- $hasAzureWorkloadIdentity = true }}
     {{- end }}
+  {{- end }}
   {{- end }}
 
   {{- $prometheus := .Values.monitoring.prometheus}}
@@ -675,10 +683,12 @@ spec:
     ignoreVolumes: {{ .Values.deleteStrategy.ignoreVolumes }}
     {{- end }}
   {{- end }}
+  {{- if .Values.workloadIdentity }}
   {{- with .Values.workloadIdentity.credentials }}
   workloadIdentity:
     credentials:
       {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- end }}
   {{- if or (eq .Values.taintBasedScheduling.enabled true) (eq .Values.taintBasedScheduling.enabled false) }}
   taintBasedScheduling:
