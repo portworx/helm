@@ -40,6 +40,37 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      # Init container: wait for the Envoy ConfigMap placeholders to be replaced
+      # by the registration component before starting Envoy. Avoids a race where
+      # Envoy loads its static_resources with PLACEHOLDER values and then fails
+      # with "no healthy upstream" (503) for the lifetime of the pod.
+      # Reuses mysqlInitImage which is the busybox image already used by
+      # pxcentral-ui's init-mysql container, avoiding a new image dependency.
+      initContainers:
+      - name: wait-for-envoy-config
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.mysqlInitImage.registry .Values.images.registry) (default .Values.images.mysqlInitImage.repo .Values.images.repo) .Values.images.mysqlInitImage.imageName .Values.images.mysqlInitImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        command:
+        - sh
+        - -c
+        - |
+          sleep 5
+          TIMEOUT=300
+          ELAPSED=0
+          while grep -q "PLACEHOLDER" /config/envoy-config.yaml; do
+            if [ $ELAPSED -ge $TIMEOUT ]; then
+              echo "ERROR: Envoy ConfigMap still has PLACEHOLDER after ${TIMEOUT}s - check registration component"
+              exit 1
+            fi
+            echo "Envoy ConfigMap not ready yet (${ELAPSED}/${TIMEOUT}s), waiting..."
+            sleep 5
+            ELAPSED=$((ELAPSED + 5))
+          done
+          echo "Envoy ConfigMap is ready"
+        volumeMounts:
+        - name: envoy-config
+          mountPath: /config
+          readOnly: true
       containers:
       # Realtime Metrics Collector
       - name: collector
