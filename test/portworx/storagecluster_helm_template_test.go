@@ -178,6 +178,43 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestStorkUseWorkloadIdentityEnabledWithCreds",
+			resultFileName: "storagecluster_stork_use_workload_identity.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_stork_use_workload_identity.yaml"},
+			},
+		},
+		{
+			name:             "TestStorkUseWorkloadIdentityEnabledWithoutCredsFails",
+			expectedErrorMsg: "stork.useWorkloadIdentity is set to true but workloadIdentity.credentials is empty.",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"stork.enabled":             "true",
+					"stork.useWorkloadIdentity": "true",
+				},
+			},
+		},
+		{
+			name:           "TestStorkUseWorkloadIdentityDisabled",
+			resultFileName: "storagecluster_stork_use_workload_identity_disabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"stork.enabled":             "true",
+					"stork.useWorkloadIdentity": "false",
+				},
+			},
+		},
+		{
+			name:             "TestStorkUseWorkloadIdentityWithStorkDisabledFails",
+			expectedErrorMsg: "stork.useWorkloadIdentity is set to true but workloadIdentity.credentials is empty.",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"stork.enabled":             "false",
+					"stork.useWorkloadIdentity": "true",
+				},
+			},
+		},
+		{
 			name:           "TestVolumes",
 			resultFileName: "storagecluster_volumes.yaml",
 			helmOption: &helm.Options{

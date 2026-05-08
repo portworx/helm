@@ -2170,6 +2170,16 @@ spec:
                   image:
                     description: Image is docker image of the cluster diags container
                     type: string
+                  periodicDiags:
+                    description: PeriodicDiags contains the configuration for periodic
+                      pod diag collection
+                    properties:
+                      interval:
+                        description: |-
+                          Interval is the duration between periodic pod diag collections.
+                          Default is 4 hours.
+                        type: string
+                    type: object
                 type: object
               csi:
                 description: CSI configurations for setting up CSI
@@ -6878,6 +6888,55 @@ spec:
                       DEPRECATED: This is no longer needed to lock an image. The new behavior is to
                       use the image as it is, if present, else use a default image.
                     type: boolean
+                  probes:
+                    description: |-
+                      Probes is an array of probe configurations for stork pods. Each entry
+                      specifies a probe type (currently only "readiness") and its
+                      parameters. Currently, only "readiness" is supported for stork deployment.
+                      These probes are only applied when the stork image version
+                      supports the /healthz endpoint (>= 26.4.0) or uses a non-semver tag.
+                      If not specified, a default readiness probe is added.
+                    items:
+                      description: StorkProbeSpec defines a single probe configuration
+                        for stork pods.
+                      properties:
+                        failureThreshold:
+                          description: |-
+                            FailureThreshold is the minimum consecutive failures for the probe
+                            to be considered failed.
+                          format: int32
+                          type: integer
+                        initialDelaySeconds:
+                          description: |-
+                            InitialDelaySeconds is the number of seconds after the container has started
+                            before the probe is initiated.
+                          format: int32
+                          type: integer
+                        periodSeconds:
+                          description: PeriodSeconds is how often (in seconds) to
+                            perform the probe.
+                          format: int32
+                          type: integer
+                        successThreshold:
+                          description: |-
+                            SuccessThreshold is the minimum consecutive successes for the probe
+                            to be considered successful.
+                          format: int32
+                          type: integer
+                        timeoutSeconds:
+                          description: TimeoutSeconds is the number of seconds after
+                            which the probe times out.
+                          format: int32
+                          type: integer
+                        type:
+                          description: Type is the probe type. Must be "readiness".
+                          enum:
+                          - readiness
+                          type: string
+                      required:
+                      - type
+                      type: object
+                    type: array
                   resources:
                     description: Resources for stork and stork-scheduler pods, e.g.
                       CPU and memory requests or limits
@@ -6946,6 +7005,10 @@ spec:
                       permissions for core scheduler/monitoring functionality only.
                       Use this for storage-only deployments that do not require
                       data protection features.
+                    type: boolean
+                  useWorkloadIdentity:
+                    description: UseWorkloadIdentity if set, stork will use the same
+                      workload identity credentials as used by Portworx
                     type: boolean
                   volumes:
                     description: Volumes is a list of extra volumes to used by stork.
@@ -10679,6 +10742,10 @@ spec:
                   description: ClusterCondition contains condition information for
                     the cluster
                   properties:
+                    lastMigrationState:
+                      description: LastMigrationState is the last migration state
+                        of the node before it failed
+                      type: string
                     lastTransitionTime:
                       description: LastTransitionTime the condition transitioned from
                         one status to another

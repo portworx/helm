@@ -139,6 +139,8 @@ stork:                                # Use Stork https://docs.portworx.com/port
   restrictDataProtectionRBAC:         # Restricts Stork and Operator RBAC to minimum permissions (Tier-0).
                                       # When true, Operator ClusterRole on non-openshift clusters uses least-privilege rules instead of wildcard,
                                       # and Stork data-protection workflows (backup/restore/DR) are restricted on all platforms.
+  useWorkloadIdentity:                # When true, Stork uses the same workload identity credentials configured for Portworx
+                                      # via workloadIdentity.credentials. Only applicable when stork.enabled is true.
 
 customRegistryURL:
 registrySecret:

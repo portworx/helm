@@ -2,6 +2,10 @@
 {{- fail "migrateToKvdbTls requires internalKvdbTls to be enabled. Please set internalKvdbTls to true." }}
 {{- end }}
 
+{{- if and (eq .Values.stork.useWorkloadIdentity true) (empty .Values.workloadIdentity.credentials) }}
+{{- fail "stork.useWorkloadIdentity is set to true but workloadIdentity.credentials is empty. Please configure workloadIdentity.credentials when enabling stork.useWorkloadIdentity." }}
+{{- end }}
+
 {{- if and (.Values.deployCluster) (or (not (lookup "apps/v1" "DaemonSet" "kube-system" "portworx")) (default true .Values.generateStorageClusterForMigration)) }}
 
   {{- $isCoreOS := .Values.isTargetOSCoreOS | default false }}
@@ -409,6 +413,9 @@ spec:
     {{- end }}
     {{- if eq .Values.stork.restrictDataProtectionRBAC true }}
     restrictDataProtectionRBAC: true
+    {{- end }}
+    {{- if kindIs "bool" .Values.stork.useWorkloadIdentity }}
+    useWorkloadIdentity: {{ .Values.stork.useWorkloadIdentity }}
     {{- end }}
     {{- else }}
     enabled: false

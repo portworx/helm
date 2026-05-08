@@ -112,6 +112,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `stork.args`                                               | Pass arguments to Stork container | "" |
 | `stork.volumes`                                            | Add volumes to Stork container | [] |
 | `stork.env`                                                | List of Kubernetes like environment variables passed to Stork | [] |
+| `stork.useWorkloadIdentity`                                | When true, Stork uses the same workload identity credentials configured for Portworx via `workloadIdentity.credentials`. Only applicable when `stork.enabled` is true. Setting this to true requires `workloadIdentity.credentials` to be configured; otherwise the chart rendering will fail. | "" |
 | `customRegistryURL`                                        | Custom Docker registry | "" |
 | `registrySecret`                                           | Registry secret | "" |
 | `imagePullPolicy`                                          | ImagePullPolicy specifies the image pull policy for all the images deployed by the operator. The possible values can be `Always` or `IfNotPresent`. | "Always" |
