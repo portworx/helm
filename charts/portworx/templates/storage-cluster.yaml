@@ -39,6 +39,13 @@
   {{- $miscArgs := include "px.miscArgs" . }}
   {{- $volumesPresent := include "px.volumesPresent" . }}
 
+  {{- $hasAzureWorkloadIdentity := false }}
+  {{- range .Values.workloadIdentity.credentials }}
+    {{- if eq (.cloudProvider | default "") "azure" }}
+      {{- $hasAzureWorkloadIdentity = true }}
+    {{- end }}
+  {{- end }}
+
   {{- $prometheus := .Values.monitoring.prometheus}}
   {{- $prometheousRetention := .Values.monitoring.prometheus.retention | default "none"}}
   {{- $prometheousRetentionSize := .Values.monitoring.prometheus.retentionSize | default "none"}}
@@ -334,7 +341,8 @@ spec:
   {{- end }}
 
   {{- $isLicenseSecretAdded := ne $licenseSecret "none" }}
-  {{- $shouldRenderEnv := or (ne $envVars "none") .Values.envs $AKSInstall $OKEInstall $isLicenseSecretAdded }}
+  {{- $shouldRenderAzureSecretEnv := and $AKSInstall (not $hasAzureWorkloadIdentity) }}
+  {{- $shouldRenderEnv := or (ne $envVars "none") .Values.envs $shouldRenderAzureSecretEnv $OKEInstall $isLicenseSecretAdded }}
   {{- if $shouldRenderEnv }}
   env:
   {{- with .Values.envs }}
@@ -355,7 +363,7 @@ spec:
         name: "{{ $licenseSecret }}"
         key: accountKey
   {{- end }}
-  {{- if $AKSInstall }}
+  {{- if $shouldRenderAzureSecretEnv }}
   - name: AZURE_CLIENT_SECRET
     valueFrom:
       secretKeyRef:

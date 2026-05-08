@@ -374,6 +374,13 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestCloudStorageAKSWithAzureWorkloadIdentity",
+			resultFileName: "storagecluster_cloudstorage_aks_with_azure_workload_identity.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_cloudstorage_aks_with_azure_workload_identity.yaml"},
+			},
+		},
+		{
 			name:           "TestStorageSpecDevices",
 			resultFileName: "storagecluster_storage_devices.yaml",
 			helmOption: &helm.Options{
