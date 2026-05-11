@@ -58,6 +58,30 @@ spec:
         - protocol: TCP
           port: 5432
 ---
+# Allow every pod in the namespace that carries the instance label to
+# egress to postgres on 5432 (covers CronJob writer, seed Job, adminer).
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: pg-client-egress
+  namespace: {{ include "pg.instance" . }}
+  labels:
+    {{- include "pg.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ include "pg.instance" . }}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              {{- include "pg.selectorLabels" . | nindent 14 }}
+      ports:
+        - protocol: TCP
+          port: 5432
+---
 {{- if .Values.adminer.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
@@ -74,7 +98,6 @@ spec:
       app.kubernetes.io/instance: {{ include "pg.instance" . }}
   policyTypes:
     - Ingress
-    - Egress
   ingress:
     - from:
         - namespaceSelector:
@@ -83,12 +106,4 @@ spec:
       ports:
         - protocol: TCP
           port: 8080
-  egress:
-    - to:
-        - podSelector:
-            matchLabels:
-              {{- include "pg.selectorLabels" . | nindent 14 }}
-      ports:
-        - protocol: TCP
-          port: 5432
 {{- end }}
