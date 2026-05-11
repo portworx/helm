@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-headless
+  namespace: {{ include "pg.instance" . }}
+  labels:
+    {{- include "pg.labels" . | nindent 4 }}
+spec:
+  clusterIP: None
+  selector:
+    {{- include "pg.selectorLabels" . | nindent 4 }}
+  ports:
+    - name: pg
+      port: 5432
+      targetPort: pg
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: {{ include "pg.instance" . }}
+  labels:
+    {{- include "pg.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    {{- include "pg.selectorLabels" . | nindent 4 }}
+    statefulset.kubernetes.io/pod-name: postgres-0
+  ports:
+    - name: pg
+      port: 5432
+      targetPort: pg
+---
+{{- if .Values.adminer.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: adminer
+  namespace: {{ include "pg.instance" . }}
+  labels:
+    app.kubernetes.io/name: adminer
+    app.kubernetes.io/instance: {{ include "pg.instance" . }}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: adminer
+    app.kubernetes.io/instance: {{ include "pg.instance" . }}
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+{{- end }}

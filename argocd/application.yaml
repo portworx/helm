@@ -13,7 +13,11 @@ spec:
   source:
     repoURL: https://github.com/portworx/helm.git
     targetRevision: argo-sap
-    path: manifests
+    path: chart
+    helm:
+      releaseName: postgres-pg-01
+      valueFiles:
+        - values.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: pg-01

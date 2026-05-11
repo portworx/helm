@@ -1,0 +1,61 @@
+# -- Instance name (used for labels, service names, namespace)
+instance: pg-01
+name: postgres
+
+image:
+  repository: postgres
+  tag: "16-alpine"
+  pullPolicy: IfNotPresent
+
+statefulset:
+  replicas: 3
+  podManagementPolicy: OrderedReady
+
+storage:
+  className: px-csi-replicated
+  data:
+    size: 26Gi      # PVC1 — data, tablespaces, backups
+  wal:
+    size: 4Gi       # PVC2 — WAL archive, logs
+
+postgres:
+  db: appdb
+  user: appuser
+  password: Password1
+  maxConnections: 200
+  sharedBuffers: 256MB
+  logMinDuration: 250
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: "1"
+    memory: 1Gi
+
+ingress:
+  enabled: true
+  className: nginx
+  host: pg-01.example.com
+
+adminer:
+  enabled: true
+  image:
+    repository: adminer
+    tag: "5"
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+cronWriter:
+  enabled: true
+  schedule: "*/1 * * * *"
+
+seedJob:
+  enabled: true
+  backoffLimit: 20

@@ -1,0 +1,8 @@
+apiVersion: v2
+name: postgres-sap
+description: >-
+  PostgreSQL StatefulSet mimicking SAP Web Dispatcher topology —
+  2 Portworx PVCs with subPath mounts, Job, Ingress, NetworkPolicy, CronJob writer.
+type: application
+version: 0.1.0
+appVersion: "16"

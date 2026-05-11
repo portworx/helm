@@ -1,0 +1,120 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: {{ include "pg.instance" . }}
+  labels:
+    {{- include "pg.labels" . | nindent 4 }}
+spec:
+  serviceName: postgres-headless
+  replicas: {{ .Values.statefulset.replicas }}
+  podManagementPolicy: {{ .Values.statefulset.podManagementPolicy }}
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      {{- include "pg.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "pg.selectorLabels" . | nindent 8 }}
+    spec:
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        fsGroup: 999
+        runAsUser: 999
+        runAsGroup: 999
+      containers:
+        - name: postgres
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: pg
+              containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: postgres-secret
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+            - name: POSTGRES_INITDB_ARGS
+              value: "--auth-host=scram-sha-256"
+          args:
+            - "-c"
+            - "config_file=/etc/postgres/postgresql.conf"
+            - "-c"
+            - "hba_file=/etc/postgres/pg_hba.conf"
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h 127.0.0.1"]
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h 127.0.0.1"]
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            # PVC1 ({{ .Values.storage.data.size }}) — data, tablespaces, logical backups via subPath
+            - name: pg-data
+              mountPath: /var/lib/postgresql/data
+              subPath: pgdata
+            - name: pg-data
+              mountPath: /var/lib/postgresql/tablespaces
+              subPath: tablespaces
+            - name: pg-data
+              mountPath: /var/lib/postgresql/backups
+              subPath: backups
+            # PVC2 ({{ .Values.storage.wal.size }}) — WAL archive + server logs via subPath
+            - name: pg-wal
+              mountPath: /var/lib/postgresql/archive
+              subPath: archive
+            - name: pg-wal
+              mountPath: /var/lib/postgresql/logs
+              subPath: logs
+            # ConfigMap-mounted server config (read-only)
+            - name: pg-conf
+              mountPath: /etc/postgres
+              readOnly: true
+            # Init SQL applied on first boot only
+            - name: pg-initdb
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
+      volumes:
+        - name: pg-conf
+          configMap:
+            name: postgres-config
+            items:
+              - key: postgresql.conf
+                path: postgresql.conf
+              - key: pg_hba.conf
+                path: pg_hba.conf
+        - name: pg-initdb
+          configMap:
+            name: postgres-config
+            items:
+              - key: init.sql
+                path: 10-init.sql
+  volumeClaimTemplates:
+    - metadata:
+        name: pg-data
+        labels:
+          {{- include "pg.selectorLabels" . | nindent 10 }}
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: {{ .Values.storage.className }}
+        resources:
+          requests:
+            storage: {{ .Values.storage.data.size }}
+    - metadata:
+        name: pg-wal
+        labels:
+          {{- include "pg.selectorLabels" . | nindent 10 }}
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: {{ .Values.storage.className }}
+        resources:
+          requests:
+            storage: {{ .Values.storage.wal.size }}

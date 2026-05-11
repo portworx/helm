@@ -1,0 +1,59 @@
+{{- if .Values.seedJob.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: postgres-seed
+  namespace: {{ include "pg.instance" . }}
+  labels:
+    {{- include "pg.labels" . | nindent 4 }}
+    app.kubernetes.io/component: seed
+  annotations:
+    argocd.argoproj.io/hook: PostSync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: {{ .Values.seedJob.backoffLimit }}
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        {{- include "pg.selectorLabels" . | nindent 8 }}
+        app.kubernetes.io/component: seed
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: seed
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          envFrom:
+            - secretRef:
+                name: postgres-secret
+          env:
+            - name: PGHOST
+              value: "postgres.{{ include "pg.instance" . }}.svc.cluster.local"
+            - name: PGPORT
+              value: "5432"
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -eu
+              echo "[seed] waiting for postgres at $PGHOST:$PGPORT"
+              for i in $(seq 1 60); do
+                if pg_isready -h "$PGHOST" -p "$PGPORT" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -q; then
+                  echo "[seed] postgres is ready"; break
+                fi
+                sleep 5
+              done
+              export PGPASSWORD="$POSTGRES_PASSWORD"
+              psql -h "$PGHOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1 <<SQL
+              INSERT INTO events (pod_name, source, message)
+              VALUES ('argo-seed', 'PostSync-Job', 'argo post-sync seed at ' || NOW()::text);
+              SELECT COUNT(*) AS row_count FROM events;
+              SQL
+              echo "[seed] done"
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+{{- end }}
