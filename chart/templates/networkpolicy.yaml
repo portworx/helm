@@ -28,6 +28,10 @@ spec:
           port: 53
         - protocol: TCP
           port: 53
+        - protocol: UDP
+          port: 8053
+        - protocol: TCP
+          port: 8053
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
