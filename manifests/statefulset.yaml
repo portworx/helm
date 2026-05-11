@@ -1,0 +1,130 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: pg-01
+  labels:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/instance: pg-01
+spec:
+  serviceName: postgres-headless
+  replicas: 3
+  podManagementPolicy: OrderedReady
+  updateStrategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postgres
+      app.kubernetes.io/instance: pg-01
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: postgres
+        app.kubernetes.io/instance: pg-01
+    spec:
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        fsGroup: 999
+        runAsUser: 999
+        runAsGroup: 999
+      containers:
+        - name: postgres
+          image: postgres:16-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: pg
+              containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: postgres-secret
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+            - name: POSTGRES_INITDB_ARGS
+              value: "--auth-host=scram-sha-256"
+          args:
+            - "-c"
+            - "config_file=/etc/postgres/postgresql.conf"
+            - "-c"
+            - "hba_file=/etc/postgres/pg_hba.conf"
+          readinessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h 127.0.0.1"]
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command: ["sh", "-c", "pg_isready -U $POSTGRES_USER -d $POSTGRES_DB -h 127.0.0.1"]
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          volumeMounts:
+            # PVC1 (26Gi) — data, tablespaces, logical backups via subPath
+            - name: pg-data
+              mountPath: /var/lib/postgresql/data
+              subPath: pgdata
+            - name: pg-data
+              mountPath: /var/lib/postgresql/tablespaces
+              subPath: tablespaces
+            - name: pg-data
+              mountPath: /var/lib/postgresql/backups
+              subPath: backups
+            # PVC2 (4Gi) — WAL archive + server logs via subPath
+            - name: pg-wal
+              mountPath: /var/lib/postgresql/archive
+              subPath: archive
+            - name: pg-wal
+              mountPath: /var/lib/postgresql/logs
+              subPath: logs
+            # ConfigMap-mounted server config (read-only)
+            - name: pg-conf
+              mountPath: /etc/postgres
+              readOnly: true
+            # Init SQL applied on first boot only (postgres entrypoint convention)
+            - name: pg-initdb
+              mountPath: /docker-entrypoint-initdb.d
+              readOnly: true
+      volumes:
+        - name: pg-conf
+          configMap:
+            name: postgres-config
+            items:
+              - key: postgresql.conf
+                path: postgresql.conf
+              - key: pg_hba.conf
+                path: pg_hba.conf
+        - name: pg-initdb
+          configMap:
+            name: postgres-config
+            items:
+              - key: init.sql
+                path: 10-init.sql
+  volumeClaimTemplates:
+    - metadata:
+        name: pg-data
+        labels:
+          app.kubernetes.io/name: postgres
+          app.kubernetes.io/instance: pg-01
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: px-csi-replicated
+        resources:
+          requests:
+            storage: 26Gi
+    - metadata:
+        name: pg-wal
+        labels:
+          app.kubernetes.io/name: postgres
+          app.kubernetes.io/instance: pg-01
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: px-csi-replicated
+        resources:
+          requests:
+            storage: 4Gi

@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: postgres-writer
+  namespace: pg-01
+  labels:
+    app.kubernetes.io/name: postgres
+    app.kubernetes.io/instance: pg-01
+    app.kubernetes.io/component: writer
+spec:
+  schedule: "*/1 * * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 60
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      ttlSecondsAfterFinished: 600
+      template:
+        metadata:
+          labels:
+            app.kubernetes.io/name: postgres
+            app.kubernetes.io/instance: pg-01
+            app.kubernetes.io/component: writer
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: writer
+              image: postgres:16-alpine
+              envFrom:
+                - secretRef:
+                    name: postgres-secret
+              env:
+                - name: PGHOST
+                  value: postgres.pg-01.svc.cluster.local
+                - name: PGPORT
+                  value: "5432"
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  set -eu
+                  export PGPASSWORD="$POSTGRES_PASSWORD"
+                  psql -h "$PGHOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -v ON_ERROR_STOP=1 -c \
+                    "INSERT INTO events (pod_name, source, message)
+                     VALUES ('cron-writer', 'CronJob', 'periodic write at ' || NOW()::text);"
+              resources:
+                requests:
+                  cpu: 25m
+                  memory: 32Mi
+                limits:
+                  cpu: 100m
+                  memory: 64Mi
