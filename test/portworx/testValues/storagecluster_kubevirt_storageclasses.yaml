@@ -1,6 +1,0 @@
-csi: 
-  enabled: true                      
-  kubeVirtStorageClasses:
-    pxRwxFileKubevirt: true
-    pxRwxBlockKubevirt: true
-    pxCdiScratch: true

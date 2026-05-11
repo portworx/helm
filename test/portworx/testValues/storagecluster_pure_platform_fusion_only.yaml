@@ -1,5 +1,0 @@
-purePlatform:
-  fusion:
-    enabled: true
-    image: "portworx/fusion:2.0.0"
-

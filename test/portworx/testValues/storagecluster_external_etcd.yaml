@@ -1,3 +1,0 @@
-internalKVDB: false
-etcdEndPoint: "etcd:https://127.0.0.1:2379;etcd:https://127.0.0.1:2379;etcd:https://127.0.0.1:2379"
-authSecret: "test-auth-secret"
