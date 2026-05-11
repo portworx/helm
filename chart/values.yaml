@@ -37,7 +37,7 @@ resources:
 ingress:
   enabled: true
   className: nginx
-  host: pg-01.example.com
+  host: ""
 
 adminer:
   enabled: true

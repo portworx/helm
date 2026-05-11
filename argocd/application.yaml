@@ -18,6 +18,9 @@ spec:
       releaseName: postgres-pg-01
       valueFiles:
         - values.yaml
+      parameters:
+        - name: ingress.host
+          value: pg-01.34.63.210.227.nip.io
   destination:
     server: https://kubernetes.default.svc
     namespace: pg-01
