@@ -1,0 +1,23 @@
+# Patterns to ignore when building Helm packages.
+# Operates on filenames, not paths. One pattern per line.
+
+# VCS
+.git/
+.gitignore
+.gitattributes
+.gitmodules
+
+# Common backup/temp files
+*.bak
+*.swp
+*.tmp
+*~
+.DS_Store
+
+# IDE / editor
+.idea/
+.vscode/
+.claude/
+
+# CI / repo metadata (not part of the chart)
+.github/
