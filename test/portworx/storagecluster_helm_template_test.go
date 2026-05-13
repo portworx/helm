@@ -585,6 +585,45 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				ValuesFiles: []string{"./testValues/storagecluster_pure_platform_fusion_only.yaml"},
 			},
 		},
+		{
+			name:           "TestVKSEnabled",
+			resultFileName: "storagecluster_vks_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"isVKS":        "true",
+					"internalKVDB": "true",
+				},
+			},
+		},
+		{
+			name:           "TestStoreV2InstallEnabled",
+			resultFileName: "storagecluster_storev2_install.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"storeV2Install": "true",
+					"internalKVDB":   "true",
+				},
+			},
+		},
+		{
+			name:           "TestVKSWithStoreV2AndCloudStorage",
+			resultFileName: "storagecluster_vks_full.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_vks_full.yaml"},
+			},
+		},
+		{
+			name:           "TestVKSWithExistingMiscArgs",
+			resultFileName: "storagecluster_vks_with_misc_args.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"isVKS":          "true",
+					"storeV2Install": "true",
+					"miscArgs":       "--debug=true",
+					"internalKVDB":   "true",
+				},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

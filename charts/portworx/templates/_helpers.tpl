@@ -303,6 +303,12 @@ Generate a random token for storage provisioning
 {{- if ne .Values.miscArgs "none" }}
     {{- $result = printf "%s %s" $result .Values.miscArgs }}
 {{- end }}
+{{- if eq (.Values.storeV2Install | default false) true }}
+    {{- $result = printf "%s -T px-storev2" $result }}
+{{- end }}
+{{- if eq (.Values.isVKS | default false) true }}
+    {{- $result = printf "%s -cloud_provider vsphere" $result }}
+{{- end }}
 {{- trim $result }}
 {{- end }}
 
