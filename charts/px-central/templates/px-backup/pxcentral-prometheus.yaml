@@ -5,9 +5,11 @@
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- $enableExternalMetricsScraping := .Values.pxbackup.enableExternalMetricsScraping | default false }}
+{{- $prometheusCRD := lookup "apiextensions.k8s.io/v1" "CustomResourceDefinition" "" "prometheuses.monitoring.coreos.com" }}
 {{- if eq $deployDedicatedMonitoringSystem true }}
 {{- $storageSize := "5Gi" }}
 {{- $retentionSize := "4096MB" }}
+{{- if $prometheusCRD }}
 {{- $prometheus := lookup "monitoring.coreos.com/v1" "Prometheus" .Release.Namespace "px-backup-dashboard-prometheus" }}
 {{- if $prometheus }}
 {{- $storageSize = $prometheus.spec.storage.volumeClaimTemplate.spec.resources.requests.storage }}
@@ -21,7 +23,7 @@
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- else }}
+{{- end }}
 {{- end }}
 {{- $hasAzureAnnotation := and (eq $azureProxyEnabled true) (not (has "px-backup-dashboard-prometheus" .Values.proxy.excludeAzureProxyList)) }}
 {{- $hasIstioAnnotation := .Values.istio.enabled }}
@@ -288,6 +290,9 @@ kind: Prometheus
 metadata:
    name: px-backup-dashboard-prometheus
    namespace: {{ .Release.Namespace }}
+   annotations:
+     helm.sh/hook: post-install,post-upgrade
+     helm.sh/hook-weight: "5"
    labels:
 {{- include "px-central.partOfLabel" . | nindent 5 }}
 spec:
@@ -513,6 +518,9 @@ kind: ServiceMonitor
 metadata:
   namespace: {{ .Release.Namespace }}
   name: px-backup-dashboard-prometheus-sm
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "6"
   labels:
     name: px-backup-dashboard-prometheus-sm
     app.kubernetes.io/component: px-backup
@@ -564,6 +572,9 @@ kind: ServiceMonitor
 metadata:
   namespace: {{ .Release.Namespace }}
   name: px-backup-dashboard-prometheus-sm
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "6"
   labels:
     name: px-backup-dashboard-prometheus-sm
     app.kubernetes.io/component: px-backup
@@ -618,6 +629,9 @@ kind: ServiceMonitor
 metadata:
   namespace: {{ .Release.Namespace }}
   name: px-backup-external-monitoring-sm
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "6"
   labels:
     name: px-backup-external-monitoring-sm
     app.kubernetes.io/component: px-backup
@@ -668,10 +682,13 @@ spec:
 apiVersion: monitoring.coreos.com/v1
 kind: PrometheusRule
 metadata:
+  name: px-backup-dashboard-prometheus-rules
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "6"
   labels:
     app: px-backup-alerts
 {{- include "px-central.partOfLabel" . | nindent 4 }}
-  name: px-backup-dashboard-prometheus-rules
 spec:
   groups:
   - name: gauge_rules

@@ -1,0 +1,86 @@
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- if eq $pxBackupEnabled true }}
+{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
+{{- $enableExternalMetricsScraping := .Values.pxbackup.enableExternalMetricsScraping | default false }}
+{{- if or (eq $deployDedicatedMonitoringSystem true) (eq $enableExternalMetricsScraping true) (eq $enableExternalMetricsScraping false) }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-backup-monitoring-cleanup
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    helm.sh/hook: pre-delete
+    helm.sh/hook-weight: "-5"
+    helm.sh/hook-delete-policy: hook-succeeded,before-hook-creation
+  labels:
+{{- include "px-central.labels" . | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: px-backup-monitoring-cleanup-{{ .Release.Namespace }}
+  annotations:
+    helm.sh/hook: pre-delete
+    helm.sh/hook-weight: "-5"
+    helm.sh/hook-delete-policy: hook-succeeded,before-hook-creation
+  labels:
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+- apiGroups: ["monitoring.coreos.com"]
+  resources: ["prometheuses", "alertmanagers", "servicemonitors", "prometheusrules"]
+  verbs: ["get", "list", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: px-backup-monitoring-cleanup-{{ .Release.Namespace }}
+  annotations:
+    helm.sh/hook: pre-delete
+    helm.sh/hook-weight: "-4"
+    helm.sh/hook-delete-policy: hook-succeeded,before-hook-creation
+  labels:
+{{- include "px-central.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: px-backup-monitoring-cleanup-{{ .Release.Namespace }}
+subjects:
+- kind: ServiceAccount
+  name: px-backup-monitoring-cleanup
+  namespace: {{ .Release.Namespace }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: px-backup-monitoring-cleanup
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    helm.sh/hook: pre-delete
+    helm.sh/hook-weight: "0"
+    helm.sh/hook-delete-policy: hook-succeeded,before-hook-creation
+  labels:
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  ttlSecondsAfterFinished: 100
+  backoffLimit: 3
+  template:
+    spec:
+      serviceAccountName: px-backup-monitoring-cleanup
+      restartPolicy: Never
+      containers:
+      - name: cleanup
+        image: bitnami/kubectl:latest
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "Cleaning up Prometheus Operator resources..."
+          kubectl delete prometheus px-backup-dashboard-prometheus -n {{ .Release.Namespace }} --ignore-not-found=true
+          kubectl delete alertmanager px-backup-alertmanager -n {{ .Release.Namespace }} --ignore-not-found=true
+          kubectl delete servicemonitor px-backup-dashboard-prometheus-sm -n {{ .Release.Namespace }} --ignore-not-found=true
+          kubectl delete servicemonitor px-backup-external-monitoring-sm -n {{ .Release.Namespace }} --ignore-not-found=true
+          kubectl delete prometheusrule px-backup-dashboard-prometheus-rules -n {{ .Release.Namespace }} --ignore-not-found=true
+          echo "Cleanup complete!"
+{{- end }}
+{{- end }}
