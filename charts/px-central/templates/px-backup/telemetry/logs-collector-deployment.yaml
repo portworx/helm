@@ -27,7 +27,7 @@ metadata:
 rules:
 - apiGroups: [""]
   resources: ["secrets"]
-  resourceNames: ["pure-telemetry-certs", "baas-secret"]
+  resourceNames: ["pure-telemetry-certs", "baas-secret", "pxc-backup-mongodb"]
   verbs: ["get"]
 - apiGroups: [""]
   resources: ["pods"]
@@ -162,6 +162,17 @@ spec:
             secretKeyRef:
               name: pxc-backup-mongodb
               key: mongodb-password
+        - name: ENCRYPT_MONGODB
+          value: {{ .Values.pxbackup.encryptMongoDB | default false | quote }}
+
+        # MongoDB exporter bytes-bounded batching.
+        # Performance internals — tuned against the log-collector memory limit
+        - name: DB_EXPORT_FLUSH_BYTES
+          value: "100663296"        # 96 MB
+        - name: DB_EXPORT_MAX_FLUSH_DOCS
+          value: "10000"
+        - name: DB_EXPORT_CURSOR_BATCH
+          value: "1000"
 
         {{- if not $isOpenshiftCluster }}
         securityContext:
@@ -173,11 +184,11 @@ spec:
           subPath: cores
         resources:
           requests:
-            memory: "128Mi"
-            cpu: "100m"
-          limits:
             memory: "256Mi"
             cpu: "200m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
       
       # Container 2: Log Upload Service
       - name: log-upload-service
@@ -297,11 +308,11 @@ spec:
         {{- end }}
         resources:
           requests:
-            memory: "128Mi"
+            memory: "256Mi"
             cpu: "100m"
           limits:
-            memory: "256Mi"
-            cpu: "200m"
+            memory: "512Mi"
+            cpu: "400m"
         {{- if and (not .Values.istio.enabled) (not .Values.linkerd.enabled) }}
         # Health probe - verifies envoy can reach upstream (Pure1)
         # Envoy listens on 0.0.0.0 (matching px-e pattern) so probe works on both K8s and OpenShift
