@@ -277,6 +277,8 @@ taintBasedScheduling:
 clusterDiags:
   enabled: true                       # Enabled decides whether cluster diags needs to be enabled
   image: ""                           # image is docker image of the cluster diags container
+  periodicDiags:
+    interval: ""                      # Interval between periodic pod diag collections (e.g. "4h"). Empty means use default (4h).
 
 tolerations:                          # Add tolerations
   # - key: "key"

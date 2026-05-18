@@ -572,6 +572,26 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestClusterDiagsWithPeriodicDiagsInterval",
+			resultFileName: "storagecluster_cluster_diags_with_periodic_diags.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"clusterDiags.enabled":                   "true",
+					"clusterDiags.periodicDiags.interval":    "4h",
+				},
+			},
+		},
+		{
+			name:           "TestClusterDiagsWithEmptyPeriodicDiagsInterval",
+			resultFileName: "storagecluster_cluster_diags_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"clusterDiags.enabled":                   "true",
+					"clusterDiags.periodicDiags.interval":    "",
+				},
+			},
+		},
+		{
 			name:           "TestPurePlatform",
 			resultFileName: "storagecluster_pure_platform.yaml",
 			helmOption: &helm.Options{

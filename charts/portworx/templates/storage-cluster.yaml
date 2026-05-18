@@ -740,6 +740,10 @@ spec:
     {{- if ne .Values.clusterDiags.image "" }}
     image: {{ .Values.clusterDiags.image }}
     {{- end }}
+    {{- if and .Values.clusterDiags.periodicDiags (ne (.Values.clusterDiags.periodicDiags.interval | default "") "") }}
+    periodicDiags:
+      interval: {{ .Values.clusterDiags.periodicDiags.interval | quote }}
+    {{- end }}
   {{- end }}
 
 {{- end }}
