@@ -5,7 +5,6 @@ metadata:
   namespace: portworx
   annotations:
     portworx.io/is-vks: "true"
-    portworx.io/misc-args: "-cloud_provider vsphere"
   labels:
     heritage: "Helm"
     release: "my-release"
