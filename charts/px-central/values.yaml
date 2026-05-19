@@ -272,7 +272,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: postgresql
-    tag: "18.3"
+    tag: "18.4"
     module: pxCentral
   keycloakFrontendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -296,7 +296,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: mysql
-    tag: 8.4.8
+    tag: 8.4.9
     module: pxCentral
   preSetupHookImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
