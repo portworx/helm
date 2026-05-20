@@ -641,8 +641,14 @@ stringData:
               </li>
               <li>
                 <div style="display: flex">
-                <div style="font-weight: bold; width: 170px;min-width: 170px;">Status:</div>
-                <div>{{ .Labels.error_reason }}</div>
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div>
+                <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
+                </div>
+              </li>
+              <li>
+                <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Action:</div>
+                <div>Further cluster additions are suspended. Delete an existing cluster or raise MAX_CLUSTER_COUNT in the px-backup-config ConfigMap.</div>
                 </div>
               </li>
             </ul>
