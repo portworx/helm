@@ -14,9 +14,9 @@ docker.io/portworx/mongodb:8.0.20
 docker.io/portworx/mongodb:7.0.15-debian-12-r2
 docker.io/portworx/mongodb:6.0.13-debian-11-r21
 docker.io/portworx/mongodb:5.0.24-debian-11-r20
-docker.io/portworx/kopiaexecutor:1.2.23
-docker.io/portworx/nfsexecutor:1.2.23
-docker.io/portworx/filesystemctl:1.2.23
+docker.io/portworx/kopiaexecutor:1.2.24-staging
+docker.io/portworx/nfsexecutor:1.2.24-staging
+docker.io/portworx/filesystemctl:1.2.24-staging
 docker.io/portworx/prometheus:v3.10.0
 docker.io/portworx/alertmanager:v0.31.1
 docker.io/portworx/prometheus-operator:v0.90.1
