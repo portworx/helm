@@ -117,7 +117,7 @@ spec:
 
         # Log storage configuration
         - name: CLEANUP_AGE
-          value: "24h"
+          value: "4h"
 
         # Pod exclusion patterns (for excluding entire pods from collection)
         - name: EXCLUDE_POD_PATTERNS
