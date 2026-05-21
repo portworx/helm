@@ -39,6 +39,8 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
+      initContainers:
+      {{- include "px-central.envoyConfigWaitInit" (dict "root" $ "mountPath" "/etc/envoy" "configFile" "envoy-config-register.yaml") | nindent 6 }}
       containers:
       # CCM-Go - Registration service
       - name: registration
