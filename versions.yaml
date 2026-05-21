@@ -26,10 +26,10 @@ modules:
     pxBackupPrometheusOperatorImage: "docker.io/portworx/prometheus-operator:v0.90.1"
     pxBackupPrometheusConfigReloaderImage: "docker.io/portworx/prometheus-config-reloader:v0.90.1"
     telemetryEnvoyImage: "docker.io/portworx/telemetry-envoy:1.1.18"
-    telemetryRegistrationImage: "docker.io/portworx/ccm-go:1.4.37"
-    telemetryMetricsCollectorImage: "docker.io/portworx/realtime-metrics:1.0.35"
+    telemetryRegistrationImage: "docker.io/portworx/ccm-go:1.4.42"
+    telemetryMetricsCollectorImage: "docker.io/portworx/realtime-metrics:1.0.36"
     telemetryDataCollectorImage: "docker.io/portworx/px-backup-telemetry-collector-base:3.0.0-staging"
-    telemetryLogUploadImage: "docker.io/portworx/log-upload:px-1.1.94"
+    telemetryLogUploadImage: "docker.io/portworx/log-upload:px-1.1.148"
   pxMonitor:
     cortex: "docker.io/portworx/cortex:v1.13.1"
     cassandra: "docker.io/portworx/cassandra:4.0.7-debian-11-r34"
