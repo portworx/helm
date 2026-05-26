@@ -1,0 +1,21 @@
+clusterName: px-cluster-7c1c3e56-ccba-498b-b455-a2ac2a5e0bad
+isVKS: true
+storeV2Install: true
+drives: "sc=test-sc,size=150"
+journalDevice: "sc=test-sc,size=3"
+systemMetadataDevice: "sc=test-sc,size=64"
+internalKVDB: true
+internalKvdbTls: true
+installCertManager: true
+csi:
+  enabled: true
+stork:
+  enabled: true
+  args: "webhook-controller=true"
+monitoring:
+  prometheus:
+    enabled: true
+    exportMetrics: true
+  telemetry:
+    enabled: true
+runtimeOptions: "default-io-profile=6"

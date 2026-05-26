@@ -19,6 +19,13 @@ EKSInstall: false                     # installation on EKS.
 GKEInstall: false                     # installation on GKE.
 AKSInstall: false                     # installation on AKS
 OKEInstall: false                     # installation on OKE
+isVKS: false                          # installation on VKS (VMware vSphere Kubernetes Service / Tanzu).
+                                      # When true, sets portworx.io/is-vks=true on the StorageCluster and injects
+                                      # ENABLE_CSI_DRIVE=true env on the Portworx container. Use the existing
+                                      # drives/journalDevice/systemMetadataDevice fields with the StorageClass
+                                      # form, e.g. drives: "sc=test-sc,size=150".
+storeV2Install: false                 # When true, appends "-T px-storev2" to the portworx.io/misc-args annotation
+                                      # so Portworx is installed with the px-storev2 backend.
 clusterAnnotations: ""                # Annotations to set on the StorageCluster resource. Pass multiple annotation with ";" sperated list. Example: portworx.io/evict-vms-during-update=true;example.io/test=true
 
 etcdEndPoint:                         # The ETCD endpoint. Should be in the format etcd:http://<your-etcd-endpoint>:2379. If there are multiple etcd endpoints they need to be ";" seperated.

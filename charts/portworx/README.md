@@ -75,6 +75,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `EKSInstall`                                               | Installing EKS (Amazon Elastic Container service) | false |
 | `AKSInstall`                                               | Installing on AKS (Azure Kubernetes service) | false |
 | `GKEInstall`                                               | Installing on GKE (Google Kubernetes Engine) | false |
+| `isVKS`                                                    | Installing on VKS (VMware vSphere Kubernetes Service / Tanzu). | false |
+| `storeV2Install`                                           | When true, appends `-T px-storev2` to the `portworx.io/misc-args` annotation so Portworx is installed with the px-storev2 backend. | false |
 | `clusterAnnotations`                                       | Semicolon-separated list of annotations to apply on the StorageCluster resource | "" |
 | `etcdEndPoint`                                             | (REQUIRED) etcd endpoint for PX to function properly in the form "etcd:http://<your-etcd-endpoint>". Multiple Urls should be semi-colon seperated example: etcd:http://<your-etcd-endpoint1>;etcd:http://<your-etcd-endpoint2> | "" |
 | `clusterName`                                              | Portworx Cluster Name | "mycluster" |

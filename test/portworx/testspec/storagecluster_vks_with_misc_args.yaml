@@ -1,0 +1,45 @@
+kind: StorageCluster
+apiVersion: core.libopenstorage.org/v1
+metadata:
+  name: "mycluster"
+  namespace: portworx
+  annotations:
+    portworx.io/is-vks: "true"
+    portworx.io/misc-args: "--debug=true -T px-storev2"
+  labels:
+    heritage: "Helm"
+    release: "my-release"
+    app.kubernetes.io/managed-by: "Helm"
+    app.kubernetes.io/instance: "my-release"
+spec:
+  image: portworx/oci-monitor:3.6.1
+  imagePullPolicy: Always
+
+  kvdb:
+    internal: true
+    enableTLS: true
+  certManager:
+    enabled: true
+  storage:
+    useAll: true
+  secretsProvider: k8s
+
+  env:
+  - name: ENABLE_CSI_DRIVE
+    value: "true"
+  - name: PRE-EXEC
+    value: "iptables -A INPUT -p tcp --match multiport --dports 9001:9020 -j ACCEPT"
+
+  stork:
+    enabled: true
+  monitoring:
+    telemetry:
+      enabled: true
+      metricsCollector:
+        enabled: true
+  csi:
+    enabled: true
+  autopilot:
+    enabled: true
+  clusterDiags:
+    enabled: true
