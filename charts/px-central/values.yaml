@@ -138,7 +138,7 @@ pxbackup:
   volDeleteWorker: 5
   backupInfoMetricsBackfillHours: ""
   dashboardMetricsBackfillDays: ""
-  version: 3.0.0
+  version: 3.1.0
   skipValidations: false
   usePlatformRbac: false
   encryptMongoDB: false
@@ -241,32 +241,32 @@ images:
   pxcentralApiServerImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-api
-    tag: 3.0.0
+    imageName: pxcentral-onprem-api-base
+    tag: 3.1.0-fc1
     module: pxCentral
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-frontend
-    tag: 3.0.0
+    imageName: pxcentral-onprem-ui-frontend-private
+    tag: 3.1.0-fc1
     module: pxCentral
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-backend
-    tag: 3.0.0
+    imageName: pxcentral-onprem-ui-backend-private
+    tag: 3.1.0-fc1
     module: pxCentral
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-ui-lhbackend
-    tag: 3.0.0
+    imageName: pxcentral-onprem-ui-lhbackend-private
+    tag: 3.1.0-fc1
     module: pxCentral
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-post-setup
-    tag: 3.0.0
+    imageName: pxcentral-onprem-post-setup-base
+    tag: 3.1.0-fc1
     module: pxCentral
   keycloakBackendImage:
     registry: docker.io
@@ -283,8 +283,8 @@ images:
   keycloakLoginThemeImage:
     registry: docker.io
     repo: portworx
-    imageName: keycloak-login-theme
-    tag: 3.0.0
+    imageName: sb-keycloak-login-theme
+    tag: 3.1.0-fc1
     module: pxCentral
   keycloakInitContainerImage:
     registry: docker.io
@@ -301,8 +301,8 @@ images:
   preSetupHookImage:
     registry: docker.io
     repo: portworx
-    imageName: pxcentral-onprem-hook
-    tag: 3.0.0
+    imageName: pxcentral-onprem-hook-base
+    tag: 3.1.0-fc1
     module: pxCentral
   mysqlInitImage:
     registry: docker.io
@@ -315,8 +315,8 @@ images:
   pxBackupImage:
     registry: docker.io
     repo: portworx
-    imageName: px-backup
-    tag: 3.0.0
+    imageName: px-backup-base
+    tag: 3.1.0-fc1
     module: pxBackup
   mongodbImage:
     registry: docker.io
@@ -347,8 +347,8 @@ images:
   telemetryDataCollectorImage:
     registry: docker.io
     repo: portworx
-    imageName: px-backup-telemetry-collector
-    tag: 3.0.0
+    imageName: px-backup-telemetry-collector-base
+    tag: 3.1.0-fc1
     module: pxBackup
   telemetryLogUploadImage:
     registry: docker.io
