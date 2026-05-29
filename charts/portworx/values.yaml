@@ -19,7 +19,7 @@ EKSInstall: false                     # installation on EKS.
 GKEInstall: false                     # installation on GKE.
 AKSInstall: false                     # installation on AKS
 OKEInstall: false                     # installation on OKE
-isVKS: false                          # installation on VKS (VMware vSphere Kubernetes Service / Tanzu).
+VKSInstall: false                      # installation on VKS (VMware vSphere Kubernetes Service / Tanzu).
                                       # When true, sets portworx.io/is-vks=true on the StorageCluster and injects
                                       # ENABLE_CSI_DRIVE=true env on the Portworx container. Use the existing
                                       # drives/journalDevice/systemMetadataDevice fields with the StorageClass

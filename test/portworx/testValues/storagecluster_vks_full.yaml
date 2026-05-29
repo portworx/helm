@@ -1,5 +1,5 @@
 clusterName: px-cluster-7c1c3e56-ccba-498b-b455-a2ac2a5e0bad
-isVKS: true
+VKSInstall: true
 storeV2Install: true
 drives: "sc=test-sc,size=150"
 journalDevice: "sc=test-sc,size=3"
