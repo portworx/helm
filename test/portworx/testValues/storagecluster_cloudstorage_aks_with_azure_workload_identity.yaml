@@ -1,0 +1,12 @@
+AKSInstall: true
+provider: azure
+journalDevice: "type=journal"
+initialStorageNodes: 1
+maxStorageNodes: 1
+systemMetadataDevice: "type=gp2,size=100"
+kvdbDevice: "type=node-kvdb"
+workloadIdentity:
+  credentials:
+    - cloudProvider: "azure"
+      key: "azure.workload.identity/client-id"
+      value: "00000000-0000-0000-0000-000000000000"

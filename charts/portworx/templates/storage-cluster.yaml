@@ -2,6 +2,16 @@
 {{- fail "migrateToKvdbTls requires internalKvdbTls to be enabled. Please set internalKvdbTls to true." }}
 {{- end }}
 
+{{- if eq (.Values.stork.useWorkloadIdentity | default false) true }}
+{{- $wiCreds := list }}
+{{- if .Values.workloadIdentity }}
+{{- $wiCreds = .Values.workloadIdentity.credentials }}
+{{- end }}
+{{- if empty $wiCreds }}
+{{- fail "stork.useWorkloadIdentity is set to true but workloadIdentity.credentials is empty. Please configure workloadIdentity.credentials when enabling stork.useWorkloadIdentity." }}
+{{- end }}
+{{- end }}
+
 {{- if and (.Values.deployCluster) (or (not (lookup "apps/v1" "DaemonSet" "kube-system" "portworx")) (default true .Values.generateStorageClusterForMigration)) }}
 
   {{- $isCoreOS := .Values.isTargetOSCoreOS | default false }}
@@ -17,6 +27,7 @@
   {{- $pksInstall := .Values.pksInstall | default false }}
   {{- $AKSInstall := .Values.AKSInstall | default false }}
   {{- $OKEInstall := .Values.OKEInstall | default false }}
+  {{- $isVKS := .Values.isVKS | default false }}
   {{- $usefileSystemDrive := .Values.usefileSystemDrive | default false }}
   {{- $usedrivesAndPartitions := .Values.usedrivesAndPartitions | default false }}
   {{- $secretType := .Values.secretType | default "k8s" }}
@@ -34,6 +45,15 @@
   {{- $systemMetadataDevice:= .Values.systemMetadataDevice | default "none"}}
   {{- $miscArgs := include "px.miscArgs" . }}
   {{- $volumesPresent := include "px.volumesPresent" . }}
+
+  {{- $hasAzureWorkloadIdentity := false }}
+  {{- if .Values.workloadIdentity }}
+  {{- range .Values.workloadIdentity.credentials }}
+    {{- if eq (.cloudProvider | default "") "azure" }}
+      {{- $hasAzureWorkloadIdentity = true }}
+    {{- end }}
+  {{- end }}
+  {{- end }}
 
   {{- $prometheus := .Values.monitoring.prometheus}}
   {{- $prometheousRetention := .Values.monitoring.prometheus.retention | default "none"}}
@@ -62,6 +82,9 @@ metadata:
     {{- end }}
     {{- if eq $OKEInstall true }}
     portworx.io/is-oke: "true"
+    {{- end }}
+    {{- if eq $isVKS true }}
+    portworx.io/is-vks: "true"
     {{- end }}
     {{- if $miscArgs }}
     portworx.io/misc-args: {{ $miscArgs | quote }}
@@ -330,7 +353,8 @@ spec:
   {{- end }}
 
   {{- $isLicenseSecretAdded := ne $licenseSecret "none" }}
-  {{- $shouldRenderEnv := or (ne $envVars "none") .Values.envs $AKSInstall $OKEInstall $isLicenseSecretAdded }}
+  {{- $shouldRenderAzureSecretEnv := and $AKSInstall (not $hasAzureWorkloadIdentity) }}
+  {{- $shouldRenderEnv := or (ne $envVars "none") .Values.envs $shouldRenderAzureSecretEnv $OKEInstall $isLicenseSecretAdded $isVKS }}
   {{- if $shouldRenderEnv }}
   env:
   {{- with .Values.envs }}
@@ -351,7 +375,7 @@ spec:
         name: "{{ $licenseSecret }}"
         key: accountKey
   {{- end }}
-  {{- if $AKSInstall }}
+  {{- if $shouldRenderAzureSecretEnv }}
   - name: AZURE_CLIENT_SECRET
     valueFrom:
       secretKeyRef:
@@ -382,6 +406,12 @@ spec:
   - name: "PX_ORACLE_private_key_path"
     value: "/etc/pwx/oci_key/oci_api_key.pem"
   {{- end }}
+  {{- if $isVKS }}
+  - name: ENABLE_CSI_DRIVE
+    value: "true"
+  - name: PRE-EXEC
+    value: "iptables -A INPUT -p tcp --match multiport --dports 9001:9020 -j ACCEPT"
+  {{- end }}
   {{- end }}
   
   stork:
@@ -409,6 +439,9 @@ spec:
     {{- end }}
     {{- if eq .Values.stork.restrictDataProtectionRBAC true }}
     restrictDataProtectionRBAC: true
+    {{- end }}
+    {{- if kindIs "bool" .Values.stork.useWorkloadIdentity }}
+    useWorkloadIdentity: {{ .Values.stork.useWorkloadIdentity }}
     {{- end }}
     {{- else }}
     enabled: false
@@ -660,10 +693,12 @@ spec:
     ignoreVolumes: {{ .Values.deleteStrategy.ignoreVolumes }}
     {{- end }}
   {{- end }}
+  {{- if .Values.workloadIdentity }}
   {{- with .Values.workloadIdentity.credentials }}
   workloadIdentity:
     credentials:
       {{- toYaml . | nindent 4 }}
+  {{- end }}
   {{- end }}
   {{- if or (eq .Values.taintBasedScheduling.enabled true) (eq .Values.taintBasedScheduling.enabled false) }}
   taintBasedScheduling:

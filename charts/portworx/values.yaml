@@ -4,8 +4,8 @@ deployOperator: true                    # Deploy the Portworx operator
 deployCluster: true                     # Deploy the Portworx cluster
 verboseOperatorLogs: false              # Enable verbose logging for the Portworx operator.
 
-imageVersion: 3.6.0                    # Version of the PX Image.
-pxOperatorImageVersion: 26.1.0         # Version of the PX operator image.
+imageVersion: 3.6.1                    # Version of the PX Image.
+pxOperatorImageVersion: 26.2.0         # Version of the PX operator image.
 
 openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
 isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
@@ -19,6 +19,13 @@ EKSInstall: false                     # installation on EKS.
 GKEInstall: false                     # installation on GKE.
 AKSInstall: false                     # installation on AKS
 OKEInstall: false                     # installation on OKE
+isVKS: false                          # installation on VKS (VMware vSphere Kubernetes Service / Tanzu).
+                                      # When true, sets portworx.io/is-vks=true on the StorageCluster and injects
+                                      # ENABLE_CSI_DRIVE=true env on the Portworx container. Use the existing
+                                      # drives/journalDevice/systemMetadataDevice fields with the StorageClass
+                                      # form, e.g. drives: "sc=test-sc,size=150".
+storeV2Install: false                 # When true, appends "-T px-storev2" to the portworx.io/misc-args annotation
+                                      # so Portworx is installed with the px-storev2 backend.
 clusterAnnotations: ""                # Annotations to set on the StorageCluster resource. Pass multiple annotation with ";" sperated list. Example: portworx.io/evict-vms-during-update=true;example.io/test=true
 
 etcdEndPoint:                         # The ETCD endpoint. Should be in the format etcd:http://<your-etcd-endpoint>:2379. If there are multiple etcd endpoints they need to be ";" seperated.
@@ -139,6 +146,8 @@ stork:                                # Use Stork https://docs.portworx.com/port
   restrictDataProtectionRBAC:         # Restricts Stork and Operator RBAC to minimum permissions (Tier-0).
                                       # When true, Operator ClusterRole on non-openshift clusters uses least-privilege rules instead of wildcard,
                                       # and Stork data-protection workflows (backup/restore/DR) are restricted on all platforms.
+  useWorkloadIdentity:                # When true, Stork uses the same workload identity credentials configured for Portworx
+                                      # via workloadIdentity.credentials. Only applicable when stork.enabled is true.
 
 customRegistryURL:
 registrySecret:
@@ -407,6 +416,6 @@ componentK8sConfig:
 
 workloadIdentity:
   credentials:
-#    - cloudProvider: ""                  # Valid values: aws, azure, gcp. Note: currently only aws is supported
+#    - cloudProvider: ""                  # Valid values: aws, azure, gcp. Note: currently only aws, azure is supported
 #      key: ""                            # Key for the annotation to be added to the ServiceAccount, e.g. for AWS it is "eks.amazonaws.com/role-arn"
 #      value: ""                          # Role ARN for the IAM role to be assumed by the ServiceAccount, it will be the value of the above key

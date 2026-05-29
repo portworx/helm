@@ -19,12 +19,13 @@ spec:
   storage:
     useAll: true
   secretsProvider: k8s
-  
+
   certManager:
     enabled: true
-  
+
   stork:
     enabled: true
+    useWorkloadIdentity: false
   monitoring:
     telemetry:
       enabled: true
@@ -34,14 +35,5 @@ spec:
     enabled: true
   autopilot:
     enabled: true
-  clusterDiags:
-    enabled: true
-
-  pxfslibsUpdate:
-    enabled: true
-    onDemandTrigger: 2026-02-09T12:00:00Z
-    autoDelete: true
-    schedule: 0 2 * * *
-
   clusterDiags:
     enabled: true

@@ -4,6 +4,7 @@ metadata:
   name: "mycluster"
   namespace: portworx
   annotations:
+    portworx.io/misc-args: "-T px-storev2"
   labels:
     heritage: "Helm"
     release: "my-release"
@@ -16,13 +17,12 @@ spec:
   kvdb:
     internal: true
     enableTLS: true
+  certManager:
+    enabled: true
   storage:
     useAll: true
   secretsProvider: k8s
-  
-  certManager:
-    enabled: true
-  
+
   stork:
     enabled: true
   monitoring:
@@ -34,14 +34,5 @@ spec:
     enabled: true
   autopilot:
     enabled: true
-  clusterDiags:
-    enabled: true
-
-  pxfslibsUpdate:
-    enabled: true
-    onDemandTrigger: 2026-02-09T12:00:00Z
-    autoDelete: true
-    schedule: 0 2 * * *
-
   clusterDiags:
     enabled: true

@@ -4,6 +4,7 @@ metadata:
   name: "mycluster"
   namespace: portworx
   annotations:
+    portworx.io/is-aks: "true"
   labels:
     heritage: "Helm"
     release: "my-release"
@@ -16,13 +17,20 @@ spec:
   kvdb:
     internal: true
     enableTLS: true
-  storage:
-    useAll: true
+  cloudStorage:
+    provider: azure
+    deviceSpecs:
+      - type=Premium_LRS,size=150
+    kvdbDeviceSpec: type=node-kvdb
+    systemMetadataDeviceSpec: type=gp2,size=100
+    journalDeviceSpec: type=journal
+    initialStorageNodes: 1
+    maxStorageNodes: 1
   secretsProvider: k8s
-  
+
   certManager:
     enabled: true
-  
+
   stork:
     enabled: true
   monitoring:
@@ -36,12 +44,8 @@ spec:
     enabled: true
   clusterDiags:
     enabled: true
-
-  pxfslibsUpdate:
-    enabled: true
-    onDemandTrigger: 2026-02-09T12:00:00Z
-    autoDelete: true
-    schedule: 0 2 * * *
-
-  clusterDiags:
-    enabled: true
+  workloadIdentity:
+    credentials:
+    - cloudProvider: "azure"
+      key: "azure.workload.identity/client-id"
+      value: "00000000-0000-0000-0000-000000000000"

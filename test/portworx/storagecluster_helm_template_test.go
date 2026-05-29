@@ -178,6 +178,43 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestStorkUseWorkloadIdentityEnabledWithCreds",
+			resultFileName: "storagecluster_stork_use_workload_identity.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_stork_use_workload_identity.yaml"},
+			},
+		},
+		{
+			name:             "TestStorkUseWorkloadIdentityEnabledWithoutCredsFails",
+			expectedErrorMsg: "stork.useWorkloadIdentity is set to true but workloadIdentity.credentials is empty.",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"stork.enabled":             "true",
+					"stork.useWorkloadIdentity": "true",
+				},
+			},
+		},
+		{
+			name:           "TestStorkUseWorkloadIdentityDisabled",
+			resultFileName: "storagecluster_stork_use_workload_identity_disabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"stork.enabled":             "true",
+					"stork.useWorkloadIdentity": "false",
+				},
+			},
+		},
+		{
+			name:             "TestStorkUseWorkloadIdentityWithStorkDisabledFails",
+			expectedErrorMsg: "stork.useWorkloadIdentity is set to true but workloadIdentity.credentials is empty.",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"stork.enabled":             "false",
+					"stork.useWorkloadIdentity": "true",
+				},
+			},
+		},
+		{
 			name:           "TestVolumes",
 			resultFileName: "storagecluster_volumes.yaml",
 			helmOption: &helm.Options{
@@ -334,6 +371,13 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			resultFileName: "storagecluster_cloudstorage_aks.yaml",
 			helmOption: &helm.Options{
 				ValuesFiles: []string{"./testValues/storagecluster_cloudstorage_aks.yaml"},
+			},
+		},
+		{
+			name:           "TestCloudStorageAKSWithAzureWorkloadIdentity",
+			resultFileName: "storagecluster_cloudstorage_aks_with_azure_workload_identity.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_cloudstorage_aks_with_azure_workload_identity.yaml"},
 			},
 		},
 		{
@@ -539,6 +583,45 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			resultFileName: "storagecluster_pure_platform_fusion_only.yaml",
 			helmOption: &helm.Options{
 				ValuesFiles: []string{"./testValues/storagecluster_pure_platform_fusion_only.yaml"},
+			},
+		},
+		{
+			name:           "TestVKSEnabled",
+			resultFileName: "storagecluster_vks_enabled.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"isVKS":        "true",
+					"internalKVDB": "true",
+				},
+			},
+		},
+		{
+			name:           "TestStoreV2InstallEnabled",
+			resultFileName: "storagecluster_storev2_install.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"storeV2Install": "true",
+					"internalKVDB":   "true",
+				},
+			},
+		},
+		{
+			name:           "TestVKSWithStoreV2AndCloudStorage",
+			resultFileName: "storagecluster_vks_full.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_vks_full.yaml"},
+			},
+		},
+		{
+			name:           "TestVKSWithExistingMiscArgs",
+			resultFileName: "storagecluster_vks_with_misc_args.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"isVKS":          "true",
+					"storeV2Install": "true",
+					"miscArgs":       "--debug=true",
+					"internalKVDB":   "true",
+				},
 			},
 		},
 	}

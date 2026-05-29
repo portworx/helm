@@ -19,12 +19,13 @@ spec:
   storage:
     useAll: true
   secretsProvider: k8s
-  
+
   certManager:
     enabled: true
-  
+
   stork:
     enabled: true
+    useWorkloadIdentity: true
   monitoring:
     telemetry:
       enabled: true
@@ -36,12 +37,8 @@ spec:
     enabled: true
   clusterDiags:
     enabled: true
-
-  pxfslibsUpdate:
-    enabled: true
-    onDemandTrigger: 2026-02-09T12:00:00Z
-    autoDelete: true
-    schedule: 0 2 * * *
-
-  clusterDiags:
-    enabled: true
+  workloadIdentity:
+    credentials:
+    - cloudProvider: "aws"
+      key: "eks.amazonaws.com/role-arn"
+      value: "arn:aws:iam::123456789012:role/example-px-role"
