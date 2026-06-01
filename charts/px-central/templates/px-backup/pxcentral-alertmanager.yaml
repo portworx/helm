@@ -237,7 +237,7 @@ stringData:
       </head>
       <body>
           <div class="container">
-            <img style="height: 33px; width: 89px;" src="https://central.portworx.com/assets/images/logo/portworx_pure_storage.large.d.png" alt="" srcset="">
+            <img style="height: 49px; width: 133px;" src="https://central.portworx.com/assets/images/logo/portworx_by_everpure.png" alt="" srcset="">
             {{ range .Alerts }}
             {{- if eq .Labels.alertname "ClusterAlert"}}
             <div
@@ -478,6 +478,180 @@ stringData:
                 </div>
               </li>
             </ul>
+            {{- else if eq .Labels.alertname "ClusterDiscoveryConfigFailed" }}
+            <div
+                class="pb-16"
+                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: Cluster Discovery Failed
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 15px;
+                font-weight: 700;
+                "
+                >
+                Alert details:
+            </div>
+            <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Config Name:</div>
+                <div>{{ .Labels.config_name }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Project:</div>
+                <div>{{ .Labels.project_name }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Label Selector:</div>
+                <div>{{ .Labels.label_selector }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error Type:</div>
+                <div>{{ .Labels.error_type }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
+                <div>{{ .Labels.error_reason }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div>
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
+              </div>
+              </li>
+            </ul>
+            {{- else if eq .Labels.alertname "GardenerConnectivityFailure" }}
+            <div
+                class="pb-16"
+                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: Gardener API Connectivity Failure
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 15px;
+                font-weight: 700;
+                "
+                >
+                Alert details:
+            </div>
+            <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Config Name:</div>
+                <div>{{ .Labels.config_name }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error Type:</div>
+                <div>{{ .Labels.error_type }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
+                <div>{{ .Labels.error_reason }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div>
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
+              </div>
+              </li>
+            </ul>
+            {{- else if eq .Labels.alertname "GardenerShootKubeconfigValidationFailure" }}
+            <div
+                class="pb-16"
+                style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: Shoot Kubeconfig Validation Failed
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 15px;
+                font-weight: 700;
+                "
+                >
+                Alert details:
+            </div>
+            <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Cluster Name:</div>
+                <div>{{ .Labels.cluster_name }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Config Name:</div>
+                <div>{{ .Labels.config_name }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div>
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
+              </div>
+              </li>
+            </ul>
+            {{- else if eq .Labels.alertname "ClusterCountLimitAlert" }}
+            <div
+                class="pb-16"
+                style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: Cluster Count Limit Reached
+            </div>
+            <div
+                class="pb-16"
+                style="
+                color: var(--content-onBase-strong, #292929);
+                font-size: 15px;
+                font-weight: 700;
+                "
+                >
+                Alert details:
+            </div>
+            <ul>
+              <li>
+                <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Current Clusters:</div>
+                <div>{{ .Labels.current_count }}</div>
+                </div>
+              </li>
+              <li>
+                <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Maximum Clusters:</div>
+                <div>{{ .Labels.max_count }}</div>
+                </div>
+              </li>
+              <li>
+                <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div>
+                <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
+                </div>
+              </li>
+              <li>
+                <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Action:</div>
+                <div>Further cluster additions are suspended. Delete an existing cluster or raise MAX_CLUSTER_COUNT in the px-backup-config ConfigMap.</div>
+                </div>
+              </li>
+            </ul>
             {{- end }}
             {{ end }}
 
@@ -529,6 +703,47 @@ stringData:
                         <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.name }}</td>
                         <td style="border: 1px solid #ddd; padding: 12px; max-width: 300px; word-wrap: break-word; font-family: monospace; font-size: 12px;">{{ .Labels.error_reason }}</td>
                         <td style="border: 1px solid #ddd; padding: 12px;">{{ .StartsAt.Format "15:04:05" }}</td>
+                    </tr>
+                    {{- end }}
+                    {{ end }}
+                </tbody>
+            </table>
+            {{- end }}
+
+            {{/* SEPARATE SECTION FOR OrphanedBackupDataAlert - OUTSIDE the main loop */}}
+            {{- $hasOrphanedBackupAlert := false }}
+            {{- range .Alerts }}
+              {{- if eq .Labels.alertname "OrphanedBackupDataAlert" }}
+                {{- $hasOrphanedBackupAlert = true }}
+              {{- end }}
+            {{- end }}
+
+            {{- if $hasOrphanedBackupAlert }}
+            <div class="pb-16" style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
+                Critical Alert: Backup Stuck in Deleting State
+            </div>
+
+            <div class="pb-16" style="color: #292929; font-size: 15px; font-weight: 700;">
+                The following backups are stuck in deleting state because the underlying cluster is no longer available. To ensure full data deletion, register a temporary cluster associated with the backup location. Alternatively, use the --force flag to remove only the backup metadata from PX-Backup; this skips physical cleanup of the backup data in the object store, which must then be cleaned up manually.
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Backup Name</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Backup UID</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Original Cluster</th>
+                        <th style="border: 1px solid #ddd; padding: 12px; text-align: left; background-color: #f2f2f2; font-weight: bold;">Backup Location</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{ range .Alerts }}
+                    {{- if eq .Labels.alertname "OrphanedBackupDataAlert" }}
+                    <tr>
+                        <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.name }}</td>
+                        <td style="border: 1px solid #ddd; padding: 12px; font-family: monospace; font-size: 12px;">{{ .Labels.uid }}</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.cluster }}</td>
+                        <td style="border: 1px solid #ddd; padding: 12px;">{{ .Labels.backup_location_name }}</td>
                     </tr>
                     {{- end }}
                     {{ end }}

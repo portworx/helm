@@ -757,41 +757,107 @@ spec:
     - alert: LicenseExpiryAlert
       annotations:
         description: >-
-          {{`{{ $labels.license_type }} license 
-          {{- if eq $labels.error_reason "License expires in 0 days" }} 
+          {{`{{ $labels.license_type }} license
+          {{- if eq $labels.error_reason "License expires in 0 days" }}
           expires today
-          {{- else if match ".*expired.*" $labels.error_reason }} 
+          {{- else if match ".*expired.*" $labels.error_reason }}
           has expired
-          {{- else if eq $labels.error_reason "License expires in 1 days" }} 
+          {{- else if eq $labels.error_reason "License expires in 1 days" }}
           expires tomorrow
-          {{- else if match ".*expires in [2-7] days.*" $labels.error_reason }} 
+          {{- else if match ".*expires in [2-7] days.*" $labels.error_reason }}
           expires soon (critical)
-          {{- else if match ".*expires in (8|9|[12][0-9]|30) days.*" $labels.error_reason }} 
+          {{- else if match ".*expires in (8|9|[12][0-9]|30) days.*" $labels.error_reason }}
           expires soon (warning)
-          {{- else if match ".*expires in [0-9]+ days.*" $labels.error_reason }} 
+          {{- else if match ".*expires in [0-9]+ days.*" $labels.error_reason }}
           expires soon
-          {{- else }} 
+          {{- else }}
           needs attention
           {{- end }}`}}
         summary: >-
-          {{`{{ $labels.license_type }} license for "{{ $labels.name }}" ({{ $labels.license_count }} nodes) 
-          {{- if eq $labels.error_reason "License expires in 0 days" }} 
+          {{`{{ $labels.license_type }} license for "{{ $labels.name }}" ({{ $labels.license_count }} nodes)
+          {{- if eq $labels.error_reason "License expires in 0 days" }}
           expires today ({{ $labels.expiry_date }})
-          {{- else if match ".*expired.*" $labels.error_reason }} 
+          {{- else if match ".*expired.*" $labels.error_reason }}
           has expired on {{ $labels.expiry_date }}
-          {{- else if eq $labels.error_reason "License expires in 1 days" }} 
+          {{- else if eq $labels.error_reason "License expires in 1 days" }}
           expires tomorrow ({{ $labels.expiry_date }})
-          {{- else if match ".*expires in [2-9] days.*" $labels.error_reason }} 
+          {{- else if match ".*expires in [2-9] days.*" $labels.error_reason }}
           expires in a few days on {{ $labels.expiry_date }}
-          {{- else if match ".*expires in [0-9]+ days.*" $labels.error_reason }} 
+          {{- else if match ".*expires in [0-9]+ days.*" $labels.error_reason }}
           will expire soon on {{ $labels.expiry_date }}
-          {{- else }} 
+          {{- else }}
           status: {{ $labels.error_reason }}
-          {{- end }}. 
+          {{- end }}.
           Please contact support to renew your license to avoid service interruption.`}}
       expr: pxbackup_license_expiry_status
       for: 1m
       labels:
         severity: critical
         user_id: "{{`{{ $labels.user_id }}`}}"
+
+    - alert: OrphanedBackupDataAlert
+      annotations:
+        description: >-
+          {{`Backup "{{ $labels.name }}" is stuck in deleting state because the underlying cluster
+          "{{ $labels.cluster }}" is no longer available. The backup data on backup location
+          "{{ $labels.backup_location_name }}" cannot be cleaned up automatically. To ensure full
+          data deletion, register a temporary
+          cluster associated with this backup location. Alternatively, use the --force flag to
+          remove only the backup metadata from PX-Backup; this skips physical cleanup of the
+          backup data in the object store, which must then be cleaned up manually.`}}
+        summary: {{`Backup "{{ $labels.name }}" stuck in deleting - underlying cluster "{{ $labels.cluster }}" is unavailable`}}
+      expr: pxbackup_orphaned_backup_data > 0
+      for: 1m
+      labels:
+        severity: critical
+        user_id: "{{`{{ $labels.user_id }}`}}"
+
+    - alert: ClusterCountLimitAlert
+      annotations:
+        description: >-
+          {{`{{ $labels.error_reason }}`}}
+        summary: >-
+          {{`Cluster count limit reached ({{ $labels.current_count }}/{{ $labels.max_count }} clusters). Further cluster additions are now suspended.`}}
+      expr: pxbackup_cluster_count_limit_status
+      for: 1m
+      labels:
+        severity: critical
+        user_id: "{{`{{ $labels.user_id }}`}}"
+
+  - name: cluster_discovery_rules
+    rules:
+    - alert: ClusterDiscoveryConfigFailed
+      annotations:
+        description: >-
+          {{`Cluster discovery config "{{ $labels.config_name }}"
+          (project: {{ $labels.project_name }}, selector: {{ $labels.label_selector }})
+          has failed. Reason: {{ $labels.error_reason }}`}}
+        summary: {{`Gardener cluster discovery failed`}}
+      expr: pxbackup_cluster_discovery_config_status == 3
+      for: 1m
+      labels:
+        severity: critical
+
+    - alert: GardenerConnectivityFailure
+      annotations:
+        description: >-
+          {{`Gardener API connectivity failed for discovery config "{{ $labels.config_name }}".
+          Reason: {{ $labels.error_reason }}`}}
+        summary: {{`Gardener API connectivity failure`}}
+      expr: pxbackup_gardener_connectivity_failure == 1
+      for: 1m
+      labels:
+        severity: critical
+
+    - alert: GardenerShootKubeconfigValidationFailure
+      annotations:
+        description: >-
+          {{`Shoot kubeconfig validation failed for cluster "{{ $labels.cluster_name }}"
+          in discovery config "{{ $labels.config_name }}".
+          Reason: {{ $labels.error_reason }}`}}
+        summary: {{`Shoot kubeconfig validation failed`}}
+      expr: pxbackup_gardener_shoot_kubeconfig_validation_failure == 1
+      for: 1m
+      labels:
+        severity: critical
 {{- end -}}
