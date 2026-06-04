@@ -570,6 +570,7 @@ Parameter | Description | Default
 `persistentStorage.mongoCacheSize` | mongodb cache size in GB | `"4"`
 `service.pxBackupUIServiceType` | service type of PX-Backup UI | `"LoadBalancer"`
 `service.pxBackupUIServiceAnnotations` | annotations for the PX-Backup UI service | `"{}"`
+`service.pxBackupServiceAnnotations` | annotations for the PX-Backup backend service | `"{}"`
 `images.pxBackupImage.registry` | PX-Backup image registry | `docker.io`
 `images.pxBackupImage.repo` | PX-Backup image repo | `portworx`
 `images.pxBackupImage.imageName` | PX-Backup image name | `px-backup`

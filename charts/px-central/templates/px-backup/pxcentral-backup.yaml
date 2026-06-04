@@ -149,6 +149,10 @@ metadata:
 {{- include "px-central.labels" . | nindent 4 }}
   name: px-backup
   namespace: {{ .Release.Namespace }}
+  annotations:
+    {{- if .Values.service.pxBackupServiceAnnotations }}
+    {{- include "pxcentral.render" (dict "value" .Values.service.pxBackupServiceAnnotations "context" $) | nindent 4 }}
+    {{- end }}
 spec:
   ports:
   - protocol: TCP

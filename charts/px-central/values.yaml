@@ -187,6 +187,7 @@ service:
   pxCentralUIServiceAnnotations: {}
   pxBackupUIServiceType: "LoadBalancer"
   pxBackupUIServiceAnnotations: {}
+  pxBackupServiceAnnotations: {}
   grafanaServiceType: "NodePort"
   cortexNginxServiceType: "NodePort"
 
