@@ -285,6 +285,8 @@ spec:
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pre-upgrade-check" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
+            - name: PX_BACKUP_FEDERATED
+              value: {{ .Values.pxbackup.federated | default false | quote }}
           volumeMounts:
             - name: data-volume
               mountPath: /mnt/data

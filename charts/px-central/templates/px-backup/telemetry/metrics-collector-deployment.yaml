@@ -1,0 +1,166 @@
+{{/* PX-Backup Telemetry Metrics Collector Deployment */}}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
+{{- $metricsEnabled := .Values.telemetry.metricsCollector.enabled | default false }}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
+{{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) (eq $metricsEnabled true) }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: px-backup-telemetry-metrics-collector
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: px-backup-telemetry
+    app.kubernetes.io/component: metrics-collector
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: px-backup-telemetry
+      app.kubernetes.io/component: metrics-collector
+  template:
+    metadata:
+      labels:
+{{- include "px-central.labels" . | nindent 8 }}
+        app.kubernetes.io/name: px-backup-telemetry
+        app.kubernetes.io/component: metrics-collector
+    spec:
+      serviceAccountName: px-backup-telemetry
+      {{- if not $isOpenshiftCluster }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      initContainers:
+      {{- include "px-central.envoyConfigWaitInit" (dict "root" $ "mountPath" "/config" "configFile" "envoy-config.yaml") | nindent 6 }}
+      containers:
+      # Realtime Metrics Collector
+      - name: collector
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryMetricsCollectorImage.registry .Values.images.registry) (default .Values.images.telemetryMetricsCollectorImage.repo .Values.images.repo) .Values.images.telemetryMetricsCollectorImage.imageName .Values.images.telemetryMetricsCollectorImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        env:
+        - name: CONFIG
+          value: "config/px-backup.yaml"
+        {{- if not $isOpenshiftCluster }}
+        securityContext:
+          runAsUser: 1000
+        {{- end }}
+        resources:
+          requests:
+            cpu: 200m
+            memory: 64Mi
+          limits:
+            cpu: 400m
+            memory: 128Mi
+        volumeMounts:
+        - name: collector-config
+          mountPath: /config
+          readOnly: true
+      # Envoy - mTLS proxy for Pure1
+      - name: envoy
+        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryEnvoyImage.registry .Values.images.registry) (default .Values.images.telemetryEnvoyImage.repo .Values.images.repo) .Values.images.telemetryEnvoyImage.imageName .Values.images.telemetryEnvoyImage.tag }}
+        imagePullPolicy: {{ .Values.images.pullPolicy }}
+        env:
+        {{- /* Proxy environment variables for telemetry - supports Scenario 1/2 from proxy docs */ -}}
+        {{- if .Values.proxy.configSecretName }}
+        # Proxy with auth/CA from secret
+        - name: PX_HTTP_PROXY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.proxy.configSecretName }}
+              key: HTTP_PROXY
+              optional: true
+        - name: PX_HTTPS_PROXY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.proxy.configSecretName }}
+              key: HTTPS_PROXY
+              optional: true
+        {{- else if or .Values.proxy.http .Values.proxy.https }}
+        # Direct proxy values
+        {{- if .Values.proxy.http }}
+        - name: PX_HTTP_PROXY
+          value: {{ .Values.proxy.http | quote }}
+        {{- end }}
+        {{- if .Values.proxy.https }}
+        - name: PX_HTTPS_PROXY
+          value: {{ .Values.proxy.https | quote }}
+        {{- end }}
+        {{- end }}
+        args:
+        - envoy
+        - --base-id
+        - "4"
+        - --config-path
+        - /config/envoy-config.yaml
+        ports:
+        - containerPort: 9901
+          name: admin
+        - containerPort: 10000
+          name: proxy
+        {{- if not $isOpenshiftCluster }}
+        securityContext:
+          runAsUser: 1000
+        {{- end }}
+        resources:
+          requests:
+            cpu: 100m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 128Mi
+        volumeMounts:
+        - name: envoy-config
+          mountPath: /config
+          readOnly: true
+        - name: cert-secret
+          mountPath: /appliance-cert
+          readOnly: true
+        - name: tls-config
+          mountPath: /etc/envoy
+          readOnly: true
+        {{- if .Values.proxy.configSecretName }}
+        # Proxy CA certificate mount (Scenario 2 Case 2)
+        - name: proxy-ca-cert
+          mountPath: /etc/envoy/proxy-certs
+          readOnly: true
+        {{- end }}
+      volumes:
+      - name: telemetry-config
+        configMap:
+          name: px-backup-telemetry-config
+          optional: false  # Pod won't start until ConfigMap exists
+      - name: collector-config
+        configMap:
+          name: px-backup-telemetry-metrics-collector-config
+      - name: envoy-config
+        configMap:
+          name: px-backup-telemetry-metrics-envoy-config
+          optional: false  # Pod won't start until Envoy ConfigMap exists
+      - name: tls-config
+        configMap:
+          name: px-backup-telemetry-metrics-tls-config
+      - name: cert-secret
+        secret:
+          secretName: pure-telemetry-certs
+          optional: false  # Pod won't start until certificate exists
+      {{- if .Values.proxy.configSecretName }}
+      # Proxy CA certificate volume
+      - name: proxy-ca-cert
+        secret:
+          secretName: {{ .Values.proxy.configSecretName }}
+          items:
+          - key: CA
+            path: proxy-ca.crt
+          optional: true  # CA is optional even when secret exists
+      {{- end }}
+{{- end }}

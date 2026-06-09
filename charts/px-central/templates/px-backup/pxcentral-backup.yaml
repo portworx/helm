@@ -77,7 +77,7 @@ rules:
     verbs: ["get", "create", "delete", "update", "list"]
   - apiGroups: [""]
     resources: ["configmaps"]
-    verbs: ["get", "update", "create"]
+    verbs: ["get", "update", "create", "list", "watch"]
   - apiGroups: ["batch"]
     resources: ["jobs"]
     verbs: ["get", "create", "delete", "update"]
@@ -214,12 +214,32 @@ spec:
               fieldPath: metadata.namespace
         - name: PX_BACKUP_DEFAULT_ORG
           value: {{ .Values.pxbackup.orgName }}
+        {{- if .Values.telemetry.enabled }}
+        - name: TELEMETRY_ENABLED
+          value: "true"
+        - name: TELEMETRY_ENVIRONMENT
+          value: {{ .Values.telemetry.environment | quote }}
+        {{- end }}
         - name: BACKUP_DELETE_WORKER
           value: "{{ .Values.pxbackup.backupDeleteWorker }}"
         - name: VOL_DELETE_WORKER
           value: "{{ .Values.pxbackup.volDeleteWorker }}"
+        {{- if ne (.Values.pxbackup.backupInfoMetricsBackfillHours | toString) "" }}
         - name: BACKUP_INFO_METRICS_BACKFILL_HOURS
           value: "{{ .Values.pxbackup.backupInfoMetricsBackfillHours }}"
+        {{- else if .Values.pxbackup.federated }}
+        # Default for federated deployments. Mirrors DefaultFederatedBackfillHours in pkg/util/utils.go
+        - name: BACKUP_INFO_METRICS_BACKFILL_HOURS
+          value: "1"
+        {{- else }}
+        # Default for non-federated deployments. Mirrors DefaultBackfillHours in pkg/util/utils.go
+        - name: BACKUP_INFO_METRICS_BACKFILL_HOURS
+          value: "24"
+        {{- end }}
+        {{- if ne (.Values.pxbackup.dashboardMetricsBackfillDays | toString) "" }}
+        - name: DASHBOARD_METRICS_BACKFILL_DAYS
+          value: "{{ .Values.pxbackup.dashboardMetricsBackfillDays }}"
+        {{- end }}
         - name: MONGODB_USERNAME
           valueFrom:
             secretKeyRef:
@@ -242,6 +262,10 @@ spec:
           value: "{{ .Values.pxbackup.usePxBackupEmailAlertTemplate }}"
         - name: SOFT_LICENSING_PERIOD
           value: "36160"
+        {{- if .Values.pxbackup.federated }}
+        - name: PX_BACKUP_FEDERATED
+          value: "true"
+        {{- end }}
         {{- include "serviceMesh.env" . | nindent 8 }}
         - name: AIRGAP_REPORTING_PERIOD
           value: "90"

@@ -1498,6 +1498,27 @@ entries:
     version: 1.0.0
   px-central:
   - apiVersion: v1
+    appVersion: 3.0.0
+    created: "2026-06-01T06:15:29.263849559Z"
+    description: A Helm chart for installing PX-Central on Kubernetes and Openshift
+    digest: 70ed226d0865f909a51849664fb813a73e9c6442efa0c4b9773c967d49bda687
+    home: https://portworx.com/
+    icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
+    keywords:
+    - px-backup
+    - storage
+    - persistent disk
+    - pvc
+    - portworx
+    - px-central
+    - lighthouse
+    name: px-central
+    sources:
+    - https://github.com/portworx/helm/tree/master/charts/px-central
+    urls:
+    - https://raw.githubusercontent.com/portworx/helm/master/stable/px-central-3.0.0.tgz
+    version: 3.0.0
+  - apiVersion: v1
     appVersion: 2.11.0
     created: "2026-06-09T14:31:03.386036+05:30"
     description: A Helm chart for installing PX-Central on Kubernetes and Openshift

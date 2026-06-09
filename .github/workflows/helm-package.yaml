@@ -1,0 +1,52 @@
+name: Helm Package and Index
+
+on:
+  push:
+    branches:
+      - '**'
+    paths:
+      - 'charts/**'
+
+jobs:
+  helm-package:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.14.0
+
+      - name: Package Helm chart
+        working-directory: stable
+        run: helm package ../charts/px-central
+
+      - name: Update Helm repo index
+        working-directory: stable
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          helm repo index \
+            --url "https://raw.githubusercontent.com/${{ github.repository }}/${BRANCH_NAME}/stable/" \
+            .
+
+      - name: Commit and push packaged chart
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "noreply@portworx.com"
+          git add stable/*.tgz stable/index.yaml
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: package helm chart px-central"
+            git push origin ${{ github.ref_name }}
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

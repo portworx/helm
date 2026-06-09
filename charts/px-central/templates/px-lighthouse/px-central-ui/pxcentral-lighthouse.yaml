@@ -76,6 +76,34 @@ roleRef:
   name: pxcentral-lh-middleware
   apiGroup: rbac.authorization.k8s.io
 ---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pxcentral-lh-middleware-nodes
+  labels:
+    app.kubernetes.io/component: pxcentral-lh-middleware
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "watch"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pxcentral-lh-middleware-nodes
+  labels:
+    app.kubernetes.io/component: pxcentral-lh-middleware
+{{- include "px-central.labels" . | nindent 4 }}
+subjects:
+- kind: ServiceAccount
+  name: pxcentral-lh-middleware
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: pxcentral-lh-middleware-nodes
+  apiGroup: rbac.authorization.k8s.io
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -149,6 +177,9 @@ spec:
       - name: pxcentral-lh-middleware
         image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxcentralMiddlewareImage.registry .Values.images.registry) (default .Values.images.pxcentralMiddlewareImage.repo .Values.images.repo) .Values.images.pxcentralMiddlewareImage.imageName .Values.images.pxcentralMiddlewareImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
+        envFrom:
+          - configMapRef:
+              name: pxcentral-ui-configmap
         env:
           - name: K8S_QPS
             value: "100"
