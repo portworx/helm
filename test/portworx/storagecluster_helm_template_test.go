@@ -590,7 +590,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			resultFileName: "storagecluster_vks_enabled.yaml",
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
-					"isVKS":        "true",
+					"VKSInstall":   "true",
 					"internalKVDB": "true",
 				},
 			},
@@ -617,7 +617,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			resultFileName: "storagecluster_vks_with_misc_args.yaml",
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
-					"isVKS":          "true",
+					"VKSInstall":     "true",
 					"storeV2Install": "true",
 					"miscArgs":       "--debug=true",
 					"internalKVDB":   "true",

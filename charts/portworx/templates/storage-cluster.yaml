@@ -27,7 +27,7 @@
   {{- $pksInstall := .Values.pksInstall | default false }}
   {{- $AKSInstall := .Values.AKSInstall | default false }}
   {{- $OKEInstall := .Values.OKEInstall | default false }}
-  {{- $isVKS := .Values.isVKS | default false }}
+  {{- $VKSInstall := .Values.VKSInstall | default false }}
   {{- $usefileSystemDrive := .Values.usefileSystemDrive | default false }}
   {{- $usedrivesAndPartitions := .Values.usedrivesAndPartitions | default false }}
   {{- $secretType := .Values.secretType | default "k8s" }}
@@ -83,7 +83,7 @@ metadata:
     {{- if eq $OKEInstall true }}
     portworx.io/is-oke: "true"
     {{- end }}
-    {{- if eq $isVKS true }}
+    {{- if eq $VKSInstall true }}
     portworx.io/is-vks: "true"
     {{- end }}
     {{- if $miscArgs }}
@@ -354,7 +354,7 @@ spec:
 
   {{- $isLicenseSecretAdded := ne $licenseSecret "none" }}
   {{- $shouldRenderAzureSecretEnv := and $AKSInstall (not $hasAzureWorkloadIdentity) }}
-  {{- $shouldRenderEnv := or (ne $envVars "none") .Values.envs $shouldRenderAzureSecretEnv $OKEInstall $isLicenseSecretAdded $isVKS }}
+  {{- $shouldRenderEnv := or (ne $envVars "none") .Values.envs $shouldRenderAzureSecretEnv $OKEInstall $isLicenseSecretAdded $VKSInstall }}
   {{- if $shouldRenderEnv }}
   env:
   {{- with .Values.envs }}
@@ -406,7 +406,7 @@ spec:
   - name: "PX_ORACLE_private_key_path"
     value: "/etc/pwx/oci_key/oci_api_key.pem"
   {{- end }}
-  {{- if $isVKS }}
+  {{- if $VKSInstall }}
   - name: ENABLE_CSI_DRIVE
     value: "true"
   - name: PRE-EXEC
