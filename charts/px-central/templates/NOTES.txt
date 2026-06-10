@@ -62,6 +62,25 @@ For more information: https://github.com/portworx/helm/blob/master/charts/px-cen
 {{- if eq .Values.pxbackup.enabled true }}
 For more information on network pre-requisites: https://docs.portworx.com/portworx-backup-on-prem/install/install-prereq/nw-prereqs.html
 
+{{- if or .Values.proxy.http .Values.proxy.https .Values.proxy.configSecretName }}
+--------------------------------------------------
+Running behind a corporate proxy / air-gap:
+--------------------------------------------------
+{{- if not .Values.proxy.httpProxy.noProxy }}
+{{ printf "\033[31mWARNING: a proxy is configured but proxy.httpProxy.noProxy is empty. Non-telemetry pods (preflight, mongodb, keycloak, px-backup) will route their in-cluster Kubernetes API calls through the proxy and may fail to start.\033[0m" }}
+{{- end }}
+When running behind a corporate proxy or in an air-gapped cluster, you MUST allow
+non-telemetry pods (preflight, mongodb, keycloak, px-backup) to reach the
+in-cluster Kubernetes API directly by adding the API ClusterIP to NO_PROXY:
+
+    K8S_API_IP=$(kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}')
+    helm upgrade --install ... --set proxy.httpProxy.noProxy="$K8S_API_IP"
+
+Note: proxy.http and proxy.https are auto-defaulted from each other, so setting
+either one routes both HTTP and HTTPS traffic (including HTTPS-only Pure1/OSB
+telemetry registration) through the proxy.
+{{- end }}
+
 {{- if .Release.IsInstall }}
 --------------------------------------------------
 View Pre-Install Report:

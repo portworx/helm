@@ -11,7 +11,7 @@ docker.io/portworx/busybox:1.35.0
 docker.io/portworx/mysql:8.4.9
 docker.io/portworx/px-backup:3.1.0-fc1
 docker.io/portworx/px-backup-telemetry-collector:3.1.0-fc1
-docker.io/portworx/telemetry-envoy:1.1.18
+docker.io/portworx/edge-envoy:2.0.109
 docker.io/portworx/ccm-go:1.4.42
 docker.io/portworx/realtime-metrics:1.0.36
 docker.io/portworx/log-upload:px-1.1.148
