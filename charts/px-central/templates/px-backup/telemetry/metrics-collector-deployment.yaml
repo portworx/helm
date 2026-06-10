@@ -3,6 +3,11 @@
 {{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
 {{- $metricsEnabled := .Values.telemetry.metricsCollector.enabled | default false }}
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
+{{- /* map telemetry.environment (staging|production) to edge-envoy's EE_ENV vocabulary (stg|prd) */ -}}
+{{- $eeEnv := "stg" }}
+{{- if eq (.Values.telemetry.environment | default "production" | lower | trim) "production" }}
+{{- $eeEnv = "prd" }}
+{{- end }}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) (eq $metricsEnabled true) }}
 ---
 apiVersion: apps/v1
@@ -40,10 +45,8 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
-      initContainers:
-      {{- include "px-central.envoyConfigWaitInit" (dict "root" $ "mountPath" "/config" "configFile" "envoy-config.yaml") | nindent 6 }}
       containers:
-      # Realtime Metrics Collector
+      # Realtime Metrics Collector — forwards to local edge-envoy on :12002.
       - name: collector
         image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryMetricsCollectorImage.registry .Values.images.registry) (default .Values.images.telemetryMetricsCollectorImage.repo .Values.images.repo) .Values.images.telemetryMetricsCollectorImage.imageName .Values.images.telemetryMetricsCollectorImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
@@ -65,51 +68,71 @@ spec:
         - name: collector-config
           mountPath: /config
           readOnly: true
-      # Envoy - mTLS proxy for Pure1
+      # Edge-envoy — mTLS proxy.
       - name: envoy
         image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryEnvoyImage.registry .Values.images.registry) (default .Values.images.telemetryEnvoyImage.repo .Values.images.repo) .Values.images.telemetryEnvoyImage.imageName .Values.images.telemetryEnvoyImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
-        env:
-        {{- /* Proxy environment variables for telemetry - supports Scenario 1/2 from proxy docs */ -}}
-        {{- if .Values.proxy.configSecretName }}
-        # Proxy with auth/CA from secret
-        - name: PX_HTTP_PROXY
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.proxy.configSecretName }}
-              key: HTTP_PROXY
-              optional: true
-        - name: PX_HTTPS_PROXY
-          valueFrom:
-            secretKeyRef:
-              name: {{ .Values.proxy.configSecretName }}
-              key: HTTPS_PROXY
-              optional: true
-        {{- else if or .Values.proxy.http .Values.proxy.https }}
-        # Direct proxy values
-        {{- if .Values.proxy.http }}
-        - name: PX_HTTP_PROXY
-          value: {{ .Values.proxy.http | quote }}
-        {{- end }}
-        {{- if .Values.proxy.https }}
-        - name: PX_HTTPS_PROXY
-          value: {{ .Values.proxy.https | quote }}
-        {{- end }}
-        {{- end }}
         args:
-        - envoy
         - --base-id
         - "4"
-        - --config-path
-        - /config/envoy-config.yaml
         ports:
-        - containerPort: 9901
-          name: admin
-        - containerPort: 10000
-          name: proxy
+        - name: ee-http
+          containerPort: 12009
+          protocol: TCP
+        - name: metrics-up
+          containerPort: 12002
+          protocol: TCP
+        env:
+        - name: EE_DEVICETYPE
+          value: "PORTWORX"
+        - name: EE_DEVICEID
+          valueFrom:
+            configMapKeyRef:
+              name: px-backup-telemetry-config
+              key: appliance-id
+              optional: false
+        - name: EE_SUBDEVICEID
+          value: "px-backup-{{ .Release.Namespace }}"
+        - name: EE_PRODUCTVERSION
+          value: {{ .Values.pxbackup.version | quote }}
+        - name: EE_DNS_LOOKUP_FAMILY
+          value: "V4_PREFERRED"
+        - name: REFRESH_TOKEN
+          value: "300"
+        - name: EE_ENV
+          value: {{ $eeEnv | quote }}
+        - name: CO_ADDR
+          value: "px-backup.{{ .Release.Namespace }}.svc.cluster.local:10002"
+        - name: PIP_ADDR
+          value: "px-backup.{{ .Release.Namespace }}.svc.cluster.local:10002"
+        - name: POLL_DELAY
+          value: "600"
+        - name: RETRY_DELAY
+          value: "30"
+        - name: EE_HTTP_SERVER_ENABLED
+          value: "1"
+        - name: EE_HTTP_PORT
+          value: "12009"
+        - name: LOG_LEVEL
+          value: "INFO"
+        # edge-envoy honors standard HTTP_PROXY/HTTPS_PROXY/NO_PROXY
+        # via Go's http.ProxyFromEnvironment. NO_PROXY is forced whenever any proxy
+        # is set so the CO-Server gRPC call bypasses the proxy.
+        {{- include "proxy.proxyEnv" . | nindent 8 }}
+        {{- /* See registration-deployment.yaml for the rationale on
+               keeping configSecretName in $proxyOn. K8s last-wins duplicate-env
+               semantics is what makes the cluster-internal NO_PROXY override the
+               Secret's NO_PROXY. Do NOT remove configSecretName here. */ -}}
+        {{- $proxyOn := or .Values.proxy.configSecretName .Values.proxy.http .Values.proxy.https }}
+        {{- if and $proxyOn (not .Values.proxy.httpProxy.noProxy) }}
+        - name: NO_PROXY
+          value: {{ include "px-central.noProxyList" . | quote }}
+        - name: no_proxy
+          value: {{ include "px-central.noProxyList" . | quote }}
+        {{- end }}
         {{- if not $isOpenshiftCluster }}
         securityContext:
-          runAsUser: 1000
+          runAsUser: 10001
         {{- end }}
         resources:
           requests:
@@ -118,49 +141,19 @@ spec:
           limits:
             cpu: 200m
             memory: 128Mi
-        volumeMounts:
-        - name: envoy-config
-          mountPath: /config
-          readOnly: true
-        - name: cert-secret
-          mountPath: /appliance-cert
-          readOnly: true
-        - name: tls-config
-          mountPath: /etc/envoy
-          readOnly: true
-        {{- if .Values.proxy.configSecretName }}
-        # Proxy CA certificate mount (Scenario 2 Case 2)
-        - name: proxy-ca-cert
-          mountPath: /etc/envoy/proxy-certs
-          readOnly: true
+        {{- if and (not .Values.istio.enabled) (not .Values.linkerd.enabled) }}
+        readinessProbe:
+          httpGet:
+            path: /status/cert-info
+            port: 12009
+          periodSeconds: 150
+          failureThreshold: 3
+          timeoutSeconds: 2
         {{- end }}
       volumes:
-      - name: telemetry-config
-        configMap:
-          name: px-backup-telemetry-config
-          optional: false  # Pod won't start until ConfigMap exists
+      # The appliance-id is consumed via the EE_DEVICEID
+      # configMapKeyRef (optional:false) env var above, NOT via a mounted volume.
       - name: collector-config
         configMap:
           name: px-backup-telemetry-metrics-collector-config
-      - name: envoy-config
-        configMap:
-          name: px-backup-telemetry-metrics-envoy-config
-          optional: false  # Pod won't start until Envoy ConfigMap exists
-      - name: tls-config
-        configMap:
-          name: px-backup-telemetry-metrics-tls-config
-      - name: cert-secret
-        secret:
-          secretName: pure-telemetry-certs
-          optional: false  # Pod won't start until certificate exists
-      {{- if .Values.proxy.configSecretName }}
-      # Proxy CA certificate volume
-      - name: proxy-ca-cert
-        secret:
-          secretName: {{ .Values.proxy.configSecretName }}
-          items:
-          - key: CA
-            path: proxy-ca.crt
-          optional: true  # CA is optional even when secret exists
-      {{- end }}
 {{- end }}
