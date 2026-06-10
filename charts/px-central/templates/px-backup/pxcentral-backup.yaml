@@ -222,7 +222,7 @@ spec:
         - name: TELEMETRY_ENABLED
           value: "true"
         - name: TELEMETRY_ENVIRONMENT
-          value: {{ .Values.telemetry.environment | quote }}
+          value: {{ .Values.telemetry.environment | default "production" | quote }}
         {{- end }}
         - name: BACKUP_DELETE_WORKER
           value: "{{ .Values.pxbackup.backupDeleteWorker }}"
