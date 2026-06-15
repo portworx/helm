@@ -84,10 +84,8 @@ spec:
         app.kubernetes.io/component: logs-collector
     spec:
       serviceAccountName: px-backup-telemetry-logs-collector
-      {{- if not $isOpenshiftCluster }}
       securityContext:
 {{ toYaml .Values.securityContext | indent 8 }}
-      {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}
@@ -276,10 +274,8 @@ spec:
         - name: logs-proxy
           containerPort: 12002
           protocol: TCP
-        {{- if not $isOpenshiftCluster }}
         securityContext:
           runAsUser: 10001
-        {{- end }}
         resources:
           requests:
             memory: "256Mi"
