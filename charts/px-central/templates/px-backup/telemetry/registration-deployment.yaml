@@ -34,10 +34,8 @@ spec:
         app.kubernetes.io/component: registration
     spec:
       serviceAccountName: px-backup-telemetry
-      {{- if not $isOpenshiftCluster }}
       securityContext:
 {{ toYaml .Values.securityContext | indent 8 }}
-      {{- end }}
       {{- if .Values.images.pullSecrets }}
       imagePullSecrets:
         {{- range $sec := .Values.images.pullSecrets }}
@@ -162,10 +160,8 @@ spec:
         - name: no_proxy
           value: {{ include "px-central.noProxyList" . | quote }}
         {{- end }}
-        {{- if not $isOpenshiftCluster }}
         securityContext:
           runAsUser: 10001
-        {{- end }}
         resources:
           requests:
             cpu: 50m
