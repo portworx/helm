@@ -93,5 +93,29 @@ roleRef:
   name: px-backup-telemetry-logs-collector-role
   apiGroup: rbac.authorization.k8s.io
 {{- end }}
+{{- if .Values.isOpenshift }}
+---
+# OpenShift: grant telemetry SAs an SCC so the pod runs as the edge-envoy image user
+# (uid 10001) and can write its rendered cert into the image-baked /config. See PB-16246.
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: px-backup-telemetry-scc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+{{- include "px-central.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:openshift:scc:anyuid
+subjects:
+  - kind: ServiceAccount
+    name: px-backup-telemetry
+    namespace: {{ .Release.Namespace }}
+  - kind: ServiceAccount
+    name: px-backup-telemetry-logs-collector
+    namespace: {{ .Release.Namespace }}
+{{- end }}
 {{- end }}
 
