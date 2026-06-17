@@ -1,6 +1,7 @@
 {{/* PX-Backup Telemetry RBAC */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) }}
 ---
 apiVersion: v1
@@ -93,7 +94,7 @@ roleRef:
   name: px-backup-telemetry-logs-collector-role
   apiGroup: rbac.authorization.k8s.io
 {{- end }}
-{{- if .Values.isOpenshift }}
+{{- if $isOpenshiftCluster }}
 ---
 # OpenShift: grant telemetry SAs the "nonroot" SCC so edge-envoy runs as uid 10001
 # (writes its cert into /config) and the collector gets fsGroup (writes /var/cores).
