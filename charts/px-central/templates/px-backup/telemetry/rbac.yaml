@@ -95,8 +95,9 @@ roleRef:
 {{- end }}
 {{- if .Values.isOpenshift }}
 ---
-# OpenShift: grant telemetry SAs an SCC so the pod runs as the edge-envoy image user
-# (uid 10001) and can write its rendered cert into the image-baked /config. See PB-16246.
+# OpenShift: grant telemetry SAs the "nonroot" SCC so edge-envoy runs as uid 10001
+# (writes its cert into /config) and the collector gets fsGroup (writes /var/cores).
+# v1 "nonroot" (not nonroot-v2) for OCP <4.11 compat. See PB-16295.
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -108,7 +109,7 @@ metadata:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: system:openshift:scc:anyuid
+  name: system:openshift:scc:nonroot
 subjects:
   - kind: ServiceAccount
     name: px-backup-telemetry
