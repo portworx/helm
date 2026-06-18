@@ -115,8 +115,27 @@ spec:
           value: "px-backup-{{ .Release.Namespace }}"
         - name: EE_PRODUCTVERSION
           value: {{ .Values.pxbackup.version | quote }}
+        # DNS-lookup-family + listener addresses are derived at runtime by the
+        # px-backup server and written to px-backup-telemetry-config. This is to ensure envoy
+        # never starts with the wrong family on IPv6-only clusters.
         - name: EE_DNS_LOOKUP_FAMILY
-          value: "V4_PREFERRED"
+          valueFrom:
+            configMapKeyRef:
+              name: px-backup-telemetry-config
+              key: dns-lookup-family
+              optional: false
+        - name: EE_PRIMARY_LISTENING_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              name: px-backup-telemetry-config
+              key: primary-listening-address
+              optional: false
+        - name: EE_LOOPBACK_LISTENING_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              name: px-backup-telemetry-config
+              key: loopback-listening-address
+              optional: false
         - name: REFRESH_TOKEN
           value: "300"
         - name: EE_ENV
