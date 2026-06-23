@@ -24,7 +24,7 @@ modules:
     pxBackupPrometheusImage: "docker.io/portworx/prometheus:v3.12.0"
     pxBackupAlertmanagerImage: "docker.io/portworx/alertmanager:v0.33.0"
     pxBackupPrometheusOperatorImage: "docker.io/portworx/prometheus-operator:v0.92.0"
-    pxBackupPrometheusConfigReloaderImage: "docker.io/portworx/prometheus-config-reloader:v0.91.0"
+    pxBackupPrometheusConfigReloaderImage: "docker.io/portworx/prometheus-config-reloader:v0.92.0"
     telemetryEnvoyImage: "docker.io/portworx/edge-envoy:2.0.109"
     telemetryRegistrationImage: "docker.io/portworx/ccm-go:1.4.49"
     telemetryMetricsCollectorImage: "docker.io/portworx/realtime-metrics:1.0.36"
