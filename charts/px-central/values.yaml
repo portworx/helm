@@ -410,26 +410,26 @@ images:
     tag: v2.35.0
     module: pxMonitor
   pxBackupPrometheusImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
+    registry: quay.io
+    repo: prometheus
     imageName: prometheus
     tag: v3.12.0
     module: pxBackup
   pxBackupAlertmanagerImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
+    registry: quay.io
+    repo: prometheus
     imageName: alertmanager
     tag: v0.33.0
     module: pxBackup
   pxBackupPrometheusOperatorImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
+    registry: quay.io
+    repo: prometheus-operator
     imageName: prometheus-operator
     tag: v0.92.0
     module: pxBackup
   pxBackupPrometheusConfigReloaderImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
+    registry: quay.io
+    repo: prometheus-operator
     imageName: prometheus-config-reloader
     tag: v0.92.0
     module: pxBackup
