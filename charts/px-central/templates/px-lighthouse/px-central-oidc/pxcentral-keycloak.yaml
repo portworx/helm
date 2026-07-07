@@ -130,7 +130,7 @@ data:
     if [[ -n "${X509_CA_BUNDLE+0}" ]] ; then
         autogenerate_keystores
     fi
-    exec /opt/keycloak/bin/kc.sh start ${CUSTOM_ARGS}  --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true --spi-connections-jpa-quarkus-migration-strategy=update
+    exec /opt/keycloak/bin/kc.sh start ${CUSTOM_ARGS} --spi-connections-jpa-quarkus-migration-strategy=update
 
 ---
 apiVersion: v1
@@ -536,7 +536,7 @@ spec:
             - sh
             - -c
             - |
-              until printf "." && nc -z -w 2 pxcentral-keycloak-postgresql 5432; do
+              until printf "." && bash -c '</dev/tcp/pxcentral-keycloak-postgresql/5432' 2>/dev/null; do
                   sleep 2;
               done;
 
