@@ -23,9 +23,9 @@ PVC "pre-upgrade-data-pvc" is created in {{ .Release.Namespace }} with database 
 {{- else}}
 {{ "\n" -}}
 {{- end}}
-----------------------------
+--------------------------------------------------
 Features Summary:
-----------------------------
+--------------------------------------------------
 {{- if eq .Values.pxbackup.enabled true }}
 PX-Backup: enabled
 {{- else }}
@@ -60,7 +60,7 @@ Login with the following credentials:
 
 For more information: https://github.com/portworx/helm/blob/master/charts/px-central/README.md
 {{- if eq .Values.pxbackup.enabled true }}
-For more information on network pre-requisites: https://docs.portworx.com/portworx-backup-on-prem/install/install-prereq/nw-prereqs.html
+For more information on network pre-requisites: https://docs.portworx.com/portworx-backup-on-prem/install/install/requirements-pxb-install#network-requirements
 
 {{- if or .Values.proxy.http .Values.proxy.https .Values.proxy.configSecretName }}
 --------------------------------------------------
