@@ -537,7 +537,7 @@ spec:
             - sh
             - -c
             - |
-              until printf "." && bash -c '</dev/tcp/pxcentral-keycloak-postgresql/5432' 2>/dev/null; do
+              until printf "." && nc -z -w 2 pxcentral-keycloak-postgresql 5432; do
                   sleep 2;
               done;
 

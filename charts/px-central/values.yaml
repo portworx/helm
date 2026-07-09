@@ -276,10 +276,10 @@ images:
     tag: "18.4"
     module: pxCentral
   keycloakFrontendImage:
-    registry: quay.io
-    repo: keycloak
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
     imageName: keycloak
-    tag: "26.6"
+    tag: "26.6.4_v2"
     module: pxCentral
   keycloakLoginThemeImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -294,8 +294,8 @@ images:
     tag: 1.35.0
     module: pxCentral
   mysqlImage:
-    registry: docker.io
-    repo: library
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
     imageName: mysql
     tag: "8.4.10"
     module: pxCentral
