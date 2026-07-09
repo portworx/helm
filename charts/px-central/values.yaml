@@ -279,7 +279,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: keycloak
-    tag: 26.5.7_v2
+    tag: "26.6.4_v2"
     module: pxCentral
   keycloakLoginThemeImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -297,7 +297,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: mysql
-    tag: 8.4.9
+    tag: "8.4.10"
     module: pxCentral
   preSetupHookImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
