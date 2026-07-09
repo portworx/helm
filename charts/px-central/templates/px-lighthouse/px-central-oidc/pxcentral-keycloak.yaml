@@ -101,8 +101,9 @@ data:
 
         if [[ -f "${JKS_TRUSTSTORE_PATH}" ]]; then
             echo "$(date "$LOG_TIMESTAMP_FORMAT") INFO  [container.initialization] (keystore-autoconfiguration) Keycloak truststore successfully created at: ${JKS_TRUSTSTORE_PATH}."
-            # Set truststore password as environment variable to avoid logging sensitive data
+            # Set truststore configuration as environment variables to avoid logging sensitive data
             export KC_SPI_TRUSTSTORE_FILE_PASSWORD="${JKS_TRUSTSTORE_PASSWORD}"
+            export JAVA_OPTS_APPEND="${JAVA_OPTS_APPEND:-} -Djavax.net.ssl.trustStore=${JKS_TRUSTSTORE_PATH} -Djavax.net.ssl.trustStorePassword=${JKS_TRUSTSTORE_PASSWORD} -Djavax.net.ssl.trustStoreType=JKS"
             CUSTOM_TLS_ARGS+="--spi-truststore-file-file=${JKS_TRUSTSTORE_PATH}"
         else
             echo "$(date "$LOG_TIMESTAMP_FORMAT") ERROR  [container.initialization] (keystore-autoconfiguration) Keycloak truststore not created at: ${JKS_TRUSTSTORE_PATH}." >&2
@@ -130,7 +131,7 @@ data:
     if [[ -n "${X509_CA_BUNDLE+0}" ]] ; then
         autogenerate_keystores
     fi
-    exec /opt/keycloak/bin/kc.sh start ${CUSTOM_ARGS}  --spi-login-protocol-openid-connect-legacy-logout-redirect-uri=true --spi-connections-jpa-quarkus-migration-strategy=update
+    exec /opt/keycloak/bin/kc.sh start ${CUSTOM_ARGS} --spi-connections-jpa-quarkus-migration-strategy=update
 
 ---
 apiVersion: v1
