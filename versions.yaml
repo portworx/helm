@@ -2,7 +2,7 @@ pxCentralVersion: 3.2.0
 modules:
   pxCentral:
     pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:3.2.0-fc1"
-    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:3.2.0-fc1"
+    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:PB-16925-schedule-policies-tab"
     pxcentralOnpremUiBackend: "docker.io/portworx/pxcentral-onprem-ui-backend-private:3.2.0-fc1"
     pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:3.2.0-fc1"
     pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:3.2.0-fc1"
