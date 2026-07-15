@@ -2163,23 +2163,13 @@ spec:
                   feature.
                 properties:
                   enabled:
-                    default: false
+                    default: true
                     description: Enabled decides whether cluster diags needs to be
                       enabled
                     type: boolean
                   image:
                     description: Image is docker image of the cluster diags container
                     type: string
-                  periodicDiags:
-                    description: PeriodicDiags contains the configuration for periodic
-                      pod diag collection
-                    properties:
-                      interval:
-                        description: |-
-                          Interval is the duration between periodic pod diag collections.
-                          Default is 4 hours.
-                        type: string
-                    type: object
                 type: object
               csi:
                 description: CSI configurations for setting up CSI
@@ -2578,6 +2568,11 @@ spec:
                           type: object
                         type: array
                     type: object
+                  pxCsiImage:
+                    description: PxCsiImage is the docker image of the PX CSI plugin
+                      container.
+                    pattern: ^[a-zA-Z0-9][a-zA-Z0-9._\-\/:@]*$
+                    type: string
                   resizer:
                     description: CSIResizerSpec is used to define the CSI resizer
                       configurations
@@ -10717,6 +10712,14 @@ spec:
                       - cloudProvider
                       type: object
                     type: array
+                  gcp:
+                    description: GCP contains configuration for GCP workload identity
+                    properties:
+                      credentialsConfigMap:
+                        description: CredentialsConfigMap is the name of the configmap
+                          that contains the GCP workload identity credentials
+                        type: string
+                    type: object
                 type: object
             type: object
           status:

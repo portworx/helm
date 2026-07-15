@@ -65,8 +65,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 
 | Parameter                                                  | Description | Default
 |------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------|
-| `imageVersion`                                             | Version of the PX image | 3.6.1 |
-| `pxOperatorImageVersion`                                   | Version of the PX operator image | 26.2.1 |
+| `imageVersion`                                             | Version of the PX image | 3.6.2 |
+| `pxOperatorImageVersion`                                   | Version of the PX operator image | 26.3.0 |
 | `verboseOperatorLogs`                                      | Enable verbose logging for the Portworx operator | true |
 | `openshiftInstall`                                         | Installing on Openshift? | false |
 | `nonDisruptivek8sUpgrade`                                  | Used to disable or enable smart and parallel kubetnetes node upgrades. By default, S&P upgrades are disabled. To enable them, set this to true | false |
@@ -261,6 +261,5 @@ You can verify the tiller logs
 [tiller] 2018/02/07 06:00:13 warning: No available release names found after 5 tries
 [tiller] 2018/02/07 06:00:13 failed install prepare step: no available release name found
 ```
-
 
 

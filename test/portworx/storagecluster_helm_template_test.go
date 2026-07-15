@@ -490,6 +490,23 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestWorkloadIdentityGCP",
+			resultFileName: "storagecluster_workload_identity_gcp.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_workload_identity_gcp.yaml"},
+			},
+		},
+		{
+			name:           "TestWorkloadIdentityGCPEmptyConfigMap",
+			resultFileName: "storagecluster_workload_identity_gcp_empty_configmap.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"internalKVDB":                              "true",
+					"workloadIdentity.gcp.credentialsConfigMap": "",
+				},
+			},
+		},
+		{
 			name:           "TestStorageClusterAnnotations",
 			resultFileName: "storagecluster_annotations.yaml",
 			helmOption: &helm.Options{
