@@ -694,10 +694,20 @@ spec:
     {{- end }}
   {{- end }}
   {{- if .Values.workloadIdentity }}
-  {{- with .Values.workloadIdentity.credentials }}
+  {{- $gcpConfigMap := "" }}
+  {{- if .Values.workloadIdentity.gcp }}
+  {{- $gcpConfigMap = .Values.workloadIdentity.gcp.credentialsConfigMap | default "" }}
+  {{- end }}
+  {{- if or $gcpConfigMap .Values.workloadIdentity.credentials }}
   workloadIdentity:
+    {{- if $gcpConfigMap }}
+    gcp:
+      credentialsConfigMap: {{ $gcpConfigMap }}
+    {{- end }}
+    {{- with .Values.workloadIdentity.credentials }}
     credentials:
       {{- toYaml . | nindent 4 }}
+    {{- end }}
   {{- end }}
   {{- end }}
   {{- if or (eq .Values.taintBasedScheduling.enabled true) (eq .Values.taintBasedScheduling.enabled false) }}

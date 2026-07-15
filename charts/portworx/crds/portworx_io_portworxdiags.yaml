@@ -54,6 +54,11 @@ spec:
                 description: Configuration for diags collection of the main Portworx
                   component.
                 properties:
+                  generateAll:
+                    description: |-
+                      GenerateAll generates all the available diagnostic information when collecting
+                      the diags.
+                    type: boolean
                   generateCore:
                     description: |-
                       Generates the core dump as well when collecting the diags. Could be useful
@@ -80,6 +85,10 @@ spec:
                         description: Labels of the volumes to be selected.
                         type: object
                     type: object
+                  outputDirectory:
+                    description: OutputDirectory specifies an existing directory path
+                      where diags files will be created.
+                    type: string
                   podDiags:
                     description: |-
                       Collects all the pod diags. Used to specify whether Pod diags need to be
