@@ -200,6 +200,18 @@ spec:
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           ports:
             - containerPort: 80
+          # install.sh runs DB init/migrations and default-role creation (which depends on
+          # px-backup + lh-middleware being up) before apache2 starts listening on 8080.
+          # A startupProbe holds off liveness/readiness until startup completes so a slow
+          # first-time init is not killed by the liveness probe (~10 min budget).
+          startupProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+            periodSeconds: 10
+            failureThreshold: 60
           readinessProbe:
             httpGet:
               path: /ping
