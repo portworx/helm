@@ -1,4 +1,4 @@
-name: Helm Package and Index
+name: Sync raw_images_list with versions.yaml
 
 on:
   workflow_dispatch:
@@ -6,10 +6,12 @@ on:
     branches:
       - '**'
     paths:
-      - 'charts/**'
+      - 'versions.yaml'
+      - 'raw_images_list.txt'
+      - 'scripts/sync_raw_images.py'
 
 jobs:
-  helm-package:
+  sync-raw-images:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -21,35 +23,29 @@ jobs:
           ref: ${{ github.ref }}
           fetch-depth: 0
 
-      - name: Install Helm
-        uses: azure/setup-helm@v3
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          version: v3.14.0
+          python-version: '3.x'
 
-      - name: Package Helm chart
-        working-directory: stable
-        run: helm package ../charts/px-central
+      - name: Install dependencies
+        run: pip install pyyaml
 
-      - name: Update Helm repo index
-        working-directory: stable
-        run: |
-          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
-          helm repo index \
-            --url "https://raw.githubusercontent.com/${{ github.repository }}/${BRANCH_NAME}/stable/" \
-            .
+      - name: Sync raw_images_list.txt tags to versions.yaml
+        run: python scripts/sync_raw_images.py --write
 
-      - name: Commit and push packaged chart
+      - name: Commit and push corrected image list
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "noreply@portworx.com"
-          git add stable/*.tgz stable/index.yaml
+          git add raw_images_list.txt
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "chore: package helm chart px-central"
+          git commit -m "chore: sync raw_images_list.txt tags with versions.yaml"
           # Retry with rebase to survive concurrent pushes from other workflows
-          # (e.g. sync-raw-images) that target the same branch.
+          # (e.g. helm-package) that target the same branch.
           for attempt in 1 2 3 4 5; do
             if git push origin HEAD:${{ github.ref_name }}; then
               echo "Pushed on attempt $attempt"
