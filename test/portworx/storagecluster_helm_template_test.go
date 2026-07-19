@@ -185,8 +185,15 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestStorkUseWorkloadIdentityEnabledWithGCP",
+			resultFileName: "storagecluster_stork_use_workload_identity_gcp.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_stork_use_workload_identity_gcp.yaml"},
+			},
+		},
+		{
 			name:             "TestStorkUseWorkloadIdentityEnabledWithoutCredsFails",
-			expectedErrorMsg: "stork.useWorkloadIdentity is set to true but workloadIdentity.credentials is empty.",
+			expectedErrorMsg: "stork.useWorkloadIdentity is set to true but no workload identity credentials are configured.",
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
 					"stork.enabled":             "true",
@@ -206,7 +213,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 		},
 		{
 			name:             "TestStorkUseWorkloadIdentityWithStorkDisabledFails",
-			expectedErrorMsg: "stork.useWorkloadIdentity is set to true but workloadIdentity.credentials is empty.",
+			expectedErrorMsg: "stork.useWorkloadIdentity is set to true but no workload identity credentials are configured.",
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
 					"stork.enabled":             "false",

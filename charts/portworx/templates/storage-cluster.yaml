@@ -4,11 +4,15 @@
 
 {{- if eq (.Values.stork.useWorkloadIdentity | default false) true }}
 {{- $wiCreds := list }}
+{{- $gcpConfigMap := "" }}
 {{- if .Values.workloadIdentity }}
 {{- $wiCreds = .Values.workloadIdentity.credentials }}
+{{- if .Values.workloadIdentity.gcp }}
+{{- $gcpConfigMap = .Values.workloadIdentity.gcp.credentialsConfigMap | default "" }}
 {{- end }}
-{{- if empty $wiCreds }}
-{{- fail "stork.useWorkloadIdentity is set to true but workloadIdentity.credentials is empty. Please configure workloadIdentity.credentials when enabling stork.useWorkloadIdentity." }}
+{{- end }}
+{{- if and (empty $wiCreds) (empty $gcpConfigMap) }}
+{{- fail "stork.useWorkloadIdentity is set to true but no workload identity credentials are configured. Please configure workloadIdentity credentials when enabling stork.useWorkloadIdentity." }}
 {{- end }}
 {{- end }}
 
