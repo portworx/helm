@@ -67,6 +67,37 @@ rules:
     resources: ["resourcequotas"]
     verbs: ["get", "list", "watch"]
 ---
+# Pre-install ClusterRole (cluster-scoped resources)
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ .Release.Namespace }}-px-backup-pre-install-clusterrole
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "2"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-pre-install-hook
+    app.kubernetes.io/component: pxcentral-pre-install-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
+rules:
+  # For ValidateNamespace
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "list", "watch"]
+  # For ValidateStorageClass / Storage provisioner validation
+  - apiGroups: ["storage.k8s.io"]
+    resources: ["storageclasses"]
+    verbs: ["get", "list", "watch"]
+  # For CRD lifecycle management (cluster-scoped)
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["get", "list", "create", "update", "patch"]
+  # For applying monitoring CRs from the px-backup-monitoring-crs ConfigMap
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["prometheuses", "alertmanagers", "servicemonitors", "prometheusrules"]
+    verbs: ["get", "create", "update", "patch"]
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
@@ -87,6 +118,27 @@ subjects:
 roleRef:
   kind: Role
   name: px-backup-pre-install-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ .Release.Namespace }}-px-backup-pre-install-crd-rolebinding
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "3"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-pre-install-hook
+    app.kubernetes.io/component: pxcentral-pre-install-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ .Release.Namespace }}-px-backup-pre-install-clusterrole
   apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: v1
@@ -129,6 +181,7 @@ metadata:
     "helm.sh/hook": pre-install
     "helm.sh/hook-weight": "6"
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-completed
+    "argocd.argoproj.io/hook-delete-policy": BeforeHookCreation
     meta.helm.sh/release-name: {{ .Release.Name }}
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
 spec:
@@ -162,6 +215,8 @@ spec:
         - name: pxbackup-pre-install-check
           image: {{ printf "%s/%s/%s:%s" (default .Values.images.preSetupHookImage.registry .Values.images.registry) (default .Values.images.preSetupHookImage.repo .Values.images.repo) .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
           command: ["/pxcentral-hook/bin/pxcentral-hook"]
           args: ["--hook=pre-install"]
           env:
@@ -211,6 +266,9 @@ spec:
           volumeMounts:
             - name: data-volume
               mountPath: /mnt/data
+            - name: monitoring-crs
+              mountPath: /etc/pxcentral/monitoring-crs
+              readOnly: true
           {{- if .Values.proxy.configSecretName }}
             - mountPath: /etc/ssl/certs/proxy-ca.pem
               subPath: proxy-ca.pem
@@ -221,6 +279,9 @@ spec:
         - name: data-volume
           persistentVolumeClaim:
             claimName: pre-install-data-pvc
+        - name: monitoring-crs
+          configMap:
+            name: px-backup-monitoring-crs
       {{- if .Values.proxy.configSecretName }}
         - name: proxy-ca-volume
           secret:
@@ -321,6 +382,8 @@ spec:
               value: {{ .Values.images.insecureRegistry | default false | quote }}
             - name: SKIP_VALIDATIONS
               value: {{ .Values.pxbackup.skipValidations | default false | quote }}
+            - name: TARGET_PXBACKUP_VERSION
+              value: "{{ .Values.pxbackup.version }}"
           volumeMounts:
           {{- if .Values.proxy.configSecretName }}
             - mountPath: /etc/ssl/certs/proxy-ca.pem
