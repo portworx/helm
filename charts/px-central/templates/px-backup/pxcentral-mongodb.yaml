@@ -185,18 +185,24 @@ spec:
             - containerPort: 27017
               name: mongodb
               protocol: TCP
+          # PB-16568: the mongosh exec (Node.js cold-start + connect + auth) cannot
+          # finish within a 5s timeout under node starvation, so the probe false-fails
+          # and kubelet kills a healthy PRIMARY -> election -> ReplicaSetNoPrimary.
+          # Interim fix: keep the functional mongosh check but widen the timeout to
+          # 300s so starvation-induced slowness no longer trips it. Deeper optimization
+          # (probe design, role-assertion-during-elections) tracked as a follow-up.
           livenessProbe:
             exec:
               command:
               - bash
               - -ec
               - |
-                mongosh --eval 'db.adminCommand("ping") && db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'            
+                mongosh --eval 'db.adminCommand("ping") && db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'
             failureThreshold: 6
             initialDelaySeconds: 600
             periodSeconds: 10
             successThreshold: 1
-            timeoutSeconds: 5
+            timeoutSeconds: 300
           readinessProbe:
             exec:
               command:
@@ -208,7 +214,7 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 10
             successThreshold: 1
-            timeoutSeconds: 5
+            timeoutSeconds: 300
           volumeMounts:
             - mountPath: /data/db
               name: pxc-mongodb-data
