@@ -33,6 +33,45 @@
 {{- end }}
 
 apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: px-backup-pre-upgrade-crd-role
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-pre-upgrade-hook
+    app.kubernetes.io/component: pxcentral-pre-upgrade-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
+rules:
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["create", "update", "get", "patch", "list", "watch"]
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["prometheuses", "alertmanagers", "servicemonitors", "prometheusrules"]
+    verbs: ["get", "create", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: px-backup-pre-upgrade-crd-rolebinding
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-pre-upgrade-hook
+    app.kubernetes.io/component: pxcentral-pre-upgrade-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: px-backup-pre-upgrade-crd-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: px-backup-mongodb-pre-upgrade-role
@@ -50,13 +89,13 @@ rules:
     verbs: ["get", "list", "update", "delete", "create", "patch"]
   - apiGroups: [""]
     resources: ["secrets"]
-    verbs: ["delete","get", "list", "watch","create","update"]
+    verbs: ["delete","get", "list", "watch","create","update","patch"]
   - apiGroups: [""]
     resources: ["serviceaccounts"]
     verbs: ["get", "list", "watch"]
   - apiGroups: [""]
     resources: ["configmaps"]
-    verbs: ["delete","get", "list", "watch","update","create"]
+    verbs: ["delete","get", "list", "watch","update","create","patch"]
   - apiGroups: [""]
     resources: ["persistentvolumeclaims"]
     verbs: ["get", "create", "delete", "update", "list"]
@@ -81,9 +120,6 @@ rules:
   - apiGroups: ["apps"]
     resources: ["deployments"]
     verbs: ["get", "list", "update", "patch"]
-  - apiGroups: ["apiextensions.k8s.io"]
-    resources: ["customresourcedefinitions"]
-    verbs: ["create", "update", "get", "patch", "list", "watch"]
   - apiGroups: [""]
     resources: ["persistentvolumes"]
     verbs: ["create", "update", "get", "patch", "list", "delete"]
@@ -152,6 +188,7 @@ metadata:
     "helm.sh/hook": pre-upgrade
     "helm.sh/hook-weight": "6"
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-completed
+    "argocd.argoproj.io/hook-delete-policy": BeforeHookCreation
     meta.helm.sh/release-name: {{ .Release.Name }}
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
 spec:
@@ -185,6 +222,8 @@ spec:
         - name: pxc-pre-upgrade
           image: {{ printf "%s/%s/%s:%s" (default .Values.images.preSetupHookImage.registry .Values.images.registry) (default .Values.images.preSetupHookImage.repo .Values.images.repo) .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
           command: ["/pxcentral-hook/bin/pxcentral-hook"]
           args: ["--hook=pre-upgrade"]
           env:
@@ -296,6 +335,9 @@ spec:
           volumeMounts:
             - name: data-volume
               mountPath: /mnt/data
+            - name: monitoring-crs
+              mountPath: /etc/pxcentral/monitoring-crs
+              readOnly: true
           {{- if .Values.proxy.configSecretName }}
             - mountPath: /etc/ssl/certs/proxy-ca.pem
               subPath: proxy-ca.pem
@@ -306,6 +348,9 @@ spec:
         - name: data-volume
           persistentVolumeClaim:
             claimName: pre-upgrade-data-pvc
+        - name: monitoring-crs
+          configMap:
+            name: px-backup-monitoring-crs
       {{- if .Values.proxy.configSecretName }}
         - name: proxy-ca-volume
           secret:

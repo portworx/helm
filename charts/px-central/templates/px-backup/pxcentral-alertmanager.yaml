@@ -1,180 +1,5 @@
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- if eq $pxBackupEnabled true }}
-{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
-{{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
-{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
-{{- if eq $deployDedicatedMonitoringSystem true }}
-apiVersion: monitoring.coreos.com/v1
-kind: Alertmanager
-metadata:
-  name: px-backup-alertmanager
-  namespace: {{ .Release.Namespace }}
-  labels:
-{{- include "px-central.partOfLabel" . | nindent 4 }}
-spec:
-  affinity:
-    nodeAffinity:
-      requiredDuringSchedulingIgnoredDuringExecution:
-        nodeSelectorTerms:
-        - matchExpressions:
-          {{- if .Values.nodeAffinityLabel }}
-          - key: {{ .Values.nodeAffinityLabel }}
-            operator: Exists
-          {{- else }}
-          - key: pxbackup/enabled
-            operator: NotIn
-            values:
-            - "false"
-          {{- end }}
-  configSecret: px-backup-alertmanager-custom-config
-  podMetadata:
-    {{- if and (eq $azureProxyEnabled true) (not (has "px-backup-alertmanager" .Values.proxy.excludeAzureProxyList)) }}
-    annotations:
-      kubernetes.azure.com/no-http-proxy-vars: "true"
-    {{- end }}
-    labels:
-{{- include "px-central.partOfLabel" . | nindent 6 }}
-  alertmanagerConfigSelector:
-    matchLabels:
-      app: px-backup-alert-configs
-  replicas: {{ .Values.pxbackup.alertmanager.replicas }}
-  {{- if .Values.images.pullSecrets }}
-  imagePullSecrets:
-    {{- range $sec := .Values.images.pullSecrets }}
-    - name: {{ $sec | quote }}
-    {{- end }}
-  {{- end }}
-  retention: {{ .Values.pxbackup.alertmanager.retention}}
-  initContainers:
-    - name: init-config-reloader
-      {{- if .Values.proxy.configSecretName }}
-      volumeMounts:
-      - mountPath: /etc/ssl/certs/proxy-ca.pem
-        subPath: proxy-ca.pem
-        name: proxy-ca-volume
-        readOnly: true
-      {{- end }}
-      {{- $proxyEnv := include "proxy.proxyEnv" . }}
-      {{- if and (or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList)) (ne (trim $proxyEnv) "") }}
-      env:
-        {{ $proxyEnv | nindent 8 }}
-      {{- end }}
-  containers:
-    - args:
-        - '--config.file=/etc/alertmanager/config_out/alertmanager.env.yaml'
-        - '--storage.path=/alertmanager'
-        - '--data.retention={{ .Values.pxbackup.alertmanager.retention }}'
-        - '--cluster.listen-address=[$(POD_IP)]:9094'
-        - '--web.listen-address=:9093'
-        - '--web.route-prefix=/'
-        - '--cluster.label={{ .Release.Namespace }}/px-backup-alertmanager'
-        - '--cluster.peer=alertmanager-px-backup-alertmanager-0.alertmanager-operated:9094'
-        - '--cluster.peer=alertmanager-px-backup-alertmanager-1.alertmanager-operated:9094'
-        - '--cluster.reconnect-timeout=5m'
-        - '--web.config.file=/etc/alertmanager/web_config/web-config-custom.yaml'
-      env:
-        - name: AUTH_SECRET
-          valueFrom:
-            secretKeyRef:
-              name: pxc-backup-metrics
-              key: metrics-token
-        {{- include "serviceMesh.env" . | nindent 8 }}
-        {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList) }}
-        {{ include "proxy.proxyEnv" . | nindent 8 }}
-        {{- end }}
-        - name: POD_IP
-          valueFrom:
-            fieldRef:
-              apiVersion: v1
-              fieldPath: status.podIP
-      image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxBackupAlertmanagerImage.registry .Values.images.registry) (default .Values.images.pxBackupAlertmanagerImage.repo .Values.images.repo) .Values.images.pxBackupAlertmanagerImage.imageName .Values.images.pxBackupAlertmanagerImage.tag }}
-      name: alertmanager
-      ports:
-        - containerPort: 9093
-          name: web
-          protocol: TCP
-    - args:
-      - --listen-address=:8080
-      - --reload-url=http://$(USERNAME):$(PASSWORD)@localhost:9093/-/reload
-      - --config-file=/etc/alertmanager/config/alertmanager.yaml.gz
-      - --config-envsubst-file=/etc/alertmanager/config_out/alertmanager.env.yaml
-      - --watched-dir=/etc/alertmanager/config
-      env:
-      - name: USERNAME
-        valueFrom:
-          secretKeyRef:
-            key: username
-            name: pxc-backup-metrics
-      - name: PASSWORD
-        valueFrom:
-          secretKeyRef:
-            key: password
-            name: pxc-backup-metrics
-      {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-alertmanager" .Values.proxy.includeNoProxyList) }}
-      {{ include "proxy.proxyEnv" . | nindent 6 }}
-      {{- end }}
-      name: config-reloader
-      ports:
-      - containerPort: 8080
-        name: reloader-web
-        protocol: TCP
-      {{- if .Values.proxy.configSecretName }}
-      volumeMounts:
-      - mountPath: /etc/ssl/certs/proxy-ca.pem
-        subPath: proxy-ca.pem
-        name: proxy-ca-volume
-        readOnly: true
-      {{- end }}
-  {{- if $isOpenshiftCluster }}
-  {{- else }}
-  securityContext:
-    fsGroup: 2000
-    runAsNonRoot: true
-    runAsUser: 1000
-  {{- end }}
-  listenLocal: true
-  volumeMounts:
-    - mountPath: /etc/alertmanager/web_config/web-config-custom.yaml
-      name: web-config-custom
-      readOnly: true
-      subPath: web-config-custom.yaml
-  {{- if .Values.proxy.configSecretName }}
-    - mountPath: /etc/ssl/certs/proxy-ca.pem
-      subPath: proxy-ca.pem
-      name: proxy-ca-volume
-      readOnly: true
-  {{- end }}
-  volumes:
-    - name: web-config-custom
-      secret:
-        defaultMode: 420
-        secretName: pxc-backup-metrics
-  {{- if .Values.proxy.configSecretName }}
-    - name: proxy-ca-volume
-      secret:
-        items:
-        - key: CA
-          path: proxy-ca.pem
-        optional: true
-        secretName: {{ .Values.proxy.configSecretName }}
-  {{- end }}
-  {{- if .Values.persistentStorage.storageClassName }}
-  storage:
-    volumeClaimTemplate:
-      metadata:
-        labels:
-{{- include "px-central.partOfLabel" . | nindent 10 }}
-      spec:
-        storageClassName: {{ .Values.persistentStorage.storageClassName }}
-        resources:
-          requests:
-            storage: {{ .Values.persistentStorage.alertManager.storage }}
-  {{- end }}
-  {{- with .Values.tolerations }}
-  tolerations:
-  {{- toYaml . | nindent 4 }}
-  {{- end }}
-{{- end }}
 ---
 apiVersion: v1
 kind: Secret
@@ -283,7 +108,7 @@ stringData:
             <div
                 class="pb-16"
                 style="margin: 22px 0px;width: 400px; color: #bc1b06; font-size: 18px; font-weight: 500">
-                Critical Alert: 
+                Critical Alert:
                 {{ if eq .Labels.alertname "PartialBackupAlert" }}Backup was only partially completed
                 {{ else if and (eq .Labels.alertname "BackupAlert")  (eq .Annotations.value "4") }}Backup Failed
                 {{ else if and (eq .Labels.alertname "BackupAlert") (eq .Annotations.value "10") }}Backup Missing
@@ -316,13 +141,13 @@ stringData:
               <li>
               <div style="display: flex">
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
-                <div>{{ .Labels.error_reason }}</div> 
+                <div>{{ .Labels.error_reason }}</div>
                 </div>
               </li>
-              <li> 
+              <li>
               <div style="display: flex">
-              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
-              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div> 
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div>
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
               </div>
               </li>
             </ul>
@@ -358,13 +183,13 @@ stringData:
               <li>
               <div style="display: flex">
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
-                <div>{{ .Labels.error_reason }}</div> 
+                <div>{{ .Labels.error_reason }}</div>
               </div>
               </li>
-              <li> 
+              <li>
               <div style="display: flex">
-              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
-              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div> 
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div>
+              <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
               </div>
               </li>
             </ul>
@@ -372,7 +197,7 @@ stringData:
             <div
                 class="pb-16"
                 style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
-                Critical Alert: 
+                Critical Alert:
                 {{if eq .Labels.alertname "BackupLocationAlert"}}Backup Location Disconnected
                 {{else if eq .Labels.alertname "BackupLocationLimitedAvailabilityAlert"}}Backup Location state changed to limited availability
                 {{ else }}unknown{{ end }}
@@ -399,21 +224,21 @@ stringData:
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
                 <div>
                   {{ .Labels.error_reason }}
-                </div> 
+                </div>
                 </div>
               </li>
-              <li> 
+              <li>
               <div style="display: flex">
-              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
+              <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div>
               <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
-              </div> 
+              </div>
               </li>
             </ul>
             {{- else if eq .Labels.alertname "LicenseExpiryAlert" }}
             <div
                 class="pb-16"
                 style="margin: 22px 0px; color: #bc1b06; font-size: 18px; font-weight: 500">
-                Critical Alert: 
+                Critical Alert:
                 {{- if eq .Labels.error_reason "License expires in 0 days" }}
                 License Expires Today
                 {{- else if match ".*expired.*" .Labels.error_reason }}
@@ -471,10 +296,10 @@ stringData:
                 <div>{{ .Labels.error_reason }}</div>
                 </div>
               </li>
-              <li> 
+              <li>
                 <div style="display: flex">
-                <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div> 
-                <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div> 
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Alert Creation Time:</div>
+                <div>{{ .StartsAt.Format "2006-01-02 15:04:05" }}</div>
                 </div>
               </li>
             </ul>
@@ -756,7 +581,7 @@ stringData:
                 {{- range .Alerts }}
                   {{- if eq .Labels.alertname "LicenseExpiryAlert" }}
                     {{- $hasLicenseAlert = true }}
-                    Please contact support to renew your license to avoid service interruption. 
+                    Please contact support to renew your license to avoid service interruption.
                     <br><br>
                     {{- break }}
                   {{- end }}
