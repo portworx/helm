@@ -114,6 +114,11 @@ spec:
         {{- end }}
       {{- end }}
       serviceAccountName: pxc-backup-mongodb
+      # PB-16568: give a SIGTERM'd mongod time to checkpoint and step down cleanly.
+      # With the default 30s, a starved primary is SIGKILLed on grace expiry and
+      # returns via WiredTiger crash recovery + oplog rollback (un-checkpointed
+      # writes discarded).
+      terminationGracePeriodSeconds: {{ .Values.mongodbTerminationGracePeriodSeconds | default 120 }}
       {{- if $isOpenshiftCluster}}
       {{- else }}
       securityContext:
@@ -185,13 +190,17 @@ spec:
             - containerPort: 27017
               name: mongodb
               protocol: TCP
+          # PB-16568: liveness must only prove the process is alive. A mongosh exec
+          # (Node.js cold-start + connect + auth) cannot finish within a 5s timeout
+          # under node starvation, and asserting replica-set role also fails during
+          # elections -- so the old exec probe would kill a healthy PRIMARY, collapsing
+          # the replica set to ReplicaSetNoPrimary. A cheap TCP check cannot false-fail
+          # under CPU pressure (measured 6ms vs 14-19s for the exec). Role/writability
+          # lives in the readiness probe below, which only removes the pod from the
+          # Service and never restarts the container.
           livenessProbe:
-            exec:
-              command:
-              - bash
-              - -ec
-              - |
-                mongosh --eval 'db.adminCommand("ping") && db.hello().isWritablePrimary || db.hello().secondary' | grep -q 'true'            
+            tcpSocket:
+              port: 27017
             failureThreshold: 6
             initialDelaySeconds: 600
             periodSeconds: 10
@@ -208,7 +217,13 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 10
             successThreshold: 1
-            timeoutSeconds: 5
+            # PB-16568: widened from 5s -- a starved secondary should be given room
+            # before it is pulled from the Service, to avoid needless endpoint churn.
+            timeoutSeconds: 15
+          {{- if .Values.mongodbResources }}
+          resources:
+{{ toYaml .Values.mongodbResources | indent 12 }}
+          {{- end }}
           volumeMounts:
             - mountPath: /data/db
               name: pxc-mongodb-data
@@ -258,4 +273,26 @@ spec:
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         {{- end }}
   {{- end }}
+{{- if .Values.mongodbPodDisruptionBudget }}
+---
+# PB-16568: protect replica-set quorum. Without a PDB, a node drain / voluntary
+# disruption can take down 2 of 3 members at once, leaving no primary. minAvailable=2
+# keeps a voting majority (and therefore a primary) available at all times.
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: pxc-backup-mongodb
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxc-backup-mongodb
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Release.Name }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/managed-by: {{ .Release.Service }}
+      app.kubernetes.io/component: pxc-backup-mongodb
+{{- end }}
 {{- end -}}

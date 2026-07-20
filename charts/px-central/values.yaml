@@ -25,7 +25,28 @@ persistentStorage:
 
 storkRequired: false
 nodeAffinityLabel: ""
-podAntiAffinity: false
+# PB-16568: default the MongoDB replica-set members onto separate nodes (hard
+# anti-affinity) so a single node failure/drain cannot take down more than one
+# member. Requires >=3 schedulable nodes; set to false for single-/two-node dev.
+podAntiAffinity: true
+
+# PB-16568: MongoDB container resources. Empty ({}) ships BestEffort QoS, which
+# lets the scheduler co-locate load onto the mongo nodes and starves the members
+# first under contention -- the trigger for the ReplicaSetNoPrimary flake. The
+# memory limit MUST exceed persistentStorage.mongoCacheSize (WiredTiger cache, GB)
+# plus overhead, or you trade eviction for OOMKill.
+mongodbResources:
+  requests:
+    cpu: "1"
+    memory: 2Gi
+  limits:
+    cpu: "2"
+    memory: 6Gi
+# PB-16568: seconds a SIGTERM'd mongod gets to checkpoint + step down before SIGKILL.
+mongodbTerminationGracePeriodSeconds: 120
+# PB-16568: create a PodDisruptionBudget (minAvailable=2 of 3) for the MongoDB
+# replica set. Disable for single-/two-node dev where it would block node drains.
+mongodbPodDisruptionBudget: true
 
 caCertsSecretName: ""
 
