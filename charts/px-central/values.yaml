@@ -181,13 +181,25 @@ telemetry:
     excludePodPatterns: "alertmanager,prometheus,telemetry"
 
 service:
+  ## NOTE: On managed cloud platforms a "LoadBalancer" service may create a
+  ## public (internet-facing) endpoint unless an internal/private load balancer
+  ## annotation is set. For a private admin UI, use "ClusterIP" (access via
+  ## kubectl port-forward / private ingress), or keep "LoadBalancer" with your
+  ## cloud provider's internal-LB annotation set in pxCentralUIServiceAnnotations.
   pxCentralUIServiceType: "LoadBalancer"
-  ## To set the LoadBalancer service type to internal only
-  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
+  ## For the current per-cloud internal-LB annotations, see the PX-Backup UI
+  ## access docs:
+  ## https://docs.portworx.com/portworx-backup-on-prem/install/install/set-up-pxb-operations/ui-access
   pxCentralUIServiceAnnotations: {}
   pxBackupUIServiceType: "LoadBalancer"
   pxBackupUIServiceAnnotations: {}
   pxBackupServiceAnnotations: {}
+  ## Optional CIDR allow-lists for the UI LoadBalancer services (defense-in-depth).
+  ## Rendered as spec.loadBalancerSourceRanges only when the matching service type
+  ## is "LoadBalancer" and the list is non-empty. Support varies by cloud provider /
+  ## load-balancer implementation; this is NOT a substitute for an internal LB.
+  pxCentralUILoadBalancerSourceRanges: []
+  pxBackupUILoadBalancerSourceRanges: []
   grafanaServiceType: "NodePort"
   cortexNginxServiceType: "NodePort"
 

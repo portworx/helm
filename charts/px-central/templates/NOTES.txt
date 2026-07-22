@@ -46,7 +46,18 @@ PX-License-Server: disabled
 Access PX-Central/PX-Backup UI:
 --------------------------------------------------
 
-To access PX-Central/PX-Backup UI please refer:  https://backup.docs.portworx.com/use-px-backup/configure-ui/#access-the-portworx-backup-ui-using-a-node-ip
+To access PX-Central/PX-Backup UI please refer:  https://docs.portworx.com/portworx-backup-on-prem/install/install/set-up-pxb-operations/ui-access
+
+{{- $lbWarning := or (eq .Values.service.pxCentralUIServiceType "LoadBalancer") (eq .Values.service.pxBackupUIServiceType "LoadBalancer") }}
+{{- range $svcName := list "px-central-ui" "px-backup-ui" }}
+{{-   $svc := lookup "v1" "Service" $.Release.Namespace $svcName }}
+{{-   if and $svc (eq (dig "spec" "type" "" $svc) "LoadBalancer") }}
+{{-     $lbWarning = true }}
+{{-   end }}
+{{- end }}
+{{- if $lbWarning }}
+{{ printf "\033[33mWARNING: A PX-Backup UI Service (px-central-ui / px-backup-ui) is type LoadBalancer, which on managed cloud platforms may expose the admin UI publicly. See the UI access link above.\033[0m" }}
+{{- end }}
 
 {{ if eq .Release.IsInstall true }}
 Login with the following credentials:
