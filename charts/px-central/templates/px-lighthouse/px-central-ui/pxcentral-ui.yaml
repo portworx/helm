@@ -705,6 +705,10 @@ metadata:
     {{- end }}
 spec:
   type: {{ .Values.service.pxCentralUIServiceType }}
+  {{- if and (eq .Values.service.pxCentralUIServiceType "LoadBalancer") .Values.service.pxCentralUILoadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml .Values.service.pxCentralUILoadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
   selector:
     run: pxcentral-frontend
   ports:
@@ -728,6 +732,10 @@ metadata:
     {{- end }}
 spec:
   type: {{ .Values.service.pxBackupUIServiceType }}
+  {{- if and (eq .Values.service.pxBackupUIServiceType "LoadBalancer") .Values.service.pxBackupUILoadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+    {{- toYaml .Values.service.pxBackupUILoadBalancerSourceRanges | nindent 4 }}
+  {{- end }}
   selector:
     run: pxcentral-frontend
   ports:
