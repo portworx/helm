@@ -134,8 +134,6 @@ pxbackup:
   usePxBackupEmailAlertTemplate: true
   monitorBLHealthFrequency: 210m
   enableMonitorBLHealth: false
-  backupDeleteWorker: 5
-  volDeleteWorker: 5
   backupInfoMetricsBackfillHours: ""
   dashboardMetricsBackfillDays: ""
   version: 3.0.0

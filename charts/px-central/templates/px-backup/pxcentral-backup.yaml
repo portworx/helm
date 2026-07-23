@@ -220,10 +220,6 @@ spec:
         - name: TELEMETRY_ENVIRONMENT
           value: {{ .Values.telemetry.environment | quote }}
         {{- end }}
-        - name: BACKUP_DELETE_WORKER
-          value: "{{ .Values.pxbackup.backupDeleteWorker }}"
-        - name: VOL_DELETE_WORKER
-          value: "{{ .Values.pxbackup.volDeleteWorker }}"
         {{- if ne (.Values.pxbackup.backupInfoMetricsBackfillHours | toString) "" }}
         - name: BACKUP_INFO_METRICS_BACKFILL_HOURS
           value: "{{ .Values.pxbackup.backupInfoMetricsBackfillHours }}"
