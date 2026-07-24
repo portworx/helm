@@ -145,6 +145,14 @@ spec:
       - name: pxcentral-apiserver
         image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxcentralApiServerImage.registry .Values.images.registry) (default .Values.images.pxcentralApiServerImage.repo .Values.images.repo) .Values.images.pxcentralApiServerImage.imageName .Values.images.pxcentralApiServerImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
         env:
           - name: PXC_NAMESPACE
             value: {{ .Release.Namespace }}

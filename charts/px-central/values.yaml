@@ -209,7 +209,6 @@ cassandra:
     maxHeapSize:
     newHeapSize:
 
-installCRDs: false
 clusterDomain: "cluster.local"
 cassandraUsername: cassandra
 cassandraPassword: cassandra
