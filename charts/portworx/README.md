@@ -114,7 +114,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `stork.args`                                               | Pass arguments to Stork container | "" |
 | `stork.volumes`                                            | Add volumes to Stork container | [] |
 | `stork.env`                                                | List of Kubernetes like environment variables passed to Stork | [] |
-| `stork.useWorkloadIdentity`                                | When true, Stork uses the same workload identity credentials configured for Portworx via `workloadIdentity.credentials`. Only applicable when `stork.enabled` is true. Setting this to true requires `workloadIdentity.credentials` to be configured; otherwise the chart rendering will fail. | "" |
+| `stork.useWorkloadIdentity`                                | When true, Stork uses the same workload identity credentials configured for Portworx via `workloadIdentity.credentials` or `workloadIdentity.gcp.credentialsConfigMap`. Only applicable when `stork.enabled` is true. Setting this to true requires either `workloadIdentity.credentials` or `workloadIdentity.gcp.credentialsConfigMap` to be configured; otherwise the chart rendering will fail. | "" |
 | `customRegistryURL`                                        | Custom Docker registry | "" |
 | `registrySecret`                                           | Registry secret | "" |
 | `imagePullPolicy`                                          | ImagePullPolicy specifies the image pull policy for all the images deployed by the operator. The possible values can be `Always` or `IfNotPresent`. | "Always" |
@@ -181,7 +181,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `componentK8sConfig.name`                                  | Name of the ComponentK8sConfig resource | "portworx-k8s-config" |
 | `componentK8sConfig.globalConfig`                          | Global configuration that applies to all Portworx components unless overridden by component-specific configuration. Supports annotations, labels, placement (nodeAffinity, tolerations), and priorityClass. Note: Global configuration cannot set container resource requests and limits. | {} |
 | `componentK8sConfig.components`                            | List of component-specific configurations. Each component can specify componentNames (e.g., "Autopilot", "CSI", "Portworx API") and workloadConfigs with workloadNames, annotations, labels, containerConfigs (resources), priorityClass, and placement settings. | [] |
-| `workloadIdentity.credentials`                             | List of cloud workload identity credentials used to annotate the Portworx ServiceAccount for cloud provider authentication. Each entry specifies `cloudProvider` (valid values: aws, azure, gcp; currently only aws and azure are supported), `key` (annotation key, e.g. `eks.amazonaws.com/role-arn` for AWS), and `value` (annotation value, e.g. the IAM role ARN to be assumed by the ServiceAccount). | [] |
+| `workloadIdentity.credentials`                             | List of cloud workload identity credentials used to annotate the Portworx ServiceAccount for cloud provider authentication. Each entry specifies `cloudProvider` (valid values: aws, azure), `key` (annotation key, e.g. `eks.amazonaws.com/role-arn` for AWS), and `value` (annotation value, e.g. the IAM role ARN to be assumed by the ServiceAccount). | [] |
+| `workloadIdentity.gcp.credentialsConfigMap`                | Name of the ConfigMap containing GCP workload identity credentials. Supported only for GCP Gardener clusters. | "" |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`. For example,
 
