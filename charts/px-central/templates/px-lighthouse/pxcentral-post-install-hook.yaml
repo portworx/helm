@@ -2,6 +2,111 @@
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pxcentral-post-install-hook
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: pxcentral-post-install-hook
+    app.kubernetes.io/component: pxcentral-post-install-hook
+{{- include "px-central.labels" . | nindent 4 }}
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pxcentral-post-install-hook
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: pxcentral-post-install-hook
+    app.kubernetes.io/component: pxcentral-post-install-hook
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+  # pxcentral-admin-user / pxcentral-modules / pxcentral-ui-configmap / license & etcd configmaps
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "patch", "delete"]
+  # px-central-admin, pxc-backup-secret, pxcentral-keycloak-http, px-license-secret, px-backup-admin-secret
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "create", "patch"]
+  # Locate/restart the frontend pod, and "get" is required by kubectl exec
+  # (into keycloak / license-server pods) before it can hit pods/exec
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/exec"]
+    verbs: ["create"]
+  # Remove etcd Service/headless-Service when px-backup isn't using etcd
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["delete"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "patch"]
+  - apiGroups: ["apps"]
+    resources: ["deployments/status"]
+    verbs: ["get"]
+  # Remove the etcd StatefulSet when px-backup isn't using etcd as its datastore
+  - apiGroups: ["apps"]
+    resources: ["statefulsets"]
+    verbs: ["get", "delete"]
+  - apiGroups: ["apps"]
+    resources: ["statefulsets/status"]
+    verbs: ["get"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pxcentral-post-install-hook
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: pxcentral-post-install-hook
+    app.kubernetes.io/component: pxcentral-post-install-hook
+{{- include "px-central.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: pxcentral-post-install-hook
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: pxcentral-post-install-hook
+  apiGroup: rbac.authorization.k8s.io
+{{- if .Values.pxlicenseserver.enabled }}
+---
+# Node listing is only needed to discover the two license-server HA node endpoints
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Namespace }}-pxcentral-post-install-hook
+  labels:
+    name: pxcentral-post-install-hook
+    app.kubernetes.io/component: pxcentral-post-install-hook
+{{- include "px-central.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["list"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Release.Namespace }}-pxcentral-post-install-hook
+  labels:
+    name: pxcentral-post-install-hook
+    app.kubernetes.io/component: pxcentral-post-install-hook
+{{- include "px-central.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: pxcentral-post-install-hook
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: {{ .Release.Namespace }}-pxcentral-post-install-hook
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -38,7 +143,7 @@ spec:
                 values:
                 - "false"
               {{- end }}
-      serviceAccountName: pxcentral-apiserver
+      serviceAccountName: pxcentral-post-install-hook
       {{- if $isOpenshiftCluster}}
       {{- else }}
       securityContext:
@@ -48,7 +153,18 @@ spec:
       - name: pxcentral-post-setup
         image: {{ printf "%s/%s/%s:%s" (default .Values.images.postInstallSetupImage.registry .Values.images.registry) (default .Values.images.postInstallSetupImage.repo .Values.images.repo) .Values.images.postInstallSetupImage.imageName .Values.images.postInstallSetupImage.tag }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop:
+            - ALL
+          seccompProfile:
+            type: RuntimeDefault
         env:
+          - name: HOME
+            value: /tmp
           - name: LOG_LEVEL
             value: INFO
           - name: UPDATE_ADMIN_USER_PROFILE
@@ -81,6 +197,8 @@ spec:
       {{- end }}
         command: ["python", "-u", "/pxcentral-post-install/pxc-post-setup.py"]
         volumeMounts:
+          - mountPath: /tmp
+            name: tmp-dir
         {{- if .Values.proxy.configSecretName }}
           - mountPath: /etc/ssl/certs/proxy-ca.pem
             subPath: proxy-ca.pem
@@ -95,6 +213,8 @@ spec:
       {{- end }}
       restartPolicy: Never
       volumes:
+        - name: tmp-dir
+          emptyDir: {}
       {{- if .Values.proxy.configSecretName }}
         - name: proxy-ca-volume
           secret:
