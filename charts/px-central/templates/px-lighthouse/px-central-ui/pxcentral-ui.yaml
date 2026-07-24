@@ -2,7 +2,6 @@
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
-{{- $nfsEnabled := .Values.pxbackup.nfs.enabled | default false }}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 apiVersion: v1
 kind: ConfigMap
@@ -227,11 +226,7 @@ spec:
                 name: pxcentral-ui-configmap
           env:
             - name: ENABLE_NFS
-              {{- if eq $nfsEnabled true }}
               value: "true"
-              {{- else }}
-              value: "false"
-              {{- end }}
           {{- include "serviceMesh.env" . | nindent 12 }}
             - name: DB_PASSWORD
               valueFrom:
