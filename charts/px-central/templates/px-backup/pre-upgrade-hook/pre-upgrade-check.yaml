@@ -228,20 +228,12 @@ spec:
           args: ["--hook=pre-upgrade"]
           env:
             {{- if eq $pxBackupEnabled true }} 
-            - name: MONGODB_STATEFULSET_NAME
-              value: pxc-backup-mongodb
             - name: SKIP_VALIDATIONS
               value: {{ .Values.pxbackup.skipValidations | default false | quote }}
             - name: ENCRYPT_MONGODB
               value: {{ .Values.pxbackup.encryptMongoDB | default false | quote }}
             - name: TARGET_PXBACKUP_VERSION
               value: "{{ .Values.pxbackup.version }}"
-            - name: MONGODB_SERVICE_NAME
-              value: pxc-backup-mongodb-headless
-            - name: MONGODB_PORT
-              value: "27017"
-            - name: MONGODB_ROOT_USERNAME
-              value: root
             - name: MINIMUM_KUBERNETES_VERSION
               value: "{{ $minimumKubernetesVersion }}"
             {{- end }}
@@ -259,30 +251,11 @@ spec:
                 secretKeyRef:
                   key: DB_PASSWORD
                   name: pxcentral-mysql-secret
-            - name: POSTGRES_STATEFULSET_NAME
-              value: pxcentral-keycloak-postgresql
-            - name: POSTGRES_CONTAINER_NAME
-              value: pxcentral-keycloak-postgresql
-            - name: POSTGRES_TARGET_IMAGE
-              value: {{ printf "%s/%s/%s:%s" (default .Values.images.keycloakBackendImage.registry .Values.images.registry) (default .Values.images.keycloakBackendImage.repo .Values.images.repo) .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
-            - name: POSTGRESQL_PORT_NUMBER
-              value: "5432"
-            - name: POSTGRESQL_VOLUME_DIR
-              value: "/bitnami/postgresql"
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
                   name: pxcentral-keycloak-postgresql
                   key: postgresql-username
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: pxcentral-keycloak-postgresql
-                  key: postgresql-password
-            - name: POSTGRES_DB
-              value: "keycloak"
-            - name: POSTGRES_PVC_NAME
-              value: pxcentral-keycloak-data-postgres18
             - name: JOB_TIMEOUT_SECONDS
               value: "600"
             - name: PX_BACKUP_ENABLED
