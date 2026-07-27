@@ -114,6 +114,7 @@ stringData:
                 {{ else if and (eq .Labels.alertname "BackupAlert") (eq .Annotations.value "10") }}Backup Missing
                 {{ else }}Unknown (value: {{ .Annotations.value }})
                 {{ end }}
+                {{ if eq .Labels.is_synced "true" }}(Synced Backup){{ end }}
             </div>
             <div
                 class="pb-16"
@@ -138,6 +139,14 @@ stringData:
                 <div>{{ .Labels.cluster }}</div>
                 </div>
               </li>
+              {{- if eq .Labels.is_synced "true" }}
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Backup type:</div>
+                <div>Synced (originally created by a cluster outside this deployment)</div>
+                </div>
+              </li>
+              {{- end }}
               <li>
               <div style="display: flex">
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">Error:</div>
