@@ -619,8 +619,9 @@ spec:
           {{- if eq $labels.schedule_name "" }}
           {{ else }} part of backup schedule "{{ $labels.schedule_name }}"
           {{ end }} taken for cluster "{{ $labels.cluster }}" on namespace "{{ $labels.backup_namespace }}"
-          {{- if eq $value 4.00 }} has failed. {{- else }} is missing from backup location. {{- end }} `}}
-        summary: "{{` {{- if eq $value 4.00 -}} Backup failed {{- else -}} Cloud file missing {{- end }} `}}"
+          {{- if eq $value 4.00 }} has failed. {{- else }} is missing from backup location. {{- end }}
+          {{- if eq $labels.is_synced "true" }} This is a synced backup (originally created by a cluster outside this deployment). {{- end }} `}}
+        summary: '{{` {{- if eq $labels.is_synced "true" -}} Synced backup: {{ end }}{{- if eq $value 4.00 -}} Backup failed {{- else -}} Cloud file missing {{- end }} `}}'
         value: "{{`{{ $value }}`}}"
       expr: pxbackup_backup_status == 4 or pxbackup_backup_status == 10
       for: 1m
@@ -661,7 +662,8 @@ spec:
           {{- if eq .Labels.schedule_name "" }}
           {{ else }} part of backup schedule "{{ $labels.schedule_name }}"
           {{ end }} taken for cluster "{{ $labels.cluster }}"on namespace "{{ $labels.backup_namespace}}"
-          was only completed partially.`}}
+          was only completed partially.
+          {{- if eq $labels.is_synced "true" }} This is a synced backup (originally created by a cluster outside this deployment). {{- end }}`}}
         summary: Partial Backup Success
       expr: pxbackup_backup_status == 8
       for: 1m
