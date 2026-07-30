@@ -1,0 +1,3 @@
+workloadIdentity:
+  gcp:
+    credentialsConfigMap: "gcp-wi-config"

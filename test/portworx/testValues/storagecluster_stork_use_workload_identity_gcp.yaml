@@ -1,0 +1,6 @@
+stork:
+  enabled: true
+  useWorkloadIdentity: true
+workloadIdentity:
+  gcp:
+    credentialsConfigMap: "gcp-wi-config"

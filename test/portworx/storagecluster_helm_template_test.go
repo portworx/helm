@@ -185,8 +185,15 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestStorkUseWorkloadIdentityEnabledWithGCP",
+			resultFileName: "storagecluster_stork_use_workload_identity_gcp.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_stork_use_workload_identity_gcp.yaml"},
+			},
+		},
+		{
 			name:             "TestStorkUseWorkloadIdentityEnabledWithoutCredsFails",
-			expectedErrorMsg: "stork.useWorkloadIdentity is set to true but workloadIdentity.credentials is empty.",
+			expectedErrorMsg: "stork.useWorkloadIdentity is set to true but no workload identity credentials are configured.",
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
 					"stork.enabled":             "true",
@@ -206,7 +213,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 		},
 		{
 			name:             "TestStorkUseWorkloadIdentityWithStorkDisabledFails",
-			expectedErrorMsg: "stork.useWorkloadIdentity is set to true but workloadIdentity.credentials is empty.",
+			expectedErrorMsg: "stork.useWorkloadIdentity is set to true but no workload identity credentials are configured.",
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
 					"stork.enabled":             "false",
@@ -487,6 +494,23 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			resultFileName: "storagecluster_with_workload_identity.yaml",
 			helmOption: &helm.Options{
 				ValuesFiles: []string{"./testValues/storagecluster_with_workload_identity.yaml"},
+			},
+		},
+		{
+			name:           "TestWorkloadIdentityGCP",
+			resultFileName: "storagecluster_workload_identity_gcp.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_workload_identity_gcp.yaml"},
+			},
+		},
+		{
+			name:           "TestWorkloadIdentityGCPEmptyConfigMap",
+			resultFileName: "storagecluster_workload_identity_gcp_empty_configmap.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"internalKVDB":                              "true",
+					"workloadIdentity.gcp.credentialsConfigMap": "",
+				},
 			},
 		},
 		{

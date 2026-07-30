@@ -4,11 +4,15 @@
 
 {{- if eq (.Values.stork.useWorkloadIdentity | default false) true }}
 {{- $wiCreds := list }}
+{{- $gcpConfigMap := "" }}
 {{- if .Values.workloadIdentity }}
 {{- $wiCreds = .Values.workloadIdentity.credentials }}
+{{- if .Values.workloadIdentity.gcp }}
+{{- $gcpConfigMap = .Values.workloadIdentity.gcp.credentialsConfigMap | default "" }}
 {{- end }}
-{{- if empty $wiCreds }}
-{{- fail "stork.useWorkloadIdentity is set to true but workloadIdentity.credentials is empty. Please configure workloadIdentity.credentials when enabling stork.useWorkloadIdentity." }}
+{{- end }}
+{{- if and (empty $wiCreds) (empty $gcpConfigMap) }}
+{{- fail "stork.useWorkloadIdentity is set to true but no workload identity credentials are configured. Please configure workloadIdentity credentials when enabling stork.useWorkloadIdentity." }}
 {{- end }}
 {{- end }}
 
@@ -694,10 +698,20 @@ spec:
     {{- end }}
   {{- end }}
   {{- if .Values.workloadIdentity }}
-  {{- with .Values.workloadIdentity.credentials }}
+  {{- $gcpConfigMap := "" }}
+  {{- if .Values.workloadIdentity.gcp }}
+  {{- $gcpConfigMap = .Values.workloadIdentity.gcp.credentialsConfigMap | default "" }}
+  {{- end }}
+  {{- if or $gcpConfigMap .Values.workloadIdentity.credentials }}
   workloadIdentity:
+    {{- if $gcpConfigMap }}
+    gcp:
+      credentialsConfigMap: {{ $gcpConfigMap }}
+    {{- end }}
+    {{- with .Values.workloadIdentity.credentials }}
     credentials:
       {{- toYaml . | nindent 4 }}
+    {{- end }}
   {{- end }}
   {{- end }}
   {{- if or (eq .Values.taintBasedScheduling.enabled true) (eq .Values.taintBasedScheduling.enabled false) }}

@@ -16,12 +16,12 @@ spec:
   kvdb:
     internal: true
     enableTLS: true
+  certManager:
+    enabled: true
   storage:
     useAll: true
   secretsProvider: k8s
 
-  certManager:
-    enabled: true
   stork:
     enabled: true
   monitoring:
@@ -31,9 +31,10 @@ spec:
         enabled: true
   csi:
     enabled: true
-    seLinuxMount: false
-    installSnapshotController: true
   autopilot:
     enabled: true
+  workloadIdentity:
+    gcp:
+      credentialsConfigMap: gcp-wi-config
   clusterDiags:
     enabled: true
