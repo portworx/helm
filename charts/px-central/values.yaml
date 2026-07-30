@@ -179,6 +179,12 @@ telemetry:
     collectionInterval: 3600  # seconds (1 hour)
     # Exclude pods matching these patterns (comma-separated)
     excludePodPatterns: "alertmanager,prometheus,telemetry"
+    # Log-pressure detection (must mirror node kubelet containerLog* settings)
+    containerLogMaxSizeBytes: 10485760  # 10Mi
+    containerLogMaxFiles: 5
+    criPrefixBytes: 44
+    fullnessThresholdPercent: 80
+    scrapeInterval: "30s"
 
 service:
   pxCentralUIServiceType: "LoadBalancer"

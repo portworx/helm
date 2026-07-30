@@ -146,6 +146,18 @@ spec:
         - name: DB_EXPORT_CURSOR_BATCH
           value: "1000"
 
+        # Log-pressure detection knobs
+        - name: CONTAINER_LOG_MAX_SIZE_BYTES
+          value: {{ .Values.telemetry.logsCollector.containerLogMaxSizeBytes | default 10485760 | quote }}
+        - name: CONTAINER_LOG_MAX_FILES
+          value: {{ .Values.telemetry.logsCollector.containerLogMaxFiles | default 5 | quote }}
+        - name: CRI_PREFIX_BYTES
+          value: {{ .Values.telemetry.logsCollector.criPrefixBytes | default 44 | quote }}
+        - name: FULLNESS_THRESHOLD_PERCENT
+          value: {{ .Values.telemetry.logsCollector.fullnessThresholdPercent | default 80 | quote }}
+        - name: SCRAPE_INTERVAL
+          value: {{ .Values.telemetry.logsCollector.scrapeInterval | default "30s" | quote }}
+
         {{- if not $isOpenshiftCluster }}
         securityContext:
           runAsUser: 1000
