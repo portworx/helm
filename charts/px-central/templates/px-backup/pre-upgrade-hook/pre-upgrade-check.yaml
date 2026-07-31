@@ -32,6 +32,20 @@
   {{- end }}
 {{- end }}
 
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-backup-pre-upgrade
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-pre-upgrade-hook
+    app.kubernetes.io/component: pxcentral-pre-upgrade-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -50,6 +64,11 @@ rules:
   - apiGroups: ["monitoring.coreos.com"]
     resources: ["prometheuses", "alertmanagers", "servicemonitors", "prometheusrules"]
     verbs: ["get", "create", "update", "patch"]
+  # For ValidateAndCleanupJobs' namespace existence check before it looks up stale Jobs
+  # (namespaces is cluster-scoped, so this must live on the ClusterRole, not the namespaced Role)
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -64,7 +83,7 @@ metadata:
 {{- include "px-central.partOfLabel" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
-    name: default
+    name: px-backup-pre-upgrade
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
@@ -86,7 +105,7 @@ metadata:
 rules:
   - apiGroups: ["apps"]
     resources: ["statefulsets"]
-    verbs: ["get", "list", "update", "delete", "create", "patch"]
+    verbs: ["get", "list", "watch", "update", "delete", "create", "patch"]
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["delete","get", "list", "watch","create","update","patch"]
@@ -141,7 +160,7 @@ metadata:
 {{- include "px-central.partOfLabel" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
-    name: default
+    name: px-backup-pre-upgrade
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
@@ -199,6 +218,7 @@ spec:
         kubernetes.azure.com/no-http-proxy-vars: "true"
     {{- end }}
     spec:
+      serviceAccountName: px-backup-pre-upgrade
       {{- if $isOpenshiftCluster}}
       {{- else }}
       securityContext:
@@ -228,43 +248,44 @@ spec:
           args: ["--hook=pre-upgrade"]
           env:
             {{- if eq $pxBackupEnabled true }} 
-            - name: MONGODB_STATEFULSET_NAME
-              value: pxc-backup-mongodb
             - name: SKIP_VALIDATIONS
               value: {{ .Values.pxbackup.skipValidations | default false | quote }}
             - name: ENCRYPT_MONGODB
               value: {{ .Values.pxbackup.encryptMongoDB | default false | quote }}
             - name: TARGET_PXBACKUP_VERSION
               value: "{{ .Values.pxbackup.version }}"
-            - name: MONGODB_TARGET_VERSION
-              value: {{ .Values.images.mongodbImage.tag }}
-            - name: MONGODB_SERVICE_NAME
-              value: pxc-backup-mongodb-headless
-            - name: MONGODB_PORT
-              value: "27017"
-            - name: MONGODB_ROOT_USERNAME
-              value: root
             - name: MINIMUM_KUBERNETES_VERSION
               value: "{{ $minimumKubernetesVersion }}"
-            - name: MONGODB_IMAGES
-              value: >
-                {
-                  "registry": "{{ (default .Values.images.mongodbImage.registry .Values.images.registry) }}",
-                  "repo": "{{ (default .Values.images.mongodbImage.repo .Values.images.repo) }}",
-                  "imageName": "{{ .Values.images.mongodbImage.imageName }}",
-                  "tags": {
-                    "mongodb5": "{{ .Values.images.mongodbImageMap.tags.mongodb5 }}",
-                    "mongodb6": "{{ .Values.images.mongodbImageMap.tags.mongodb6 }}",
-                    "mongodb7": "{{ .Values.images.mongodbImageMap.tags.mongodb7 }}",
-                    "mongodb8": "{{ .Values.images.mongodbImageMap.tags.mongodb8 }}"
-                  }
-                }
             {{- end }}
           {{- include "serviceMesh.env" . | nindent 12 }}
             - name: NAMESPACE
               value: {{ .Release.Namespace }}
             - name: DEFAULT_USER_NAME
               value: {{ .Values.oidc.centralOIDC.defaultUsername | quote }}
+            - name: NEW_OIDC_CLIENT_ID
+              value: {{ .Values.oidc.centralOIDC.clientId | quote }}
+            - name: NEW_POSTGRES_USERNAME
+              value: {{ .Values.oidc.centralOIDC.keyCloakBackendUserName | quote }}
+            - name: NEW_CENTRAL_OIDC_ENABLED
+              value: {{ .Values.oidc.centralOIDC.enabled | quote }}
+            - name: NEW_DEFAULT_EMAIL
+              value: {{ .Values.oidc.centralOIDC.defaultEmail | quote }}
+            - name: NEW_EXTERNAL_OIDC_ENABLED
+              value: {{ .Values.oidc.externalOIDC.enabled | quote }}
+            - name: NEW_EXTERNAL_OIDC_ENDPOINT
+              value: {{ .Values.oidc.externalOIDC.endpoint | default "" | quote }}
+            - name: NEW_EXTERNAL_OIDC_CLIENT_ID
+              value: {{ .Values.oidc.externalOIDC.clientID | default "" | quote }}
+            - name: NEW_EXTERNAL_OIDC_CLIENT_SECRET
+              value: {{ .Values.oidc.externalOIDC.clientSecret | default "" | quote }}
+            - name: NEW_ORG_NAME
+              value: {{ .Values.pxbackup.orgName | quote }}
+            - name: NEW_STORAGE_CLASS_NAME
+              value: {{ .Values.persistentStorage.storageClassName | default "" | quote }}
+            - name: NEW_MYSQL_VOLUME_SIZE
+              value: {{ .Values.persistentStorage.mysqlVolumeSize | quote }}
+            - name: NEW_MONGODB_VOLUME_SIZE
+              value: {{ .Values.persistentStorage.mongodbVolumeSize | quote }}
             - name: MYSQL_STATEFULSET_NAME
               value: pxcentral-mysql
             - name: MYSQL_ROOT_USERNAME
@@ -274,30 +295,11 @@ spec:
                 secretKeyRef:
                   key: DB_PASSWORD
                   name: pxcentral-mysql-secret
-            - name: POSTGRES_STATEFULSET_NAME
-              value: pxcentral-keycloak-postgresql
-            - name: POSTGRES_CONTAINER_NAME
-              value: pxcentral-keycloak-postgresql
-            - name: POSTGRES_TARGET_IMAGE
-              value: {{ printf "%s/%s/%s:%s" (default .Values.images.keycloakBackendImage.registry .Values.images.registry) (default .Values.images.keycloakBackendImage.repo .Values.images.repo) .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
-            - name: POSTGRESQL_PORT_NUMBER
-              value: "5432"
-            - name: POSTGRESQL_VOLUME_DIR
-              value: "/bitnami/postgresql"
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
                   name: pxcentral-keycloak-postgresql
                   key: postgresql-username
-            - name: POSTGRES_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: pxcentral-keycloak-postgresql
-                  key: postgresql-password
-            - name: POSTGRES_DB
-              value: "keycloak"
-            - name: POSTGRES_PVC_NAME
-              value: pxcentral-keycloak-data-postgres18
             - name: JOB_TIMEOUT_SECONDS
               value: "600"
             - name: PX_BACKUP_ENABLED

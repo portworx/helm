@@ -1,5 +1,4 @@
 {{/* Setting defaults if they are omitted. */}}
-{{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $centralOIDC := .Values.oidc.centralOIDC.enabled | default false -}}
 {{- $operatorToChartUpgrade := .Values.operatorToChartUpgrade | default false -}}
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
@@ -420,11 +419,6 @@ spec:
           emptyDir:
             medium: Memory
             sizeLimit: 1Gi
-        {{- if eq $externalPersistentStorageEnabled false }}
-        - name: pxcentral-keycloak-data-postgres18
-          emptyDir: {}
-        {{- end }}
-  {{- if eq $externalPersistentStorageEnabled true }}
   volumeClaimTemplates:
     - metadata:
         name: pxcentral-keycloak-data-postgres18
@@ -437,7 +431,6 @@ spec:
         {{- if .Values.persistentStorage.storageClassName }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         {{- end }}
-  {{- end }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -669,13 +662,8 @@ spec:
           configMap:
             name: pxcentral-keycloak-startup
             defaultMode: 0555
-        {{- if eq $externalPersistentStorageEnabled false }}
-        - name: theme
-          emptyDir: {}
-        {{- end }}
         - emptyDir: {}
           name: keycloakdir
-  {{- if eq $externalPersistentStorageEnabled true }}
   volumeClaimTemplates:
     - metadata:
         name: theme
@@ -688,5 +676,4 @@ spec:
         {{- if .Values.persistentStorage.storageClassName }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         {{- end }}
-  {{- end }}
 {{- end -}}

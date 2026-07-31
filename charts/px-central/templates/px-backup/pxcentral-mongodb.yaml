@@ -1,6 +1,5 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
-{{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $mongoCacheSize := int .Values.persistentStorage.mongoCacheSize}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
@@ -231,10 +230,6 @@ spec:
           configMap:
             defaultMode: 493
             name: pxc-backup-mongodb-scripts
-        {{- if eq $externalPersistentStorageEnabled false }}
-        - name: pxc-mongodb-data
-          emptyDir: {}
-        {{- end }}
       {{- if .Values.proxy.configSecretName }}
         - name: proxy-ca-volume
           secret:
@@ -244,7 +239,6 @@ spec:
             optional: true
             secretName: {{ .Values.proxy.configSecretName }}
       {{- end }}
-  {{- if eq $externalPersistentStorageEnabled true }}
   volumeClaimTemplates:
     - metadata:
         name: pxc-mongodb-data
@@ -257,5 +251,4 @@ spec:
         {{- if .Values.persistentStorage.storageClassName }}
         storageClassName: {{ .Values.persistentStorage.storageClassName }}
         {{- end }}
-  {{- end }}
 {{- end -}}

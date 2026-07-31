@@ -115,6 +115,9 @@ metadata:
   annotations:
     meta.helm.sh/release-name: {{ .Release.Name }}
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "5"
+    helm.sh/hook-delete-policy: before-hook-creation
   labels:
     name: pxcentral-post-install-hook
     app.kubernetes.io/component: pxcentral-post-install-hook
@@ -169,8 +172,6 @@ spec:
             value: INFO
           - name: UPDATE_ADMIN_USER_PROFILE
             value: "{{ .Values.oidc.centralOIDC.updateAdminProfile }}"
-          - name: K8S_SSL_ENABLED
-            value: "{{ .Values.postInstallJob.sslEnabled }}"
           - name: PXC_NAMESPACE
             valueFrom:
               fieldRef:
@@ -195,7 +196,8 @@ spec:
           - name: PX_BACKUP_FEDERATED
             value: "true"
       {{- end }}
-        command: ["python", "-u", "/pxcentral-post-install/pxc-post-setup.py"]
+        command: ["/pxcentral-hook/bin/pxcentral-hook"]
+        args: ["--hook=post-install"]
         volumeMounts:
           - mountPath: /tmp
             name: tmp-dir

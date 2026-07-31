@@ -1,6 +1,19 @@
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 
 {{ if not .Values.isArgoCD }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-backup-pre-rollback
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-rollback
+    "helm.sh/hook-delete-policy": hook-succeeded
+  labels:
+    name: pxcentral-pre-install-hook
+    app.kubernetes.io/component: pxcentral-pre-install-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -18,6 +31,7 @@ metadata:
 spec:
   template:
     spec:
+      serviceAccountName: px-backup-pre-rollback
       {{- if $isOpenshiftCluster}}
       {{- else }}
       securityContext:
