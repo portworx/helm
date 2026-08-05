@@ -7,6 +7,20 @@
 
 {{- if not .Values.isUpgrade }}
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-backup-pre-install
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-pre-install-hook
+    app.kubernetes.io/component: pxcentral-pre-install-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
+---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -113,7 +127,7 @@ metadata:
 {{- include "px-central.partOfLabel" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
-    name: default
+    name: px-backup-pre-install
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: Role
@@ -134,7 +148,7 @@ metadata:
 {{- include "px-central.partOfLabel" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
-    name: default
+    name: px-backup-pre-install
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
@@ -192,6 +206,7 @@ spec:
         kubernetes.azure.com/no-http-proxy-vars: "true"
     {{- end }}
     spec:
+      serviceAccountName: px-backup-pre-install
       {{- if $isOpenshiftCluster}}
       {{- else }}
       securityContext:
@@ -306,6 +321,79 @@ spec:
 {{- end }}
 ---
 {{- if eq $pxBackupEnabled true }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-backup-preflight-check
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-preflight-check-hook
+    app.kubernetes.io/component: pxcentral-preflight-check-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: px-backup-preflight-check-role
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-preflight-check-hook
+    app.kubernetes.io/component: pxcentral-preflight-check-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
+rules:
+  # For reading/writing the px-central-report and pxc-preflight-temporary ConfigMaps
+  # (delete is required: SavePreflightResultsToConfigMap deletes and recreates rather than patching in place)
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["get", "create", "update", "delete"]
+  # For resolving image pull credentials via the in-cluster keychain
+  - apiGroups: [""]
+    resources: ["serviceaccounts"]
+    verbs: ["get"]
+  # For cleaning up stale pre-install-check/pre-upgrade-check Jobs left over from a prior failed run
+  - apiGroups: ["batch"]
+    resources: ["jobs", "jobs/status"]
+    verbs: ["get", "list", "delete"]
+  # For ValidateStorageClassReady's test PVC (create/poll/delete a throwaway PVC to confirm the
+  # storage class can actually provision, not just that the StorageClass object exists)
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "create", "delete"]
+  # For surfacing the provisioner's failure event when the test PVC doesn't bind in time
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: px-backup-preflight-check-rolebinding
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-preflight-check-hook
+    app.kubernetes.io/component: pxcentral-preflight-check-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: px-backup-preflight-check
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: px-backup-preflight-check-role
+  apiGroup: rbac.authorization.k8s.io
+---
 # Pre Flight check job
 apiVersion: batch/v1
 kind: Job
@@ -330,6 +418,7 @@ spec:
         kubernetes.azure.com/no-http-proxy-vars: "true"
     {{- end }}
     spec:
+      serviceAccountName: px-backup-preflight-check
       {{- if $isOpenshiftCluster}}
       {{- else }}
       securityContext:
@@ -449,7 +538,7 @@ metadata:
 {{- include "px-central.partOfLabel" . | nindent 4 }}
 subjects:
   - kind: ServiceAccount
-    name: default
+    name: px-backup-preflight-check
     namespace: {{ .Release.Namespace }}
 roleRef:
   kind: ClusterRole
