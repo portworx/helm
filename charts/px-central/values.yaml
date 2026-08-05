@@ -214,7 +214,6 @@ cassandra:
     maxHeapSize:
     newHeapSize:
 
-installCRDs: false
 clusterDomain: "cluster.local"
 cassandraUsername: cassandra
 cassandraPassword: cassandra
@@ -266,7 +265,7 @@ images:
     module: pxCentral
   postInstallSetupImage:
     imageName: pxcentral-onprem-hook-base
-    tag: 358-merge
+    tag: 3.2.0-fc1
     module: pxCentral
   keycloakBackendImage:
     imageName: postgresql
@@ -290,7 +289,7 @@ images:
     module: pxCentral
   preSetupHookImage:
     imageName: pxcentral-onprem-hook-base
-    tag: 358-merge
+    tag: 3.2.0-fc1
     module: pxCentral
   mysqlInitImage:
     imageName: busybox
@@ -400,3 +399,11 @@ images:
     imageName: memcached
     tag: 1.6.17-alpine
     module: pxMonitor
+  ## Images required for intermediate Mongo upgrades
+  # mongodbImageMap:
+  #   tags:
+  #     mongodb5: 5.0.24-debian-11-r20
+  #     mongodb6: 6.0.13-debian-11-r21
+  #     mongodb7: 7.0.15-debian-12-r2
+  #     mongodb8: 8.0.20
+  #   module: pxBackup
