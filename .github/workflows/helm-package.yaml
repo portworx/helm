@@ -3,8 +3,14 @@ name: Helm Package and Index
 on:
   workflow_dispatch:
   push:
-    branches:
-      - '**'
+    # master and pre-release-* are excluded: the auto-commit lands on stable/
+    # (index.yaml + the packaged .tgz), which conflicts on every rebase of a
+    # pre-release branch onto master. Package these branches deliberately via
+    # workflow_dispatch (Actions -> Helm Package and Index -> Run workflow)
+    # instead of on every push.
+    branches-ignore:
+      - 'master'
+      - 'pre-release-*'
     paths:
       - 'charts/**'
 
