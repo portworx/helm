@@ -53,8 +53,6 @@ spec:
             value: INFO
           - name: UPDATE_ADMIN_USER_PROFILE
             value: "{{ .Values.oidc.centralOIDC.updateAdminProfile }}"
-          - name: K8S_SSL_ENABLED
-            value: "{{ .Values.postInstallJob.sslEnabled }}"
           - name: PXC_NAMESPACE
             valueFrom:
               fieldRef:
@@ -79,7 +77,8 @@ spec:
           - name: PX_BACKUP_FEDERATED
             value: "true"
       {{- end }}
-        command: ["python", "-u", "/pxcentral-post-install/pxc-post-setup.py"]
+        command: ["/pxcentral-hook/bin/pxcentral-hook"]
+        args: ["--hook=post-install"]
         volumeMounts:
         {{- if .Values.proxy.configSecretName }}
           - mountPath: /etc/ssl/certs/proxy-ca.pem

@@ -15,4 +15,3 @@ sources:
 - https://github.com/portworx/helm/tree/master/charts/px-central
 version: 3.2.0
 appVersion: 3.2.0-fc1
-name: px-central
