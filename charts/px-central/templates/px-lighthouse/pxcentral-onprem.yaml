@@ -26,7 +26,6 @@ metadata:
 {{- include "px-central.labels" . | nindent 4 }}
 data:
   ENABLED_BACKUP: "{{ .Values.pxbackup.enabled }}"
-  ENABLED_LICENSE_SERVER: "{{ .Values.pxlicenseserver.enabled }}"
   ENABLED_FORWARDING_PROXY: "false"
   ENABLED_METRICS: "{{ .Values.pxmonitor.enabled }}"
   MINI_K8S: "false"

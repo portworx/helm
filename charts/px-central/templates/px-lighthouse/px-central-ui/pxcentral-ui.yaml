@@ -275,6 +275,12 @@ spec:
                   name: px-central-admin
             - name: DB_INIT_TIMEOUT
               value: "300"
+            - name: PX_LICENSE_USER
+              value: "test"
+              valueFrom: null
+            - name: PX_LICENSE_PASSWORD
+              value: "test"
+              valueFrom: null
           resources: {}
           volumeMounts:
           {{- if .Values.proxy.configSecretName }}
@@ -408,6 +414,12 @@ spec:
                 secretKeyRef:
                   name: pxc-backup-secret
                   key: OIDC_CLIENT_SECRET
+            - name: PX_LICENSE_USER
+              value: "test"
+              valueFrom: null
+            - name: PX_LICENSE_PASSWORD
+              value: "test"
+              valueFrom: null
           volumeMounts:
             - name: frontend-nginx-configs
               mountPath: /etc/nginx/conf.d
