@@ -236,8 +236,6 @@ spec:
               value: {{ .Values.pxbackup.enabled | default false | quote }}
             - name: PX_MONITOR_ENABLED
               value: {{ .Values.pxmonitor.enabled | default false | quote }}
-            - name: PX_LICENSE_SERVER_ENABLED
-              value: {{ .Values.pxlicenseserver.enabled | default false | quote }}
             - name: PROXY_CONFIG_SECRET_NAME
               value: {{ .Values.proxy.configSecretName | default "" | quote }}
             - name: POSTGRES_USER
@@ -380,8 +378,6 @@ spec:
               value: {{ .Values.pxbackup.enabled | default false | quote }}
             - name: PX_MONITOR_ENABLED
               value: {{ .Values.pxmonitor.enabled | default false | quote }}
-            - name: PX_LICENSE_SERVER_ENABLED
-              value: {{ .Values.pxlicenseserver.enabled | default false | quote }}
             - name: DOCREGISTRY_SECRET_NAME
               value: {{ .Values.images.pullSecrets | first }}
             - name: INSECURE_REGISTRY

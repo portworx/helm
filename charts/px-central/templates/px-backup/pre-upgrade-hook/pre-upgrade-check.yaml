@@ -310,8 +310,6 @@ spec:
               value: "{{ $pxBackupEnabled }}"
             - name: PX_MONITOR_ENABLED
               value: {{ .Values.pxmonitor.enabled | default false | quote }}
-            - name: PX_LICENSE_SERVER_ENABLED
-              value: {{ .Values.pxlicenseserver.enabled | default false | quote }}
             - name: PROXY_CONFIG_SECRET_NAME
               value: {{ .Values.proxy.configSecretName | default "" | quote }}
             - name: IS_ARGOCD
