@@ -138,7 +138,7 @@ pxbackup:
   volDeleteWorker: 5
   backupInfoMetricsBackfillHours: ""
   dashboardMetricsBackfillDays: ""
-  version: 3.0.0
+  version: 3.1.0
   skipValidations: false
   usePlatformRbac: false
   encryptMongoDB: false
@@ -181,12 +181,25 @@ telemetry:
     excludePodPatterns: "alertmanager,prometheus,telemetry"
 
 service:
+  ## NOTE: On managed cloud platforms a "LoadBalancer" service may create a
+  ## public (internet-facing) endpoint unless an internal/private load balancer
+  ## annotation is set. For a private admin UI, use "ClusterIP" (access via
+  ## kubectl port-forward / private ingress), or keep "LoadBalancer" with your
+  ## cloud provider's internal-LB annotation set in pxCentralUIServiceAnnotations.
   pxCentralUIServiceType: "LoadBalancer"
-  ## To set the LoadBalancer service type to internal only
-  ## ref: https://kubernetes.io/docs/concepts/services-networking/service/#internal-load-balancer
+  ## For the current per-cloud internal-LB annotations, see the PX-Backup UI
+  ## access docs:
+  ## https://docs.portworx.com/portworx-backup-on-prem/install/install/set-up-pxb-operations/ui-access
   pxCentralUIServiceAnnotations: {}
   pxBackupUIServiceType: "LoadBalancer"
   pxBackupUIServiceAnnotations: {}
+  pxBackupServiceAnnotations: {}
+  ## Optional CIDR allow-lists for the UI LoadBalancer services (defense-in-depth).
+  ## Rendered as spec.loadBalancerSourceRanges only when the matching service type
+  ## is "LoadBalancer" and the list is non-empty. Support varies by cloud provider /
+  ## load-balancer implementation; this is NOT a substitute for an internal LB.
+  pxCentralUILoadBalancerSourceRanges: []
+  pxBackupUILoadBalancerSourceRanges: []
   grafanaServiceType: "NodePort"
   cortexNginxServiceType: "NodePort"
 
@@ -242,31 +255,31 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 3.0.0
+    tag: 3.1.0
     module: pxCentral
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 3.0.0
+    tag: 3.1.0
     module: pxCentral
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 3.0.0
+    tag: 3.1.0
     module: pxCentral
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 3.0.0
+    tag: 3.1.0
     module: pxCentral
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 3.0.0
+    tag: 3.1.0
     module: pxCentral
   keycloakBackendImage:
     registry: docker.io
@@ -278,13 +291,13 @@ images:
     registry: docker.io
     repo: portworx
     imageName: keycloak
-    tag: 26.5.7_v2
+    tag: "26.6.4_v2"
     module: pxCentral
   keycloakLoginThemeImage:
     registry: docker.io
     repo: portworx
     imageName: keycloak-login-theme
-    tag: 3.0.0
+    tag: 3.1.0
     module: pxCentral
   keycloakInitContainerImage:
     registry: docker.io
@@ -296,13 +309,13 @@ images:
     registry: docker.io
     repo: portworx
     imageName: mysql
-    tag: 8.4.9
+    tag: "8.4.10"
     module: pxCentral
   preSetupHookImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-hook
-    tag: 3.0.0
+    tag: 3.1.0
     module: pxCentral
   mysqlInitImage:
     registry: docker.io
@@ -316,7 +329,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 3.0.0
+    tag: 3.1.0
     module: pxBackup
   mongodbImage:
     registry: docker.io
@@ -329,32 +342,32 @@ images:
   telemetryEnvoyImage:
     registry: docker.io
     repo: portworx
-    imageName: telemetry-envoy
-    tag: 1.1.18
+    imageName: edge-envoy
+    tag: 2.0.115
     module: pxBackup
   telemetryRegistrationImage:
     registry: docker.io
     repo: portworx
     imageName: ccm-go
-    tag: 1.4.42
+    tag: 1.4.54
     module: pxBackup
   telemetryMetricsCollectorImage:
     registry: docker.io
     repo: portworx
     imageName: realtime-metrics
-    tag: 1.0.36
+    tag: 1.0.38
     module: pxBackup
   telemetryDataCollectorImage:
     registry: docker.io
     repo: portworx
     imageName: px-backup-telemetry-collector
-    tag: 3.0.0
+    tag: 3.1.0
     module: pxBackup
   telemetryLogUploadImage:
     registry: docker.io
     repo: portworx
     imageName: log-upload
-    tag: px-1.1.148
+    tag: px-1.1.155
     module: pxBackup
 
   ## Images required for enabling px-license-server
@@ -412,25 +425,25 @@ images:
     registry: docker.io
     repo: portworx
     imageName: prometheus
-    tag: v3.11.3
+    tag: v3.13.1
     module: pxBackup
   pxBackupAlertmanagerImage:
     registry: docker.io
     repo: portworx
     imageName: alertmanager
-    tag: v0.32.1
+    tag: v0.33.0
     module: pxBackup
   pxBackupPrometheusOperatorImage:
     registry: docker.io
     repo: portworx
     imageName: prometheus-operator
-    tag: v0.91.0
+    tag: v0.92.0
     module: pxBackup
   pxBackupPrometheusConfigReloaderImage:
     registry: docker.io
     repo: portworx
     imageName: prometheus-config-reloader
-    tag: v0.91.0
+    tag: v0.92.0
     module: pxBackup
   prometheusConfigReloadrImage:
     registry: docker.io

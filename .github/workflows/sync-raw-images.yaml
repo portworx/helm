@@ -1,0 +1,60 @@
+name: Sync raw_images_list with versions.yaml
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - '**'
+    paths:
+      - 'versions.yaml'
+      - 'raw_images_list.txt'
+      - 'scripts/sync_raw_images.py'
+
+jobs:
+  sync-raw-images:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Sync raw_images_list.txt tags to versions.yaml
+        run: python scripts/sync_raw_images.py --write
+
+      - name: Commit and push corrected image list
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "noreply@portworx.com"
+          git add raw_images_list.txt
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "chore: sync raw_images_list.txt tags with versions.yaml"
+          # Retry with rebase to survive concurrent pushes from other workflows
+          # (e.g. helm-package) that target the same branch.
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:${{ github.ref_name }}; then
+              echo "Pushed on attempt $attempt"
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt); rebasing on latest ${{ github.ref_name }}..."
+            git pull --rebase origin ${{ github.ref_name }}
+          done
+          echo "Failed to push after 5 attempts"
+          exit 1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

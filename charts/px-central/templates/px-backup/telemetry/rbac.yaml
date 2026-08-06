@@ -1,6 +1,7 @@
 {{/* PX-Backup Telemetry RBAC */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $telemetryEnabled := .Values.telemetry.enabled | default false }}
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- if and (eq $pxBackupEnabled true) (eq $telemetryEnabled true) }}
 ---
 apiVersion: v1
@@ -92,6 +93,31 @@ roleRef:
   kind: Role
   name: px-backup-telemetry-logs-collector-role
   apiGroup: rbac.authorization.k8s.io
+{{- end }}
+{{- if $isOpenshiftCluster }}
+---
+# OpenShift: grant telemetry SAs the "nonroot" SCC so edge-envoy runs as uid 10001
+# (writes its cert into /config) and the collector gets fsGroup (writes /var/cores).
+# v1 "nonroot" (not nonroot-v2) for OCP <4.11 compat. See PB-16295.
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: px-backup-telemetry-scc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-telemetry
+{{- include "px-central.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: system:openshift:scc:nonroot
+subjects:
+  - kind: ServiceAccount
+    name: px-backup-telemetry
+    namespace: {{ .Release.Namespace }}
+  - kind: ServiceAccount
+    name: px-backup-telemetry-logs-collector
+    namespace: {{ .Release.Namespace }}
 {{- end }}
 {{- end }}
 

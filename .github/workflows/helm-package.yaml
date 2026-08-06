@@ -1,9 +1,16 @@
 name: Helm Package and Index
 
 on:
+  workflow_dispatch:
   push:
-    branches:
-      - '**'
+    # master and pre-release-* are excluded: the auto-commit lands on stable/
+    # (index.yaml + the packaged .tgz), which conflicts on every rebase of a
+    # pre-release branch onto master. Package these branches deliberately via
+    # workflow_dispatch (Actions -> Helm Package and Index -> Run workflow)
+    # instead of on every push.
+    branches-ignore:
+      - 'master'
+      - 'pre-release-*'
     paths:
       - 'charts/**'
 
@@ -44,9 +51,20 @@ jobs:
           git add stable/*.tgz stable/index.yaml
           if git diff --staged --quiet; then
             echo "No changes to commit"
-          else
-            git commit -m "chore: package helm chart px-central"
-            git push origin ${{ github.ref_name }}
+            exit 0
           fi
+          git commit -m "chore: package helm chart px-central"
+          # Retry with rebase to survive concurrent pushes from other workflows
+          # (e.g. sync-raw-images) that target the same branch.
+          for attempt in 1 2 3 4 5; do
+            if git push origin HEAD:${{ github.ref_name }}; then
+              echo "Pushed on attempt $attempt"
+              exit 0
+            fi
+            echo "Push rejected (attempt $attempt); rebasing on latest ${{ github.ref_name }}..."
+            git pull --rebase origin ${{ github.ref_name }}
+          done
+          echo "Failed to push after 5 attempts"
+          exit 1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

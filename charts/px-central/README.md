@@ -511,8 +511,9 @@ Parameter | Description | Default
 `oidc.externalOIDC.endpoint` | External OIDC endpoint | `""`
 `securityContext` | Security context for the pod | `{runAsUser: 1000, fsGroup: 1000, runAsNonRoot: true}`
 `postInstallJob.sslEnabled` | k8s apis with ssl enabled in post-install-job pod | `true`
-`service.pxCentralUIServiceType` | service type of PX-Central UI | `"LoadBalancer"`
-`service.pxCentralUIServiceAnnotations` | annotations for PX-Central UI service | `"{}"`
+`service.pxCentralUIServiceType` | service type of PX-Central UI (`ClusterIP` or `LoadBalancer`) | `"LoadBalancer"`
+`service.pxCentralUIServiceAnnotations` | annotations for PX-Central UI service (use for internal/private LB annotations) | `"{}"`
+`service.pxCentralUILoadBalancerSourceRanges` | CIDR allow-list rendered as `spec.loadBalancerSourceRanges` when PX-Central UI is `LoadBalancer` (defense-in-depth) | `[]`
 `images.pullSecrets` | Image pull secrets | `docregistry-secret`
 `images.pullPolicy` | Image pull policy | `Always`
 `images.pxcentralApiServerImage.registry` | API server image registry | `docker.io`
@@ -568,8 +569,10 @@ Parameter | Description | Default
 `pxbackup.federated` | Enable federated mode for PX-Backup | `false`
 `persistentStorage.mongodbVolumeSize` | mongodb volume size | `"64Gi"`
 `persistentStorage.mongoCacheSize` | mongodb cache size in GB | `"4"`
-`service.pxBackupUIServiceType` | service type of PX-Backup UI | `"LoadBalancer"`
-`service.pxBackupUIServiceAnnotations` | annotations for the PX-Backup UI service | `"{}"`
+`service.pxBackupUIServiceType` | service type of PX-Backup UI (`ClusterIP` or `LoadBalancer`) | `"LoadBalancer"`
+`service.pxBackupUIServiceAnnotations` | annotations for the PX-Backup UI service (use for internal/private LB annotations) | `"{}"`
+`service.pxBackupUILoadBalancerSourceRanges` | CIDR allow-list rendered as `spec.loadBalancerSourceRanges` when PX-Backup UI is `LoadBalancer` (defense-in-depth) | `[]`
+`service.pxBackupServiceAnnotations` | annotations for the PX-Backup backend service | `"{}"`
 `images.pxBackupImage.registry` | PX-Backup image registry | `docker.io`
 `images.pxBackupImage.repo` | PX-Backup image repo | `portworx`
 `images.pxBackupImage.imageName` | PX-Backup image name | `px-backup`

@@ -167,6 +167,12 @@ spec:
           env:
             - name: NAMESPACE
               value: {{ .Release.Namespace }}
+            # UI service types — used by the pre-install hook to emit a
+            # non-blocking warning if the admin UI is exposed via LoadBalancer.
+            - name: PX_CENTRAL_UI_SERVICE_TYPE
+              value: {{ .Values.service.pxCentralUIServiceType | quote }}
+            - name: PX_BACKUP_UI_SERVICE_TYPE
+              value: {{ .Values.service.pxBackupUIServiceType | quote }}
             - name: DEFAULT_USER_NAME
               value: {{ .Values.oidc.centralOIDC.defaultUsername | quote }}
             - name: STORAGE_CLASS

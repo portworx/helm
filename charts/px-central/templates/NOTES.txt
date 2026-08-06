@@ -23,9 +23,9 @@ PVC "pre-upgrade-data-pvc" is created in {{ .Release.Namespace }} with database 
 {{- else}}
 {{ "\n" -}}
 {{- end}}
-----------------------------
+--------------------------------------------------
 Features Summary:
-----------------------------
+--------------------------------------------------
 {{- if eq .Values.pxbackup.enabled true }}
 PX-Backup: enabled
 {{- else }}
@@ -46,7 +46,18 @@ PX-License-Server: disabled
 Access PX-Central/PX-Backup UI:
 --------------------------------------------------
 
-To access PX-Central/PX-Backup UI please refer:  https://backup.docs.portworx.com/use-px-backup/configure-ui/#access-the-portworx-backup-ui-using-a-node-ip
+To access PX-Central/PX-Backup UI please refer:  https://docs.portworx.com/portworx-backup-on-prem/install/install/set-up-pxb-operations/ui-access
+
+{{- $lbWarning := or (eq .Values.service.pxCentralUIServiceType "LoadBalancer") (eq .Values.service.pxBackupUIServiceType "LoadBalancer") }}
+{{- range $svcName := list "px-central-ui" "px-backup-ui" }}
+{{-   $svc := lookup "v1" "Service" $.Release.Namespace $svcName }}
+{{-   if and $svc (eq (dig "spec" "type" "" $svc) "LoadBalancer") }}
+{{-     $lbWarning = true }}
+{{-   end }}
+{{- end }}
+{{- if $lbWarning }}
+{{ printf "\033[33mWARNING: A PX-Backup UI Service (px-central-ui / px-backup-ui) is type LoadBalancer, which on managed cloud platforms may expose the admin UI publicly. See the UI access link above.\033[0m" }}
+{{- end }}
 
 {{ if eq .Release.IsInstall true }}
 Login with the following credentials:
@@ -60,7 +71,26 @@ Login with the following credentials:
 
 For more information: https://github.com/portworx/helm/blob/master/charts/px-central/README.md
 {{- if eq .Values.pxbackup.enabled true }}
-For more information on network pre-requisites: https://docs.portworx.com/portworx-backup-on-prem/install/install-prereq/nw-prereqs.html
+For more information on network pre-requisites: https://docs.portworx.com/portworx-backup-on-prem/install/install/requirements-pxb-install#network-requirements
+
+{{- if or .Values.proxy.http .Values.proxy.https .Values.proxy.configSecretName }}
+--------------------------------------------------
+Running behind a corporate proxy / air-gap:
+--------------------------------------------------
+{{- if not .Values.proxy.httpProxy.noProxy }}
+{{ printf "\033[31mWARNING: a proxy is configured but proxy.httpProxy.noProxy is empty. Non-telemetry pods (preflight, mongodb, keycloak, px-backup) will route their in-cluster Kubernetes API calls through the proxy and may fail to start.\033[0m" }}
+{{- end }}
+When running behind a corporate proxy or in an air-gapped cluster, you MUST allow
+non-telemetry pods (preflight, mongodb, keycloak, px-backup) to reach the
+in-cluster Kubernetes API directly by adding the API ClusterIP to NO_PROXY:
+
+    K8S_API_IP=$(kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}')
+    helm upgrade --install ... --set proxy.httpProxy.noProxy="$K8S_API_IP"
+
+Note: proxy.http and proxy.https are auto-defaulted from each other, so setting
+either one routes both HTTP and HTTPS traffic (including HTTPS-only Pure1/OSB
+telemetry registration) through the proxy.
+{{- end }}
 
 {{- if .Release.IsInstall }}
 --------------------------------------------------
