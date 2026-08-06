@@ -144,19 +144,6 @@ pxbackup:
   encryptMongoDB: false
   federated: false
 
-pxlicenseserver:
-  enabled: false
-  internal:
-    enabled: true
-    lsTypeUAT: false
-    lsTypeAirgapped: false
-  external:
-    enabled: false
-  mainNodeIP: ""
-  backupNodeIP: ""
-  adminUserName: admin
-  adminUserPassword: Adm1n!Ur
-
 pxmonitor:
   enabled: false
   pxCentralEndpoint:
@@ -368,14 +355,6 @@ images:
     imageName: log-upload
     tag: px-1.1.155
     module: pxBackup
-
-  ## Images required for enabling px-license-server
-  licenseServerImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
-    imageName: px-els
-    tag: 2.8.0
-    module: pxLicenseServer
 
   ## Images required for enabling px-monitor
   cortexImage:
