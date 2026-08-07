@@ -1,7 +1,6 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
-{{- $nfsEnabled := .Values.pxbackup.nfs.enabled | default false }}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
 {{- if eq $pxBackupEnabled true }}
 apiVersion: v1
@@ -37,14 +36,12 @@ rules:
   - apiGroups: ["snapshot.storage.k8s.io"]
     resources: ["volumesnapshotclasses"]
     verbs: ["get"]
-{{- if eq $nfsEnabled true }}
   - apiGroups: [""]
     resources: ["persistentvolumes"]
     verbs: ["create", "update", "get", "patch", "list", "delete"]
   - apiGroups: [""]
     resources: ["configmaps"]
     verbs: ["delete"]
-{{- end }}
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -96,7 +93,6 @@ rules:
   - apiGroups: ["monitoring.coreos.com"]
     resources: ["alertmanagerconfigs"]
     verbs: ["get","create","delete","update","list","deletecollection"]
-{{- if eq $nfsEnabled true }}
   - apiGroups: [""]
     resources: ["persistentvolumeclaims"]
     verbs: ["get", "create", "delete", "update", "list"]
@@ -109,7 +105,6 @@ rules:
   - apiGroups: [""]
     resources: ["events"]
     verbs: ["get", "list"]
-{{- end }}
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -222,7 +217,7 @@ spec:
             fieldRef:
               fieldPath: status.podIPs
         - name: PX_BACKUP_DEFAULT_ORG
-          value: {{ .Values.pxbackup.orgName }}
+          value: "default"
         {{- if .Values.telemetry.enabled }}
         - name: TELEMETRY_ENABLED
           value: "true"
@@ -321,7 +316,6 @@ spec:
         - /px-backup
         - start
         - --datastoreEndpoints=mongodb://$MONGODB_USERNAME:$MONGODB_PASSWORD@pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017/?authSource=px-backup&replicaSet=rs0
-        - --mongo-migration={{.Values.pxbackup.mongoMigration}}
       volumes:
       {{- if .Values.caCertsSecretName }}
         - name: ssl-cert-dir
