@@ -1,7 +1,6 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
-{{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $storkRequired := .Values.storkRequired | default false -}}
 {{- $sslEnabled := .Values.pxmonitor.sslEnabled | default false -}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
@@ -1296,7 +1295,6 @@ spec:
   updateStrategy:
     type: RollingUpdate          
   serviceName: pxcentral-cortex-alertmanager
-  {{- if eq $externalPersistentStorageEnabled true }}
   volumeClaimTemplates:
     - metadata:
         name: storage
@@ -1309,7 +1307,6 @@ spec:
         resources:
           requests:
             storage: {{ .Values.persistentStorage.alertManager.storage }}
-  {{- end }}
   template:
     metadata:
       labels:
@@ -1357,10 +1354,6 @@ spec:
         - name: config
           secret:
             secretName: pxcentral-cortex
-        {{- if eq $externalPersistentStorageEnabled false }}
-        - name: storage
-          emptyDir: {}
-        {{- end }}
         {{- if .Values.proxy.configSecretName }}
         - name: proxy-ca-volume
           secret:
@@ -1438,7 +1431,6 @@ spec:
   updateStrategy:
     type: RollingUpdate          
   serviceName: pxcentral-cortex-ingester
-  {{- if eq $externalPersistentStorageEnabled true }}
   volumeClaimTemplates:
     - metadata:
         name: storage
@@ -1451,7 +1443,6 @@ spec:
         resources:
           requests:
             storage: {{ .Values.persistentStorage.ingester.storage }}
-  {{- end }}
   template:
     metadata:
       labels:
@@ -1521,10 +1512,6 @@ spec:
         - name: config
           secret:
             secretName: pxcentral-cortex
-        {{- if eq $externalPersistentStorageEnabled false }}
-        - name: storage
-          emptyDir: {}
-        {{- end }}
         {{- if .Values.proxy.configSecretName }}
         - name: proxy-ca-volume
           secret:
