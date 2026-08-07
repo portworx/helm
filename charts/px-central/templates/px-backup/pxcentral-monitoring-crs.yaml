@@ -258,6 +258,7 @@ metadata:
   labels:
 {{- include "px-central.partOfLabel" . | nindent 4 }}
 spec:
+  serviceAccountName: px-backup-alertmanager
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
@@ -792,6 +793,21 @@ spec:
 
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $enableExternalMetricsScraping := .Values.pxbackup.enableExternalMetricsScraping | default false }}
+{{- if eq $deployDedicatedMonitoringSystem true }}
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-backup-alertmanager
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-6"
+    "helm.sh/hook-delete-policy": before-hook-creation
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+---
+{{- end }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
