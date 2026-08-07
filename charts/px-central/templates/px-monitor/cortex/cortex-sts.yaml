@@ -1,7 +1,6 @@
 {{/* Setting defaults if they are omitted. */}}
 {{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
-{{- $externalPersistentStorageEnabled := .Values.persistentStorage.enabled | default false }}
 {{- $storkRequired := .Values.storkRequired | default false -}}
 {{- $sslEnabled := .Values.pxmonitor.sslEnabled | default false -}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
@@ -592,11 +591,7 @@ spec:
               name: proxy-ca-volume
               readOnly: true
           {{- end }}
-      volumes:   
-      {{- if eq $externalPersistentStorageEnabled false }}
-        - name: pxcentral-consul-data
-          emptyDir: {}
-      {{- end }}
+      volumes:
       {{- if .Values.proxy.configSecretName }}
         - name: proxy-ca-volume
           secret:
@@ -616,7 +611,6 @@ spec:
         - name: {{ $sec | quote }}
         {{- end }}
       {{- end }}
-  {{- if eq $externalPersistentStorageEnabled true }}
   volumeClaimTemplates:
     - metadata:
         name: pxcentral-consul-data
@@ -628,5 +622,4 @@ spec:
         resources:
           requests:
             storage: {{ .Values.persistentStorage.consul.storage }}
-  {{- end }}
 {{- end -}}
