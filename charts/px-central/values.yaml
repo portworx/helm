@@ -265,7 +265,7 @@ images:
     module: pxCentral
   postInstallSetupImage:
     imageName: pxcentral-onprem-hook-base
-    tag: 3.2.0-fc1
+    tag: 358-merge
     module: pxCentral
   keycloakBackendImage:
     imageName: postgresql
@@ -289,7 +289,7 @@ images:
     module: pxCentral
   preSetupHookImage:
     imageName: pxcentral-onprem-hook-base
-    tag: 3.2.0-fc1
+    tag: 358-merge
     module: pxCentral
   mysqlInitImage:
     imageName: busybox
