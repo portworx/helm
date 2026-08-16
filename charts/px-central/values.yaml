@@ -301,7 +301,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-hook-base
-    tag: 3.2.0-fc1
+    tag: 361-merge
     module: pxCentral
   mysqlInitImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
