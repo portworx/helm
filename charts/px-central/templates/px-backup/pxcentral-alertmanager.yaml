@@ -63,6 +63,7 @@ stringData:
       <body>
           <div class="container">
             <img style="height: 49px; width: 133px;" src="https://central.portworx.com/assets/images/logo/portworx_by_everpure.png" alt="" srcset="">
+            {{- $configName := reReplaceAll ".*/" "" .Receiver }}
             {{ range .Alerts }}
             {{- if eq .Labels.alertname "ClusterAlert"}}
             <div
@@ -85,6 +86,12 @@ stringData:
                 Alert details:
             </div>
             <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Configuration:</div>
+                <div>{{ $configName }}</div>
+              </div>
+              </li>
               <li>
               <div style="display: flex">
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">Cluster Name:</div>
@@ -127,6 +134,12 @@ stringData:
                 Alert details:
             </div>
             <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Configuration:</div>
+                <div>{{ $configName }}</div>
+              </div>
+              </li>
               <li>
                 <div style="display: flex">
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">Backup name:</div>
@@ -179,6 +192,12 @@ stringData:
             <ul>
               <li>
               <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Configuration:</div>
+                <div>{{ $configName }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">Restore name:</div>
                 <div>{{ .Labels.name }}</div>
               </div>
@@ -222,6 +241,12 @@ stringData:
                 Alert details:
             </div>
             <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Configuration:</div>
+                <div>{{ $configName }}</div>
+              </div>
+              </li>
               <li>
               <div style="display: flex">
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">Backup Location name:</div>
@@ -275,6 +300,12 @@ stringData:
                 Alert details:
             </div>
             <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Configuration:</div>
+                <div>{{ $configName }}</div>
+              </div>
+              </li>
               <li>
                 <div style="display: flex">
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">License Type:</div>
@@ -331,6 +362,12 @@ stringData:
             <ul>
               <li>
               <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Configuration:</div>
+                <div>{{ $configName }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">Config Name:</div>
                 <div>{{ .Labels.config_name }}</div>
               </div>
@@ -385,6 +422,12 @@ stringData:
             <ul>
               <li>
               <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Configuration:</div>
+                <div>{{ $configName }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">Config Name:</div>
                 <div>{{ .Labels.config_name }}</div>
               </div>
@@ -427,6 +470,12 @@ stringData:
             <ul>
               <li>
               <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Configuration:</div>
+                <div>{{ $configName }}</div>
+              </div>
+              </li>
+              <li>
+              <div style="display: flex">
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">Cluster Name:</div>
                 <div>{{ .Labels.cluster_name }}</div>
               </div>
@@ -461,6 +510,12 @@ stringData:
                 Alert details:
             </div>
             <ul>
+              <li>
+              <div style="display: flex">
+                <div style="font-weight: bold; width: 170px;min-width: 170px;">Configuration:</div>
+                <div>{{ $configName }}</div>
+              </div>
+              </li>
               <li>
                 <div style="display: flex">
                 <div style="font-weight: bold; width: 170px;min-width: 170px;">Current Clusters:</div>
