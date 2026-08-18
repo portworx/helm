@@ -63,6 +63,9 @@ stringData:
       <body>
           <div class="container">
             <img style="height: 49px; width: 133px;" src="https://central.portworx.com/assets/images/logo/portworx_by_everpure.png" alt="" srcset="">
+            <div class="pb-16" style="color: #666; font-size: 13px;">
+                <span style="font-weight: bold;">Configuration:</span> {{ reReplaceAll ".*/" "" .Receiver }}
+            </div>
             {{ range .Alerts }}
             {{- if eq .Labels.alertname "ClusterAlert"}}
             <div
