@@ -13,6 +13,11 @@ Wait for job "pxcentral-post-install-hook" status to be in "Completed" state.
 
     kubectl get po --namespace {{ .Release.Namespace }} -ljob-name=pxcentral-post-install-hook  -o wide | awk '{print $1, $3}' | grep -iv error
 
+NOTE: Even when the job reaches the "Completed" state, review the post-install
+job logs for any warnings and act on the summary printed at the end of the logs:
+
+    kubectl logs --namespace {{ .Release.Namespace }} -ljob-name=pxcentral-post-install-hook
+
 {{- if eq .Release.IsInstall false }}
 
 PVC "pre-upgrade-data-pvc" is created in {{ .Release.Namespace }} with database dumps for MongoDB(in case ".pxbackup.enabled" is set to true), PostgreSQL (for Keycloak) and MySQL. Use it to restore the initial state in case of Upgrade failure, else delete it on success.
