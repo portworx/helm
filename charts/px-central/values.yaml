@@ -285,7 +285,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: postgresql
-    tag: "18.4"
+    tag: "18.6"
     module: pxCentral
   keycloakFrontendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -303,7 +303,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: busybox
-    tag: 1.35.0
+    tag: 1.38.0
     module: pxCentral
   mysqlImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -321,7 +321,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: busybox
-    tag: 1.35.0
+    tag: 1.38.0
     module: pxCentral
 
   ## Images required for enabling px-backup

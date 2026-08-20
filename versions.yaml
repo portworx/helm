@@ -7,10 +7,10 @@ modules:
     pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:3.1.1-staging"
     pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-post-setup-base:3.1.1-staging"
     pxcentralOnpremPreSetup: "docker.io/portworx/pxcentral-onprem-hook-base:3.1.1-staging"
-    postgresql: "docker.io/portworx/postgresql:18.4"
+    postgresql: "docker.io/portworx/postgresql:18.6"
     keycloak: "docker.io/portworx/keycloak:26.6.4_v2"
     keycloakLoginTheme: "docker.io/portworx/sb-keycloak-login-theme:3.1.1-staging"
-    busybox: "docker.io/portworx/busybox:1.35.0"
+    busybox: "docker.io/portworx/busybox:1.38.0"
     mysql: "docker.io/portworx/mysql:8.4.10"
   pxBackup:
     pxBackup: "docker.io/portworx/px-backup-base:3.1.1-staging"
