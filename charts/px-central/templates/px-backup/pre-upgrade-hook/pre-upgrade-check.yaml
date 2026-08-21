@@ -266,19 +266,21 @@ spec:
             #   value: root
             - name: MINIMUM_KUBERNETES_VERSION
               value: "{{ $minimumKubernetesVersion }}"
-            # - name: MONGODB_IMAGES
-            #   value: >
-            #     {
-            #       "registry": "{{ (default .Values.images.mongodbImage.registry .Values.images.registry) }}",
-            #       "repo": "{{ (default .Values.images.mongodbImage.repo .Values.images.repo) }}",
-            #       "imageName": "{{ .Values.images.mongodbImage.imageName }}",
-            #       "tags": {
-            #         "mongodb5": "{{ .Values.images.mongodbImageMap.tags.mongodb5 }}",
-            #         "mongodb6": "{{ .Values.images.mongodbImageMap.tags.mongodb6 }}",
-            #         "mongodb7": "{{ .Values.images.mongodbImageMap.tags.mongodb7 }}",
-            #         "mongodb8": "{{ .Values.images.mongodbImageMap.tags.mongodb8 }}"
-            #       }
-            #     }
+            {{- if and .Values.images.mongodbImageMap .Values.images.mongodbImageMap.tags }}
+            - name: MONGODB_IMAGES
+              value: >
+                {
+                  "registry": "{{ (default .Values.images.mongodbImage.registry .Values.images.registry) }}",
+                  "repo": "{{ (default .Values.images.mongodbImage.repo .Values.images.repo) }}",
+                  "imageName": "{{ .Values.images.mongodbImage.imageName }}",
+                  "tags": {
+                    "mongodb5": "{{ .Values.images.mongodbImageMap.tags.mongodb5 }}",
+                    "mongodb6": "{{ .Values.images.mongodbImageMap.tags.mongodb6 }}",
+                    "mongodb7": "{{ .Values.images.mongodbImageMap.tags.mongodb7 }}",
+                    "mongodb8": "{{ .Values.images.mongodbImageMap.tags.mongodb8 }}"
+                  }
+                }
+            {{- end }}
             {{- end }}
           {{- include "serviceMesh.env" . | nindent 12 }}
             - name: NAMESPACE
