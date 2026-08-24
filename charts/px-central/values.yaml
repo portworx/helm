@@ -431,7 +431,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: alertmanager
-    tag: v0.33.0
+    tag: v0.34.0
     module: pxBackup
   pxBackupPrometheusOperatorImage:
     registry: docker.io
