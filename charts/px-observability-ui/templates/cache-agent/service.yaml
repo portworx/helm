@@ -1,0 +1,30 @@
+{{- if .Values.cacheAgent.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.cacheAgent.service.name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "px-observability-ui.cacheAgent.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+  - name: rest
+    port: 8710
+    targetPort: rest
+    protocol: TCP
+  - name: grpc
+    port: 7710
+    targetPort: grpc
+    protocol: TCP
+  - name: metrics
+    port: 8081
+    targetPort: metrics
+    protocol: TCP
+  - name: health
+    port: 8082
+    targetPort: health
+    protocol: TCP
+  selector:
+    {{- include "px-observability-ui.cacheAgent.selectorLabels" . | nindent 4 }}
+{{- end }}

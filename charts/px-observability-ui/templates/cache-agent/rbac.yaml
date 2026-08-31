@@ -1,0 +1,105 @@
+{{- if .Values.cacheAgent.enabled }}
+# Copied as-is from px-cache-agent's own deploy/rbac.yaml (wildcard ClusterRole, unscoped —
+# see docs/helm-chart.md for why this isn't narrowed as part of this chart).
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "px-observability-ui.cacheAgent.fullname" . }}-manager-role
+  labels:
+    {{- include "px-observability-ui.cacheAgent.labels" . | nindent 4 }}
+rules:
+  - apiGroups:
+      - '*'
+    resources:
+      - '*'
+    verbs:
+      - '*'
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "px-observability-ui.cacheAgent.fullname" . }}-manager-rolebinding
+  labels:
+    {{- include "px-observability-ui.cacheAgent.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "px-observability-ui.cacheAgent.fullname" . }}-manager-role
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.cacheAgent.serviceAccount.name }}
+    namespace: {{ .Release.Namespace }}
+---
+# Grants read access to OpenShift's built-in monitoring stack (Prometheus/Thanos Querier) —
+# cluster-monitoring-view is a pre-existing OpenShift ClusterRole, not defined by this chart.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "px-observability-ui.cacheAgent.fullname" . }}-manager-monitoring-view
+  labels:
+    {{- include "px-observability-ui.cacheAgent.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-monitoring-view
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.cacheAgent.serviceAccount.name }}
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "px-observability-ui.cacheAgent.fullname" . }}-leader-election-role
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "px-observability-ui.cacheAgent.labels" . | nindent 4 }}
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
+  - apiGroups:
+      - ""
+    resources:
+      - events
+    verbs:
+      - create
+      - patch
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ include "px-observability-ui.cacheAgent.fullname" . }}-leader-election-rolebinding
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "px-observability-ui.cacheAgent.labels" . | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ include "px-observability-ui.cacheAgent.fullname" . }}-leader-election-role
+subjects:
+  - kind: ServiceAccount
+    name: {{ .Values.cacheAgent.serviceAccount.name }}
+    namespace: {{ .Release.Namespace }}
+{{- end }}

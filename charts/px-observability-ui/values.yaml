@@ -1,0 +1,53 @@
+# Default values for px-observability-ui.
+
+nameOverride: ""
+fullnameOverride: ""
+
+ui:
+  image:
+    repository: docker.io/portworx/px-observability-ui
+    tag: "f97654f"
+    pullPolicy: Always
+  replicas: 1
+  resources:
+    requests:
+      cpu: 75m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 512Mi
+  serviceAccount:
+    create: true
+    name: ""
+  service:
+    type: ClusterIP
+    port: 8080
+
+# OpenShift Route — nginx serves plain HTTP only, TLS is terminated at the OCP router edge.
+# Only meaningful on OpenShift; leave disabled elsewhere and use kubectl port-forward.
+route:
+  enabled: false
+
+# PX Cache Agent — bundled as part of this chart. Disable if an
+# instance is already running elsewhere in the cluster; the UI will still need
+# cacheAgent.service.name/serviceAccount.name to point at that existing deployment.
+cacheAgent:
+  enabled: true
+  installCRDs: true
+  image:
+    repository: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual/portworx/base-px-cache-agent
+    tag: "1.1.0-pxo-ui-dev"
+    pullPolicy: Always
+  serviceAccount:
+    name: px-cache-agent
+  service:
+    name: px-cache-agent-service
+  # Passed as px-cache-agent's --prometheus-endpoint arg.
+  prometheusEndpoint: http://px-prometheus.portworx.svc.cluster.local:9090
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 400m
+      memory: 2Gi

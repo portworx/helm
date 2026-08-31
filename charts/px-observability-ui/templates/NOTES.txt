@@ -1,0 +1,66 @@
+px-observability-ui has been deployed to namespace "{{ .Release.Namespace }}".
+
+CONFIGURATION
+
+{{- if .Values.cacheAgent.enabled }}
+  Cache agent      internal, {{ .Values.cacheAgent.service.name }}
+{{- else }}
+  Cache agent      external, {{ .Values.cacheAgent.service.name }} (OCP dynamic plugin)
+{{- end }}
+  Service account  {{ .Values.cacheAgent.serviceAccount.name }}
+  Prometheus       {{ .Values.cacheAgent.prometheusEndpoint }}
+
+NEXT STEPS
+
+1. Wait for the deployment to be ready
+
+     kubectl rollout status deploy/{{ include "px-observability-ui.fullname" . }} -n {{ .Release.Namespace }}
+
+2. Confirm the Cache Agent is present
+
+{{- if not .Values.cacheAgent.enabled }}
+   This release does not deploy a Cache Agent. It expects one from the
+   Portworx Operator OCP dynamic plugin.
+{{- end }}
+
+   Both of these must exist:
+
+     kubectl get svc {{ .Values.cacheAgent.service.name }} -n {{ .Release.Namespace }}
+     kubectl get sa {{ .Values.cacheAgent.serviceAccount.name }} -n {{ .Release.Namespace }}
+
+   If either is missing, check that ocpDynamicPlugin is enabled and that
+   cacheAgentImage is set in the StorageCluster spec.
+
+3. Access the PX Observability UI
+
+{{- if .Values.route.enabled }}
+   Access it via the OpenShift Route:
+     oc get route {{ include "px-observability-ui.fullname" . }} -n {{ .Release.Namespace }} -o jsonpath='{.spec.host}'
+{{- else if eq .Values.ui.service.type "ClusterIP" }}
+   Access it via port-forward:
+     kubectl port-forward svc/{{ include "px-observability-ui.fullname" . }} 8080:{{ .Values.ui.service.port }} -n {{ .Release.Namespace }}
+     open http://localhost:8080
+{{- else if eq .Values.ui.service.type "NodePort" }}
+   Access it via the NodePort:
+     kubectl get svc {{ include "px-observability-ui.fullname" . }} -n {{ .Release.Namespace }} -o jsonpath='{.spec.ports[0].nodePort}'
+     open http://<node-ip>:<node-port>
+{{- else if eq .Values.ui.service.type "LoadBalancer" }}
+   Access it via the LoadBalancer:
+     kubectl get svc {{ include "px-observability-ui.fullname" . }} -n {{ .Release.Namespace }} -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+     open http://<loadbalancer-endpoint>
+{{- else }}
+   Unsupported service type {{ .Values.ui.service.type }}
+{{- end }}
+
+IF SOMETHING IS WRONG
+
+  UI shows "Cluster unreachable"
+    The Cache Agent is not reachable. Verify the Service and ServiceAccount
+    in step 2, and that the authproxy can mint tokens for it.
+    kubectl logs deploy/{{ include "px-observability-ui.fullname" . }} -n {{ .Release.Namespace }} --all-containers
+
+  UI loads but shows no metrics
+    Check the Prometheus endpoint resolves from inside the cluster.
+
+  Pods not starting
+    kubectl describe deploy/{{ include "px-observability-ui.fullname" . }} -n {{ .Release.Namespace }}
