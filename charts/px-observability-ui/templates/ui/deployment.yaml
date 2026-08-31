@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "px-observability-ui.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "px-observability-ui.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.ui.replicas }}
+  selector:
+    matchLabels:
+      {{- include "px-observability-ui.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "px-observability-ui.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "px-observability-ui.serviceAccountName" . }}
+      securityContext:
+        runAsNonRoot: true
+      containers:
+        # Runs both nginx (UI + /cache/* proxy) and authproxy (mints/caches the
+        # PX Cache Agent ServiceAccount token and injects it as a Bearer header,
+        # see docs/auth.md) as sibling processes — see deploy/entrypoint.sh
+        # and the root Dockerfile.
+        - name: ui
+          image: "{{ .Values.ui.image.repository }}:{{ .Values.ui.image.tag }}"
+          # IfNotPresent, not the ":latest" tag's implicit "Always": these clusters may have no
+          # internet egress (see ARCHITECTURE.md), so a forced re-pull on every pod restart isn't
+          # safe to assume works. Revisit once images are pinned to a specific tag/digest.
+          imagePullPolicy: {{ .Values.ui.image.pullPolicy }}
+          env:
+            # Wires authproxy (docs/auth.md) at the PX Cache Agent this release targets — either
+            # the agent bundled by this chart (cacheAgent.enabled: true) or an existing one
+            # elsewhere in the cluster, per cacheAgent.service.name/serviceAccount.name.
+            - name: UPSTREAM_URL
+              value: "http://{{ .Values.cacheAgent.service.name }}:8710"
+            - name: SERVICE_ACCOUNT_NAMESPACE
+              value: {{ .Release.Namespace | quote }}
+            - name: SERVICE_ACCOUNT_NAME
+              value: {{ .Values.cacheAgent.serviceAccount.name | quote }}
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          resources:
+            {{- toYaml .Values.ui.resources | nindent 12 }}
