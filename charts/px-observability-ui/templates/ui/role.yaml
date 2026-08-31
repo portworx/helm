@@ -1,0 +1,16 @@
+# Grants only what the authproxy sidecar needs (docs/auth.md): minting a
+# token for the PX Cache Agent ServiceAccount, and nothing else. Scoped by
+# resourceNames so this role cannot be used to mint tokens for any other
+# ServiceAccount in the namespace.
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: {{ include "px-observability-ui.fullname" . }}-token-minter
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "px-observability-ui.labels" . | nindent 4 }}
+rules:
+  - apiGroups: [""]
+    resources: ["serviceaccounts/token"]
+    resourceNames: [{{ .Values.cacheAgent.serviceAccount.name | quote }}]
+    verbs: ["create"]
