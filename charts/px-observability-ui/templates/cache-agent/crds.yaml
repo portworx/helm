@@ -1,0 +1,1346 @@
+{{- if and .Values.cacheAgent.enabled .Values.cacheAgent.installCRDs }}
+# Copied as-is from px-cache-agent's own deploy/crds/*.yaml (DR/multicluster feature CRDs,
+# included for feature parity with a manually-deployed agent — see docs/helm-chart.md).
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.18.0
+  name: clusters.agent.multicluster.portworx.com
+spec:
+  group: agent.multicluster.portworx.com
+  names:
+    kind: Cluster
+    listKind: ClusterList
+    plural: clusters
+    shortNames:
+    - cluster
+    singular: cluster
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.health
+      name: Health
+      type: string
+    - jsonPath: .status.pxVersion
+      name: PXVersion
+      type: string
+    - jsonPath: .status.capacity.used
+      name: Used
+      type: string
+    - jsonPath: .status.capacity.total
+      name: Total
+      type: string
+    - jsonPath: .status.license.sku
+      name: LicenseSKU
+      type: string
+    - jsonPath: .status.license.expiry
+      name: LicenseExpiry
+      type: string
+    - jsonPath: .status.telemetryStatus
+      name: TelemetryStatus
+      type: string
+    - jsonPath: .status.monitoringStatus
+      name: MonitoringStatus
+      type: string
+    - jsonPath: .status.pxOperatorVersion
+      name: PXOperatorVersion
+      type: string
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Cluster is the Schema for the clusters API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ClusterSpec defines the desired state and configuration of
+              a cluster
+            properties:
+              clusterName:
+                description: ClusterName represents the name of the storage cluster
+                  as configured in the cluster environment
+                type: string
+              clusterNamespace:
+                description: ClusterNamespace represents the namespace of the storage
+                  cluster as configured in the cluster environment
+                type: string
+            type: object
+          status:
+            description: ClusterStatus defines the observed state and runtime information
+              of a cluster
+            properties:
+              capacity:
+                description: Storage capacity information including total and used
+                  capacity
+                properties:
+                  total:
+                    description: Total storage capacity of the cluster in bytes
+                    format: int64
+                    type: integer
+                  used:
+                    description: Used storage capacity of the cluster in bytes
+                    format: int64
+                    type: integer
+                type: object
+              drAdminNamespace:
+                description: Admin namespace configured for the cluster for DR operations
+                  through Stork
+                type: string
+              drCapable:
+                description: Indicates whether the cluster is capable of disaster
+                  recovery operations
+                type: boolean
+              drReadiness:
+                additionalProperties:
+                  description: DrReadinessCheckDetails contains detailed information
+                    about a specific DR readiness check
+                  properties:
+                    info:
+                      description: Info provides additional details about the check
+                        result
+                      type: string
+                    status:
+                      description: Status of the readiness check (e.g., "passed",
+                        "failed", "warning")
+                      type: string
+                  type: object
+                description: |-
+                  Map of DR readiness checks with their detailed status and information
+                  Key is the readiness check name defined in DrReadinessCheckKey and value is the readiness check details
+                type: object
+              health:
+                description: Overall health status of the cluster (e.g., "healthy",
+                  "degraded", "offline")
+                type: string
+              lastStatusUpdateTimestamp:
+                description: Timestamp of last update of the cluster status
+                type: string
+              license:
+                description: License information including SKU and expiry details
+                properties:
+                  expiry:
+                    description: Expiration date of the license in ISO 8601 format
+                    type: string
+                  sku:
+                    description: Stock Keeping Unit (SKU) identifier of the license
+                    type: string
+                type: object
+              monitoringStatus:
+                description: Status of monitoring services on the cluster
+                type: string
+              pxOperatorVersion:
+                description: Version of Portworx Operator installed on the cluster
+                type: string
+              pxSecretsProviderType:
+                description: Type of secrets provider used by the cluster (e.g., "vault",
+                  "k8s")
+                type: string
+              pxSecurityChecksum:
+                description: Checksum of secret sync used in  the PX security configuration
+                type: string
+              pxSecurityEnabled:
+                description: Indicates whether PX security is enabled on the cluster
+                type: boolean
+              pxVersion:
+                description: Version of Portworx software installed on the cluster
+                type: string
+              storageClusterUid:
+                description: Unique identifier of the storage cluster
+                type: string
+              telemetryStatus:
+                description: Status of telemetry collection on the cluster
+                type: string
+              topology:
+                description: Topology information including regions, zones, and racks
+                properties:
+                  racks:
+                    description: List of racks where the cluster nodes are deployed
+                    items:
+                      type: string
+                    type: array
+                  regions:
+                    description: List of regions where the cluster nodes are deployed
+                    items:
+                      type: string
+                    type: array
+                  zones:
+                    description: List of availability zones where the cluster nodes
+                      are deployed
+                    items:
+                      type: string
+                    type: array
+                type: object
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.18.0
+  name: clusteraccesses.agent.multicluster.portworx.com
+spec:
+  group: agent.multicluster.portworx.com
+  names:
+    kind: ClusterAccess
+    listKind: ClusterAccessList
+    plural: clusteraccesses
+    shortNames:
+    - ca
+    singular: clusteraccess
+  scope: Cluster
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .status.cluster_name
+      name: ClusterName
+      type: string
+    - jsonPath: .status.phase
+      name: Phase
+      type: string
+    - jsonPath: .status.expiry_time
+      name: ExpiryTime
+      type: string
+    - jsonPath: .status.error_message
+      name: ErrorMessage
+      type: string
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: ClusterAccess is the Schema for the clusteraccesses API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ClusterAccessSpec defines the desired state of ClusterAccess
+            properties:
+              time_to_live:
+                description: TimeToLive is the time to live for the cluster kubeconfig
+                  in minutes, default is 1440
+                type: integer
+            type: object
+          status:
+            description: ClusterAccessStatus defines the observed state of ClusterAccess
+            properties:
+              error_message:
+                description: ErrorMessage is the error message if the cluster access
+                  has failed
+                type: string
+              expiry_time:
+                description: ExpiryTime is the expiry time of the cluster access
+                type: string
+              kubeconfig:
+                description: KubeConfig is the kubeconfig for the target cluster
+                type: string
+              phase:
+                description: Phase is the current phase of the cluster access
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.18.0
+  name: disasterrecoverypairs.agent.multicluster.portworx.com
+spec:
+  group: agent.multicluster.portworx.com
+  names:
+    kind: DisasterRecoveryPair
+    listKind: DisasterRecoveryPairList
+    plural: disasterrecoverypairs
+    singular: disasterrecoverypair
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: DisasterRecoveryPair is the Schema for the DisasterRecoveryPair
+          API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: DisasterRecoveryPairSpec defines the desired state of DisasterRecoveryPair
+            properties:
+              backupLocation:
+                description: |-
+                  BackupLocation configuration for disaster recovery
+                  Required when disasterRecoveryType is ASYNC
+                properties:
+                  encryptionKey:
+                    description: EncryptionKey is used for client-side encryption
+                      of application resource manifests (Kubernetes YAMLs) before
+                      uploading to object storage.
+                    type: string
+                  secretRef:
+                    description: |-
+                      SecretRef is the secret reference for backup location credentials;
+                      required; immutable; references a Kubernetes Secret containing credentials for the backup location.
+                    type: string
+                  storageLocationName:
+                    description: StorageLocationName is the name of the storage location
+                      where the backup is stored; optional.
+                    type: string
+                  type:
+                    description: Type of backup location
+                    enum:
+                    - s3
+                    - azure
+                    - google
+                    - nfs
+                    type: string
+                required:
+                - secretRef
+                - type
+                type: object
+                x-kubernetes-validations:
+                - message: 'type must be one of: s3, azure, google, nfs'
+                  rule: self.type == 's3' || self.type == 'azure' || self.type ==
+                    'google' || self.type == 'nfs'
+                - message: type is immutable
+                  rule: self.type == oldSelf.type
+                - message: secretRef is required
+                  rule: has(self.secretRef) && size(self.secretRef) > 0
+                - message: secretRef is immutable
+                  rule: self.secretRef == oldSelf.secretRef
+              disasterRecoveryType:
+                default: ASYNC
+                description: DisasterRecoveryType defines the type of disaster recovery
+                  is desired
+                enum:
+                - SYNC
+                - ASYNC
+                type: string
+              pairType:
+                default: BI-DIRECTIONAL
+                description: PairType defines the type of cluster pairing is desired
+                enum:
+                - UNI-DIRECTIONAL
+                - BI-DIRECTIONAL
+                type: string
+              peerClusterKubeConfigSecretRef:
+                description: |-
+                  PeerClusterKubeConfigSecretRef is the peer cluster's kubeconfig secret reference;
+                  required when pairType is BI-DIRECTIONAL; references a Kubernetes Secret containing the kubeconfig for connecting to the peer cluster.
+                type: string
+            required:
+            - disasterRecoveryType
+            - pairType
+            type: object
+            x-kubernetes-validations:
+            - message: pairType is immutable
+              rule: self.pairType == oldSelf.pairType
+            - message: disasterRecoveryType is immutable
+              rule: self.disasterRecoveryType == oldSelf.disasterRecoveryType
+            - message: backupLocation is required when disasterRecoveryType is ASYNC
+              rule: self.disasterRecoveryType != 'ASYNC' || has(self.backupLocation)
+            - message: peerClusterKubeConfigSecretRef is required when pairType is
+                BI-DIRECTIONAL
+              rule: self.pairType != 'BI-DIRECTIONAL' || (has(self.peerClusterKubeConfigSecretRef)
+                && size(self.peerClusterKubeConfigSecretRef) > 0)
+          status:
+            description: DisasterRecoveryPairStatus stores the current status of the
+              Disaster Recovery Pair
+            properties:
+              compliant:
+                description: Compliant represents the compliance status of the disaster
+                  recovery pair.
+                properties:
+                  reason:
+                    description: Reason is short description of why the resource is
+                      in non compliant state.
+                    type: string
+                  status:
+                    description: 'Status: is true then resource is compliant and operational.'
+                    type: boolean
+                required:
+                - status
+                type: object
+              conditions:
+                description: Conditions represent the latest available observations
+                  of the Agent DisasterRecoveryPair's state.
+                items:
+                  description: Condition contains details for one aspect of the current
+                    state of this API Resource.
+                  properties:
+                    lastTransitionTime:
+                      description: |-
+                        lastTransitionTime is the last time the condition transitioned from one status to another.
+                        This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                      format: date-time
+                      type: string
+                    message:
+                      description: |-
+                        message is a human readable message indicating details about the transition.
+                        This may be an empty string.
+                      maxLength: 32768
+                      type: string
+                    observedGeneration:
+                      description: |-
+                        observedGeneration represents the .metadata.generation that the condition was set based upon.
+                        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                        with respect to the current state of the instance.
+                      format: int64
+                      minimum: 0
+                      type: integer
+                    reason:
+                      description: |-
+                        reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                        Producers of specific condition types may define expected values and meanings for this field,
+                        and whether the values are considered a guaranteed API.
+                        The value should be a CamelCase string.
+                        This field may not be empty.
+                      maxLength: 1024
+                      minLength: 1
+                      pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                      type: string
+                    status:
+                      description: status of the condition, one of True, False, Unknown.
+                      enum:
+                      - "True"
+                      - "False"
+                      - Unknown
+                      type: string
+                    type:
+                      description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                      maxLength: 316
+                      pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - message
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+                x-kubernetes-list-map-keys:
+                - type
+                x-kubernetes-list-type: map
+              references:
+                additionalProperties:
+                  items:
+                    type: string
+                  type: array
+                description: |-
+                  Cluster's DisasterRecovery Pair Created Object Details
+                  Map of Kubernetes resource kind to array of object references in format: <uid>#<name>#<namespace>
+                type: object
+              schedulerStatus:
+                description: Cluster's DisasterRecovery Pair SchedulerStatus
+                enum:
+                - Initial
+                - Pending
+                - Ready
+                - Error
+                - Degraded
+                - Deleting
+                - NotProvided
+                type: string
+              storageStatus:
+                description: Cluster's DisasterRecovery Pair StorageStatus
+                enum:
+                - Initial
+                - Pending
+                - Ready
+                - Error
+                - Degraded
+                - Deleting
+                - NotProvided
+                type: string
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.18.0
+  name: disasterrecoveryactions.agent.multicluster.portworx.com
+spec:
+  group: agent.multicluster.portworx.com
+  names:
+    kind: DisasterRecoveryAction
+    listKind: DisasterRecoveryActionList
+    plural: disasterrecoveryactions
+    singular: disasterrecoveryaction
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns:
+    - jsonPath: .spec.actionType
+      name: ActionType
+      type: string
+    - jsonPath: .status.stage
+      name: Stage
+      type: string
+    - jsonPath: .status.status
+      name: Status
+      type: string
+    - jsonPath: .status.finishTimestamp
+      name: FinishTime
+      type: date
+    - jsonPath: .metadata.creationTimestamp
+      name: Age
+      type: date
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: DisasterRecoveryAction is the Schema for the disasterrecoveryactions
+          API
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: DisasterRecoveryActionSpec defines the desired state of DisasterRecoveryAction
+            properties:
+              actionType:
+                description: ActionType defines the type of disaster recovery action
+                enum:
+                - Failover
+                - Failback
+                type: string
+              failbackParameters:
+                description: FailbackParameters contains parameters for failback action
+                properties:
+                  excludeSelectors:
+                    additionalProperties:
+                      type: string
+                    description: ExcludeSelectors specifies label selectors that identify
+                      resources to be excluded from DR operations.
+                    type: object
+                  namespaces:
+                    description: Namespaces is the list of namespaces to failback
+                    items:
+                      type: string
+                    minItems: 1
+                    type: array
+                  selectors:
+                    additionalProperties:
+                      type: string
+                    description: |-
+                      Selectors and ExcludeSelectors are mutually exclusive. Only one of these
+                      may be set at a time to avoid ambiguous filtering of resources during DR
+                      operations.
+                    type: object
+                  types:
+                    description: Types restricts the DR operation to the specified
+                      Kubernetes resource kinds. If empty, all supported types are
+                      considered.
+                    items:
+                      description: |-
+                        Kubernetes resource types. Kind is required; Group and Version are optional:
+                          - Kind identifies the resource type (for example, Deployment or StatefulSet);
+                          - if only Kind is set, it matches all API groups/versions for that Kind;
+                          - if Group/Version are also set, they must match exactly.
+                      properties:
+                        group:
+                          type: string
+                        kind:
+                          minLength: 1
+                          type: string
+                        version:
+                          type: string
+                      required:
+                      - kind
+                      type: object
+                    type: array
+                required:
+                - namespaces
+                type: object
+              failoverParameters:
+                description: FailoverParameters contains parameters for failover action
+                properties:
+                  excludeSelectors:
+                    additionalProperties:
+                      type: string
+                    description: ExcludeSelectors specifies label selectors that identify
+                      resources to be excluded from DR operations.
+                    type: object
+                  namespaces:
+                    description: Namespaces is the list of namespaces to failover
+                    items:
+                      type: string
+                    minItems: 1
+                    type: array
+                  selectors:
+                    additionalProperties:
+                      type: string
+                    description: |-
+                      Selectors and ExcludeSelectors are mutually exclusive. Only one of these
+                      may be set at a time to avoid ambiguous filtering of resources during DR
+                      operations.
+                    type: object
+                  skipSourceClusterDomainDeactivation:
+                    description: SkipSourceClusterDomainDeactivation indicates whether
+                      to skip deactivating the source cluster domain during failover.
+                    type: boolean
+                  skipSourceOperations:
+                    description: SkipSourceOperations indicates whether to skip operations
+                      on source cluster
+                    type: boolean
+                  types:
+                    description: Types restricts the DR operation to the specified
+                      Kubernetes resource kinds. If empty, all supported types are
+                      considered.
+                    items:
+                      description: |-
+                        Kubernetes resource types. Kind is required; Group and Version are optional:
+                          - Kind identifies the resource type (for example, Deployment or StatefulSet);
+                          - if only Kind is set, it matches all API groups/versions for that Kind;
+                          - if Group/Version are also set, they must match exactly.
+                      properties:
+                        group:
+                          type: string
+                        kind:
+                          minLength: 1
+                          type: string
+                        version:
+                          type: string
+                      required:
+                      - kind
+                      type: object
+                    type: array
+                required:
+                - namespaces
+                type: object
+              protectionGroupReference:
+                description: ProtectionGroupReference is the reference to the protection
+                  group
+                minLength: 1
+                type: string
+            required:
+            - actionType
+            - protectionGroupReference
+            type: object
+            x-kubernetes-validations:
+            - message: protectionGroupReference is immutable
+              rule: '!has(oldSelf.protectionGroupReference) || self.protectionGroupReference
+                == oldSelf.protectionGroupReference'
+            - message: actionType is immutable
+              rule: '!has(oldSelf.actionType) || self.actionType == oldSelf.actionType'
+            - message: failoverParameters must be set when actionType is Failover
+              rule: 'self.actionType == ''Failover'' ? has(self.failoverParameters)
+                : true'
+            - message: failbackParameters must be set when actionType is Failback
+              rule: 'self.actionType == ''Failback'' ? has(self.failbackParameters)
+                : true'
+            - message: failbackParameters must not be set when actionType is Failover
+              rule: 'self.actionType == ''Failover'' ? !has(self.failbackParameters)
+                : true'
+            - message: failoverParameters must not be set when actionType is Failback
+              rule: 'self.actionType == ''Failback'' ? !has(self.failoverParameters)
+                : true'
+            - message: failoverParameters.namespaces is immutable
+              rule: '!has(oldSelf.failoverParameters) || !has(self.failoverParameters)
+                || self.failoverParameters.namespaces == oldSelf.failoverParameters.namespaces'
+            - message: failbackParameters.namespaces is immutable
+              rule: '!has(oldSelf.failbackParameters) || !has(self.failbackParameters)
+                || self.failbackParameters.namespaces == oldSelf.failbackParameters.namespaces'
+          status:
+            description: DisasterRecoveryActionStatus defines the observed state of
+              DisasterRecoveryAction
+            properties:
+              compliant:
+                description: Compliant represents the compliance status of the disaster
+                  recovery action.
+                properties:
+                  reason:
+                    description: Reason is short description of why the resource is
+                      in non compliant state.
+                    type: string
+                  status:
+                    description: 'Status: is true then resource is compliant and operational.'
+                    type: boolean
+                required:
+                - status
+                type: object
+              conditions:
+                description: Conditions represent the latest available observations
+                  of the DisasterRecoveryAction's state.
+                items:
+                  description: Condition contains details for one aspect of the current
+                    state of this API Resource.
+                  properties:
+                    lastTransitionTime:
+                      description: |-
+                        lastTransitionTime is the last time the condition transitioned from one status to another.
+                        This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                      format: date-time
+                      type: string
+                    message:
+                      description: |-
+                        message is a human readable message indicating details about the transition.
+                        This may be an empty string.
+                      maxLength: 32768
+                      type: string
+                    observedGeneration:
+                      description: |-
+                        observedGeneration represents the .metadata.generation that the condition was set based upon.
+                        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                        with respect to the current state of the instance.
+                      format: int64
+                      minimum: 0
+                      type: integer
+                    reason:
+                      description: |-
+                        reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                        Producers of specific condition types may define expected values and meanings for this field,
+                        and whether the values are considered a guaranteed API.
+                        The value should be a CamelCase string.
+                        This field may not be empty.
+                      maxLength: 1024
+                      minLength: 1
+                      pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                      type: string
+                    status:
+                      description: status of the condition, one of True, False, Unknown.
+                      enum:
+                      - "True"
+                      - "False"
+                      - Unknown
+                      type: string
+                    type:
+                      description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                      maxLength: 316
+                      pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - message
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+                x-kubernetes-list-map-keys:
+                - type
+                x-kubernetes-list-type: map
+              finishTimestamp:
+                description: FinishTimestamp is the time when the disaster recovery
+                  action operation finished
+                format: date-time
+                type: string
+              reason:
+                description: Reason provides additional information about the current
+                  status
+                type: string
+              references:
+                additionalProperties:
+                  items:
+                    type: string
+                  type: array
+                description: |-
+                  References stores all sub-resources created for disaster recovery action operation
+                  Map of Kubernetes resource kind to array of object references in format: <uid>#<name>#<namespace>
+                type: object
+              stage:
+                description: Stage represents the current stage of the disaster recovery
+                  action operation
+                enum:
+                - Initial
+                - ScaleDownDestination
+                - ScaleDownSource
+                - ScaleUpDestination
+                - ScaleUpSource
+                - LastMileMigration
+                - WaitAfterScaleDown
+                - Final
+                type: string
+              startTimestamp:
+                description: StartTimestamp is the time when the disaster recovery
+                  action was created
+                format: date-time
+                type: string
+              status:
+                description: Status represents the current status of the disaster
+                  recovery action operation
+                enum:
+                - Initial
+                - Scheduled
+                - In-Progress
+                - Failed
+                - Successful
+                - RollbackSuccessful
+                - RollbackFailed
+                type: string
+              summary:
+                description: Summary provides a summary of the disaster recovery action
+                  operation
+                properties:
+                  summary:
+                    description: Summary contains per-namespace disaster recovery
+                      operation status
+                    items:
+                      description: NamespaceDRStatus represents the DR status for
+                        a single namespace
+                      properties:
+                        namespace:
+                          description: Namespace is the namespace name
+                          type: string
+                        reason:
+                          description: Reason provides additional information about
+                            the status
+                          type: string
+                        status:
+                          description: Status is the status of the operation for this
+                            namespace
+                          type: string
+                      type: object
+                    type: array
+                type: object
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.18.0
+  name: protectiongroups.agent.multicluster.portworx.com
+spec:
+  group: agent.multicluster.portworx.com
+  names:
+    kind: ProtectionGroup
+    listKind: ProtectionGroupList
+    plural: protectiongroups
+    singular: protectiongroup
+  scope: Namespaced
+  versions:
+  - name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: |-
+          ProtectionGroup is the Schema for the protectiongroups API
+          in the agent.multicluster.portworx.com group.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: ProtectionGroupSpec defines the desired state of ProtectionGroup.
+            properties:
+              advanceConfiguration:
+                description: AdvanceConfiguration provides fine-grained migration
+                  control options. .
+                properties:
+                  applicationLifecycleHooks:
+                    description: ApplicationLifecycleHooks defines the hooks that
+                      should be executed before and after application migration.
+                    properties:
+                      postMigrationHook:
+                        description: PostMigrationHook is the list of hooks that should
+                          be executed after application migration completes.
+                        type: object
+                        x-kubernetes-embedded-resource: true
+                        x-kubernetes-preserve-unknown-fields: true
+                        x-kubernetes-validations:
+                        - message: apiVersion must be stork.libopenstorage.org/v1alpha1
+                          rule: has(self.apiVersion) && self.apiVersion == 'stork.libopenstorage.org/v1alpha1'
+                        - message: kind must be Rule
+                          rule: has(self.kind) && self.kind == 'Rule'
+                        - message: metadata.name is required
+                          rule: has(self.metadata) && has(self.metadata.name) && self.metadata.name.size()
+                            > 0
+                      preMigrationHook:
+                        description: PreMigrationHook is the list of hooks that should
+                          be executed before application migration starts.
+                        type: object
+                        x-kubernetes-embedded-resource: true
+                        x-kubernetes-preserve-unknown-fields: true
+                        x-kubernetes-validations:
+                        - message: apiVersion must be stork.libopenstorage.org/v1alpha1
+                          rule: has(self.apiVersion) && self.apiVersion == 'stork.libopenstorage.org/v1alpha1'
+                        - message: kind must be Rule
+                          rule: has(self.kind) && self.kind == 'Rule'
+                        - message: metadata.name is required
+                          rule: has(self.metadata) && has(self.metadata.name) && self.metadata.name.size()
+                            > 0
+                    type: object
+                  ignoreDeletedNamespacesAtSource:
+                    description: SkipDeletedNamespaces determines whether namespaces
+                      that have been deleted should be skipped during migration.
+                    type: boolean
+                  ignoreOwnerReferencesValidation:
+                    description: IgnoreOwnerReferencesValidation specifies whether
+                      the migration should ignore checks related to owner references.
+                    type: boolean
+                  purgeDeletedResourcesAtSource:
+                    description: PurgeDeletedResources specifies whether deleted resources
+                      (that existed before but no longer exist) should be removed
+                      from destination cluster.
+                    type: boolean
+                  resourceTransformations:
+                    description: ResourceTransformations is a list of transformation
+                      specifications that should be applied to Kubernetes resources
+                      before they are migrated.
+                    items:
+                      description: InlineResourceTransformation stores a full stork.libopenstorage.org/v1alpha1
+                        ResourceTransformation object inline.
+                      type: object
+                      x-kubernetes-embedded-resource: true
+                      x-kubernetes-preserve-unknown-fields: true
+                      x-kubernetes-validations:
+                      - message: apiVersion must be stork.libopenstorage.org/v1alpha1
+                        rule: has(self.apiVersion) && self.apiVersion == 'stork.libopenstorage.org/v1alpha1'
+                      - message: kind must be ResourceTransformation
+                        rule: has(self.kind) && self.kind == 'ResourceTransformation'
+                      - message: metadata.name is required
+                        rule: has(self.metadata) && has(self.metadata.name) && self.metadata.name.size()
+                          > 0
+                    type: array
+                  skipServiceUpdate:
+                    description: SkipServiceUpdate determines whether service updates
+                      should be skipped during migration.
+                    type: boolean
+                type: object
+              disasterRecoveryPairRef:
+                description: |-
+                  DisasterRecoveryPairRef is the name of the DisasterRecoveryPair resource
+                  that defines the source/destination clusters and backup location.
+                type: string
+              namespaceSelection:
+                description: |-
+                  NamespaceSelection controls which namespaces are in this protection group.
+                  At least one of namespaces or namespaceSelector must be provided.
+                properties:
+                  namespaceSelectors:
+                    description: NamespaceSelectors selects namespaces by label.
+                    items:
+                      description: CustomLabelSelector defines a label selector for
+                        filtering resources.
+                      properties:
+                        label:
+                          description: Key is the label key to match.
+                          type: string
+                        operator:
+                          description: Operator is the label operator to use.
+                          enum:
+                          - equal
+                          type: string
+                          x-kubernetes-validations:
+                          - message: operator must be 'equal'
+                            rule: self == 'equal'
+                        value:
+                          description: Value is the label value to match.
+                          type: string
+                      type: object
+                    type: array
+                  namespaces:
+                    description: Namespaces is the explicit list of namespaces that
+                      are part of this
+                    items:
+                      type: string
+                    type: array
+                type: object
+              replicationSchedulePolicy:
+                description: |-
+                  ReplicationSchedulePolicy defines when DR replications for this protection group should run.
+                  At least one schedule policy (interval) should be specified.
+                properties:
+                  interval:
+                    description: Interval policy that will be triggered at the specified
+                      interval
+                    properties:
+                      intervalMinutes:
+                        description: IntervalMinutes specifies the interval in minutes
+                          between triggers.
+                        minimum: 1
+                        type: integer
+                      retain:
+                        description: |-
+                          Retain specifies the number of backups to retain
+                          @DefaultIntervalPolicyRetain
+                        type: integer
+                    required:
+                    - intervalMinutes
+                    type: object
+                  suspend:
+                    description: Suspend indicates whether the migrations for the
+                      protection group are to be suspended.
+                    type: boolean
+                type: object
+              resourceConfiguration:
+                description: |-
+                  ResourceConfiguration matches Figma "Resource configuration" step:
+                  label rules, PVC inclusion + PVC label rules, and resource type filters.
+                properties:
+                  customSelection:
+                    description: ResourceSelector controls which resources and volumes
+                      within the selected namespaces are protected.
+                    properties:
+                      excludeLabelSelectors:
+                        description: ExcludeFilters is a set of label-based selectors
+                          used to filter the objects that should be excluded from
+                          the migration.
+                        items:
+                          description: CustomLabelSelector defines a label selector
+                            for filtering resources.
+                          properties:
+                            label:
+                              description: Key is the label key to match.
+                              type: string
+                            operator:
+                              description: Operator is the label operator to use.
+                              enum:
+                              - equal
+                              type: string
+                              x-kubernetes-validations:
+                              - message: operator must be 'equal'
+                                rule: self == 'equal'
+                            value:
+                              description: Value is the label value to match.
+                              type: string
+                          type: object
+                        type: array
+                      includeApplicationVolumes:
+                        description: |-
+                          IncludeApplicationVolumes specifies whether application volumes (PVCs) should
+                          be included in the protection group.
+                        type: boolean
+                      includeCIDRBasedNetworkPolicies:
+                        description: IncludeCIDRBasedNetworkPolicies specifies whether
+                          network policies with CIDR-based rules should be included
+                          in the migration.
+                        type: boolean
+                      includeLabelSelectors:
+                        description: IncludeLabelSelectors is a set of label-based
+                          selectors used to filter the objects that should be included
+                          in the migration.
+                        items:
+                          description: CustomLabelSelector defines a label selector
+                            for filtering resources.
+                          properties:
+                            label:
+                              description: Key is the label key to match.
+                              type: string
+                            operator:
+                              description: Operator is the label operator to use.
+                              enum:
+                              - equal
+                              type: string
+                              x-kubernetes-validations:
+                              - message: operator must be 'equal'
+                                rule: self == 'equal'
+                            value:
+                              description: Value is the label value to match.
+                              type: string
+                          type: object
+                        type: array
+                      resourceTypeSelector:
+                        description: ResourceTypeSelector controls which resource
+                          kinds are included or excluded from protection.
+                        properties:
+                          exclude:
+                            description: Exclude is a list of resource types that
+                              should be excluded from the migration.
+                            items:
+                              type: string
+                            type: array
+                          include:
+                            description: Include is a list of optional Kubernetes
+                              resource types that should be included in the migration.
+                            items:
+                              type: string
+                            type: array
+                        type: object
+                      startApplicationsAfterFailover:
+                        description: StartApplicationsAfterFailover determines whether
+                          migrated applications should be started after failover.
+                        type: boolean
+                    type: object
+                  includeAllResources:
+                    description: IncludeAllResources specifies whether all resources
+                      in the selected namespaces should be included in the protection
+                      group.
+                    type: boolean
+                type: object
+            required:
+            - disasterRecoveryPairRef
+            - namespaceSelection
+            - replicationSchedulePolicy
+            type: object
+          status:
+            description: |-
+              ProtectionGroupStatus defines the observed state of ProtectionGroup for the agent.
+              This status type is specific to the agent and only contains fields that the agent
+              needs to report. Fields like ProtectionState, ActiveSite, ReverseSpec, FailoverNamespaces,
+              FailbackNamespaces, FailoverStatuses, and FailbackStatuses are managed by the hub
+              and are not part of the agent status.
+            properties:
+              applicationActivated:
+                description: ApplicationActivated indicates whether the application
+                  is activated.
+                type: boolean
+              compliant:
+                description: Compliant represents the compliance status of the protection
+                  group.
+                properties:
+                  reason:
+                    description: Reason is short description of why the resource is
+                      in non compliant state.
+                    type: string
+                  status:
+                    description: 'Status: is true then resource is compliant and operational.'
+                    type: boolean
+                required:
+                - status
+                type: object
+              conditions:
+                description: Conditions represent the latest available observations
+                  of the Agent ProtectionGroup's state.
+                items:
+                  description: Condition contains details for one aspect of the current
+                    state of this API Resource.
+                  properties:
+                    lastTransitionTime:
+                      description: |-
+                        lastTransitionTime is the last time the condition transitioned from one status to another.
+                        This should be when the underlying condition changed.  If that is not known, then using the time when the API field changed is acceptable.
+                      format: date-time
+                      type: string
+                    message:
+                      description: |-
+                        message is a human readable message indicating details about the transition.
+                        This may be an empty string.
+                      maxLength: 32768
+                      type: string
+                    observedGeneration:
+                      description: |-
+                        observedGeneration represents the .metadata.generation that the condition was set based upon.
+                        For instance, if .metadata.generation is currently 12, but the .status.conditions[x].observedGeneration is 9, the condition is out of date
+                        with respect to the current state of the instance.
+                      format: int64
+                      minimum: 0
+                      type: integer
+                    reason:
+                      description: |-
+                        reason contains a programmatic identifier indicating the reason for the condition's last transition.
+                        Producers of specific condition types may define expected values and meanings for this field,
+                        and whether the values are considered a guaranteed API.
+                        The value should be a CamelCase string.
+                        This field may not be empty.
+                      maxLength: 1024
+                      minLength: 1
+                      pattern: ^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$
+                      type: string
+                    status:
+                      description: status of the condition, one of True, False, Unknown.
+                      enum:
+                      - "True"
+                      - "False"
+                      - Unknown
+                      type: string
+                    type:
+                      description: type of condition in CamelCase or in foo.example.com/CamelCase.
+                      maxLength: 316
+                      pattern: ^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$
+                      type: string
+                  required:
+                  - lastTransitionTime
+                  - message
+                  - reason
+                  - status
+                  - type
+                  type: object
+                type: array
+                x-kubernetes-list-map-keys:
+                - type
+                x-kubernetes-list-type: map
+              migrationStatus:
+                additionalProperties:
+                  items:
+                    description: ScheduledMigrationStatus captures status for a single
+                      migration run.
+                    properties:
+                      creationTimestamp:
+                        description: CreationTimestamp is when the migration was created.
+                        format: date-time
+                        type: string
+                      finishTimestamp:
+                        description: FinishTimestamp is when the migration finished,
+                          if it has completed.
+                        format: date-time
+                        type: string
+                      name:
+                        description: Name is the name of the migration object created
+                          for this run.
+                        type: string
+                      status:
+                        description: Status is the final (or current) status of the
+                          migration.
+                        type: string
+                      summary:
+                        description: summary  of the migration
+                        properties:
+                          elapsedTimeForResourceMigration:
+                            description: |-
+                              ElapsedTimeForResourceMigration provides the total time the
+                              resource migration stage has been running or the total time
+                              taken for the resource migration to complete if the volume migration has finished
+                            type: string
+                          elapsedTimeForVolumeMigration:
+                            description: |-
+                              ElapsedTimeForVolumeMigration provides the total time the
+                              volume migration stage has been running or the total time
+                              taken for the volume migration to complete if the volume migration has finished
+                            type: string
+                          migrationFailureReasons:
+                            description: MigrationFailureReasons provides the list
+                              of failure reasons for migration failures
+                            items:
+                              type: string
+                            type: array
+                          numOfMigratedResources:
+                            description: NumberOfMigratedResources gives the total
+                              count of migrated k8s resources
+                            format: int64
+                            type: integer
+                          numOfMigratedVolumes:
+                            description: NumberOfMigratedVolumes gives the total count
+                              of successfully migrated volumes
+                            format: int64
+                            type: integer
+                          totalBytesMigrated:
+                            description: TotalBytesMigrated gives the total amount
+                              of bytes migrated across all the volumes
+                            format: int64
+                            type: integer
+                          totalNumberOfResources:
+                            description: TotalNumberOfResources gives the total count
+                              of resourcs
+                            format: int64
+                            type: integer
+                          totalNumberOfVolumes:
+                            description: TotalNumberOfVolumes gives the total count
+                              of volumes
+                            format: int64
+                            type: integer
+                        type: object
+                    required:
+                    - creationTimestamp
+                    - name
+                    - status
+                    type: object
+                  type: array
+                description: MigrationStatus groups recent migration runs by schedule
+                  policy type.
+                type: object
+              references:
+                additionalProperties:
+                  items:
+                    type: string
+                  type: array
+                description: |-
+                  References stores all sub-resources created for protection group operation
+                  Map of Kubernetes resource kind to array of object references in format: <uid>#<name>#<namespace>
+                type: object
+              suspend:
+                description: Suspend indicates whether the status of the migrations
+                  for the protection group is suspended.
+                type: boolean
+            type: object
+        required:
+        - spec
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+
+{{- end }}

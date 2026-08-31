@@ -1,0 +1,78 @@
+{{- if .Values.cacheAgent.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "px-observability-ui.cacheAgent.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "px-observability-ui.cacheAgent.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "px-observability-ui.cacheAgent.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "px-observability-ui.cacheAgent.selectorLabels" . | nindent 8 }}
+      annotations:
+        kubectl.kubernetes.io/default-container: manager
+    spec:
+      serviceAccountName: {{ .Values.cacheAgent.serviceAccount.name }}
+      securityContext:
+        runAsNonRoot: true
+      containers:
+      - name: manager
+        image: "{{ required "cacheAgent.image.repository is required (see docs/helm-chart.md)" .Values.cacheAgent.image.repository }}:{{ required "cacheAgent.image.tag is required (see docs/helm-chart.md)" .Values.cacheAgent.image.tag }}"
+        imagePullPolicy: {{ .Values.cacheAgent.image.pullPolicy }}
+        command:
+        - /agent
+        args:
+        - --prometheus-endpoint={{ .Values.cacheAgent.prometheusEndpoint }}
+        env:
+        - name: DATABASE_PATH
+          value: "/tmp/px-cache.db"
+        ports:
+        - name: rest
+          containerPort: 8710
+          protocol: TCP
+        - name: grpc
+          containerPort: 7710
+          protocol: TCP
+        # NOTE: these two container ports don't match px-cache-agent's own code defaults
+        # (9090/9003) since no --metrics-port/--http-port flags are passed — replicated as-is
+        # from its own deploy/deployment.yaml, a known pre-existing discrepancy not fixed here
+        # (see docs/helm-chart.md).
+        - name: metrics
+          containerPort: 8081
+          protocol: TCP
+        - name: health
+          containerPort: 8082
+          protocol: TCP
+        resources:
+          {{- toYaml .Values.cacheAgent.resources | nindent 10 }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          capabilities:
+            drop:
+            - ALL
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+      volumes:
+      - name: tmp
+        emptyDir:
+          sizeLimit: 1Gi
+      terminationGracePeriodSeconds: 10
+      nodeSelector:
+        kubernetes.io/os: linux
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+        effect: NoSchedule
+{{- end }}

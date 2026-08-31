@@ -1,0 +1,20 @@
+{{- if .Values.route.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "px-observability-ui.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "px-observability-ui.labels" . | nindent 4 }}
+spec:
+  to:
+    kind: Service
+    name: {{ include "px-observability-ui.fullname" . }}
+  port:
+    targetPort: http
+  tls:
+    # nginx serves plain HTTP only (see nginx.conf) — terminate TLS at the OCP router edge
+    # and redirect http->https rather than adding cert handling inside the container.
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+{{- end }}
