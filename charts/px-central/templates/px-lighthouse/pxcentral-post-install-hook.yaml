@@ -29,7 +29,7 @@ rules:
   # px-central-admin, pxc-backup-secret, pxcentral-keycloak-http, px-license-secret, px-backup-admin-secret
   - apiGroups: [""]
     resources: ["secrets"]
-    verbs: ["get", "create", "patch"]
+    verbs: ["get", "create", "patch", "update"]
   # Locate/restart the frontend pod, and "get" is required by kubectl exec
   # (into keycloak / license-server pods) before it can hit pods/exec
   - apiGroups: [""]
