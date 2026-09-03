@@ -348,8 +348,6 @@ spec:
               value: "600"
             - name: PX_BACKUP_ENABLED
               value: "{{ $pxBackupEnabled }}"
-            - name: PX_MONITOR_ENABLED
-              value: {{ .Values.pxmonitor.enabled | default false | quote }}
             - name: PX_LICENSE_SERVER_ENABLED
               value: {{ .Values.pxlicenseserver.enabled | default false | quote }}
             - name: PROXY_CONFIG_SECRET_NAME

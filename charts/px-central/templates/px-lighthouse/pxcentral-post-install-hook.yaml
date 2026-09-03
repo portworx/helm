@@ -25,11 +25,11 @@ rules:
   # pxcentral-admin-user / pxcentral-modules / pxcentral-ui-configmap / license & etcd configmaps
   - apiGroups: [""]
     resources: ["configmaps"]
-    verbs: ["get", "patch", "delete"]
+    verbs: ["get", "patch", "update", "delete"]
   # px-central-admin, pxc-backup-secret, pxcentral-keycloak-http, px-license-secret, px-backup-admin-secret
   - apiGroups: [""]
     resources: ["secrets"]
-    verbs: ["get", "create", "patch"]
+    verbs: ["get", "create", "patch", "update"]
   # Locate/restart the frontend pod, and "get" is required by kubectl exec
   # (into keycloak / license-server pods) before it can hit pods/exec
   - apiGroups: [""]
@@ -73,9 +73,7 @@ roleRef:
   kind: Role
   name: pxcentral-post-install-hook
   apiGroup: rbac.authorization.k8s.io
-{{- if .Values.pxlicenseserver.enabled }}
 ---
-# Node listing is only needed to discover the two license-server HA node endpoints
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -85,9 +83,15 @@ metadata:
     app.kubernetes.io/component: pxcentral-post-install-hook
 {{- include "px-central.labels" . | nindent 4 }}
 rules:
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["get", "create", "patch"]
+{{- if .Values.pxlicenseserver.enabled }}
+  # Node listing is only needed to discover the two license-server HA node endpoints
   - apiGroups: [""]
     resources: ["nodes"]
     verbs: ["list"]
+{{- end }}
 ---
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
@@ -105,7 +109,6 @@ roleRef:
   kind: ClusterRole
   name: {{ .Release.Namespace }}-pxcentral-post-install-hook
   apiGroup: rbac.authorization.k8s.io
-{{- end }}
 ---
 apiVersion: batch/v1
 kind: Job

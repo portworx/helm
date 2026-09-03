@@ -391,10 +391,8 @@ spec:
                   name: pxc-backup-secret
                   key: OIDC_CLIENT_SECRET
           volumeMounts:
-            - name: frontend-nginx-configs
-              mountPath: /etc/nginx/conf.d
             - name: frontend-nginx-configmap
-              mountPath: /etc/nginx/configmap
+              mountPath: /etc/nginx/conf.d
               readOnly: true
           {{- if .Values.proxy.configSecretName }}
             - mountPath: /etc/ssl/certs/proxy-ca.pem
@@ -408,8 +406,6 @@ spec:
       {{- toYaml . | nindent 8 }}
       {{- end }}
       volumes:
-        - name: frontend-nginx-configs
-          emptyDir: {}
         - name: frontend-nginx-configmap
           configMap:
             name: pxcentral-frontend-nginx-config
