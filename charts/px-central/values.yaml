@@ -1,15 +1,7 @@
 persistentStorage:
   enabled: true
   storageClassName:
-  cassandra:
-    storage: 64Gi
-  grafana:
-    storage: 20Gi
-  consul:
-    storage: 8Gi
   alertManager:
-    storage: 2Gi
-  ingester:
     storage: 2Gi
   prometheus:
     storage: 64Gi
@@ -150,15 +142,6 @@ pxlicenseserver:
   adminUserName: admin
   adminUserPassword: Adm1n!Ur
 
-pxmonitor:
-  enabled: false
-  pxCentralEndpoint:
-  sslEnabled: false
-  oidcClientID: pxcentral
-  consulBindInterface: ""
-  cortex:
-    alertmanager:
-      advertiseAddress: ""
 
 # Telemetry configuration for PX-Backup
 telemetry:
@@ -181,30 +164,8 @@ service:
   pxBackupUIServiceType: "LoadBalancer"
   pxBackupUIServiceAnnotations: {}
   pxBackupServiceAnnotations: {}
-  grafanaServiceType: "NodePort"
-  cortexNginxServiceType: "NodePort"
-
-## Memory settings: These are calculated automatically unless specified otherwise
-## To run on environments with little resources (<= 8GB), tune your heap settings:
-## maxHeapSize:
-## - calculate 1/2 ram and cap to 1024MB
-## - calculate 1/4 ram and cap to 8192MB
-## - pick the max
-## newHeapSize:
-## A good guideline is 100 MB per CPU core.
-## - min(100 * num_cores, 1/4 * heap size)
-##
-# maxHeapSize: 4G
-# newHeapSize: 800M
-
-cassandra:
-  jvm:
-    maxHeapSize:
-    newHeapSize:
 
 clusterDomain: "cluster.local"
-cassandraUsername: cassandra
-cassandraPassword: cassandra
 
 operatorToChartUpgrade: false
 
@@ -322,35 +283,6 @@ images:
     tag: 2.8.0
     module: pxLicenseServer
 
-  ## Images required for enabling px-monitor
-  cortexImage:
-    imageName: cortex
-    tag: v1.13.1
-    module: pxMonitor
-  cassandraImage:
-    imageName: cassandra
-    tag: 4.0.7-debian-11-r34
-    module: pxMonitor
-  proxyConfigImage:
-    imageName: nginx
-    tag: 1.23.3-alpine-slim
-    module: pxMonitor
-  consulImage:
-    imageName: consul
-    tag: 1.14.4-debian-11-r4
-    module: pxMonitor
-  dnsmasqImage:
-    imageName: go-dnsmasq
-    tag: release-1.0.7-v3
-    module: pxMonitor
-  grafanaImage:
-    imageName: grafana
-    tag: 9.1.3
-    module: pxMonitor
-  prometheusImage:
-    imageName: prometheus
-    tag: v2.35.0
-    module: pxMonitor
   pxBackupPrometheusImage:
     imageName: prometheus
     tag: v3.11.3
@@ -367,26 +299,6 @@ images:
     imageName: prometheus-config-reloader
     tag: v0.91.0
     module: pxBackup
-  prometheusConfigReloadrImage:
-    imageName: prometheus-config-reloader
-    tag: v0.56.3
-    module: pxMonitor
-  prometheusOperatorImage:
-    imageName: prometheus-operator
-    tag: v0.56.3
-    module: pxMonitor
-  memcachedMetricsImage:
-    imageName: memcached-exporter
-    tag: v0.10.0
-    module: pxMonitor
-  memcachedIndexImage:
-    imageName: memcached
-    tag: 1.6.17-alpine
-    module: pxMonitor
-  memcachedImage:
-    imageName: memcached
-    tag: 1.6.17-alpine
-    module: pxMonitor
   ## Images required for intermediate Mongo upgrades
   # mongodbImageMap:
   #   tags:
