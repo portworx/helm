@@ -1,5 +1,4 @@
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
-{{- $pxMonitorEnabled := .Values.pxmonitor.enabled | default false }}
 {{- $minimumKubernetesVersion := "1.30.0"}}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
@@ -243,8 +242,6 @@ spec:
               value: {{ .Values.persistentStorage.storageClassName }}
             - name: PX_BACKUP_ENABLED
               value: {{ .Values.pxbackup.enabled | default false | quote }}
-            - name: PX_MONITOR_ENABLED
-              value: {{ .Values.pxmonitor.enabled | default false | quote }}
             - name: PX_LICENSE_SERVER_ENABLED
               value: {{ .Values.pxlicenseserver.enabled | default false | quote }}
             - name: PROXY_CONFIG_SECRET_NAME
@@ -465,8 +462,6 @@ spec:
               {{- end }}
             - name: PX_BACKUP_ENABLED
               value: {{ .Values.pxbackup.enabled | default false | quote }}
-            - name: PX_MONITOR_ENABLED
-              value: {{ .Values.pxmonitor.enabled | default false | quote }}
             - name: PX_LICENSE_SERVER_ENABLED
               value: {{ .Values.pxlicenseserver.enabled | default false | quote }}
             - name: DOCREGISTRY_SECRET_NAME

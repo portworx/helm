@@ -2,8 +2,7 @@
 PX-Central is a unified, multi-user, multi-cluster management interface.
 This chart also supports following features but by default those are disabled.
   1. PX-Backup
-  2. PX-Monitor
-  3. PX-License-Server
+  2. PX-License-Server
 
 To enable each feature, follow the respective sections for detailed steps.
 
@@ -277,142 +276,6 @@ Note: Keycloak auth and Grafana UI will be accessible on same endpoint on differ
    $ kubectl logs -f --namespace {{ .Release.Namespace }} -ljob-name=pxcentral-post-install-hook
    ```
 
-# PX-Monitor
-
-Using PX-Monitor, you can manage and monitor portworx cluster metrics.
-By default PX-Monitor remains disabled with px-central installation.
-
-### Prerequisites:
-- PX-Central chart has to be deployed and all components should be in running state.
-- Edit `privileged` scc using command : `oc edit scc privileged` and add following into `users` section : `- system:serviceaccount:<PX_BACKUP_NAMESPACE>:px-monitor` change the PX_BACKUP_NAMESPACE.
-
-Note:
-
-- To fetch `PX_CENTRAL_UI_ENDPOINT`:
-   - External IP of `px-central-ui` service
-   - `px-central-ui` ingress host or address
-
-## Enabling PX-Monitor
-
-To enable PX-Monitor :
-
-1. helm get values --namespace central px-central -o yaml > values.yaml
-
-2. Delete post install job: `kubectl delete job -n central pxcentral-post-install-hook`
-
-3. Run following helm upgrade command to enable px-monitor for same px-central chart
-
-Helm 3:
-```console
-$ helm upgrade px-central portworx/px-central --namespace central --create-namespace --set pxmonitor.enabled=true,installCRDs=true,pxmonitor.pxCentralEndpoint=<PX_BACKUP_UI_ENDPOINT>
-```
-
-Helm 2:
-```console
-$ helm install --name px-central portworx/px-central --namespace central --set pxmonitor.enabled=true,installCRDs=true,pxmonitor.pxCentralEndpoint=<PX_BACKUP_UI_ENDPOINT>
-```
-
-## Disabling PX-Monitor
-
-To disable PX-Monitor:
-
-1. helm get values --namespace central px-central -o yaml > values.yaml
-
-2. Delete post install job: `kubectl delete job -n central pxcentral-post-install-hook`
-
-3. Run following helm upgrade command to disable px-monitor for same px-central chart
-
-Helm 3:
-```console
-$ helm upgrade px-central portworx/px-central --namespace central --create-namespace --set pxmonitor.enabled=false
-```
-
-Helm 2:
-```console
-$ helm upgrade --name px-central portworx/px-central --namespace central --set pxmonitor.enabled=false
-```
-
-## Advanced Configuration
-
-### Expose PX-Central UI with metrics frontend(Grafana) on ingress:
-
-- Edit the current px-central-ui ingress and add grafana and cortex endpoints, complete ingress spec are as follows:
-
-- Example - 1:
-```
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.class: nginx
-  name: px-central-ui-ingress
-  namespace: central
-spec:
-  rules:
-  - http:
-      paths:
-      - backend:
-          serviceName: px-central-ui
-          servicePort: 80
-        path: /
-      - backend:
-          serviceName: pxcentral-keycloak-http
-          servicePort: 80
-        path: /auth
-      - backend:
-          serviceName: pxcentral-grafana
-          servicePort: 3000
-        path: /grafana(/|$)(.*)
-      - backend:
-          serviceName: pxcentral-cortex-nginx
-          servicePort: 80
-        path: /cortex(/|$)(.*)
-```
-
-- Example - 2:
-
-```
-apiVersion: extensions/v1beta1
-kind: Ingress
-metadata:
-  annotations:
-    ingress.bluemix.net/redirect-to-https: "True"
-    kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/x-forwarded-port: "443"
-  name: px-central-ui-ingress
-  namespace: central
-spec:
-  rules:
-  - host: px-central-ui.test-1.us-east.containers.appdomain.cloud
-    http:
-      paths:
-      - backend:
-          serviceName: px-central-ui
-          servicePort: 80
-        path: /
-      - backend:
-          serviceName: pxcentral-keycloak-http
-          servicePort: 80
-        path: /auth
-      - backend:
-          serviceName: pxcentral-grafana
-          servicePort: 3000
-        path: /grafana(/|$)(.*)
-      - backend:
-          serviceName: pxcentral-cortex-nginx
-          servicePort: 80
-        path: /cortex(/|$)(.*)
-  tls:
-  - hosts:
-    - px-central-ui.test-1.us-east.containers.appdomain.cloud
-    secretName: test
-```
-Note: Change the secret and hosts based on your configuration. Also, `secretName` -> `kubernetes TLS certificates secret` is required only when you want to terminate TLS on the host/domain.
-- Some examples:
-  - AKS: https://docs.microsoft.com/en-us/azure/aks/ingress-own-tls
-  - EKS: https://aws.amazon.com/blogs/opensource/network-load-balancer-nginx-ingress-controller-eks/
-
-
 # PX-License-Server
 
 Using PX-License-Server, you can manage license for all your portworx clusters.
@@ -552,22 +415,10 @@ Image (`images.<key>`) | imageName | tag | module
 `telemetryDataCollectorImage` | `px-backup-telemetry-collector-base` | `3.3.0-fc1` | `pxBackup`
 `telemetryLogUploadImage` | `log-upload` | `px-1.1.148` | `pxBackup`
 `licenseServerImage` | `px-els` | `2.8.0` | `pxLicenseServer`
-`cortexImage` | `cortex` | `v1.13.1` | `pxMonitor`
-`cassandraImage` | `cassandra` | `4.0.7-debian-11-r34` | `pxMonitor`
-`proxyConfigImage` | `nginx` | `1.23.3-alpine-slim` | `pxMonitor`
-`consulImage` | `consul` | `1.14.4-debian-11-r4` | `pxMonitor`
-`dnsmasqImage` | `go-dnsmasq` | `release-1.0.7-v3` | `pxMonitor`
-`grafanaImage` | `grafana` | `9.1.3` | `pxMonitor`
-`prometheusImage` | `prometheus` | `v2.35.0` | `pxMonitor`
 `pxBackupPrometheusImage` | `prometheus` | `v3.11.3` | `pxBackup`
 `pxBackupAlertmanagerImage` | `alertmanager` | `v0.32.1` | `pxBackup`
 `pxBackupPrometheusOperatorImage` | `prometheus-operator` | `v0.91.0` | `pxBackup`
 `pxBackupPrometheusConfigReloaderImage` | `prometheus-config-reloader` | `v0.91.0` | `pxBackup`
-`prometheusConfigReloadrImage` | `prometheus-config-reloader` | `v0.56.3` | `pxMonitor`
-`prometheusOperatorImage` | `prometheus-operator` | `v0.56.3` | `pxMonitor`
-`memcachedMetricsImage` | `memcached-exporter` | `v0.10.0` | `pxMonitor`
-`memcachedIndexImage` | `memcached` | `1.6.17-alpine` | `pxMonitor`
-`memcachedImage` | `memcached` | `1.6.17-alpine` | `pxMonitor`
 
 
 ### PX-Backup parameters
@@ -583,36 +434,6 @@ Parameter | Description | Default
 `service.pxBackupUIServiceType` | service type of PX-Backup UI | `"LoadBalancer"`
 `service.pxBackupUIServiceAnnotations` | annotations for the PX-Backup UI service | `"{}"`
 `service.pxBackupServiceAnnotations` | annotations for the PX-Backup backend service | `"{}"`
-
-### PX-Monitor parameters
-
-Parameter | Description | Default
---- | --- | ---
-`pxmonitor` | PX Monitor deployment | ``
-`pxmonitor.enabled` | PX-Central cluster enabled monitor component | `false`
-`pxmonitor.pxCentralEndpoint` | PX-Central endpoint (LB endpoint of px-central-ui service, ingress host) | ``
-`pxmonitor.sslEnabled` | PX-Central UI is accessibe on https | `false`
-`pxmonitor.oidcClientID` | PX-Central internal oidc client ID | `pxcentral`
-`pxmonitor.oidcClientSecret` | Grafana OAuth client secret — **not a values input**; managed internally (empty in the generated Grafana config) | _(internal)_
-`pxmonitor.consulBindInterface` | Exclusive bind interface for consul (ex: eth0) | `""`
-`pxmonitor.cortex.alertmanager.advertiseAddress` | Advertise address for alert manager (supported values - "pod_ip") | `""`
-`installCRDs` | Install metrics stack required crds | `false`
-`storkRequired` | Scheduler name as stork | `false`
-`clusterDomain` | Cluster domain | `cluster.local`
-`cassandraUsername` | Cassandra cluster username | `cassandra`
-`cassandraPassword` | Cassandra cluster password | `cassandra`
-`cassandra.jvm.maxHeapSize` | Cassandra jvm maximum heap size | `""`
-`cassandra.jvm.newHeapSize` | Cassandra jvm new heap size | `""`
-`persistentStorage` | Persistent storage for all px-central px-monitor components | `""`
-`persistentStorage.storageClassName` | Provide storage class name which exists | `""`
-`persistentStorage.cassandra.storage` | Cassandra volumes size | `64Gi`
-`persistentStorage.grafana.storage` | Grafana volumes size | `20Gi`
-`persistentStorage.consul.storage` | Consul volumes size | `8Gi`
-`persistentStorage.alertManager.storage` | AlertManager volume size | `2Gi`
-`persistentStorage.ingester.storage` | ingester volume size | `2Gi`
-`securityContext` | Security context for the pod | `{runAsUser: 1000, fsGroup: 1000, runAsNonRoot: true}`
-`service.grafanaServiceType` | service type of grafana | `"NodePort"`
-`service.cortexNginxServiceType` | service type of cortex nginx | `"NodePort"`
 
 ### PX-License-Server parameters
 

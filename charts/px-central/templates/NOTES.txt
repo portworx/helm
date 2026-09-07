@@ -31,11 +31,6 @@ PX-Backup: enabled
 {{- else }}
 PX-Backup: disabled
 {{- end}}
-{{- if eq .Values.pxmonitor.enabled true}}
-PX-Monitor: enabled
-{{- else }}
-PX-Monitor: disabled
-{{- end}}
 {{- if eq .Values.pxlicenseserver.enabled true}}
 PX-License-Server: enabled
 {{- else }}
