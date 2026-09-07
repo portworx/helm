@@ -73,39 +73,6 @@ roleRef:
   kind: Role
   name: pxcentral-post-install-hook
   apiGroup: rbac.authorization.k8s.io
-{{- if .Values.pxlicenseserver.enabled }}
----
-# Node listing is only needed to discover the two license-server HA node endpoints
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: {{ .Release.Namespace }}-pxcentral-post-install-hook
-  labels:
-    name: pxcentral-post-install-hook
-    app.kubernetes.io/component: pxcentral-post-install-hook
-{{- include "px-central.labels" . | nindent 4 }}
-rules:
-  - apiGroups: [""]
-    resources: ["nodes"]
-    verbs: ["list"]
----
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: {{ .Release.Namespace }}-pxcentral-post-install-hook
-  labels:
-    name: pxcentral-post-install-hook
-    app.kubernetes.io/component: pxcentral-post-install-hook
-{{- include "px-central.labels" . | nindent 4 }}
-subjects:
-  - kind: ServiceAccount
-    name: pxcentral-post-install-hook
-    namespace: {{ .Release.Namespace }}
-roleRef:
-  kind: ClusterRole
-  name: {{ .Release.Namespace }}-pxcentral-post-install-hook
-  apiGroup: rbac.authorization.k8s.io
-{{- end }}
 ---
 apiVersion: batch/v1
 kind: Job
