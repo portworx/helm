@@ -551,7 +551,7 @@ Parameter | Description | Default
 `images.keycloakInitContainerImage.registry` | PX-Backup keycloak init container image registry | `docker.io`
 `images.keycloakInitContainerImage.repo` | PX-Backup keycloak init container image repo | `library`
 `images.keycloakInitContainerImage.imageName` | PX-Backup keycloak init container image name | `busybox`
-`images.keycloakInitContainerImage.tag` | PX-Backup keycloak init container image tag | `1.35.0`
+`images.keycloakInitContainerImage.tag` | PX-Backup keycloak init container image tag | `1.38.0`
 `images.mysqlImage.registry` | PX-Central cluster store mysql image registry | `docker.io`
 `images.mysqlImage.repo` | PX-Central cluster store mysql image repo | `library`
 `images.mysqlImage.imageName` | PX-Central cluster store mysql image name | `mysql`
