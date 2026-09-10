@@ -143,7 +143,7 @@ spec:
               {{- end }}
       containers:
       - name: pxcentral-apiserver
-        image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxcentralApiServerImage.registry .Values.images.registry) (default .Values.images.pxcentralApiServerImage.repo .Values.images.repo) .Values.images.pxcentralApiServerImage.imageName .Values.images.pxcentralApiServerImage.tag }}
+        image: {{ include "px.image" (dict "key" "pxcentralApiServerImage" "root" .) }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         securityContext:
           runAsNonRoot: true

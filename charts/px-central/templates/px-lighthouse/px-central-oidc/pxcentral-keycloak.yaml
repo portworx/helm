@@ -329,7 +329,7 @@ spec:
       {{- end }}
       containers:
         - name: pxcentral-keycloak-postgresql
-          image: {{ printf "%s/%s/%s:%s" (default .Values.images.keycloakBackendImage.registry .Values.images.registry) (default .Values.images.keycloakBackendImage.repo .Values.images.repo) .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
+          image: {{ include "px.image" (dict "key" "keycloakBackendImage" "root" .) }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           {{ if eq $operatorToChartUpgrade true }}
           securityContext:
@@ -503,7 +503,7 @@ spec:
           {{ include "proxy.proxyEnv" . | nindent 10 }}
           {{- end }}
           {{- end }}
-          image: {{ printf "%s/%s/%s:%s" (default .Values.images.keycloakLoginThemeImage.registry .Values.images.registry) (default .Values.images.keycloakLoginThemeImage.repo .Values.images.repo) .Values.images.keycloakLoginThemeImage.imageName .Values.images.keycloakLoginThemeImage.tag }}
+          image: {{ include "px.image" (dict "key" "keycloakLoginThemeImage" "root" .) }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
             - sh
@@ -523,7 +523,7 @@ spec:
           {{- end }}
       containers:
         - name: keycloak
-          image: {{ printf "%s/%s/%s:%s" (default .Values.images.keycloakFrontendImage.registry .Values.images.registry) (default .Values.images.keycloakFrontendImage.repo .Values.images.repo) .Values.images.keycloakFrontendImage.imageName .Values.images.keycloakFrontendImage.tag }}
+          image: {{ include "px.image" (dict "key" "keycloakFrontendImage" "root" .) }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
             - sh
