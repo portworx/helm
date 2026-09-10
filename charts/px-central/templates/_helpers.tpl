@@ -176,3 +176,41 @@ Usage:
         {{- tpl (.value | toYaml) .context }}
     {{- end }}
 {{- end -}}
+
+{{/*
+px.image resolves a fully-qualified image ref for a given image key.
+Tag resolution: .Values.images.<key>.tag (override) -> hardcoded tag (external) -> .Values.images.version (PX-owned).
+*/}}
+{{- define "px.image" -}}
+{{- $key  := .key -}}
+{{- $root := .root -}}
+{{- $images := dict
+    "pxcentralApiServerImage"               (dict "name" "pxcentral-onprem-api-base")
+    "pxcentralFrontendImage"                (dict "name" "pxcentral-onprem-ui-frontend-private")
+    "pxcentralMiddlewareImage"              (dict "name" "pxcentral-onprem-ui-lhbackend-private")
+    "preSetupHookImage"                     (dict "name" "pxcentral-onprem-hook-base")
+    "keycloakLoginThemeImage"               (dict "name" "sb-keycloak-login-theme")
+    "pxBackupImage"                         (dict "name" "px-backup-base")
+    "telemetryDataCollectorImage"           (dict "name" "px-backup-telemetry-collector-base")
+    "keycloakBackendImage"                  (dict "name" "postgresql"                 "tag" "18.6")
+    "keycloakFrontendImage"                 (dict "name" "keycloak"                   "tag" "26.8.0_v2")
+    "keycloakInitContainerImage"            (dict "name" "busybox"                    "tag" "1.38.0")
+    "mongodbImage"                          (dict "name" "mongodb"                    "tag" "8.0.34")
+    "pxBackupPrometheusImage"               (dict "name" "prometheus"                 "tag" "v3.15.1")
+    "pxBackupAlertmanagerImage"             (dict "name" "alertmanager"               "tag" "v0.34.1")
+    "pxBackupPrometheusOperatorImage"       (dict "name" "prometheus-operator"        "tag" "v0.94.2")
+    "pxBackupPrometheusConfigReloaderImage" (dict "name" "prometheus-config-reloader" "tag" "v0.94.2")
+    "telemetryEnvoyImage"                   (dict "name" "edge-envoy"                 "tag" "2.0.150")
+    "telemetryRegistrationImage"            (dict "name" "ccm-go"                     "tag" "1.4.80")
+    "telemetryLogUploadImage"               (dict "name" "log-upload"                 "tag" "1.1.179")
+-}}
+{{- $pxVersion := "3.3.0-fc1" -}}
+{{- $img      := get $images $key -}}
+{{- $name     := get $img "name" -}}
+{{- $hardTag  := get $img "tag" -}}
+{{- $override := dig $key "tag" "" $root.Values.images -}}
+{{- $tag      := default (default $pxVersion $hardTag) $override -}}
+{{- $registry := default "docker.io"  (default (dig $key "registry" "" $root.Values.images) $root.Values.images.registry) -}}
+{{- $repo     := default "portworx"   (default (dig $key "repo"     "" $root.Values.images) $root.Values.images.repo) -}}
+{{- printf "%s/%s/%s:%s" $registry $repo $name $tag -}}
+{{- end -}}
