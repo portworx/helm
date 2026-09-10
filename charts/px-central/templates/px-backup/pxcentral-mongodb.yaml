@@ -120,7 +120,7 @@ spec:
       {{- end }}
       containers:
         - name: mongodb
-          image: {{ printf "%s/%s/%s:%s" (default .Values.images.mongodbImage.registry .Values.images.registry) (default .Values.images.mongodbImage.repo .Values.images.repo) .Values.images.mongodbImage.imageName .Values.images.mongodbImage.tag }}
+          image: {{ include "px.image" (dict "key" "mongodbImage" "root" .) }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
             - /scripts/setup.sh

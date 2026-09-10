@@ -227,7 +227,7 @@ spec:
               {{- end }}
       containers:
         - name: pxbackup-pre-install-check
-          image: {{ printf "%s/%s/%s:%s" (default .Values.images.preSetupHookImage.registry .Values.images.registry) (default .Values.images.preSetupHookImage.repo .Values.images.repo) .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          image: {{ include "px.image" (dict "key" "preSetupHookImage" "root" .) }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           securityContext:
             readOnlyRootFilesystem: true
@@ -441,7 +441,7 @@ spec:
               {{- end }}
       containers:
         - name: pxbackup-pre-flight-checker
-          image: {{ printf "%s/%s/%s:%s" (default .Values.images.preSetupHookImage.registry .Values.images.registry) (default .Values.images.preSetupHookImage.repo .Values.images.repo) .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          image: {{ include "px.image" (dict "key" "preSetupHookImage" "root" .) }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: [ "/pxcentral-hook/bin/pxcentral-hook" ]
           args: [ "--hook=preflight-check" ]

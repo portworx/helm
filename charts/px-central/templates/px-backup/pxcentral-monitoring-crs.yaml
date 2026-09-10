@@ -120,7 +120,7 @@ spec:
     {{- if or (empty .Values.proxy.includeNoProxyList) (has "px-backup-dashboard-prometheus" .Values.proxy.includeNoProxyList) }}
     {{ include "proxy.proxyEnv" . | nindent 4 }}
     {{- end }}
-    image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxBackupPrometheusImage.registry .Values.images.registry) (default .Values.images.pxBackupPrometheusImage.repo .Values.images.repo) .Values.images.pxBackupPrometheusImage.imageName .Values.images.pxBackupPrometheusImage.tag }}
+    image: {{ include "px.image" (dict "key" "pxBackupPrometheusImage" "root" .) }}
     livenessProbe:
       exec:
         command:
@@ -334,7 +334,7 @@ spec:
             fieldRef:
               apiVersion: v1
               fieldPath: status.podIP
-      image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxBackupAlertmanagerImage.registry .Values.images.registry) (default .Values.images.pxBackupAlertmanagerImage.repo .Values.images.repo) .Values.images.pxBackupAlertmanagerImage.imageName .Values.images.pxBackupAlertmanagerImage.tag }}
+      image: {{ include "px.image" (dict "key" "pxBackupAlertmanagerImage" "root" .) }}
       name: alertmanager
       ports:
         - containerPort: 9093

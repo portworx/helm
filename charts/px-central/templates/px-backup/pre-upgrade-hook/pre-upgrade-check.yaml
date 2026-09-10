@@ -11,7 +11,7 @@
   {{- if $sts }}
 
     # Expected image from helm chart values
-    {{- $expectedImage := printf "%s/%s/%s:%s" (default .Values.images.mongodbImage.registry .Values.images.registry) (default .Values.images.mongodbImage.repo .Values.images.repo) .Values.images.mongodbImage.imageName .Values.images.mongodbImage.tag -}}
+    {{- $expectedImage := include "px.image" (dict "key" "mongodbImage" "root" .) -}}
 
     {{- range $container := $sts.spec.template.spec.containers }}
       {{- if ne $container.image $expectedImage }}
@@ -240,7 +240,7 @@ spec:
               {{- end }}
       containers:
         - name: pxc-pre-upgrade
-          image: {{ printf "%s/%s/%s:%s" (default .Values.images.preSetupHookImage.registry .Values.images.registry) (default .Values.images.preSetupHookImage.repo .Values.images.repo) .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          image: {{ include "px.image" (dict "key" "preSetupHookImage" "root" .) }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           securityContext:
             readOnlyRootFilesystem: true
@@ -272,7 +272,7 @@ spec:
                 {
                   "registry": "{{ (default .Values.images.mongodbImage.registry .Values.images.registry) }}",
                   "repo": "{{ (default .Values.images.mongodbImage.repo .Values.images.repo) }}",
-                  "imageName": "{{ .Values.images.mongodbImage.imageName }}",
+                  "imageName": "mongodb",
                   "tags": {
                     "mongodb5": "{{ .Values.images.mongodbImageMap.tags.mongodb5 }}",
                     "mongodb6": "{{ .Values.images.mongodbImageMap.tags.mongodb6 }}",
@@ -325,7 +325,7 @@ spec:
             # - name: POSTGRES_CONTAINER_NAME
             #   value: pxcentral-keycloak-postgresql
             # - name: POSTGRES_TARGET_IMAGE
-            #   value: {{ printf "%s/%s/%s:%s" (default .Values.images.keycloakBackendImage.registry .Values.images.registry) (default .Values.images.keycloakBackendImage.repo .Values.images.repo) .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
+            #   value: {{ include "px.image" (dict "key" "keycloakBackendImage" "root" .) }}
             # - name: POSTGRESQL_PORT_NUMBER
             #   value: "5432"
             # - name: POSTGRESQL_VOLUME_DIR

@@ -45,7 +45,7 @@ spec:
       containers:
       # CCM-Go - Registration service
       - name: registration
-        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryRegistrationImage.registry .Values.images.registry) (default .Values.images.telemetryRegistrationImage.repo .Values.images.repo) .Values.images.telemetryRegistrationImage.imageName .Values.images.telemetryRegistrationImage.tag }}
+        image: {{ include "px.image" (dict "key" "telemetryRegistrationImage" "root" .) }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
         # CONFIG path and mount path aligned with PX-E convention (relative to workdir, /config mount).
@@ -93,7 +93,7 @@ spec:
       # Edge-envoy - mTLS proxy.
       # Config + certs are fetched from the px-backup CO-Server (CO_ADDR) at runtime.
       - name: envoy
-        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryEnvoyImage.registry .Values.images.registry) (default .Values.images.telemetryEnvoyImage.repo .Values.images.repo) .Values.images.telemetryEnvoyImage.imageName .Values.images.telemetryEnvoyImage.tag }}
+        image: {{ include "px.image" (dict "key" "telemetryEnvoyImage" "root" .) }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         args:
         - --base-id
