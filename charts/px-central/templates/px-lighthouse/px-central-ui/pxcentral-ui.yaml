@@ -92,6 +92,169 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: pxcentral-backend
+  namespace: {{ .Release.Namespace }}
+  labels:
+    run: pxcentral-backend
+    app.kubernetes.io/component: pxcentral-backend
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      run: pxcentral-backend
+      app.kubernetes.io/component: pxcentral-backend
+  replicas: 1
+  revisionHistoryLimit: 0
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  template:
+    metadata:
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-backend" .Values.proxy.excludeAzureProxyList)) }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
+      labels:
+        run: pxcentral-backend
+        app.kubernetes.io/component: pxcentral-backend
+{{- include "px-central.partOfLabel" . | nindent 8 }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+              {{- end }}
+      containers:
+        - name: pxcentral-backend
+          image: {{ include "px.image" (dict "key" "pxcentralBackendImage" "root" .) }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          ports:
+            - containerPort: 80
+          # install.sh runs DB init/migrations and default-role creation (which depends on
+          # px-backup + lh-middleware being up) before apache2 starts listening on 8080.
+          # A startupProbe holds off liveness/readiness until startup completes so a slow
+          # first-time init is not killed by the liveness probe (~10 min budget).
+          startupProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+            periodSeconds: 10
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+            periodSeconds: 60
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: 8080
+            initialDelaySeconds: 15
+            timeoutSeconds: 1
+            periodSeconds: 60
+          args:
+          - -c
+          - |
+            cd /var/www/html && ./install.sh && php artisan passport:keys && exec apache2-foreground
+          command:
+          - /bin/bash
+          envFrom:
+            - configMapRef:
+                name: pxcentral-ui-configmap
+          env:
+            - name: ENABLE_NFS
+              value: "true"
+          {{- include "serviceMesh.env" . | nindent 12 }}
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-mysql-secret
+                  key: DB_PASSWORD
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-backend" .Values.proxy.includeNoProxyList) }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
+            {{- end }}
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-mysql-secret
+                  key: DB_USERNAME
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: pxc-backup-secret
+                  key: OIDC_CLIENT_ID
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: pxc-backup-secret
+                  key: OIDC_CLIENT_SECRET
+            - name: KEYCLOAK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: credential
+                  name: px-central-admin
+            - name: DB_INIT_TIMEOUT
+              value: "300"
+            - name: PX_LICENSE_USER
+              value: "test"
+              valueFrom: null
+            - name: PX_LICENSE_PASSWORD
+              value: "test"
+              valueFrom: null
+          resources: {}
+          volumeMounts:
+          {{- if .Values.proxy.configSecretName }}
+          - mountPath: /etc/ssl/certs/proxy-ca.pem
+            subPath: proxy-ca.pem
+            name: proxy-ca-volume
+            readOnly: true
+          {{- end }}
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      restartPolicy: Always
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }} 
+status: {}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: pxcentral-frontend
   namespace: {{ .Release.Namespace }}
   labels:
@@ -137,7 +300,7 @@ spec:
               {{- end }}
       containers:
         - name: pxcentral-frontend
-          image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxcentralFrontendImage.registry .Values.images.registry) (default .Values.images.pxcentralFrontendImage.repo .Values.images.repo) .Values.images.pxcentralFrontendImage.imageName .Values.images.pxcentralFrontendImage.tag }}
+          image: {{ include "px.image" (dict "key" "pxcentralFrontendImage" "root" .) }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           ports:
             - name : http
@@ -227,6 +390,207 @@ spec:
       {{- end }}
       restartPolicy: Always
 status: {}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pxcentral-mysql-pvc
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: pxcentral-mysql
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.persistentStorage.mysqlVolumeSize }}
+  {{- if .Values.persistentStorage.storageClassName }}
+  storageClassName: {{ .Values.persistentStorage.storageClassName }}
+  {{- end }}
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    run: pxcentral-mysql
+    app.kubernetes.io/component: pxcentral-mysql
+{{- include "px-central.labels" . | nindent 4 }}
+  name: pxcentral-mysql
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    matchLabels:
+      run: pxcentral-mysql
+      app.kubernetes.io/component: pxcentral-mysql
+  replicas: 1
+  serviceName: pxcentral-mysql
+  updateStrategy:
+    type: RollingUpdate
+  template:
+    metadata:
+      {{- if and (eq $azureProxyEnabled true) (not (has "pxcentral-mysql" .Values.proxy.excludeAzureProxyList)) }}
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+      {{- end }}
+      labels:
+        run: pxcentral-mysql
+        app.kubernetes.io/component: pxcentral-mysql
+{{- include "px-central.partOfLabel" . | nindent 8 }}
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+              {{- end }}
+      {{- if eq .Values.storkRequired true }}
+      schedulerName: stork
+      {{- end }}
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      {{- if $isOpenshiftCluster}}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      initContainers:
+      - name: init-mysql
+        image: {{ include "px.image" (dict "key" "mysqlInitImage" "root" .) }}
+        command: ['sh', '-c', 'rmdir /var/lib/mysql/lost+found || true']
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: pxcentral-mysql
+        {{- if .Values.proxy.configSecretName }}
+        - mountPath: /etc/ssl/certs/proxy-ca.pem
+          subPath: proxy-ca.pem
+          name: proxy-ca-volume
+          readOnly: true
+        {{- end }}
+      containers:
+        - name: mysql
+          image: {{ include "px.image" (dict "key" "mysqlImage" "root" .) }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          args:
+            - "--mysql-native-password=ON"
+          ports:
+            - containerPort: 3306
+          env:
+            - name: MYSQL_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: pxcentral-ui-configmap
+                  key: DB_DATABASE
+            - name: MYSQL_ROOT_USER_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-mysql-secret
+                  key: DB_USERNAME
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pxcentral-mysql-secret
+                  key: DB_PASSWORD
+            - name: SERVICE_NAME
+              value: pxcentral-mysql
+            - name: SERVICE_TAGS
+              value: dev
+          {{- include "serviceMesh.env" . | nindent 12 }}
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "pxcentral-mysql" .Values.proxy.includeNoProxyList) }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
+            {{- end }}
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - |
+                  echo $MYSQL_ROOT_PASSWORD > /etc/mysql/secret
+                  export MYSQL_ROOT_PASSWORD_FILE=/etc/mysql/secret
+                  password_aux="${MYSQL_ROOT_PASSWORD:-}"
+                  if [ -f "${MYSQL_ROOT_PASSWORD_FILE:-}" ]; then
+                      password_aux=$(cat $MYSQL_ROOT_PASSWORD_FILE)
+                  fi
+                  mysqladmin status -uroot -p$password_aux
+            initialDelaySeconds: 600
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - |
+                  echo $MYSQL_ROOT_PASSWORD > /etc/mysql/secret
+                  export MYSQL_ROOT_PASSWORD_FILE=/etc/mysql/secret
+                  password_aux="${MYSQL_ROOT_PASSWORD:-}"
+                  if [ -f "${MYSQL_ROOT_PASSWORD_FILE:-}" ]; then
+                      password_aux=$(cat $MYSQL_ROOT_PASSWORD_FILE)
+                  fi
+                  mysqladmin status -uroot -p$password_aux
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+          volumeMounts:
+            - mountPath: /var/lib/mysql
+              name: pxcentral-mysql
+          {{- if .Values.proxy.configSecretName }}
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
+              name: proxy-ca-volume
+              readOnly: true
+          {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }} 
+      volumes:
+        - name: pxcentral-mysql
+          persistentVolumeClaim:
+            claimName: pxcentral-mysql-pvc
+      {{- if .Values.proxy.configSecretName }}
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    name: pxcentral-mysql
+    run: pxcentral-mysql
+    app.kubernetes.io/component: pxcentral-mysql
+{{- include "px-central.labels" . | nindent 4 }}
+  name: pxcentral-mysql
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    run: pxcentral-mysql
+  ports:
+    - name: "3306"
+      port: 3306
+      targetPort: 3306
 ---
 apiVersion: v1
 kind: Service
