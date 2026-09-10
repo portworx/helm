@@ -175,7 +175,7 @@ spec:
               {{- end }}
       containers:
       - name: pxcentral-lh-middleware
-        image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxcentralMiddlewareImage.registry .Values.images.registry) (default .Values.images.pxcentralMiddlewareImage.repo .Values.images.repo) .Values.images.pxcentralMiddlewareImage.imageName .Values.images.pxcentralMiddlewareImage.tag }}
+        image: {{ include "px.image" (dict "key" "pxcentralMiddlewareImage" "root" .) }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         envFrom:
           - configMapRef:

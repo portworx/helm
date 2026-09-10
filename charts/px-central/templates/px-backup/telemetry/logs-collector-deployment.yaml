@@ -95,7 +95,7 @@ spec:
       containers:
       # Container 1: Telemetry Data Collector (Go binary)
       - name: log-collector
-        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryDataCollectorImage.registry .Values.images.registry) (default .Values.images.telemetryDataCollectorImage.repo .Values.images.repo) .Values.images.telemetryDataCollectorImage.imageName .Values.images.telemetryDataCollectorImage.tag }}
+        image: {{ include "px.image" (dict "key" "telemetryDataCollectorImage" "root" .) }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         env:
         # Kubernetes configuration (using standard px-backup pattern)
@@ -164,7 +164,7 @@ spec:
       
       # Container 2: Log Upload Service
       - name: log-upload-service
-        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryLogUploadImage.registry .Values.images.registry) (default .Values.images.telemetryLogUploadImage.repo .Values.images.repo) .Values.images.telemetryLogUploadImage.imageName .Values.images.telemetryLogUploadImage.tag }}
+        image: {{ include "px.image" (dict "key" "telemetryLogUploadImage" "root" .) }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         ports:
         - name: grpc
@@ -217,7 +217,7 @@ spec:
       # Container 3: Edge-envoy.
       # Config + certs fetched from CO_ADDR (px-backup CO-Server) at runtime.
       - name: envoy
-        image: {{ printf "%s/%s/%s:%s" (default .Values.images.telemetryEnvoyImage.registry .Values.images.registry) (default .Values.images.telemetryEnvoyImage.repo .Values.images.repo) .Values.images.telemetryEnvoyImage.imageName .Values.images.telemetryEnvoyImage.tag }}
+        image: {{ include "px.image" (dict "key" "telemetryEnvoyImage" "root" .) }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         args:
         - --base-id
