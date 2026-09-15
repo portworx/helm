@@ -6,7 +6,6 @@ persistentStorage:
   prometheus:
     storage: 64Gi
     retentionSize: 51200MB
-  mysqlVolumeSize: "100Gi"
   mongodbVolumeSize: "64Gi"
   mongoCacheSize: 4
   keycloakThemeVolumeSize: "5Gi"
@@ -52,12 +51,10 @@ proxy:
   # - pxcentral-keycloak-postgresql
   # - pxcentral-keycloak
   # - pxcentral-lh-middleware
-  # - pxcentral-backend
   # - pxcentral-frontend
-  # - pxcentral-mysql
 
   # Example for using set command
-  # --set "proxy.excludeAzureProxyList[0]=px-backup","proxy.excludeAzureProxyList[1]=pxcentral-mysql"
+  # --set "proxy.excludeAzureProxyList[0]=px-backup"
   excludeAzureProxyList: []
 
   ## includeNoProxyList: List of services to include in the noProxy configuration.
@@ -75,9 +72,7 @@ proxy:
   # - pxcentral-keycloak-postgresql
   # - pxcentral-keycloak
   # - pxcentral-lh-middleware
-  # - pxcentral-backend
   # - pxcentral-frontend
-  # - pxcentral-mysql
 
   # Example for using set command
   # --set "proxy.includeNoProxyList[0]=px-backup"
@@ -204,10 +199,6 @@ images:
     imageName: pxcentral-onprem-ui-frontend-private
     tag: 3.3.0-fc1
     module: pxCentral
-  pxcentralBackendImage:
-    imageName: pxcentral-onprem-ui-backend-private
-    tag: 3.3.0-fc1
-    module: pxCentral
   pxcentralMiddlewareImage:
     imageName: pxcentral-onprem-ui-lhbackend-private
     tag: 3.3.0-fc1
@@ -232,17 +223,9 @@ images:
     imageName: busybox
     tag: 1.35.0
     module: pxCentral
-  mysqlImage:
-    imageName: mysql
-    tag: 8.4.9
-    module: pxCentral
   preSetupHookImage:
     imageName: pxcentral-onprem-hook-base
     tag: 3.3.0-fc1
-    module: pxCentral
-  mysqlInitImage:
-    imageName: busybox
-    tag: 1.35.0
     module: pxCentral
 
   ## Images required for enabling px-backup
