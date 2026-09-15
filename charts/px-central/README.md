@@ -348,7 +348,6 @@ Parameter | Description | Default
 --- | --- | ---
 `persistentStorage` | Persistent storage for all px-central components | `""`
 `persistentStorage.storageClassName` | Provide storage class name which exists | `""`
-`persistentStorage.mysqlVolumeSize` | MySQL volume size | `"100Gi"`
 `persistentStorage.keycloakThemeVolumeSize` | Keycloak frontend theme volume size | `"5Gi"`
 `persistentStorage.keycloakBackendVolumeSize` | Keycloak backend volume size | `"10Gi"`
 `storkRequired` | Scheduler name as stork | `false`
@@ -397,16 +396,13 @@ Image (`images.<key>`) | imageName | tag | module
 --- | --- | --- | ---
 `pxcentralApiServerImage` | `pxcentral-onprem-api-base` | `3.3.0-fc1` | `pxCentral`
 `pxcentralFrontendImage` | `pxcentral-onprem-ui-frontend-private` | `3.3.0-fc1` | `pxCentral`
-`pxcentralBackendImage` | `pxcentral-onprem-ui-backend-private` | `3.3.0-fc1` | `pxCentral`
 `pxcentralMiddlewareImage` | `pxcentral-onprem-ui-lhbackend-private` | `3.3.0-fc1` | `pxCentral`
 `postInstallSetupImage` | `pxcentral-onprem-post-setup-base` | `3.3.0-fc1` | `pxCentral`
 `keycloakBackendImage` | `postgresql` | `18.4` | `pxCentral`
 `keycloakFrontendImage` | `keycloak` | `26.5.7_v2` | `pxCentral`
 `keycloakLoginThemeImage` | `sb-keycloak-login-theme` | `3.3.0-fc1` | `pxCentral`
 `keycloakInitContainerImage` | `busybox` | `1.35.0` | `pxCentral`
-`mysqlImage` | `mysql` | `8.4.9` | `pxCentral`
 `preSetupHookImage` | `pxcentral-onprem-hook-base` | `3.3.0-fc1` | `pxCentral`
-`mysqlInitImage` | `busybox` | `1.35.0` | `pxCentral`
 `pxBackupImage` | `px-backup-base` | `3.3.0-fc1` | `pxBackup`
 `mongodbImage` | `mongodb` | `8.0.20` | `pxBackup`
 `telemetryEnvoyImage` | `edge-envoy` | `2.0.109` | `pxBackup`

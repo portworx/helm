@@ -6,7 +6,6 @@ persistentStorage:
   prometheus:
     storage: 64Gi
     retentionSize: 51200MB
-  mysqlVolumeSize: "100Gi"
   mongodbVolumeSize: "64Gi"
   mongoCacheSize: 4
   keycloakThemeVolumeSize: "5Gi"
@@ -52,12 +51,10 @@ proxy:
   # - pxcentral-keycloak-postgresql
   # - pxcentral-keycloak
   # - pxcentral-lh-middleware
-  # - pxcentral-backend
   # - pxcentral-frontend
-  # - pxcentral-mysql
 
   # Example for using set command
-  # --set "proxy.excludeAzureProxyList[0]=px-backup","proxy.excludeAzureProxyList[1]=pxcentral-mysql"
+  # --set "proxy.excludeAzureProxyList[0]=px-backup"
   excludeAzureProxyList: []
 
   ## includeNoProxyList: List of services to include in the noProxy configuration.
@@ -75,9 +72,7 @@ proxy:
   # - pxcentral-keycloak-postgresql
   # - pxcentral-keycloak
   # - pxcentral-lh-middleware
-  # - pxcentral-backend
   # - pxcentral-frontend
-  # - pxcentral-mysql
 
   # Example for using set command
   # --set "proxy.includeNoProxyList[0]=px-backup"
@@ -219,12 +214,6 @@ images:
     imageName: pxcentral-onprem-ui-frontend-private
     tag: 3.3.0-fc1
     module: pxCentral
-  pxcentralBackendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
-    imageName: pxcentral-onprem-ui-backend-private
-    tag: 3.3.0-fc1
-    module: pxCentral
   pxcentralMiddlewareImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
@@ -261,23 +250,11 @@ images:
     imageName: busybox
     tag: 1.35.0
     module: pxCentral
-  mysqlImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
-    imageName: mysql
-    tag: "8.4.10"
-    module: pxCentral
   preSetupHookImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-hook-base
     tag: 3.3.0-fc1
-    module: pxCentral
-  mysqlInitImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
-    imageName: busybox
-    tag: 1.35.0
     module: pxCentral
 
   ## Images required for enabling px-backup
