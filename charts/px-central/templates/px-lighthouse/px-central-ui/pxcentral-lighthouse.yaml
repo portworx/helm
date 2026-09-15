@@ -185,6 +185,11 @@ spec:
             value: "100"
           - name: K8S_BURST
             value: "100"
+          - name: KEYCLOAK_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: credential
+                name: px-central-admin
           {{- if eq $usePlatformRbac true }}
           - name: USE_PLATFORM_RBAC
             value: "true"
