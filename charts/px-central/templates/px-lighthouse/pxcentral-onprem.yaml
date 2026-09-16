@@ -22,7 +22,7 @@ metadata:
   name: pxcentral-modules
   namespace: {{ .Release.Namespace }}
   labels:
-    app.kubernetes.io/component: pxcentral-backend
+    app.kubernetes.io/component: pxcentral-frontend
 {{- include "px-central.labels" . | nindent 4 }}
 data:
   ENABLED_LIGHTHOUSE: "true"

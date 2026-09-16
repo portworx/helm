@@ -307,19 +307,8 @@ spec:
               value: {{ .Values.pxbackup.orgName | quote }}
             - name: NEW_STORAGE_CLASS_NAME
               value: {{ .Values.persistentStorage.storageClassName | default "" | quote }}
-            - name: NEW_MYSQL_VOLUME_SIZE
-              value: {{ .Values.persistentStorage.mysqlVolumeSize | quote }}
             - name: NEW_MONGODB_VOLUME_SIZE
               value: {{ .Values.persistentStorage.mongodbVolumeSize | quote }}
-            - name: MYSQL_STATEFULSET_NAME
-              value: pxcentral-mysql
-            - name: MYSQL_ROOT_USERNAME
-              value: root
-            - name: MYSQL_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: DB_PASSWORD
-                  name: pxcentral-mysql-secret
             # - name: POSTGRES_STATEFULSET_NAME
             #   value: pxcentral-keycloak-postgresql
             # - name: POSTGRES_CONTAINER_NAME
