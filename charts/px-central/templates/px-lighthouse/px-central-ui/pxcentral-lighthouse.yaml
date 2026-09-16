@@ -190,6 +190,16 @@ spec:
               secretKeyRef:
                 key: credential
                 name: px-central-admin
+          - name: OIDC_CLIENT_ID
+            valueFrom:
+              secretKeyRef:
+                name: pxc-backup-secret
+                key: OIDC_CLIENT_ID
+          - name: OIDC_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: pxc-backup-secret
+                key: OIDC_CLIENT_SECRET
           {{- if eq $usePlatformRbac true }}
           - name: USE_PLATFORM_RBAC
             value: "true"
