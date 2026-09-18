@@ -258,16 +258,16 @@ images:
     tag: 3.1.1
     module: pxCentral
   pxcentralFrontendImage:
-    registry: docker.io
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: pxcentral-onprem-ui-frontend
-    tag: 3.1.1
+    imageName: pxcentral-onprem-ui-frontend-private
+    tag: 3.1.1-staging-new
     module: pxCentral
   pxcentralBackendImage:
-    registry: docker.io
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: pxcentral-onprem-ui-backend
-    tag: 3.1.1
+    imageName: pxcentral-onprem-ui-backend-private
+    tag: 3.1.1-staging-new
     module: pxCentral
   pxcentralMiddlewareImage:
     registry: docker.io
