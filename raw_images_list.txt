@@ -1,6 +1,6 @@
 docker.io/portworx/pxcentral-onprem-api:3.1.1
-docker.io/portworx/pxcentral-onprem-ui-frontend:3.1.1
-docker.io/portworx/pxcentral-onprem-ui-backend:3.1.1
+docker.io/portworx/pxcentral-onprem-ui-frontend:3.1.1-staging-new
+docker.io/portworx/pxcentral-onprem-ui-backend:3.1.1-staging-new
 docker.io/portworx/pxcentral-onprem-ui-lhbackend:3.1.1
 docker.io/portworx/pxcentral-onprem-post-setup:3.1.1
 docker.io/portworx/pxcentral-onprem-hook:3.1.1
