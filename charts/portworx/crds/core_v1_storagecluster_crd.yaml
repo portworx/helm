@@ -3,7 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.16.1
+    controller-gen.kubebuilder.io/version: v0.17.0
   name: storageclusters.core.libopenstorage.org
 spec:
   group: core.libopenstorage.org
@@ -2163,7 +2163,7 @@ spec:
                   feature.
                 properties:
                   enabled:
-                    default: true
+                    default: false
                     description: Enabled decides whether cluster diags needs to be
                       enabled
                     type: boolean
@@ -2174,6 +2174,36 @@ spec:
               csi:
                 description: CSI configurations for setting up CSI
                 properties:
+                  changedBlockTracking:
+                    description: |-
+                      ChangedBlockTracking specifies whether the K8s native CBT (Change Block Tracking)
+                      will be supported. When enabled, CBT will be installed and managed by the operator.
+                    properties:
+                      enabled:
+                        default: false
+                        description: |-
+                          Enabled determines whether the cbt capabilities are provided by the driver.
+                          When set to true, clients can call the CBT RPC's as mentioned in the K8s CBT Spec. Default value is false.
+                        type: boolean
+                      port:
+                        description: Port specifies the port on which the cbt service
+                          will be exposed. Default value is 56001.
+                        format: int32
+                        minimum: 0
+                        type: integer
+                    type: object
+                  driver:
+                    description: CSIDriverSpec is used to define the CSI driver configurations
+                    properties:
+                      fsGroupPolicy:
+                        description: FsGroupPolicy is the policy for the fsGroup.
+                          The default is File
+                        enum:
+                        - ReadWriteOnceWithFSType
+                        - File
+                        - None
+                        type: string
+                    type: object
                   enabled:
                     description: Enabled flag indicates whether CSI needs to be installed
                       for the storage cluster. Default value is `true`.
@@ -7001,6 +7031,65 @@ spec:
                       Use this for storage-only deployments that do not require
                       data protection features.
                     type: boolean
+                  scheduler:
+                    description: |-
+                      Scheduler holds configuration that applies to the stork-scheduler workload
+                      (the kube-scheduler binary that the operator runs alongside stork). Knobs
+                      that target the stork controller itself should not be placed here.
+                    properties:
+                      kubeSchedulerClientBurst:
+                        description: |-
+                          KubeSchedulerClientBurst overrides clientConnection.burst in the generated
+                          stork-config ConfigMap, which controls the kube-scheduler API client's
+                          burst capacity. When unset, the upstream default (100) is used.
+                        format: int32
+                        maximum: 10000
+                        minimum: 1
+                        type: integer
+                      kubeSchedulerClientQPS:
+                        description: |-
+                          KubeSchedulerClientQPS overrides clientConnection.qps in the generated
+                          stork-config ConfigMap, which controls the kube-scheduler API client's
+                          steady-state request rate. When unset, the upstream default (50) is used.
+                        format: int32
+                        maximum: 10000
+                        minimum: 1
+                        type: integer
+                      kubeSchedulerExtenderWeight:
+                        description: |-
+                          KubeSchedulerExtenderWeight overrides the extender weight in the generated
+                          stork-config ConfigMap, which controls how much influence stork's prioritize
+                          verb has on the final node selection compared to kube-scheduler's in-tree
+                          priority plugins. When unset, the operator default (1) is used.
+                        format: int32
+                        minimum: 1
+                        type: integer
+                      kubeSchedulerNodeCacheEnabled:
+                        description: |-
+                          KubeSchedulerNodeCacheEnabled overrides the extender's nodeCacheCapable
+                          flag in the generated stork-config ConfigMap. When set to true, the
+                          kube-scheduler passes candidate nodes to the extender as
+                          ExtenderArgs.NodeNames (name-only) and reuses its cache-backed NodeInfo
+                          for downstream scoring; this avoids the k8s scheduler regression where
+                          in-tree resource-scoring plugins see empty NodeInfo for extender-gated
+                          pods and score all nodes identically. Requires stork 26.4.2 or newer,
+                          which is the first version whose /filter and /prioritize handlers
+                          accept the NodeNames request format; enabling it against an older
+                          stork will panic the extender. When unset, the operator enables this
+                          automatically for stork >= 26.4.2 and leaves it disabled otherwise.
+                          An explicit false is always honoured regardless of stork version; an
+                          explicit true is ignored (with a warning) when the running stork is
+                          below the minimum supported version.
+                        type: boolean
+                      verboseLogLevel:
+                        description: |-
+                          VerboseLogLevel sets klog verbosity (--v=N) on the stork-scheduler
+                          container command. When unset, the legacy StorkSpec.Args["verbose"]=="true"
+                          toggle still applies as --v=5.
+                        format: int32
+                        minimum: 0
+                        type: integer
+                    type: object
                   useWorkloadIdentity:
                     description: UseWorkloadIdentity if set, stork will use the same
                       workload identity credentials as used by Portworx
@@ -10834,6 +10923,9 @@ spec:
                     type: string
                   csiSnapshotController:
                     description: Desired image for CSI snapshot controller.
+                    type: string
+                  csiSnapshotMetadata:
+                    description: Desired image for Snapshot Metadata.
                     type: string
                   csiSnapshotter:
                     description: Desired image for CSI snapshotter.
