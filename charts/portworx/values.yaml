@@ -5,7 +5,7 @@ deployCluster: true                     # Deploy the Portworx cluster
 verboseOperatorLogs: false              # Enable verbose logging for the Portworx operator.
 
 imageVersion: 3.7.0                   # Version of the PX Image.
-pxOperatorImageVersion: 26.3.2         # Version of the PX operator image.
+pxOperatorImageVersion: 26.4.0         # Version of the PX operator image.
 
 openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
 isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
@@ -148,6 +148,26 @@ stork:                                # Use Stork https://docs.portworx.com/port
                                       # and Stork data-protection workflows (backup/restore/DR) are restricted on all platforms.
   useWorkloadIdentity:                # When true, Stork uses the same workload identity credentials configured for Portworx
                                       # via workloadIdentity.credentials. Only applicable when stork.enabled is true.
+  scheduler:                          # Configuration for the stork-scheduler workload (the kube-scheduler binary the
+                                      # operator runs alongside stork). Knobs targeting the stork controller itself
+                                      # do not belong here.
+    kubeSchedulerClientQPS:           # Overrides clientConnection.qps in the generated stork-config ConfigMap, which
+                                      # controls the kube-scheduler API client's steady-state request rate.
+                                      # Must be an integer in [1, 10000]. Unset uses the upstream default (50).
+    kubeSchedulerClientBurst:         # Overrides clientConnection.burst in the generated stork-config ConfigMap, which
+                                      # controls the kube-scheduler API client's burst capacity.
+                                      # Must be an integer in [1, 10000]. Unset uses the upstream default (100).
+    verboseLogLevel:                  # Sets klog verbosity (--v=N) on the stork-scheduler container command.
+                                      # Must be an integer >= 0. When unset, the legacy stork.args "verbose=true"
+                                      # toggle still applies as --v=5.
+    kubeSchedulerExtenderWeight:      # Overrides the extender weight in the generated stork-config ConfigMap, which
+                                      # controls how much influence stork's prioritize verb has on the final node
+                                      # selection compared to kube-scheduler's in-tree priority plugins.
+                                      # Must be an integer >= 1. Unset uses the operator default (1).
+    kubeSchedulerNodeCacheEnabled:    # Overrides the extender's nodeCacheCapable flag in the generated stork-config
+                                      # ConfigMap. Requires stork 26.4.2 or newer; enabling it against an older stork
+                                      # will panic the extender. When unset, the operator enables this automatically
+                                      # for stork >= 26.4.2 and leaves it disabled otherwise.
 
 customRegistryURL:
 registrySecret:

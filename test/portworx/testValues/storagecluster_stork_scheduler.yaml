@@ -1,0 +1,8 @@
+stork:
+  enabled: true
+  scheduler:
+    kubeSchedulerClientQPS: 200
+    kubeSchedulerClientBurst: 400
+    verboseLogLevel: 4
+    kubeSchedulerExtenderWeight: 5
+    kubeSchedulerNodeCacheEnabled: true
