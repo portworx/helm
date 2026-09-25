@@ -222,6 +222,20 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestStorkSchedulerAllFields",
+			resultFileName: "storagecluster_stork_scheduler.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_stork_scheduler.yaml"},
+			},
+		},
+		{
+			name:           "TestStorkSchedulerPartialZeroAndFalse",
+			resultFileName: "storagecluster_stork_scheduler_partial.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_stork_scheduler_partial.yaml"},
+			},
+		},
+		{
 			name:           "TestVolumes",
 			resultFileName: "storagecluster_volumes.yaml",
 			helmOption: &helm.Options{

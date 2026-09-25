@@ -447,6 +447,27 @@ spec:
     {{- if kindIs "bool" .Values.stork.useWorkloadIdentity }}
     useWorkloadIdentity: {{ .Values.stork.useWorkloadIdentity }}
     {{- end }}
+    {{- if .Values.stork.scheduler }}
+    {{- $sched := .Values.stork.scheduler }}
+    {{- if or $sched.kubeSchedulerClientQPS $sched.kubeSchedulerClientBurst $sched.kubeSchedulerExtenderWeight (or (kindIs "float64" $sched.verboseLogLevel) (kindIs "int" $sched.verboseLogLevel)) (kindIs "bool" $sched.kubeSchedulerNodeCacheEnabled) }}
+    scheduler:
+      {{- if $sched.kubeSchedulerClientQPS }}
+      kubeSchedulerClientQPS: {{ $sched.kubeSchedulerClientQPS }}
+      {{- end }}
+      {{- if $sched.kubeSchedulerClientBurst }}
+      kubeSchedulerClientBurst: {{ $sched.kubeSchedulerClientBurst }}
+      {{- end }}
+      {{- if or (kindIs "float64" $sched.verboseLogLevel) (kindIs "int" $sched.verboseLogLevel) }}
+      verboseLogLevel: {{ $sched.verboseLogLevel }}
+      {{- end }}
+      {{- if $sched.kubeSchedulerExtenderWeight }}
+      kubeSchedulerExtenderWeight: {{ $sched.kubeSchedulerExtenderWeight }}
+      {{- end }}
+      {{- if kindIs "bool" $sched.kubeSchedulerNodeCacheEnabled }}
+      kubeSchedulerNodeCacheEnabled: {{ $sched.kubeSchedulerNodeCacheEnabled }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
     {{- else }}
     enabled: false
     {{- end }}
