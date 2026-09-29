@@ -1,4 +1,4 @@
-pxCentralVersion: 3.2.0
+pxCentralVersion: 3.3.0
 modules:
   pxCentral:
     pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:3.2.0-staging"
