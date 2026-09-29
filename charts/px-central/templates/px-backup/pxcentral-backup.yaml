@@ -223,6 +223,14 @@ spec:
               fieldPath: status.podIPs
         - name: PX_BACKUP_DEFAULT_ORG
           value: {{ .Values.pxbackup.orgName }}
+        {{- if .Values.pxbackup.imageSecurity.enabled }}
+        - name: PX_BACKUP_IMAGE_SCANNER_URL
+          value: http://px-backup-image-scanner.{{ .Release.Namespace }}.svc:8080
+        - name: PX_BACKUP_IMAGE_SCANNER_TOKEN_FILE
+          value: /run/image-scanner/token
+        - name: PX_BACKUP_SCHEDULE_POSTURE_ENABLED
+          value: {{ .Values.pxbackup.imageSecurity.schedulePostureEnabled | quote }}
+        {{- end }}
         {{- if .Values.telemetry.enabled }}
         - name: TELEMETRY_ENABLED
           value: "true"
@@ -306,6 +314,11 @@ spec:
           timeoutSeconds: 1
           periodSeconds: 60
         volumeMounts:
+        {{- if .Values.pxbackup.imageSecurity.enabled }}
+          - mountPath: /run/image-scanner
+            readOnly: true
+            name: image-scanner-token
+        {{- end }}
         {{- if .Values.caCertsSecretName }}
           - mountPath: /tmp/certs
             readOnly: true
@@ -323,6 +336,12 @@ spec:
         - --datastoreEndpoints=mongodb://$MONGODB_USERNAME:$MONGODB_PASSWORD@pxc-backup-mongodb-0.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-1.pxc-backup-mongodb-headless:27017,pxc-backup-mongodb-2.pxc-backup-mongodb-headless:27017/?authSource=px-backup&replicaSet=rs0
         - --mongo-migration={{.Values.pxbackup.mongoMigration}}
       volumes:
+      {{- if .Values.pxbackup.imageSecurity.enabled }}
+        - name: image-scanner-token
+          secret:
+            defaultMode: 0440
+            secretName: {{ default "px-backup-image-scanner-token" .Values.pxbackup.imageSecurity.existingTokenSecretName | quote }}
+      {{- end }}
       {{- if .Values.caCertsSecretName }}
         - name: ssl-cert-dir
           secret:

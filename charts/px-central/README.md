@@ -7,6 +7,9 @@ This chart also supports following features but by default those are disabled.
 
 To enable each feature, follow the respective sections for detailed steps.
 
+For the backup image CVE and scheduled configuration assessment POC on this
+branch, use [HACKATHON_IMAGE_CVE.md](HACKATHON_IMAGE_CVE.md).
+
 ## Installing the Chart
 
 To install the chart with the release name `px-central`:

@@ -1,0 +1,187 @@
+{{- if and .Values.pxbackup.enabled .Values.pxbackup.imageSecurity.enabled }}
+{{- $settings := .Values.pxbackup.imageSecurity }}
+{{- $secretName := default "px-backup-image-scanner-token" $settings.existingTokenSecretName }}
+{{- $workerImage := printf "%s/%s/%s:%s" (default .Values.images.pxBackupImageScanner.registry .Values.images.registry) (default .Values.images.pxBackupImageScanner.repo .Values.images.repo) .Values.images.pxBackupImageScanner.imageName .Values.images.pxBackupImageScanner.tag }}
+{{- $proxyEnv := include "proxy.proxyEnv" . | trim }}
+{{- if not $settings.existingTokenSecretName }}
+{{- $existing := lookup "v1" "Secret" .Release.Namespace $secretName }}
+{{- $token := randAlphaNum 64 | b64enc }}
+{{- if $existing }}
+{{- $token = get ($existing.data | default dict) "token" }}
+{{- if not $token }}{{ fail "existing image scanner Secret has no token key; set pxbackup.imageSecurity.existingTokenSecretName to a valid Secret" }}{{ end }}
+{{- end }}
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ $secretName }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-image-scanner
+{{- include "px-central.labels" . | nindent 4 }}
+type: Opaque
+data:
+  token: {{ $token | quote }}
+---
+{{- end }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: px-backup-image-scanner-cache
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-image-scanner
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  accessModes: [ReadWriteOnce]
+  {{- $storageClass := default .Values.persistentStorage.storageClassName $settings.cache.storageClassName }}
+  {{- if $storageClass }}
+  storageClassName: {{ $storageClass | quote }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ $settings.cache.size | quote }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: px-backup-image-scanner
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-image-scanner
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  selector:
+    app: px-backup-image-scanner
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: px-backup-image-scanner
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-image-scanner
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: px-backup-image-scanner
+  template:
+    metadata:
+      labels:
+        app: px-backup-image-scanner
+{{- include "px-central.partOfLabel" . | nindent 8 }}
+    spec:
+      automountServiceAccountToken: false
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $pullSecret := .Values.images.pullSecrets }}
+        - name: {{ $pullSecret | quote }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        fsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: prepare-db
+          image: {{ $workerImage }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          command: ["/bin/sh", "-ec"]
+          args:
+            - 'if [ ! -s /var/lib/trivy/db/trivy.db ]; then /usr/local/bin/trivy image --cache-dir /var/lib/trivy --download-db-only --disable-telemetry --no-progress; fi'
+          {{- if $proxyEnv }}
+          env:
+{{ $proxyEnv | nindent 12 }}
+          {{- end }}
+          resources:
+{{ toYaml $settings.initResources | indent 12 }}
+          volumeMounts:
+            - name: cache
+              mountPath: /var/lib/trivy
+            - name: temp
+              mountPath: /tmp/image-scanner
+      containers:
+        - name: scanner
+          image: {{ $workerImage }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: IMAGE_SCANNER_TOKEN_FILE
+              value: /run/image-scanner/token
+            - name: TRIVY_CACHE_DIR
+              value: /var/lib/trivy
+            - name: IMAGE_SCANNER_TMP_DIR
+              value: /tmp/image-scanner
+            {{- if $proxyEnv }}
+{{ $proxyEnv | nindent 12 }}
+            {{- end }}
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            periodSeconds: 10
+          resources:
+{{ toYaml $settings.resources | indent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: cache
+              mountPath: /var/lib/trivy
+            - name: temp
+              mountPath: /tmp/image-scanner
+            - name: token
+              mountPath: /run/image-scanner
+              readOnly: true
+      volumes:
+        - name: cache
+          persistentVolumeClaim:
+            claimName: px-backup-image-scanner-cache
+        - name: temp
+          emptyDir:
+            sizeLimit: {{ $settings.tempSizeLimit | quote }}
+        - name: token
+          secret:
+            secretName: {{ $secretName | quote }}
+            defaultMode: 0440
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: px-backup-image-scanner-ingress
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup-image-scanner
+{{- include "px-central.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app: px-backup-image-scanner
+  policyTypes: [Ingress]
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: px-backup
+      ports:
+        - protocol: TCP
+          port: 8080
+{{- end }}

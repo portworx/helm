@@ -112,6 +112,35 @@ isArgoCD: false
 
 pxbackup:
   enabled: false
+  # Hackathon POC: enabled when PX-Backup is installed. Image CVE scans remain
+  # manual; scheduled namespace backups receive configuration assessments.
+  imageSecurity:
+    enabled: true
+    schedulePostureEnabled: true
+    # Set this to a pre-created Secret name when upgrading a cluster that
+    # already has the scanner token. Otherwise Helm creates and retains one.
+    existingTokenSecretName: ""
+    cache:
+      size: 10Gi
+      # Empty uses persistentStorage.storageClassName, then the default class.
+      storageClassName: ""
+    tempSizeLimit: 5Gi
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+        ephemeral-storage: 1Gi
+      limits:
+        cpu: "2"
+        memory: 2Gi
+        ephemeral-storage: 5Gi
+    initResources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: "1"
+        memory: 1Gi
   orgName: default
   # obsolete
   callHome: false
@@ -244,10 +273,10 @@ images:
     tag: 3.2.0-staging
     module: pxCentral
   pxcentralFrontendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend-private
-    tag: 3.2.0-staging
+    tag: hackathon-backup-image-cve
     module: pxCentral
   pxcentralBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -256,10 +285,10 @@ images:
     tag: 3.2.0-staging
     module: pxCentral
   pxcentralMiddlewareImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend-private
-    tag: 3.2.0-staging
+    tag: hackathon-backup-image-cve
     module: pxCentral
   postInstallSetupImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -312,10 +341,16 @@ images:
 
   ## Images required for enabling px-backup
   pxBackupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: px-backup-base
-    tag: 3.2.0-staging
+    tag: hackathon-backup-image-cve
+    module: pxBackup
+  pxBackupImageScanner:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
+    repo: portworx
+    imageName: px-backup-image-scanner
+    tag: hackathon-backup-image-cve
     module: pxBackup
   mongodbImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote

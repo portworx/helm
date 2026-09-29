@@ -1,0 +1,45 @@
+# Apply after the existing release's values when upgrading from 3.2.0-staging.
+# These explicit overrides prevent --reuse-values from retaining staging images.
+pxbackup:
+  imageSecurity:
+    enabled: true
+    schedulePostureEnabled: true
+    existingTokenSecretName: ""
+    cache:
+      size: 10Gi
+      storageClassName: ""
+    tempSizeLimit: 5Gi
+    resources:
+      requests:
+        cpu: 250m
+        memory: 512Mi
+        ephemeral-storage: 1Gi
+      limits:
+        cpu: "2"
+        memory: 2Gi
+        ephemeral-storage: 5Gi
+    initResources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: "1"
+        memory: 1Gi
+
+images:
+  pullPolicy: Always
+  pxBackupImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
+    tag: hackathon-backup-image-cve
+  pxBackupImageScanner:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
+    repo: portworx
+    imageName: px-backup-image-scanner
+    tag: hackathon-backup-image-cve
+    module: pxBackup
+  pxcentralMiddlewareImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
+    tag: hackathon-backup-image-cve
+  pxcentralFrontendImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
+    tag: hackathon-backup-image-cve
