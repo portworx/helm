@@ -329,19 +329,19 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: edge-envoy
-    tag: 2.0.115
+    tag: 2.0.134
     module: pxBackup
   telemetryRegistrationImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: ccm-go
-    tag: 1.4.54
+    tag: 1.4.61
     module: pxBackup
   telemetryMetricsCollectorImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: realtime-metrics
-    tag: 1.0.38
+    tag: 1.0.39
     module: pxBackup
   telemetryDataCollectorImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -353,7 +353,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: log-upload
-    tag: px-1.1.155
+    tag: px-1.1.169
     module: pxBackup
 
   ## Images required for enabling px-monitor
@@ -403,25 +403,25 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: prometheus
-    tag: v3.13.1
+    tag: v3.15.0
     module: pxBackup
   pxBackupAlertmanagerImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: alertmanager
-    tag: v0.34.0
+    tag: v0.34.1
     module: pxBackup
   pxBackupPrometheusOperatorImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: prometheus-operator
-    tag: v0.92.0
+    tag: v0.94.1
     module: pxBackup
   pxBackupPrometheusConfigReloaderImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: prometheus-config-reloader
-    tag: v0.92.0
+    tag: v0.94.1
     module: pxBackup
   prometheusConfigReloadrImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
