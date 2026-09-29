@@ -114,6 +114,12 @@ metadata:
     {{- if eq .Values.migrateToComponentK8sConfig true }}
     portworx.io/migrate-configs: "true"
     {{- end }}
+    {{- if eq (.Values.migrateStoreV1ToV2 | default false) true }}
+    portworx.io/migrate-v1-to-v2: {{ dateInZone "2006-01-02T15:04:05Z" (now) "UTC" | quote }}
+    {{- end }}
+    {{- if eq (.Values.migrateStoreV1ToV2ForceAck | default false) true }}
+    portworx.io/migrate-storev1-to-v2-force-ack: "true"
+    {{- end }}
     {{- $annotations := .Values.clusterAnnotations | trim }}
     {{- if $annotations }}
     {{- range $annotation := splitList ";" $annotations }}

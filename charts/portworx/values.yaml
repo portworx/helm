@@ -26,6 +26,11 @@ VKSInstall: false                      # installation on VKS (VMware vSphere Kub
                                       # form, e.g. drives: "sc=test-sc,size=150".
 storeV2Install: false                 # When true, appends "-T px-storev2" to the portworx.io/misc-args annotation
                                       # so Portworx is installed with the px-storev2 backend.
+migrateStoreV1ToV2: false             # When true, sets portworx.io/migrate-v1-to-v2=<current UTC timestamp> on the StorageCluster
+                                      # to trigger migration from px-storev1 to px-storev2. The timestamp (e.g. 2026-09-29T04:11:13Z)
+                                      # is generated at render time, so every helm install/upgrade with this set re-stamps the annotation.
+migrateStoreV1ToV2ForceAck: false     # When true, sets portworx.io/migrate-storev1-to-v2-force-ack=true on the StorageCluster.
+                                      # Required to acknowledge storev1 to storev2 migration on 3-node clusters.
 clusterAnnotations: ""                # Annotations to set on the StorageCluster resource. Pass multiple annotation with ";" sperated list. Example: portworx.io/evict-vms-during-update=true;example.io/test=true
 
 etcdEndPoint:                         # The ETCD endpoint. Should be in the format etcd:http://<your-etcd-endpoint>:2379. If there are multiple etcd endpoints they need to be ";" seperated.

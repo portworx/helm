@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"reflect"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -37,6 +38,12 @@ func TestRenderedHelmTemplate(t *testing.T, helmOptions *helm.Options, helmChart
 	require.Equal(t, isYamlMatched(resultFileData, templateOutput), true)
 }
 
+// Annotations whose value is generated at render time, mapped to the format the value must match.
+// Matching values are replaced with a "<timestamp>" placeholder so they can be compared against result files.
+var dynamicAnnotations = map[string]*regexp.Regexp{
+	"portworx.io/migrate-v1-to-v2": regexp.MustCompile(`^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$`),
+}
+
 func isYamlMatched(expected, actual interface{}) bool {
 	// Remove specific chart annotation/label before comparison
 	cleanExpected := removeDynamicFields(expected)
@@ -58,6 +65,11 @@ func removeDynamicFields(obj interface{}) interface{} {
 		if metadata, ok := obj["metadata"].(map[string]interface{}); ok {
 			if annotations, ok := metadata["annotations"].(map[string]interface{}); ok {
 				delete(annotations, "chart")
+				for name, format := range dynamicAnnotations {
+					if value, ok := annotations[name].(string); ok && format.MatchString(value) {
+						annotations[name] = "<timestamp>"
+					}
+				}
 			}
 		}
 		// Check for labels and remove the "chart" label
