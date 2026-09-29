@@ -4,7 +4,7 @@ metadata:
   name: "mycluster"
   namespace: portworx
   annotations:
-    portworx.io/migrate-v1-to-v2: "<timestamp>"
+    portworx.io/migrate-v1-to-v2: "2026-09-29T04:11:13Z"
   labels:
     heritage: "Helm"
     release: "my-release"

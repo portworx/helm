@@ -648,7 +648,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			resultFileName: "storagecluster_migrate_storev1_to_v2.yaml",
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
-					"migrateStoreV1ToV2": "true",
+					"migrateStoreV1ToV2": "2026-09-29T04:11:13Z",
 					"internalKVDB":       "true",
 				},
 			},
@@ -658,7 +658,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			resultFileName: "storagecluster_migrate_storev1_to_v2_force_ack.yaml",
 			helmOption: &helm.Options{
 				SetValues: map[string]string{
-					"migrateStoreV1ToV2":         "true",
+					"migrateStoreV1ToV2":         "2026-09-29T04:11:13Z",
 					"migrateStoreV1ToV2ForceAck": "true",
 					"internalKVDB":               "true",
 				},
