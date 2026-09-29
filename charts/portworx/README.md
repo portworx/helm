@@ -87,6 +87,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `GKEInstall` | Installing on GKE (Google Kubernetes Engine) | false |
 | `VKSInstall` | Installing on VKS (VMware vSphere Kubernetes Service / Tanzu). | false |
 | `storeV2Install` | When true, appends `-T px-storev2` to the `portworx.io/misc-args` annotation so Portworx is installed with the px-storev2 backend. | false |
+| `migrateStoreV1ToV2` | When set, sets the `portworx.io/migrate-v1-to-v2` annotation on the StorageCluster to the given value to trigger migration from px-storev1 to px-storev2. Provide a UTC timestamp such as `2026-09-29T04:11:13Z` (generate with `date -u +%Y-%m-%dT%H:%M:%SZ`). The value is applied as-is. | "" |
+| `migrateStoreV1ToV2ForceAck` | When true, sets the `portworx.io/migrate-storev1-to-v2-force-ack: "true"` annotation on the StorageCluster. Required to acknowledge storev1 to storev2 migration on 3-node clusters. | false |
 | `clusterAnnotations` | Semicolon-separated list of annotations to apply on the StorageCluster resource | "" |
 | `etcdEndPoint` | (REQUIRED) etcd endpoint for PX to function properly in the form "etcd:http://". Multiple Urls should be semi-colon seperated example: etcd:http://;etcd:http:// | "" |
 | `clusterName` | Portworx Cluster Name | "mycluster" |
