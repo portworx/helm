@@ -3,6 +3,7 @@
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+{{- if eq $deployDedicatedMonitoringSystem true }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -258,4 +259,5 @@ metadata:
   labels:
     app.kubernetes.io/component: px-backup
 {{- include "px-central.labels" . | nindent 4 }}
+{{- end }}
 {{- end -}}
