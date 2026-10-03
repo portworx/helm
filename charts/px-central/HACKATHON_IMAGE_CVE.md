@@ -96,3 +96,49 @@ running frontend's UI after installation. A commit-specific published tag or
 a fixed proxy cache is still needed to make that frontend update reliable
 without a digest pin. Helm packaging alone cannot refresh a stale registry
 manifest.
+
+## Manual PXD/S3 volume malware assessment
+
+This branch also enables **Scan volume data** in backup Show Details. It supports
+successful namespace backups with only native `pxd` filesystem PVC backups on an
+S3 or S3-compatible location. It restores each PVC to the registered source
+cluster, runs a separate offline ClamAV/YARA Job with read-only data, persists
+findings, and cleans up the temporary Job, namespace and restored volume. The
+existing CVE schedule can remain suspended; volume scans are manual.
+
+The scanner image is `portworx/px-backup-volume-scanner:hackathon-backup-image-cve`
+through Pure Artifactory. Its signature database is bundled at build time; the
+report records engine versions, database/rule hashes and the actual image ID.
+Rebuild to refresh signatures. There is no permanent malware worker pod or PVC.
+
+First-release bounds: four PVCs / 20 GiB total restored capacity; one active scan
+at a time; 20-minute restore and 10-minute Job deadlines per PVC; 100 MiB per file,
+100,000 filesystem entries and 1,000 findings per volume. Skips or engine errors
+make the assessment incomplete. The YARA rules are explicitly labelled demo
+indicators; replace with a vetted ruleset before production use.
+
+Start/cancel requires PX-Backup super administrator. Readers need source-backup
+access. The registered cluster credential must be able to restore PVCs and manage
+temporary namespaces, Jobs, NetworkPolicies, PVCs, and read PVs and Pod logs.
+A deny-all NetworkPolicy is installed before scanning; the CNI must enforce it.
+The scanner receives no application Secret or Kubernetes service-account token.
+A configured registry pull Secret is used only by the kubelet.
+
+If Pure Artifactory requires authentication on the target cluster, create its
+ordinary image pull Secret in the PX-Backup installation namespace, then use:
+
+```bash
+helm upgrade px-central ./charts/px-central -n px-backup --reuse-values \
+  -f ./charts/px-central/hackathon-image-cve.values.yaml \
+  --set-string pxbackup.volumeSecurity.pullSecretName=artifactory-pull \
+  --wait --timeout 15m
+```
+
+Leave `pullSecretName` empty for anonymous registry pulls. To disable only this
+feature set `pxbackup.volumeSecurity.enabled=false`. Mutable tags use Always;
+restart PX-Backup, frontend and middleware after their updated tags are published.
+
+Expanded backups show **Volume findings**. Show Details lists paths, engines,
+rule IDs, hashes, test-indicator labels, provenance and cleanup state. The restore
+wizard requests acknowledgement for any detected files. No detections is not a
+safety guarantee; unscanned and partial results remain explicit.

@@ -1,6 +1,9 @@
 # Apply after the existing release's values when upgrading from 3.2.0-staging.
 # These explicit overrides prevent --reuse-values from retaining staging images.
 pxbackup:
+  volumeSecurity:
+    enabled: true
+    pullSecretName: ""
   imageSecurity:
     enabled: true
     schedulePostureEnabled: true
@@ -43,3 +46,9 @@ images:
   pxcentralFrontendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     tag: hackathon-backup-image-cve
+  pxBackupVolumeScanner:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
+    repo: portworx
+    imageName: px-backup-volume-scanner
+    tag: hackathon-backup-image-cve
+    module: pxBackup

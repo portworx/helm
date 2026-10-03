@@ -223,6 +223,14 @@ spec:
               fieldPath: status.podIPs
         - name: PX_BACKUP_DEFAULT_ORG
           value: {{ .Values.pxbackup.orgName }}
+        {{- if .Values.pxbackup.volumeSecurity.enabled }}
+        - name: PX_BACKUP_VOLUME_SECURITY_ENABLED
+          value: "true"
+        - name: PX_BACKUP_VOLUME_SCANNER_IMAGE
+          value: {{ printf "%s/%s/%s:%s" (default .Values.images.pxBackupVolumeScanner.registry .Values.images.registry) (default .Values.images.pxBackupVolumeScanner.repo .Values.images.repo) .Values.images.pxBackupVolumeScanner.imageName .Values.images.pxBackupVolumeScanner.tag | quote }}
+        - name: PX_BACKUP_VOLUME_SCANNER_PULL_SECRET
+          value: {{ .Values.pxbackup.volumeSecurity.pullSecretName | quote }}
+        {{- end }}
         {{- if .Values.pxbackup.imageSecurity.enabled }}
         - name: PX_BACKUP_IMAGE_SCANNER_URL
           value: http://px-backup-image-scanner.{{ .Release.Namespace }}.svc:8080

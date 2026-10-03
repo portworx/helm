@@ -141,6 +141,10 @@ pxbackup:
       limits:
         cpu: "1"
         memory: 1Gi
+  volumeSecurity:
+    enabled: true
+    # Optional installation-namespace registry Secret copied for scanner pulls.
+    pullSecretName: ""
   orgName: default
   # obsolete
   callHome: false
@@ -344,6 +348,12 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: px-backup-base
+    tag: hackathon-backup-image-cve
+    module: pxBackup
+  pxBackupVolumeScanner:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
+    repo: portworx
+    imageName: px-backup-volume-scanner
     tag: hackathon-backup-image-cve
     module: pxBackup
   pxBackupImageScanner:
