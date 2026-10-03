@@ -222,6 +222,20 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
+			name:           "TestStorkSchedulerAllFields",
+			resultFileName: "storagecluster_stork_scheduler.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_stork_scheduler.yaml"},
+			},
+		},
+		{
+			name:           "TestStorkSchedulerPartialZeroAndFalse",
+			resultFileName: "storagecluster_stork_scheduler_partial.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_stork_scheduler_partial.yaml"},
+			},
+		},
+		{
 			name:           "TestVolumes",
 			resultFileName: "storagecluster_volumes.yaml",
 			helmOption: &helm.Options{
@@ -626,6 +640,27 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				SetValues: map[string]string{
 					"storeV2Install": "true",
 					"internalKVDB":   "true",
+				},
+			},
+		},
+		{
+			name:           "TestMigrateStoreV1ToV2Enabled",
+			resultFileName: "storagecluster_migrate_storev1_to_v2.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"migrateStoreV1ToV2": "2026-09-29T04:11:13Z",
+					"internalKVDB":       "true",
+				},
+			},
+		},
+		{
+			name:           "TestMigrateStoreV1ToV2WithForceAck",
+			resultFileName: "storagecluster_migrate_storev1_to_v2_force_ack.yaml",
+			helmOption: &helm.Options{
+				SetValues: map[string]string{
+					"migrateStoreV1ToV2":         "2026-09-29T04:11:13Z",
+					"migrateStoreV1ToV2ForceAck": "true",
+					"internalKVDB":               "true",
 				},
 			},
 		},

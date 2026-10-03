@@ -1,0 +1,5 @@
+stork:
+  enabled: true
+  scheduler:
+    verboseLogLevel: 0
+    kubeSchedulerNodeCacheEnabled: false

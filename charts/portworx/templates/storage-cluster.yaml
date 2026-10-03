@@ -114,6 +114,12 @@ metadata:
     {{- if eq .Values.migrateToComponentK8sConfig true }}
     portworx.io/migrate-configs: "true"
     {{- end }}
+    {{- with .Values.migrateStoreV1ToV2 }}
+    portworx.io/migrate-v1-to-v2: {{ . | toString | trim | quote }}
+    {{- end }}
+    {{- if eq (.Values.migrateStoreV1ToV2ForceAck | default false) true }}
+    portworx.io/migrate-storev1-to-v2-force-ack: "true"
+    {{- end }}
     {{- $annotations := .Values.clusterAnnotations | trim }}
     {{- if $annotations }}
     {{- range $annotation := splitList ";" $annotations }}
@@ -446,6 +452,27 @@ spec:
     {{- end }}
     {{- if kindIs "bool" .Values.stork.useWorkloadIdentity }}
     useWorkloadIdentity: {{ .Values.stork.useWorkloadIdentity }}
+    {{- end }}
+    {{- if .Values.stork.scheduler }}
+    {{- $sched := .Values.stork.scheduler }}
+    {{- if or $sched.kubeSchedulerClientQPS $sched.kubeSchedulerClientBurst $sched.kubeSchedulerExtenderWeight (or (kindIs "float64" $sched.verboseLogLevel) (kindIs "int" $sched.verboseLogLevel)) (kindIs "bool" $sched.kubeSchedulerNodeCacheEnabled) }}
+    scheduler:
+      {{- if $sched.kubeSchedulerClientQPS }}
+      kubeSchedulerClientQPS: {{ $sched.kubeSchedulerClientQPS }}
+      {{- end }}
+      {{- if $sched.kubeSchedulerClientBurst }}
+      kubeSchedulerClientBurst: {{ $sched.kubeSchedulerClientBurst }}
+      {{- end }}
+      {{- if or (kindIs "float64" $sched.verboseLogLevel) (kindIs "int" $sched.verboseLogLevel) }}
+      verboseLogLevel: {{ $sched.verboseLogLevel }}
+      {{- end }}
+      {{- if $sched.kubeSchedulerExtenderWeight }}
+      kubeSchedulerExtenderWeight: {{ $sched.kubeSchedulerExtenderWeight }}
+      {{- end }}
+      {{- if kindIs "bool" $sched.kubeSchedulerNodeCacheEnabled }}
+      kubeSchedulerNodeCacheEnabled: {{ $sched.kubeSchedulerNodeCacheEnabled }}
+      {{- end }}
+    {{- end }}
     {{- end }}
     {{- else }}
     enabled: false
