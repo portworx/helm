@@ -142,3 +142,8 @@ Expanded backups show **Volume findings**. Show Details lists paths, engines,
 rule IDs, hashes, test-indicator labels, provenance and cleanup state. The restore
 wizard requests acknowledgement for any detected files. No detections is not a
 safety guarantee; unscanned and partial results remain explicit.
+
+Feature frontend, middleware, backend and volume-scanner references use
+`px-docker-prod-local` after direct CI publishing, to avoid stale manifests
+from the virtual repository's Docker Hub proxy. Existing public dependency
+images can continue through their configured repositories.

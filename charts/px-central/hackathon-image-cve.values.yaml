@@ -32,7 +32,7 @@ pxbackup:
 images:
   pullPolicy: Always
   pxBackupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-local
     tag: hackathon-backup-image-cve
   pxBackupImageScanner:
     registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
@@ -41,13 +41,13 @@ images:
     tag: hackathon-backup-image-cve
     module: pxBackup
   pxcentralMiddlewareImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-local
     tag: hackathon-backup-image-cve
   pxcentralFrontendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-local
     tag: hackathon-backup-image-cve
   pxBackupVolumeScanner:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-local
     repo: portworx
     imageName: px-backup-volume-scanner
     tag: hackathon-backup-image-cve
