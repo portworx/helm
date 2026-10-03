@@ -91,8 +91,21 @@ points.
 The frontend and middleware runners publish their feature tags to private
 Docker Hub. The PX-Backup branch’s **Publish hackathon UI images to Pure
 Artifactory** workflow mirrors those tags into `px-docker-prod-local/portworx`,
-which this chart uses directly. Run that workflow after publishing a new UI
-or middleware image, then restart the relevant Deployment. This avoids stale
+which this chart uses directly. After publishing a new UI or middleware image,
+rerun its most recent successful mirror job, then restart the relevant Deployment:
+
+```bash
+gh run list --repo pure-px/px-backup --branch hackathon/backup-image-cve \
+  --workflow hackathon-mirror.yaml --limit 5
+gh run rerun MIRROR_RUN_ID --repo pure-px/px-backup
+gh run watch MIRROR_RUN_ID --repo pure-px/px-backup --exit-status
+kubectl -n px-backup rollout restart deployment/pxcentral-frontend
+```
+
+Use `pxcentral-lh-middleware` when refreshing middleware. The rerun pulls the
+current mutable tags. A new branch-only workflow may not appear in GitHub's
+manual-dispatch UI until it exists on the default branch; rerunning the existing
+job works with this feature branch. This avoids stale
 Docker Hub proxy manifests while retaining mutable tags and Always pulls.
 The PX-Backup and volume-scanner builders publish to Artifactory directly.
 
@@ -141,6 +154,11 @@ Expanded backups show **Volume findings**. Show Details lists paths, engines,
 rule IDs, hashes, test-indicator labels, provenance and cleanup state. The restore
 wizard requests acknowledgement for any detected files. No detections is not a
 safety guarantee; unscanned and partial results remain explicit.
+
+Validated on a-116: the original native S3 backup detected three harmless test
+files (four findings across ClamAV/YARA). A newer backup after removing those
+fixtures had no detections, using the same scanner profile. Manual cancellation,
+backend restart recovery and restored-volume cleanup also passed.
 
 Feature frontend, middleware, backend and volume-scanner references use
 `px-docker-prod-local` after direct CI publishing, to avoid stale manifests
