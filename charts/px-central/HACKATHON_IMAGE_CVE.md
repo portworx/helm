@@ -88,14 +88,13 @@ open its details, and select **Scan images**. For configuration history,
 create a namespace backup schedule and let it produce at least two completed
 points.
 
-The frontend GitHub Actions runner pushes the mutable feature tag to private
-Docker Hub; the chart pulls it through Pure Artifactory. On a-111, an
-Artifactory tag lookup showed the latest UI while the kubelet repeatedly
-pulled an older frontend image despite `Always` and restarts. Check the
-running frontend's UI after installation. A commit-specific published tag or
-a fixed proxy cache is still needed to make that frontend update reliable
-without a digest pin. Helm packaging alone cannot refresh a stale registry
-manifest.
+The frontend and middleware runners publish their feature tags to private
+Docker Hub. The PX-Backup branch’s **Publish hackathon UI images to Pure
+Artifactory** workflow mirrors those tags into `px-docker-prod-local/portworx`,
+which this chart uses directly. Run that workflow after publishing a new UI
+or middleware image, then restart the relevant Deployment. This avoids stale
+Docker Hub proxy manifests while retaining mutable tags and Always pulls.
+The PX-Backup and volume-scanner builders publish to Artifactory directly.
 
 ## Manual PXD/S3 volume malware assessment
 
