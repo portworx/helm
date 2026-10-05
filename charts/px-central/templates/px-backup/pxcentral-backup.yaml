@@ -13,6 +13,33 @@ metadata:
     app.kubernetes.io/component: px-backup
 {{- include "px-central.labels" . | nindent 4 }}
 ---
+# ServiceAccount the control-plane upgrade Job runs as. The upgrade helm run
+# and the operator hooks need cluster-admin. Added for the UI-driven upgrade.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pxcentral-onprem-operator
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: pxcentral-onprem-operator-upgrade-admin
+  labels:
+    app.kubernetes.io/component: px-backup
+{{- include "px-central.labels" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: pxcentral-onprem-operator
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
 kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -220,6 +247,11 @@ spec:
               fieldPath: metadata.namespace
         - name: PX_BACKUP_DEFAULT_ORG
           value: {{ .Values.pxbackup.orgName }}
+        # Hardcoded for the hackathon. The server reads releases.json from here
+        # to validate the upgrade pair and resolve the chart. Move to an HTTPS
+        # host for production.
+        - name: PXB_RELEASES_URL
+          value: "http://10.13.194.159:8081/px-backup/releases.json"
         {{- if .Values.telemetry.enabled }}
         - name: TELEMETRY_ENABLED
           value: "true"
