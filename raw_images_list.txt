@@ -2,7 +2,6 @@ docker.io/portworx/pxcentral-onprem-api:3.3.0-fc1
 docker.io/portworx/pxcentral-onprem-ui-frontend:3.3.0-fc1
 docker.io/portworx/pxcentral-onprem-ui-backend:3.3.0-fc1
 docker.io/portworx/pxcentral-onprem-ui-lhbackend:3.3.0-fc1
-docker.io/portworx/pxcentral-onprem-post-setup:3.3.0-fc1
 docker.io/portworx/pxcentral-onprem-hook:3.3.0-fc1
 docker.io/portworx/postgresql:18.4
 docker.io/portworx/keycloak:26.6.4_v2
