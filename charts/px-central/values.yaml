@@ -128,7 +128,7 @@ pxbackup:
   volDeleteWorker: 5
   backupInfoMetricsBackfillHours: ""
   dashboardMetricsBackfillDays: ""
-  version: 3.2.0
+  version: 3.3.0
   skipValidations: false
   usePlatformRbac: false
   encryptMongoDB: false
@@ -234,7 +234,7 @@ images:
   postInstallSetupImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: pxcentral-onprem-post-setup-base
+    imageName: pxcentral-onprem-hook-base
     tag: 3.3.0-fc1
     module: pxCentral
   keycloakBackendImage:
