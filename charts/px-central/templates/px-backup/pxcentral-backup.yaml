@@ -96,6 +96,12 @@ rules:
   - apiGroups: ["monitoring.coreos.com"]
     resources: ["alertmanagerconfigs"]
     verbs: ["get","create","delete","update","list","deletecollection"]
+  # px-backup reads its own pod to derive the control-plane upgrade Job image
+  # (the px-backup image with the name swapped to px-backup-update). This must
+  # be available regardless of NFS, because the UI-driven upgrade uses it.
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list"]
 {{- if eq $nfsEnabled true }}
   - apiGroups: [""]
     resources: ["persistentvolumeclaims"]
