@@ -460,10 +460,8 @@ spec:
             - name: STORAGE_CLASS
               value: {{ .Values.persistentStorage.storageClassName }}
             - name: IMAGES
-              {{- with .Values.images }}
               value: |
-              {{- toJson . | nindent 16 }}
-              {{- end }}
+                {{- include "px.imagesJson" . | nindent 16 }}
             - name: PX_BACKUP_ENABLED
               value: {{ .Values.pxbackup.enabled | default false | quote }}
             - name: DOCREGISTRY_SECRET_NAME
