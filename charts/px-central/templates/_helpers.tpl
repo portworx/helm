@@ -178,12 +178,37 @@ Usage:
 {{- end -}}
 
 {{/*
-px.image resolves a fully-qualified image ref for a given image key.
-Tag resolution: .Values.images.<key>.tag (override) -> hardcoded tag (external) -> .Values.images.version (PX-owned).
+px.imageCatalog is the single source of truth for chart images: name, module and,
+for externally-owned images, a hardcoded tag. PX-owned images (no tag) get the chart's PX version.
+module matches the preflight-check hook's module gating (pxCentral / pxBackup / pxLicenseServer).
+Returned as JSON; consume with: include "px.imageCatalog" . | fromJson
+
+Third-party images (legal: origin and license must stay documented; keep in sync with README.md "Third-party images")
+These are open-source images Portworx does not build. They are retagged from the public upstream image
+(unmodified unless noted) and published as docker.io/portworx/<image>, mirrored by pure-artifactory
+px-docker-remote, by the DevOps job DevOps/docker-images/publish-public-docker-image (one PXDO ticket per
+retag, e.g. PXDO-14194). The tag is the upstream release tag; bump it only after that tag exists in
+docker.io/portworx (versions.yaml lists the published set). When adding or changing an upstream image,
+update this list and the README table in the same change.
+
+  portworx image               upstream source                                         license (main software)
+  postgresql                   docker.io/library/postgres                              PostgreSQL License
+  keycloak                     quay.io/keycloak/keycloak, rebuilt by Portworx ("_vN")  Apache-2.0
+  mysql                        docker.io/library/mysql                                 GPL-2.0
+  busybox                      docker.io/library/busybox                               GPL-2.0
+  mongodb                      docker.io/library/mongo                                 SSPL-1.0
+  mongodb (mongodbImageMap)    docker.io/bitnami/mongodb (5.x-7.x upgrade steps only)  SSPL-1.0; Bitnami packaging Apache-2.0
+  prometheus                   quay.io/prometheus/prometheus                           Apache-2.0
+  alertmanager                 quay.io/prometheus/alertmanager                         Apache-2.0
+  prometheus-operator          quay.io/prometheus-operator/prometheus-operator         Apache-2.0
+  prometheus-config-reloader   quay.io/prometheus-operator/prometheus-config-reloader  Apache-2.0
+
+postgresql was previously the Bitnami image; the /bitnami/postgresql paths left in pxcentral-keycloak.yaml
+are directory names only (PGDATA points the official image at them).
+Not third-party: edge-envoy, ccm-go, realtime-metrics and log-upload are Portworx-built telemetry images
+on their own release cadence; entries without a tag are PX-owned and built at the PX version.
 */}}
-{{- define "px.image" -}}
-{{- $key  := .key -}}
-{{- $root := .root -}}
+{{- define "px.imageCatalog" -}}
 {{- $images := dict
     "pxcentralApiServerImage"               (dict "name" "pxcentral-onprem-api-base")
     "pxcentralFrontendImage"                (dict "name" "pxcentral-onprem-ui-frontend-private")
@@ -193,7 +218,6 @@ Tag resolution: .Values.images.<key>.tag (override) -> hardcoded tag (external) 
     "keycloakLoginThemeImage"               (dict "name" "sb-keycloak-login-theme")
     "pxBackupImage"                         (dict "name" "px-backup-base")
     "telemetryDataCollectorImage"           (dict "name" "px-backup-telemetry-collector-base")
-    "licenseServerImage"                    (dict "name" "px-els")
     "keycloakBackendImage"                  (dict "name" "postgresql"                 "tag" "18.6")
     "keycloakFrontendImage"                 (dict "name" "keycloak"                   "tag" "26.6.4_v2")
     "keycloakInitContainerImage"            (dict "name" "busybox"                    "tag" "1.38.0")
@@ -207,13 +231,47 @@ Tag resolution: .Values.images.<key>.tag (override) -> hardcoded tag (external) 
     "telemetryMetricsCollectorImage"        (dict "name" "realtime-metrics"           "tag" "1.0.39")
     "telemetryLogUploadImage"               (dict "name" "log-upload"                 "tag" "px-1.1.169")
 -}}
+{{- toJson $images -}}
+{{- end -}}
+
+{{/*
+px.imageParts resolves registry/repo/imageName/tag/module for one image key, as JSON.
+Tag resolution: .Values.images.<key>.tag (override) -> catalog tag (external) -> PX version (PX-owned).
+Registry/repo resolution: .Values.images.<registry|repo> (global) -> .Values.images.<key>.<registry|repo> -> docker.io/portworx.
+Usage: include "px.imageParts" (dict "key" "<imageKey>" "root" .) | fromJson
+*/}}
+{{- define "px.imageParts" -}}
+{{- $key  := .key -}}
+{{- $root := .root -}}
 {{- $pxVersion := "3.3.0-fc1" -}}
-{{- $img      := get $images $key -}}
-{{- $name     := get $img "name" -}}
-{{- $hardTag  := get $img "tag" -}}
+{{- $img      := required (printf "px.image: unknown image key %q" $key) (get (include "px.imageCatalog" $root | fromJson) $key) -}}
 {{- $override := dig $key "tag" "" $root.Values.images -}}
-{{- $tag      := default (default $pxVersion $hardTag) $override -}}
+{{- $tag      := default (default $pxVersion $img.tag) $override -}}
 {{- $registry := default "docker.io"  (default (dig $key "registry" "" $root.Values.images) $root.Values.images.registry) -}}
 {{- $repo     := default "portworx"   (default (dig $key "repo"     "" $root.Values.images) $root.Values.images.repo) -}}
-{{- printf "%s/%s/%s:%s" $registry $repo $name $tag -}}
+{{- toJson (dict "registry" $registry "repo" $repo "imageName" $img.name "tag" $tag "module" $img.module) -}}
+{{- end -}}
+
+{{/*
+px.image resolves a fully-qualified image ref for a given image key.
+Usage: include "px.image" (dict "key" "<imageKey>" "root" .)
+*/}}
+{{- define "px.image" -}}
+{{- $p := include "px.imageParts" . | fromJson -}}
+{{- printf "%s/%s/%s:%s" $p.registry $p.repo $p.imageName $p.tag -}}
+{{- end -}}
+
+{{/*
+px.imagesJson renders the IMAGES payload for the preflight-check hook
+(pxcentral-hook utils.GetImageList): global registry/repo plus one fully-resolved
+{registry, repo, imageName, tag, module} entry per catalog image, so the hook
+validates exactly the refs the workloads use.
+*/}}
+{{- define "px.imagesJson" -}}
+{{- $root := . -}}
+{{- $out := dict "registry" (default "" .Values.images.registry) "repo" (default "" .Values.images.repo) -}}
+{{- range $key, $img := include "px.imageCatalog" . | fromJson -}}
+{{- $_ := set $out $key (include "px.imageParts" (dict "key" $key "root" $root) | fromJson) -}}
+{{- end -}}
+{{- toJson $out -}}
 {{- end -}}
