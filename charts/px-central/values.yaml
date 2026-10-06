@@ -245,22 +245,22 @@ images:
     tag: 3.0.0-staging
     module: pxCentral
   pxcentralFrontendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend-private
-    tag: 3.0.0-staging
+    tag: pxb-elevate
     module: pxCentral
   pxcentralBackendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: pxcentral-onprem-ui-backend-private
-    tag: 3.0.0-staging
+    tag: pxb-elevate
     module: pxCentral
   pxcentralMiddlewareImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend-private
-    tag: 3.0.0-staging
+    tag: pxb-elevate
     module: pxCentral
   postInstallSetupImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -313,10 +313,10 @@ images:
 
   ## Images required for enabling px-backup
   pxBackupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: px-backup-base
-    tag: 3.0.0-staging
+    tag: pxb-elevate
     module: pxBackup
   mongodbImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
