@@ -240,16 +240,17 @@ on their own release cadence; entries without a tag are PX-owned and built at th
 
 {{/*
 px.imageParts resolves registry/repo/imageName/tag/module for one image key, as JSON.
-Tag resolution: .Values.images.<key>.tag (override) -> catalog tag (external) -> PX version (PX-owned).
+Tag resolution: .Values.images.<key>.tagOverride -> catalog tag (external) -> .Chart.AppVersion (PX-owned).
+.Values.images.<key>.tag is ignored so a values file carried over from an older release cannot pin old images.
 Registry/repo resolution: .Values.images.<registry|repo> (global) -> .Values.images.<key>.<registry|repo> -> docker.io/portworx.
 Usage: include "px.imageParts" (dict "key" "<imageKey>" "root" .) | fromJson
 */}}
 {{- define "px.imageParts" -}}
 {{- $key  := .key -}}
 {{- $root := .root -}}
-{{- $pxVersion := "3.3.0-fc1" -}}
+{{- $pxVersion := $root.Chart.AppVersion -}}
 {{- $img      := required (printf "px.image: unknown image key %q" $key) (get (include "px.imageCatalog" $root | fromJson) $key) -}}
-{{- $override := dig $key "tag" "" $root.Values.images -}}
+{{- $override := dig $key "tagOverride" "" $root.Values.images -}}
 {{- $tag      := default (default $pxVersion $img.tag) $override -}}
 {{- $registry := default "docker.io"  (default (dig $key "registry" "" $root.Values.images) $root.Values.images.registry) -}}
 {{- $repo     := default "portworx"   (default (dig $key "repo"     "" $root.Values.images) $root.Values.images.repo) -}}
@@ -278,4 +279,34 @@ validates exactly the refs the workloads use.
 {{- $_ := set $out $key (include "px.imageParts" (dict "key" $key "root" $root) | fromJson) -}}
 {{- end -}}
 {{- toJson $out -}}
+{{- end -}}
+
+{{/*
+px.requireVersionMatch fails an install or upgrade whose pxbackup.version differs from the chart version, so the deployed version stays traceable from the values.
+Pre-release suffixes are ignored: pxbackup.version 3.3.0 matches chart 3.3.0 even when the images are 3.3.0-fc1.
+*/}}
+{{- define "px.requireVersionMatch" -}}
+{{- $requested := toString .Values.pxbackup.version -}}
+{{- $chartCore := regexFind "[0-9]+\\.[0-9]+\\.[0-9]+" .Chart.Version -}}
+{{- if ne $chartCore (regexFind "[0-9]+\\.[0-9]+\\.[0-9]+" $requested) -}}
+{{- fail (printf "Version mismatch: pxbackup.version is %q but this is the %s chart. Set pxbackup.version to %s in your values file." $requested .Chart.Version $chartCore) -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+px.rejectDowngrade fails a helm upgrade to a chart older than the running px-backup; px.requireVersionMatch keeps pxbackup.version equal to the chart version.
+The running version is the app.kubernetes.io/version label (the chart version of the last applied release) on the px-backup Deployment.
+Skipped when that Deployment cannot be looked up: fresh install, helm template, client-side dry run, ArgoCD render.
+*/}}
+{{- define "px.rejectDowngrade" -}}
+{{- if .Release.IsUpgrade -}}
+{{- $deployment := lookup "apps/v1" "Deployment" .Release.Namespace "px-backup" -}}
+{{- $running := dig "metadata" "labels" "app.kubernetes.io/version" "" $deployment | toString -}}
+{{- $runningCore := regexFind "[0-9]+\\.[0-9]+\\.[0-9]+" $running -}}
+{{- if $runningCore -}}
+{{- if semverCompare (printf "<%s" $runningCore) (regexFind "[0-9]+\\.[0-9]+\\.[0-9]+" .Chart.Version) -}}
+{{- fail (printf "Downgrade rejected: px-backup %s is running but this is the %s chart. Downgrades are not supported; use helm rollback to return to an earlier revision." $running .Chart.Version) -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
 {{- end -}}
