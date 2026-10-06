@@ -323,12 +323,14 @@ spec:
     matchLabels:
       run: pxcentral-frontend
       app.kubernetes.io/component: pxcentral-frontend
-  replicas: 1
+  # Two replicas with maxUnavailable 0 keep at least one UI pod serving during
+  # the UI's own rolling upgrade, so the "upgrade in progress" overlay stays up.
+  replicas: 2
   revisionHistoryLimit: 0
   strategy:
     rollingUpdate:
-      maxSurge: 2
-      maxUnavailable: 1
+      maxSurge: 1
+      maxUnavailable: 0
     type: RollingUpdate
   template:
     metadata:
