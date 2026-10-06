@@ -40,7 +40,7 @@ uses `pxbackup.imageSecurity.cache.storageClassName` if set, otherwise
 `persistentStorage.storageClassName`, then the cluster's default StorageClass.
 Its cache requests 10 GiB and its temporary files use a 5 GiB `emptyDir`.
 If site values set a global `images.registry` or `images.repo`, those override
-the per-image feature locations; verify the resulting four image references
+the per-image feature locations; verify the resulting five feature image references
 with `helm template` before installing.
 The init container must reach the Trivy DB registry at first startup; image
 scans need access to public Docker Hub images.
@@ -88,26 +88,28 @@ open its details, and select **Scan images**. For configuration history,
 create a namespace backup schedule and let it produce at least two completed
 points.
 
-The frontend and middleware runners publish their feature tags to private
-Docker Hub. The PX-Backup branch’s **Publish hackathon UI images to Pure
-Artifactory** workflow mirrors those tags into `px-docker-prod-local/portworx`,
-which this chart uses directly. After publishing a new UI or middleware image,
-rerun its most recent successful mirror job, then restart the relevant Deployment:
+Feature images use the staging chart's existing pull endpoint,
+`pure-artifactory.dev.purestorage.com/px-docker-remote/portworx`, with the tag
+`hackathon-backup-image-cve`. The frontend and middleware runners publish
+these tags through their existing pipelines. PX-Backup no longer mirrors
+those UI images by pulling, retagging, and pushing them into a second
+Artifactory repository.
+
+After a new image is published, restart its Deployment to refresh the mutable
+tag. The chart retains `imagePullPolicy: Always` and does not pin digests:
 
 ```bash
-gh run list --repo pure-px/px-backup --branch hackathon/backup-image-cve \
-  --workflow hackathon-mirror.yaml --limit 5
-gh run rerun MIRROR_RUN_ID --repo pure-px/px-backup
-gh run watch MIRROR_RUN_ID --repo pure-px/px-backup --exit-status
 kubectl -n px-backup rollout restart deployment/pxcentral-frontend
+kubectl -n px-backup rollout status deployment/pxcentral-frontend --timeout=5m
 ```
 
-Use `pxcentral-lh-middleware` when refreshing middleware. The rerun pulls the
-current mutable tags. A new branch-only workflow may not appear in GitHub's
-manual-dispatch UI until it exists on the default branch; rerunning the existing
-job works with this feature branch. This avoids stale
-Docker Hub proxy manifests while retaining mutable tags and Always pulls.
-The PX-Backup and volume-scanner builders publish to Artifactory directly.
+Use `pxcentral-lh-middleware`, `px-backup`, or `px-backup-image-scanner` when
+refreshing those images. Volume-scanner Jobs pull the current tag when each
+new Job starts. The backend and scanner build targets continue publishing
+newly built images directly to Pure Artifactory; deleting the UI mirror does
+not remove those build targets. Verify both scanner tags can be pulled through
+`px-docker-remote` before distributing or deploying this chart; a successful
+frontend pull does not verify the separate scanner images.
 
 ## Manual PXD/S3 volume malware assessment
 
@@ -160,7 +162,7 @@ files (four findings across ClamAV/YARA). A newer backup after removing those
 fixtures had no detections, using the same scanner profile. Manual cancellation,
 backend restart recovery and restored-volume cleanup also passed.
 
-Feature frontend, middleware, backend and volume-scanner references use
-`px-docker-prod-local` after direct CI publishing, to avoid stale manifests
-from the virtual repository's Docker Hub proxy. Existing public dependency
-images can continue through their configured repositories.
+All five feature image references (frontend, middleware, backend, image
+scanner, and volume scanner) use `px-docker-remote`, matching the staging
+chart's pull endpoint. Feature tags remain `hackathon-backup-image-cve` and
+pull policy remains `Always`.

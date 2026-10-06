@@ -277,7 +277,7 @@ images:
     tag: 3.2.0-staging
     module: pxCentral
   pxcentralFrontendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-local
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend-private
     tag: hackathon-backup-image-cve
@@ -289,7 +289,7 @@ images:
     tag: 3.2.0-staging
     module: pxCentral
   pxcentralMiddlewareImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-local
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend-private
     tag: hackathon-backup-image-cve
@@ -345,13 +345,13 @@ images:
 
   ## Images required for enabling px-backup
   pxBackupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-local
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: px-backup-base
     tag: hackathon-backup-image-cve
     module: pxBackup
   pxBackupVolumeScanner:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-local
+    registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: px-backup-volume-scanner
     tag: hackathon-backup-image-cve
