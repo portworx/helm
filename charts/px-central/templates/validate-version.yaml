@@ -1,0 +1,3 @@
+{{- /* Renders nothing; rejects a pxbackup.version that differs from the chart, and any upgrade that would downgrade px-backup. */ -}}
+{{- include "px.requireVersionMatch" . -}}
+{{- include "px.rejectDowngrade" . -}}
