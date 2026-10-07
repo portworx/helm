@@ -378,47 +378,54 @@ Parameter | Description | Default
 
 ### Image parameters
 
-All images share one **registry** and **repo**, set once on `images.registry` / `images.repo`.
-Each per-image block carries only `imageName`, `tag` and `module`. To retarget every image
-(air-gap / private mirror) change `images.registry` / `images.repo`; a per-image block may still
-set its own `registry`/`repo` for a one-off (used only when the shared value is left empty).
+All images share one **registry** and **repo**. To retarget every image (air-gap / private mirror)
+set `images.registry` / `images.repo`. When those are empty, each image uses its own
+`images.<key>.registry` / `images.<key>.repo`, and falls back to `docker.io/portworx`.
+
+Image names and default tags are fixed in the chart (`templates/_helpers.tpl`, `px.imageCatalog`),
+not in `values.yaml`. Portworx-built images use the release version (`3.3.0-fc1`); third-party images
+keep their upstream tag (see [Third-party images](#third-party-images)). Set `images.<key>.tag` only
+to override one image's tag.
 
 Parameter | Description | Default
 --- | --- | ---
-`images.registry` | Shared container registry for all images | `pure-artifactory.dev.purestorage.com/px-docker-remote`
-`images.repo` | Shared repository (org/namespace) for all images | `portworx`
+`images.registry` | Shared container registry for all images (empty: use each image's own `registry`) | `""`
+`images.repo` | Shared repository (org/namespace) for all images (empty: use each image's own `repo`) | `""`
+`images.<key>.registry` | Registry for one image, used only when `images.registry` is empty | `pure-artifactory.dev.purestorage.com/px-docker-remote`
+`images.<key>.repo` | Repository for one image, used only when `images.repo` is empty | `portworx`
+`images.<key>.tag` | Override the default tag for one image | unset
 `images.pullSecrets` | Image pull secrets | `[]`
 `images.pullPolicy` | Image pull policy | `Always`
 `images.insecureRegistry` | Allow pulling from an insecure (HTTP) registry | `false`
+`images.mongodbImageMap.tags` | `mongodb` tags for the intermediate MongoDB upgrade steps (`mongodb5`, `mongodb6`, `mongodb7`, `mongodb8`) | see `values.yaml`
 
-Per-image blocks (registry/repo inherited from above):
+Images (`images.<key>`), with the name and default tag set by the chart:
 
-Image (`images.<key>`) | imageName | tag | module
+Image (`images.<key>`) | Image name | Default tag | Module
 --- | --- | --- | ---
 `pxcentralApiServerImage` | `pxcentral-onprem-api-base` | `3.3.0-fc1` | `pxCentral`
 `pxcentralFrontendImage` | `pxcentral-onprem-ui-frontend-private` | `3.3.0-fc1` | `pxCentral`
 `pxcentralBackendImage` | `pxcentral-onprem-ui-backend-private` | `3.3.0-fc1` | `pxCentral`
 `pxcentralMiddlewareImage` | `pxcentral-onprem-ui-lhbackend-private` | `3.3.0-fc1` | `pxCentral`
-`postInstallSetupImage` | `pxcentral-onprem-post-setup-base` | `3.3.0-fc1` | `pxCentral`
+`postInstallSetupImage` | `pxcentral-onprem-hook-base` | `3.3.0-fc1` | `pxCentral`
 `keycloakBackendImage` | `postgresql` | `18.4` | `pxCentral`
-`keycloakFrontendImage` | `keycloak` | `26.5.7_v2` | `pxCentral`
+`keycloakFrontendImage` | `keycloak` | `26.6.4_v2` | `pxCentral`
 `keycloakLoginThemeImage` | `sb-keycloak-login-theme` | `3.3.0-fc1` | `pxCentral`
 `keycloakInitContainerImage` | `busybox` | `1.35.0` | `pxCentral`
-`mysqlImage` | `mysql` | `8.4.9` | `pxCentral`
+`mysqlImage` | `mysql` | `8.4.10` | `pxCentral`
 `preSetupHookImage` | `pxcentral-onprem-hook-base` | `3.3.0-fc1` | `pxCentral`
 `mysqlInitImage` | `busybox` | `1.35.0` | `pxCentral`
 `pxBackupImage` | `px-backup-base` | `3.3.0-fc1` | `pxBackup`
 `mongodbImage` | `mongodb` | `8.0.20` | `pxBackup`
-`telemetryEnvoyImage` | `edge-envoy` | `2.0.109` | `pxBackup`
-`telemetryRegistrationImage` | `ccm-go` | `1.4.42` | `pxBackup`
-`telemetryMetricsCollectorImage` | `realtime-metrics` | `1.0.36` | `pxBackup`
+`telemetryEnvoyImage` | `edge-envoy` | `2.0.115` | `pxBackup`
+`telemetryRegistrationImage` | `ccm-go` | `1.4.54` | `pxBackup`
+`telemetryMetricsCollectorImage` | `realtime-metrics` | `1.0.38` | `pxBackup`
 `telemetryDataCollectorImage` | `px-backup-telemetry-collector-base` | `3.3.0-fc1` | `pxBackup`
-`telemetryLogUploadImage` | `log-upload` | `px-1.1.148` | `pxBackup`
-`licenseServerImage` | `px-els` | `2.8.0` | `pxLicenseServer`
-`pxBackupPrometheusImage` | `prometheus` | `v3.11.3` | `pxBackup`
-`pxBackupAlertmanagerImage` | `alertmanager` | `v0.32.1` | `pxBackup`
-`pxBackupPrometheusOperatorImage` | `prometheus-operator` | `v0.91.0` | `pxBackup`
-`pxBackupPrometheusConfigReloaderImage` | `prometheus-config-reloader` | `v0.91.0` | `pxBackup`
+`telemetryLogUploadImage` | `log-upload` | `px-1.1.155` | `pxBackup`
+`pxBackupPrometheusImage` | `prometheus` | `v3.13.1` | `pxBackup`
+`pxBackupAlertmanagerImage` | `alertmanager` | `v0.33.0` | `pxBackup`
+`pxBackupPrometheusOperatorImage` | `prometheus-operator` | `v0.92.0` | `pxBackup`
+`pxBackupPrometheusConfigReloaderImage` | `prometheus-config-reloader` | `v0.92.0` | `pxBackup`
 
 
 ### PX-Backup parameters
@@ -435,21 +442,28 @@ Parameter | Description | Default
 `service.pxBackupUIServiceAnnotations` | annotations for the PX-Backup UI service | `"{}"`
 `service.pxBackupServiceAnnotations` | annotations for the PX-Backup backend service | `"{}"`
 
-### PX-License-Server parameters
+## Third-party images
 
-The following table lists the configurable parameters of the PX-License-Server chart and their default values.
+Some images this chart deploys are open-source software that Portworx does not build. Portworx
+retags the public upstream image (unmodified unless noted below) and publishes it as
+`docker.io/portworx/<image>`, which `pure-artifactory.dev.purestorage.com/px-docker-remote/portworx`
+mirrors. The tag is the upstream release tag, so the version you run is the upstream version.
 
-Parameter | Description | Default
---- | --- | ---
-`pxlicenseserver` | PX license server deployment | ``
-`pxlicenseserver.enabled` | PX-Central cluster enabled license server component | `false`
-`pxlicenseserver.internal` | PX-Central cluster license server | ``
-`pxlicenseserver.internal.enabled` | PX-Central cluster license server enabled | `true`
-`pxlicenseserver.internal.lsTypeUAT` | PX license server deployment type [UAT] | `false`
-`pxlicenseserver.internal.lsTypeAirgapped` | PX license server deployment type [Air-gapped] | `false`
-`pxlicenseserver.external.enabled` | External license server enabled | `false`
-`pxlicenseserver.mainNodeIP` | External license server main node endpoints | ``
-`pxlicenseserver.backupNodeIP` | External license server backup node endpoints | ``
-`pxlicenseserver.adminUserName` | PX license server admin user name | `admin`
-`pxlicenseserver.adminUserPassword` | PX license server admin user password | `Adm1n!Ur`
-`securityContext` | Security context for the pod | `{runAsUser: 1000, fsGroup: 1000, runAsNonRoot: true}`
+Image (`docker.io/portworx/...`) | Used by (`images.<key>`) | Upstream source | License of the main software
+--- | --- | --- | ---
+`postgresql` | `keycloakBackendImage` | `docker.io/library/postgres` | PostgreSQL License
+`keycloak` | `keycloakFrontendImage` | `quay.io/keycloak/keycloak`, rebuilt by Portworx (`_vN` tag suffix) | Apache-2.0
+`mysql` | `mysqlImage` | `docker.io/library/mysql` | GPL-2.0
+`busybox` | `keycloakInitContainerImage`, `mysqlInitImage` | `docker.io/library/busybox` | GPL-2.0
+`mongodb` | `mongodbImage` | `docker.io/library/mongo` | SSPL-1.0
+`mongodb` (5.x, 6.x, 7.x tags) | `mongodbImageMap`, intermediate MongoDB upgrade steps only | `docker.io/bitnami/mongodb` | SSPL-1.0 (MongoDB), Apache-2.0 (Bitnami packaging)
+`prometheus` | `pxBackupPrometheusImage` | `quay.io/prometheus/prometheus` | Apache-2.0
+`alertmanager` | `pxBackupAlertmanagerImage` | `quay.io/prometheus/alertmanager` | Apache-2.0
+`prometheus-operator` | `pxBackupPrometheusOperatorImage` | `quay.io/prometheus-operator/prometheus-operator` | Apache-2.0
+`prometheus-config-reloader` | `pxBackupPrometheusConfigReloaderImage` | `quay.io/prometheus-operator/prometheus-config-reloader` | Apache-2.0
+
+The license column names the license of the main software only. Each image also contains
+operating-system packages under their own licenses; the upstream image is the source of the full
+license and source-code information.
+
+All other images in this chart are built by Portworx.

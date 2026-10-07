@@ -1,6 +1,17 @@
 Your Release is named: {{ .Release.Name | quote }}
 PX-Central is deployed in the namespace: {{ .Release.Namespace }}
 Chart Version: {{ .Chart.Version }}
+{{- $ignoredTags := list }}
+{{- range $key, $img := .Values.images }}
+{{- if kindIs "map" $img }}
+{{- if hasKey $img "tag" }}
+{{- $ignoredTags = append $ignoredTags $key }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- if $ignoredTags }}
+WARNING: images.<key>.tag is ignored for {{ len $ignoredTags }} image(s): {{ sortAlpha $ignoredTags | join ", " }}. The chart sets every image tag (Portworx images use {{ .Chart.AppVersion }}); set images.<key>.tagOverride to pin one.
+{{- end }}
 
 --------------------------------------------------
 {{- if eq .Release.IsInstall true }}
