@@ -74,36 +74,6 @@ roleRef:
   name: pxcentral-post-install-hook
   apiGroup: rbac.authorization.k8s.io
 ---
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: pxcentral-post-install-hook-crd-role
-  labels:
-    name: pxcentral-post-install-hook
-    app.kubernetes.io/component: pxcentral-post-install-hook
-{{- include "px-central.labels" . | nindent 4 }}
-rules:
-  - apiGroups: ["apiextensions.k8s.io"]
-    resources: ["customresourcedefinitions"]
-    verbs: ["get", "create", "patch"]
----
-kind: ClusterRoleBinding
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  name: pxcentral-post-install-hook-crd-rolebinding
-  labels:
-    name: pxcentral-post-install-hook
-    app.kubernetes.io/component: pxcentral-post-install-hook
-{{- include "px-central.labels" . | nindent 4 }}
-subjects:
-  - kind: ServiceAccount
-    name: pxcentral-post-install-hook
-    namespace: {{ .Release.Namespace }}
-roleRef:
-  kind: ClusterRole
-  name: pxcentral-post-install-hook-crd-role
-  apiGroup: rbac.authorization.k8s.io
----
 apiVersion: batch/v1
 kind: Job
 metadata:

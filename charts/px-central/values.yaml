@@ -265,10 +265,10 @@ images:
   
   ## Images required for intermediate Mongo upgrades
   # Retagged from docker.io/bitnami/mongodb (see README.md "Third-party images").
-  # mongodbImageMap:
-  #   tags:
-  #     mongodb5: 5.0.24-debian-11-r20
-  #     mongodb6: 6.0.13-debian-11-r21
-  #     mongodb7: 7.0.15-debian-12-r2
-  #     mongodb8: 8.0.20
-  #   module: pxBackup
+  mongodbImageMap:
+    tags:
+      mongodb5: 5.0.24-debian-11-r20
+      mongodb6: 6.0.13-debian-11-r21
+      mongodb7: 7.0.15-debian-12-r2
+      mongodb8: 8.0.20
+    module: pxBackup
