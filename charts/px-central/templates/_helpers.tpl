@@ -180,21 +180,18 @@ Usage:
 {{/*
 px.imageCatalog is the single source of truth for chart images: name, module and,
 for externally-owned images, a hardcoded tag. PX-owned images (no tag) get the chart's PX version.
-module matches the preflight-check hook's module gating (pxCentral / pxBackup / pxLicenseServer).
+module matches the preflight-check hook's module gating (pxCentral / pxBackup ).
 Returned as JSON; consume with: include "px.imageCatalog" . | fromJson
 
 Third-party images (legal: origin and license must stay documented; keep in sync with README.md "Third-party images")
-These are open-source images Portworx does not build. They are retagged from the public upstream image
-(unmodified unless noted) and published as docker.io/portworx/<image>, mirrored by pure-artifactory
-px-docker-remote, by the DevOps job DevOps/docker-images/publish-public-docker-image (one PXDO ticket per
-retag, e.g. PXDO-14194). The tag is the upstream release tag; bump it only after that tag exists in
+These are open-source images Portworx does not build. They are retagged from the public upstream image.
+The tag is the upstream release tag; bump it only after that tag exists in
 docker.io/portworx (versions.yaml lists the published set). When adding or changing an upstream image,
 update this list and the README table in the same change.
 
   portworx image               upstream source                                         license (main software)
   postgresql                   docker.io/library/postgres                              PostgreSQL License
   keycloak                     quay.io/keycloak/keycloak, rebuilt by Portworx ("_vN")  Apache-2.0
-  mysql                        docker.io/library/mysql                                 GPL-2.0
   busybox                      docker.io/library/busybox                               GPL-2.0
   mongodb                      docker.io/library/mongo                                 SSPL-1.0
   mongodb (mongodbImageMap)    docker.io/bitnami/mongodb (5.x-7.x upgrade steps only)  SSPL-1.0; Bitnami packaging Apache-2.0
@@ -210,26 +207,25 @@ on their own release cadence; entries without a tag are PX-owned and built at th
 */}}
 {{- define "px.imageCatalog" -}}
 {{- $images := dict
-    "pxcentralApiServerImage"               (dict "name" "pxcentral-onprem-api-base")
-    "pxcentralFrontendImage"                (dict "name" "pxcentral-onprem-ui-frontend-private")
-    "pxcentralBackendImage"                 (dict "name" "pxcentral-onprem-ui-backend-private")
-    "pxcentralMiddlewareImage"              (dict "name" "pxcentral-onprem-ui-lhbackend-private")
-    "preSetupHookImage"                     (dict "name" "pxcentral-onprem-hook-base")
-    "keycloakLoginThemeImage"               (dict "name" "sb-keycloak-login-theme")
-    "pxBackupImage"                         (dict "name" "px-backup-base")
-    "telemetryDataCollectorImage"           (dict "name" "px-backup-telemetry-collector-base")
-    "keycloakBackendImage"                  (dict "name" "postgresql"                 "tag" "18.6")
-    "keycloakFrontendImage"                 (dict "name" "keycloak"                   "tag" "26.6.4_v2")
-    "keycloakInitContainerImage"            (dict "name" "busybox"                    "tag" "1.38.0")
-    "mongodbImage"                          (dict "name" "mongodb"                    "tag" "8.0.20")
-    "pxBackupPrometheusImage"               (dict "name" "prometheus"                 "tag" "v3.15.0")
-    "pxBackupAlertmanagerImage"             (dict "name" "alertmanager"               "tag" "v0.34.1")
-    "pxBackupPrometheusOperatorImage"       (dict "name" "prometheus-operator"        "tag" "v0.94.1")
-    "pxBackupPrometheusConfigReloaderImage" (dict "name" "prometheus-config-reloader" "tag" "v0.94.1")
-    "telemetryEnvoyImage"                   (dict "name" "edge-envoy"                 "tag" "2.0.134")
-    "telemetryRegistrationImage"            (dict "name" "ccm-go"                     "tag" "1.4.61")
-    "telemetryMetricsCollectorImage"        (dict "name" "realtime-metrics"           "tag" "1.0.39")
-    "telemetryLogUploadImage"               (dict "name" "log-upload"                 "tag" "px-1.1.169")
+    "pxcentralApiServerImage"               (dict "name" "pxcentral-onprem-api-base"             "module" "pxCentral")
+    "pxcentralFrontendImage"                (dict "name" "pxcentral-onprem-ui-frontend-private"  "module" "pxCentral")
+    "pxcentralMiddlewareImage"              (dict "name" "pxcentral-onprem-ui-lhbackend-private" "module" "pxCentral")
+    "preSetupHookImage"                     (dict "name" "pxcentral-onprem-hook-base"            "module" "pxCentral")
+    "keycloakLoginThemeImage"               (dict "name" "sb-keycloak-login-theme"               "module" "pxCentral")
+    "keycloakBackendImage"                  (dict "name" "postgresql"                 "tag" "18.6"       "module" "pxCentral")
+    "keycloakFrontendImage"                 (dict "name" "keycloak"                   "tag" "26.6.4_v2"  "module" "pxCentral")
+    "keycloakInitContainerImage"            (dict "name" "busybox"                    "tag" "1.38.0"     "module" "pxCentral")
+    "pxBackupImage"                         (dict "name" "px-backup-base"                        "module" "pxBackup")
+    "telemetryDataCollectorImage"           (dict "name" "px-backup-telemetry-collector-base"    "module" "pxBackup")
+    "mongodbImage"                          (dict "name" "mongodb"                    "tag" "8.0.20"     "module" "pxBackup")
+    "pxBackupPrometheusImage"               (dict "name" "prometheus"                 "tag" "v3.15.0"    "module" "pxBackup")
+    "pxBackupAlertmanagerImage"             (dict "name" "alertmanager"               "tag" "v0.34.1"    "module" "pxBackup")
+    "pxBackupPrometheusOperatorImage"       (dict "name" "prometheus-operator"        "tag" "v0.94.1"    "module" "pxBackup")
+    "pxBackupPrometheusConfigReloaderImage" (dict "name" "prometheus-config-reloader" "tag" "v0.94.1"    "module" "pxBackup")
+    "telemetryEnvoyImage"                   (dict "name" "edge-envoy"                 "tag" "2.0.134"    "module" "pxBackup")
+    "telemetryRegistrationImage"            (dict "name" "ccm-go"                     "tag" "1.4.61"     "module" "pxBackup")
+    "telemetryMetricsCollectorImage"        (dict "name" "realtime-metrics"           "tag" "1.0.39"     "module" "pxBackup")
+    "telemetryLogUploadImage"               (dict "name" "log-upload"                 "tag" "px-1.1.169" "module" "pxBackup")
 -}}
 {{- toJson $images -}}
 {{- end -}}
