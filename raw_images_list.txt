@@ -25,4 +25,3 @@ docker.io/portworx/prometheus:v3.13.1
 docker.io/portworx/alertmanager:v0.33.0
 docker.io/portworx/prometheus-operator:v0.92.0
 docker.io/portworx/prometheus-config-reloader:v0.92.0
-docker.io/portworx/px-els:2.8.0
