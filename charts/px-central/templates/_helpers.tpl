@@ -180,7 +180,7 @@ Usage:
 {{/*
 px.imageCatalog is the single source of truth for chart images: name, module and,
 for externally-owned images, a hardcoded tag. PX-owned images (no tag) get the chart's PX version.
-module matches the preflight-check hook's module gating (pxCentral / pxBackup / pxLicenseServer).
+module matches the preflight-check hook's module gating (pxCentral / pxBackup ).
 Returned as JSON; consume with: include "px.imageCatalog" . | fromJson
 
 Third-party images (legal: origin and license must stay documented; keep in sync with README.md "Third-party images")
@@ -233,7 +233,6 @@ on their own release cadence; entries without a tag are PX-owned and built at th
     "telemetryRegistrationImage"            (dict "name" "ccm-go"                     "tag" "1.4.54"     "module" "pxBackup")
     "telemetryMetricsCollectorImage"        (dict "name" "realtime-metrics"           "tag" "1.0.38"     "module" "pxBackup")
     "telemetryLogUploadImage"               (dict "name" "log-upload"                 "tag" "px-1.1.155" "module" "pxBackup")
-    "licenseServerImage"                    (dict "name" "px-els"                                "module" "pxLicenseServer")
 -}}
 {{- toJson $images -}}
 {{- end -}}
