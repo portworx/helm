@@ -4,7 +4,6 @@ modules:
     pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:3.3.0-fc1"
     pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:3.3.0-fc1"
     pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:3.3.0-fc1"
-    pxcentralOnpremPostSetup: "docker.io/portworx/pxcentral-onprem-hook-base:3.3.0-fc1"
     pxcentralOnpremPreSetup: "docker.io/portworx/pxcentral-onprem-hook-base:3.3.0-fc1"
     postgresql: "docker.io/portworx/postgresql:18.6"
     keycloak: "docker.io/portworx/keycloak:26.8.0_v2"
@@ -27,5 +26,3 @@ modules:
     telemetryRegistrationImage: "docker.io/portworx/ccm-go:1.4.80"
     telemetryDataCollectorImage: "docker.io/portworx/px-backup-telemetry-collector-base:3.3.0-fc1"
     telemetryLogUploadImage: "docker.io/portworx/log-upload:1.1.179"
-  pxLicenseServer:
-    pxEls: "docker.io/portworx/px-els:2.8.0"
