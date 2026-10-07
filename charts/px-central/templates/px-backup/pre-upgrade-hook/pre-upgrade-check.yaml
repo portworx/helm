@@ -260,7 +260,7 @@ spec:
             - name: TARGET_PXBACKUP_VERSION
               value: "{{ .Values.pxbackup.version }}"
             - name: MONGODB_TARGET_VERSION
-              value: {{ .Values.images.mongodbImage.tag }}
+              value: {{ (include "px.imageParts" (dict "key" "mongodbImage" "root" .) | fromJson).tag | quote }}
             - name: MONGODB_SERVICE_NAME
               value: pxc-backup-mongodb-headless
             - name: MONGODB_PORT
