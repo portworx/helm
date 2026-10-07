@@ -418,7 +418,6 @@ Image (`images.<key>`) | Image name | Default tag | Module
 `telemetryMetricsCollectorImage` | `realtime-metrics` | `1.0.38` | `pxBackup`
 `telemetryDataCollectorImage` | `px-backup-telemetry-collector-base` | `3.3.0-fc1` | `pxBackup`
 `telemetryLogUploadImage` | `log-upload` | `px-1.1.155` | `pxBackup`
-`licenseServerImage` | `px-els` | `3.3.0-fc1` | `pxLicenseServer`
 `pxBackupPrometheusImage` | `prometheus` | `v3.13.1` | `pxBackup`
 `pxBackupAlertmanagerImage` | `alertmanager` | `v0.33.0` | `pxBackup`
 `pxBackupPrometheusOperatorImage` | `prometheus-operator` | `v0.92.0` | `pxBackup`
@@ -438,25 +437,6 @@ Parameter | Description | Default
 `service.pxBackupUIServiceType` | service type of PX-Backup UI | `"LoadBalancer"`
 `service.pxBackupUIServiceAnnotations` | annotations for the PX-Backup UI service | `"{}"`
 `service.pxBackupServiceAnnotations` | annotations for the PX-Backup backend service | `"{}"`
-
-### PX-License-Server parameters
-
-The following table lists the configurable parameters of the PX-License-Server chart and their default values.
-
-Parameter | Description | Default
---- | --- | ---
-`pxlicenseserver` | PX license server deployment | ``
-`pxlicenseserver.enabled` | PX-Central cluster enabled license server component | `false`
-`pxlicenseserver.internal` | PX-Central cluster license server | ``
-`pxlicenseserver.internal.enabled` | PX-Central cluster license server enabled | `true`
-`pxlicenseserver.internal.lsTypeUAT` | PX license server deployment type [UAT] | `false`
-`pxlicenseserver.internal.lsTypeAirgapped` | PX license server deployment type [Air-gapped] | `false`
-`pxlicenseserver.external.enabled` | External license server enabled | `false`
-`pxlicenseserver.mainNodeIP` | External license server main node endpoints | ``
-`pxlicenseserver.backupNodeIP` | External license server backup node endpoints | ``
-`pxlicenseserver.adminUserName` | PX license server admin user name | `admin`
-`pxlicenseserver.adminUserPassword` | PX license server admin user password | `Adm1n!Ur`
-`securityContext` | Security context for the pod | `{runAsUser: 1000, fsGroup: 1000, runAsNonRoot: true}`
 
 ## Third-party images
 

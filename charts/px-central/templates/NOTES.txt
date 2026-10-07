@@ -3,8 +3,10 @@ PX-Central is deployed in the namespace: {{ .Release.Namespace }}
 Chart Version: {{ .Chart.Version }}
 {{- $ignoredTags := list }}
 {{- range $key, $img := .Values.images }}
-{{- if and (kindIs "map" $img) (hasKey $img "tag") }}
+{{- if kindIs "map" $img }}
+{{- if hasKey $img "tag" }}
 {{- $ignoredTags = append $ignoredTags $key }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- if $ignoredTags }}

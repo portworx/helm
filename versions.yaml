@@ -28,5 +28,3 @@ modules:
     telemetryMetricsCollectorImage: "docker.io/portworx/realtime-metrics:1.0.38"
     telemetryDataCollectorImage: "docker.io/portworx/px-backup-telemetry-collector-base:3.3.0-fc1"
     telemetryLogUploadImage: "docker.io/portworx/log-upload:px-1.1.155"
-  pxLicenseServer:
-    pxEls: "docker.io/portworx/px-els:2.8.0"
