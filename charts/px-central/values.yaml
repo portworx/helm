@@ -196,6 +196,10 @@ securityContext:
 tolerations: []
 
 images:
+  # Shared registry + repo. To retarget everything (air-gap / mirror) change just these two.
+  # Image names and tags are set in templates/_helpers.tpl (px.imageCatalog). Third-party images are
+  # retagged public upstream images; their origin and license are listed there and in README.md
+  # ("Third-party images"), and must stay documented.
   registry: ""
   repo: ""
   pullSecrets: []
@@ -205,135 +209,88 @@ images:
   pxcentralApiServerImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: pxcentral-onprem-api-base
-    tag: 3.3.0-fc1
-    module: pxCentral
   pxcentralFrontendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: pxcentral-onprem-ui-frontend-private
-    tag: 3.3.0-fc1
-    module: pxCentral
+  pxcentralBackendImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
   pxcentralMiddlewareImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: pxcentral-onprem-ui-lhbackend-private
-    tag: 3.3.0-fc1
-    module: pxCentral
   postInstallSetupImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: pxcentral-onprem-hook-base
-    tag: 3.3.0-fc1
-    module: pxCentral
   keycloakBackendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: postgresql
-    tag: "18.4"
-    module: pxCentral
   keycloakFrontendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: keycloak
-    tag: "26.6.4_v2"
-    module: pxCentral
   keycloakLoginThemeImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: sb-keycloak-login-theme
-    tag: 3.3.0-fc1
-    module: pxCentral
   keycloakInitContainerImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: busybox
-    tag: 1.35.0
-    module: pxCentral
+  mysqlImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
   preSetupHookImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: pxcentral-onprem-hook-base
-    tag: 3.3.0-fc1
-    module: pxCentral
+  mysqlInitImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
 
   ## Images required for enabling px-backup
   pxBackupImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: px-backup-base
-    tag: 3.3.0-fc1
-    module: pxBackup
   mongodbImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: mongodb
-    tag: 8.0.20
-    module: pxBackup
 
   ## Images required for PX-Backup Telemetry
   telemetryEnvoyImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: edge-envoy
-    tag: 2.0.134
-    module: pxBackup
   telemetryRegistrationImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: ccm-go
-    tag: 1.4.61
-    module: pxBackup
   telemetryMetricsCollectorImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: realtime-metrics
-    tag: 1.0.39
-    module: pxBackup
   telemetryDataCollectorImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: px-backup-telemetry-collector-base
-    tag: 3.3.0-fc1
-    module: pxBackup
   telemetryLogUploadImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: log-upload
-    tag: px-1.1.169
-    module: pxBackup
 
-  ## Images required for enabling px-monitor
+  ## Images required for enabling px-license-server
+  licenseServerImage:
+    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    repo: portworx
+
   pxBackupPrometheusImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: prometheus
-    tag: v3.15.0
-    module: pxBackup
   pxBackupAlertmanagerImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: alertmanager
-    tag: v0.34.1
-    module: pxBackup
   pxBackupPrometheusOperatorImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: prometheus-operator
-    tag: v0.94.1
-    module: pxBackup
   pxBackupPrometheusConfigReloaderImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-    imageName: prometheus-config-reloader
-    tag: v0.94.1
-    module: pxBackup
-
   ## Images required for intermediate Mongo upgrades
-  mongodbImageMap:
-    tags:
-      mongodb5: 5.0.24-debian-11-r20
-      mongodb6: 6.0.13-debian-11-r21
-      mongodb7: 7.0.15-debian-12-r2
-      mongodb8: 8.0.20
-    module: pxBackup
+  # Retagged from docker.io/bitnami/mongodb (see README.md "Third-party images").
+  # mongodbImageMap:
+  #   tags:
+  #     mongodb5: 5.0.24-debian-11-r20
+  #     mongodb6: 6.0.13-debian-11-r21
+  #     mongodb7: 7.0.15-debian-12-r2
+  #     mongodb8: 8.0.20
+  #   module: pxBackup

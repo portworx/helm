@@ -227,7 +227,7 @@ spec:
               {{- end }}
       containers:
         - name: pxbackup-pre-install-check
-          image: {{ printf "%s/%s/%s:%s" (default .Values.images.preSetupHookImage.registry .Values.images.registry) (default .Values.images.preSetupHookImage.repo .Values.images.repo) .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          image: {{ include "px.image" (dict "key" "preSetupHookImage" "root" .) }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           securityContext:
             readOnlyRootFilesystem: true
@@ -445,7 +445,7 @@ spec:
               {{- end }}
       containers:
         - name: pxbackup-pre-flight-checker
-          image: {{ printf "%s/%s/%s:%s" (default .Values.images.preSetupHookImage.registry .Values.images.registry) (default .Values.images.preSetupHookImage.repo .Values.images.repo) .Values.images.preSetupHookImage.imageName .Values.images.preSetupHookImage.tag }}
+          image: {{ include "px.image" (dict "key" "preSetupHookImage" "root" .) }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command: [ "/pxcentral-hook/bin/pxcentral-hook" ]
           args: [ "--hook=preflight-check" ]
@@ -460,10 +460,8 @@ spec:
             - name: STORAGE_CLASS
               value: {{ .Values.persistentStorage.storageClassName }}
             - name: IMAGES
-              {{- with .Values.images }}
               value: |
-              {{- toJson . | nindent 16 }}
-              {{- end }}
+                {{- include "px.imagesJson" . | nindent 16 }}
             - name: PX_BACKUP_ENABLED
               value: {{ .Values.pxbackup.enabled | default false | quote }}
             - name: DOCREGISTRY_SECRET_NAME
