@@ -137,7 +137,7 @@ spec:
               {{- end }}
       containers:
         - name: pxcentral-frontend
-          image: {{ printf "%s/%s/%s:%s" (default .Values.images.pxcentralFrontendImage.registry .Values.images.registry) (default .Values.images.pxcentralFrontendImage.repo .Values.images.repo) .Values.images.pxcentralFrontendImage.imageName .Values.images.pxcentralFrontendImage.tag }}
+          image: {{ include "px.image" (dict "key" "pxcentralFrontendImage" "root" .) }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           ports:
             - name : http
