@@ -62,7 +62,12 @@ data:
         proxy_pass http://lhBackend/;
 {{- if .Values.istio.enabled }}
         proxy_set_header Host              "pxcentral-lh-middleware";
+{{- else }}
+        proxy_set_header Host              $host;
 {{- end }}
+        proxy_set_header X-Forwarded-Host  $http_host;
+        proxy_set_header X-Forwarded-Proto $myscheme;
+        proxy_set_header X-Forwarded-Port  $http_port;
       }
       location /auth {
         proxy_pass http://keycloak;
