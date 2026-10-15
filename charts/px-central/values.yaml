@@ -460,5 +460,5 @@ images:
       mongodb5: 5.0.24-debian-11-r20
       mongodb6: 6.0.13-debian-11-r21
       mongodb7: 7.0.15-debian-12-r2
-      mongodb8: 8.0.20
+      mongodb8: 8.3.13
     module: pxBackup
