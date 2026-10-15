@@ -323,7 +323,7 @@ spec:
             - name: POSTGRES_CONTAINER_NAME
               value: pxcentral-keycloak-postgresql
             - name: POSTGRES_TARGET_IMAGE
-              value: {{ printf "%s/%s/%s:%s" (default .Values.images.keycloakBackendImage.registry .Values.images.registry) (default .Values.images.keycloakBackendImage.repo .Values.images.repo) .Values.images.keycloakBackendImage.imageName .Values.images.keycloakBackendImage.tag }}
+              value: {{ include "px.image" (dict "key" "keycloakBackendImage" "root" .) }}
             - name: POSTGRESQL_PORT_NUMBER
               value: "5432"
             - name: POSTGRESQL_VOLUME_DIR
