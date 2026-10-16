@@ -15,7 +15,7 @@ docker.io/portworx/edge-envoy:2.0.134
 docker.io/portworx/ccm-go:1.4.61
 docker.io/portworx/realtime-metrics:1.0.39
 docker.io/portworx/log-upload:px-1.1.169
-docker.io/portworx/mongodb:8.0.20
+docker.io/portworx/mongodb:8.3.13
 docker.io/portworx/mongodb:7.0.15-debian-12-r2
 docker.io/portworx/mongodb:6.0.13-debian-11-r21
 docker.io/portworx/mongodb:5.0.24-debian-11-r20
