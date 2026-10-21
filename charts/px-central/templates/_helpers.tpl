@@ -210,7 +210,7 @@ on their own release cadence; entries without a tag are PX-owned and built at th
     "pxcentralApiServerImage"               (dict "name" "pxcentral-onprem-api-base"             "module" "pxCentral")
     "pxcentralFrontendImage"                (dict "name" "pxcentral-onprem-ui-frontend-private"  "module" "pxCentral")
     "pxcentralMiddlewareImage"              (dict "name" "pxcentral-onprem-ui-lhbackend-private" "module" "pxCentral")
-    "preSetupHookImage"                     (dict "name" "pxcentral-onprem-hook-base"            "module" "pxCentral")
+    "SetupHookImage"                     (dict "name" "pxcentral-onprem-hook-base"            "module" "pxCentral")
     "keycloakLoginThemeImage"               (dict "name" "sb-keycloak-login-theme"               "module" "pxCentral")
     "keycloakBackendImage"                  (dict "name" "postgresql"                 "tag" "18.6"       "module" "pxCentral")
     "keycloakFrontendImage"                 (dict "name" "keycloak"                   "tag" "26.8.0_v2"  "module" "pxCentral")

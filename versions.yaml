@@ -4,7 +4,7 @@ modules:
     pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:3.3.0-fc1"
     pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:3.3.0-fc1"
     pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:3.3.0-fc1"
-    pxcentralOnpremPreSetup: "docker.io/portworx/pxcentral-onprem-hook-base:3.3.0-fc1"
+    pxcentralOnpremSetup: "docker.io/portworx/pxcentral-onprem-hook-base:3.3.0-fc1"
     postgresql: "docker.io/portworx/postgresql:18.6"
     keycloak: "docker.io/portworx/keycloak:26.8.0_v2"
     keycloakLoginTheme: "docker.io/portworx/sb-keycloak-login-theme:3.3.0-fc1"
