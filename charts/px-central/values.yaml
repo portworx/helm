@@ -227,7 +227,7 @@ images:
   keycloakInitContainerImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
-  preSetupHookImage:
+  SetupHookImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
 
