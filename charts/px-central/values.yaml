@@ -335,7 +335,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: ccm-go
-    tag: 1.4.61
+    tag: 1.4.80
     module: pxBackup
   telemetryMetricsCollectorImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
