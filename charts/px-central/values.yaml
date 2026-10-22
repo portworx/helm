@@ -329,7 +329,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: edge-envoy
-    tag: 2.0.134
+    tag: 2.0.150
     module: pxBackup
   telemetryRegistrationImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
