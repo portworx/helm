@@ -11,6 +11,7 @@ on:
     branches-ignore:
       - 'master'
       - 'pre-release-*'
+      - 'patch-*'
     paths:
       - 'charts/**'
 
