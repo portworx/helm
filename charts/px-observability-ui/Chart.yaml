@@ -3,8 +3,8 @@ name: px-observability-ui
 description: >-
   An in-cluster observability, manageability and supportability UI for your Portworx Cluster.
 type: application
-version: 1.0.0-ea
-appVersion: "1.0.0-ea"
+version: 1.1.0-ea-rc1
+appVersion: "1.1.0-ea-rc1"
 home: https://www.everpuredata.com/products/kubernetes-data-management.html
 sources:
   - https://github.com/portworx/helm

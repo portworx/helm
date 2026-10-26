@@ -5,8 +5,8 @@ fullnameOverride: ""
 
 ui:
   image:
-    repository: docker.io/portworx/px-observability-ui
-    tag: "1.0.0-ea"
+    repository: pure-artifactory.dev.purestorage.com:443/px-docker-dev-virtual/portworx-observability-ui
+    tag: "1.1.0-ea-rc1"
     pullPolicy: Always
   replicas: 1
   resources:
