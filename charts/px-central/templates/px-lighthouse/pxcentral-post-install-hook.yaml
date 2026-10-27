@@ -118,7 +118,7 @@ spec:
       {{- end }}
       containers:
       - name: pxcentral-post-setup
-        image: {{ include "px.image" (dict "key" "SetupHookImage" "root" .) }}
+        image: {{ include "px.image" (dict "key" "setupHookImage" "root" .) }}
         imagePullPolicy: {{ .Values.images.pullPolicy }}
         securityContext:
           runAsNonRoot: true

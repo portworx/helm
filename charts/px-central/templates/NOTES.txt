@@ -12,6 +12,11 @@ Chart Version: {{ .Chart.Version }}
 {{- if $ignoredTags }}
 WARNING: images.<key>.tag is ignored for {{ len $ignoredTags }} image(s): {{ sortAlpha $ignoredTags | join ", " }}. The chart sets every image tag (Portworx images use {{ .Chart.AppVersion }}); set images.<key>.tagOverride to pin one.
 {{- end }}
+{{- range $newKey, $oldKey := include "px.legacyImageKeys" . | fromJson }}
+{{- if hasKey $.Values.images $oldKey }}
+WARNING: images.{{ $oldKey }} is deprecated; rename it to images.{{ $newKey }} in your values file. Its registry/repo/tagOverride are still applied for now.
+{{- end }}
+{{- end }}
 
 --------------------------------------------------
 {{- if eq .Release.IsInstall true }}
