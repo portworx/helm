@@ -1,5 +1,5 @@
 docker.io/portworx/pxcentral-onprem-api:3.2.0-staging
-docker.io/portworx/pxcentral-onprem-ui-frontend:3.2.0-staging
+docker.io/portworx/pxcentral-onprem-ui-frontend:PB-19223
 docker.io/portworx/pxcentral-onprem-ui-backend:3.2.0-staging
 docker.io/portworx/pxcentral-onprem-ui-lhbackend:3.2.0-staging
 docker.io/portworx/pxcentral-onprem-post-setup:3.2.0-staging
