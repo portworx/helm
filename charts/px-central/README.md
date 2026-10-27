@@ -409,7 +409,7 @@ Image (`images.<key>`) | Image name | Default tag | Module
 `keycloakFrontendImage` | `keycloak` | `26.6.4_v2` | `pxCentral`
 `keycloakLoginThemeImage` | `sb-keycloak-login-theme` | `3.3.0-fc1` | `pxCentral`
 `keycloakInitContainerImage` | `busybox` | `1.35.0` | `pxCentral`
-`SetupHookImage` | `pxcentral-onprem-hook-base` | `3.3.0-fc1` | `pxCentral`
+`setupHookImage` | `pxcentral-onprem-hook-base` | `3.3.0-fc1` | `pxCentral`
 `pxBackupImage` | `px-backup-base` | `3.3.0-fc1` | `pxBackup`
 `mongodbImage` | `mongodb` | `8.0.20` | `pxBackup`
 `telemetryEnvoyImage` | `edge-envoy` | `2.0.115` | `pxBackup`
