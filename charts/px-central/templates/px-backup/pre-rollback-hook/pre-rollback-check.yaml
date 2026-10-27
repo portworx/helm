@@ -55,7 +55,7 @@ spec:
               {{- end }}
       containers:
         - name: pxbackup-pre-rollback-check
-          image: {{ include "px.image" (dict "key" "SetupHookImage" "root" .) }}
+          image: {{ include "px.image" (dict "key" "setupHookImage" "root" .) }}
           imagePullPolicy: {{ .Values.images.pullPolicy }}
           command:
             - sh

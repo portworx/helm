@@ -210,7 +210,7 @@ on their own release cadence; entries without a tag are PX-owned and built at th
     "pxcentralApiServerImage"               (dict "name" "pxcentral-onprem-api-base"             "module" "pxCentral")
     "pxcentralFrontendImage"                (dict "name" "pxcentral-onprem-ui-frontend-private"  "module" "pxCentral")
     "pxcentralMiddlewareImage"              (dict "name" "pxcentral-onprem-ui-lhbackend-private" "module" "pxCentral")
-    "SetupHookImage"                     (dict "name" "pxcentral-onprem-hook-base"            "module" "pxCentral")
+    "setupHookImage"                        (dict "name" "pxcentral-onprem-hook-base"            "module" "pxCentral")
     "keycloakLoginThemeImage"               (dict "name" "sb-keycloak-login-theme"               "module" "pxCentral")
     "keycloakBackendImage"                  (dict "name" "postgresql"                 "tag" "18.6"       "module" "pxCentral")
     "keycloakFrontendImage"                 (dict "name" "keycloak"                   "tag" "26.8.0_v2"  "module" "pxCentral")
@@ -230,10 +230,20 @@ on their own release cadence; entries without a tag are PX-owned and built at th
 {{- end -}}
 
 {{/*
+px.legacyImageKeys maps a renamed image key to its old name, as JSON, so values files from older
+releases keep their per-image registry/repo/tagOverride. NOTES.txt warns when an old name is set.
+*/}}
+{{- define "px.legacyImageKeys" -}}
+{{- toJson (dict "setupHookImage" "preSetupHookImage") -}}
+{{- end -}}
+
+{{/*
 px.imageParts resolves registry/repo/imageName/tag/module for one image key, as JSON.
 Tag resolution: .Values.images.<key>.tagOverride -> catalog tag (external) -> .Chart.AppVersion (PX-owned).
 .Values.images.<key>.tag is ignored so a values file carried over from an older release cannot pin old images.
 Registry/repo resolution: .Values.images.<registry|repo> (global) -> .Values.images.<key>.<registry|repo> -> docker.io/portworx.
+For a renamed key (px.legacyImageKeys), each field set under the old name wins over the new name: values.yaml
+always fills the new name, so the old name is present only when a user's values file sets it.
 Usage: include "px.imageParts" (dict "key" "<imageKey>" "root" .) | fromJson
 */}}
 {{- define "px.imageParts" -}}
@@ -241,10 +251,13 @@ Usage: include "px.imageParts" (dict "key" "<imageKey>" "root" .) | fromJson
 {{- $root := .root -}}
 {{- $pxVersion := $root.Chart.AppVersion -}}
 {{- $img      := required (printf "px.image: unknown image key %q" $key) (get (include "px.imageCatalog" $root | fromJson) $key) -}}
-{{- $override := dig $key "tagOverride" "" $root.Values.images -}}
+{{- $legacy   := get (include "px.legacyImageKeys" $root | fromJson) $key -}}
+{{- $override := default (dig $key "tagOverride" "" $root.Values.images) (dig $legacy "tagOverride" "" $root.Values.images) -}}
 {{- $tag      := default (default $pxVersion $img.tag) $override -}}
-{{- $registry := default "docker.io"  (default (dig $key "registry" "" $root.Values.images) $root.Values.images.registry) -}}
-{{- $repo     := default "portworx"   (default (dig $key "repo"     "" $root.Values.images) $root.Values.images.repo) -}}
+{{- $keyReg   := default (dig $key "registry" "" $root.Values.images) (dig $legacy "registry" "" $root.Values.images) -}}
+{{- $keyRepo  := default (dig $key "repo"     "" $root.Values.images) (dig $legacy "repo"     "" $root.Values.images) -}}
+{{- $registry := default "docker.io"  (default $keyReg  $root.Values.images.registry) -}}
+{{- $repo     := default "portworx"   (default $keyRepo $root.Values.images.repo) -}}
 {{- toJson (dict "registry" $registry "repo" $repo "imageName" $img.name "tag" $tag "module" $img.module) -}}
 {{- end -}}
 
@@ -262,12 +275,19 @@ px.imagesJson renders the IMAGES payload for the preflight-check hook
 (pxcentral-hook utils.GetImageList): global registry/repo plus one fully-resolved
 {registry, repo, imageName, tag, module} entry per catalog image, so the hook
 validates exactly the refs the workloads use.
+mongodbImageMap (intermediate MongoDB upgrade images) is passed through as {tags, module}; the hook
+builds those refs from the resolved mongodbImage registry/repo/imageName plus each tag.
 */}}
 {{- define "px.imagesJson" -}}
 {{- $root := . -}}
 {{- $out := dict "registry" (default "" .Values.images.registry) "repo" (default "" .Values.images.repo) -}}
 {{- range $key, $img := include "px.imageCatalog" . | fromJson -}}
 {{- $_ := set $out $key (include "px.imageParts" (dict "key" $key "root" $root) | fromJson) -}}
+{{- end -}}
+{{- with .Values.images.mongodbImageMap -}}
+{{- if .tags -}}
+{{- $_ := set $out "mongodbImageMap" (dict "tags" .tags "module" (default "pxBackup" .module)) -}}
+{{- end -}}
 {{- end -}}
 {{- toJson $out -}}
 {{- end -}}
