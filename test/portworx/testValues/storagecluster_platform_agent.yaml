@@ -1,0 +1,6 @@
+platformAgent:
+  enabled: true
+  image: "portworx/platform-agent:1.0.0"
+  ui:
+    enabled: true
+    image: "portworx/observability-ui:1.0.0"

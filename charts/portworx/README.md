@@ -135,7 +135,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `pxfslibsUpdate.onDemandTrigger` | On-demand trigger for pxfslibs update. Set a timestamp in RFC3339 format to trigger the update (e.g., "2026-02-09T12:00:00Z") | "" |
 | `pxfslibsUpdate.autoDelete` | Auto delete the pxfslibs update job after completion | true |
 | `pxfslibsUpdate.schedule` | Schedule the pxfslibs update job in cronjob format (e.g., "0 2 \* \* \*" for daily at 2 AM) | "" |
-| `ocpDynamicPlugin.cacheAgentImage` | Cache agent image for OpenShift dynamic plugin | "" |
+| `ocpDynamicPlugin.cacheAgentImage` | DEPRECATED: use `platformAgent.image`. Legacy image override for the PX Platform Agent; overridden by `platformAgent.image` when both are set | "" |
 | `ocpDynamicPlugin.pluginImage` | Plugin image for OpenShift dynamic plugin | "" |
 | `ocpDynamicPlugin.proxyImage` | Proxy image for OpenShift dynamic plugin | "" |
 | `monitoring.prometheus.enabled` | Enable or disable Prometheus | false |
@@ -175,6 +175,10 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `etcd.key` | Location of certificate key for etcd authentication Should be /path/to/servery.key (Depricated : use `kvdb.authSecretName`) | "none" |
 | `consul.token` | ACL token value used for Consul authentication. (example: 398073a8-5091-4d9c-871a-bbbeb030d1f6) (Depricated : use `kvdb.authSecretName`) (Depricated : use `kvdb.authSecretName`) |  |
 | `volumes` | Specifies volumes for Portworx by defining a name, mount path, mount propagation (None, HostToContainer, Bidirectional), and whether the volume is read-only. For secrets, provide the secret name and map specific keys to paths. Supported volume types include Host, Secret, and ConfigMap | \[\] |
+| `platformAgent.enabled` | Enables or disables the PX Platform Agent. `platformAgent.image` and `platformAgent.ui.*` are applied only when this is set to true. When unset, it is enabled on OpenShift and disabled on other Kubernetes platforms | None |
+| `platformAgent.image` | Overrides the PX Platform Agent image resolved from the release manifest | "" |
+| `platformAgent.ui.enabled` | Enables or disables the PX Observability UI that uses the PX Platform Agent. When unset, the UI is disabled | None |
+| `platformAgent.ui.image` | Overrides the PX Observability UI image resolved from the release manifest | "" |
 | `taintBasedScheduling.enabled` | Enables taint-based scheduling for Portworx. Applies taints on Px nodes, adds tolerations to Portworx components, and enables Stork to add tolerations to application pods using Px backend | None |
 | `tolerations` | Specifies tolerations for scheduling Portworx pods. | \[\] |
 | `nodeAffinity` | Specifies node affinity rules for Portworx pods. | {} |

@@ -265,9 +265,18 @@ autopilot:
   #   params: ""                        # Pass params to provider. Example: url=http://datadog:9090;auth=foobar
 
 ocpDynamicPlugin:
-  cacheAgentImage: ""                   # Cache agent image
+  cacheAgentImage: ""                   # DEPRECATED: Use platformAgent.image instead. Legacy image override for the PX Platform Agent,
+                                        # overridden by platformAgent.image when both are set.
   pluginImage: ""                       # Plugin image
   proxyImage: ""                        # Proxy image
+
+platformAgent:                        # PX Platform Agent, supported on OpenShift and other Kubernetes distributions for eligible PXE clusters.
+  enabled:                            # Set explicitly to true/false. When unset, the operator enables it on OpenShift and leaves it disabled on other Kubernetes platforms.
+                                      # The image and ui settings below are applied only when this is set to true.
+  image: ""                           # Overrides the PX Platform Agent image resolved from the release manifest.
+  ui:                                 # PX Observability UI that uses the PX Platform Agent.
+    enabled:                          # When unset, the UI is disabled.
+    image: ""                         # Overrides the PX Observability UI image resolved from the release manifest.
 
 internalKVDB: true                   # internal KVDB
 kvdbDevice: none                      # specify a separate device to store KVDB data, only used when internalKVDB is set to true
