@@ -8,7 +8,7 @@ docker.io/portworx/postgresql:18.6
 docker.io/portworx/keycloak:26.8.0_v2
 docker.io/portworx/keycloak-login-theme:3.3.0-dev
 docker.io/portworx/busybox:1.38.0
-docker.io/portworx/mysql:8.4.11
+docker.io/portworx/mysql:8.4.13
 docker.io/portworx/px-backup:3.3.0-dev
 docker.io/portworx/px-backup-telemetry-collector:3.3.0-dev
 docker.io/portworx/edge-envoy:2.0.134
