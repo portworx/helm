@@ -326,13 +326,13 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: edge-envoy
-    tag: 2.0.150
+    tag: 2.0.156
     module: pxBackup
   telemetryRegistrationImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: ccm-go
-    tag: 1.4.80
+    tag: 1.4.82
     module: pxBackup
   telemetryDataCollectorImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
@@ -344,7 +344,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: log-upload
-    tag: 1.1.179
+    tag: 1.1.181
     module: pxBackup
 
   ## Images required for enabling px-monitor
