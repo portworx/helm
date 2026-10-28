@@ -22,7 +22,7 @@ docker.io/portworx/mongodb:5.0.24-debian-11-r20
 docker.io/portworx/kopiaexecutor:3.3.0-dev
 docker.io/portworx/nfsexecutor:3.3.0-dev
 docker.io/portworx/filesystemctl:3.3.0-dev
-docker.io/portworx/prometheus:v3.15.0
+docker.io/portworx/prometheus:v3.15.1
 docker.io/portworx/alertmanager:v0.34.1
 docker.io/portworx/prometheus-operator:v0.94.1
 docker.io/portworx/prometheus-config-reloader:v0.94.1
