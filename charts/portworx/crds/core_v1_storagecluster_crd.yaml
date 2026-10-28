@@ -2171,6 +2171,28 @@ spec:
                     description: Image is docker image of the cluster diags container
                     type: string
                 type: object
+              cosi:
+                description: COSI configures Container Object Storage Interface support.
+                properties:
+                  controller:
+                    description: Controller configures the COSI object storage controller
+                      container.
+                    properties:
+                      enabled:
+                        default: true
+                        description: |-
+                          Enabled flag indicates whether the operator installs the COSI object storage
+                          controller and the objectstorage.k8s.io bucket CRDs. Both are cluster singletons,
+                          so set this to `false` when they are already installed on the cluster. Default
+                          value is `true` when COSI is enabled.
+                        type: boolean
+                    type: object
+                  enabled:
+                    description: |-
+                      Enabled flag indicates whether COSI (object storage) support is installed for
+                      the storage cluster. Default value is `false`.
+                    type: boolean
+                type: object
               csi:
                 description: CSI configurations for setting up CSI
                 properties:
@@ -2995,6 +3017,12 @@ spec:
                 description: KubeDatastore contains configuration for Kubernetes datastore
                   features
                 properties:
+                  disableOCPUpgradeBlockOnPoolMigration:
+                    description: |-
+                      DisableOCPUpgradeBlockOnPoolMigration disables holding an external node drain (such as an
+                      OCP upgrade) until dynamic pool migration for that node completes. Defaults to false (the
+                      drain is held). Does not disable pool migration itself.
+                    type: boolean
                   enableDynamicPools:
                     default: false
                     description: |-
@@ -6147,8 +6175,12 @@ spec:
                   dynamic plugin.
                 properties:
                   cacheAgentImage:
-                    description: CacheAgentImage is the desired image for the OCP
-                      dynamic plugin cache-agent.
+                    description: |-
+                      CacheAgentImage is the legacy image override for the PX Platform Agent.
+                      DEPRECATED: Use spec.platformAgent.image instead. The PX Platform Agent is no longer
+                      tied to the OpenShift console plugin and runs on any Kubernetes platform.
+                      This field is still read for upgrade compatibility and is overridden by
+                      spec.platformAgent.image when both are set.
                     type: string
                   pluginImage:
                     description: PluginImage is the desired image for the OCP console
@@ -6403,6 +6435,38 @@ spec:
                           type: string
                       type: object
                     type: array
+                type: object
+              platformAgent:
+                description: |-
+                  PlatformAgent contains configuration for the PX Platform Agent. The agent is
+                  platform-neutral and is supported on both OpenShift and other Kubernetes
+                  distributions for eligible PXE clusters.
+                properties:
+                  enabled:
+                    description: |-
+                      Enabled explicitly enables or disables the PX Platform Agent. When unset, the
+                      operator enables it by default on OpenShift and leaves it disabled on other
+                      Kubernetes platforms.
+                    type: boolean
+                  image:
+                    description: Image overrides the PX Platform Agent image resolved
+                      from the release manifest.
+                    type: string
+                  ui:
+                    description: |-
+                      UI contains configuration for the PX Observability UI that uses the
+                      PX Platform Agent. The UI remains disabled when this block is unset.
+                    properties:
+                      enabled:
+                        description: |-
+                          Enabled explicitly enables or disables the PX Observability UI. When unset,
+                          the UI is disabled.
+                        type: boolean
+                      image:
+                        description: Image overrides the PX Observability UI image
+                          resolved from the release manifest.
+                        type: string
+                    type: object
                 type: object
               portworxApi:
                 description: PortworxAPI is the spec to configure the Portworx API
@@ -8850,6 +8914,11 @@ spec:
                     description: RollingUpdate is spec to control the desired behavior
                       of storage cluster rolling update.
                     properties:
+                      disablePoolRelocate:
+                        description: |-
+                          DisablePoolRelocate disables relocating pools off a node before the operator-driven
+                          rolling upgrade deletes that node's PX pod. Defaults to false (relocate runs).
+                        type: boolean
                       disruption:
                         description: |-
                           The default behavior is non-disruptive upgrades. This setting disables the default
@@ -10876,8 +10945,9 @@ spec:
                     description: Desired image for autopilot.
                     type: string
                   cacheAgent:
-                    description: CacheAgent specifies the image for the dynamic plugin
-                      cache-agent component.
+                    description: |-
+                      CacheAgent specifies the PX Platform Agent image. The field name is retained
+                      for release-manifest compatibility.
                     type: string
                   certManagerAcmeSolver:
                     description: Desired image for cert-manager acmesolver.
@@ -10893,6 +10963,12 @@ spec:
                     type: string
                   clusterDiags:
                     description: Desired image for cluster diags.
+                    type: string
+                  cosiController:
+                    description: Desired image for the COSI object storage controller.
+                    type: string
+                  cosiSidecar:
+                    description: Desired image for the COSI object storage sidecar.
                     type: string
                   csiAttacher:
                     description: Desired image for CSI attacher.

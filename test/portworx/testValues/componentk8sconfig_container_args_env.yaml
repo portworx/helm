@@ -1,0 +1,17 @@
+componentK8sConfig:
+  enabled: true
+  components:
+  - componentNames: ["Autopilot"]
+    workloadConfigs:
+      - workloadNames: ["autopilot"]
+        containerConfigs:
+          - containerNames: ["autopilot"]
+            args: ["log-level=debug", "min_poll_interval=4"]
+            env:
+              - name: EXAMPLE_ENV
+                value: "example"
+              - name: EXAMPLE_SECRET
+                valueFrom:
+                  secretKeyRef:
+                    name: example-secret
+                    key: example-key
