@@ -22,7 +22,7 @@ modules:
     nfsExecutor: "docker.io/portworx/nfsexecutor:3.3.0-dev"
     cbtExecutor: "docker.io/portworx/cbtexecutor:3.3.0-dev"
     filesystemCtl: "docker.io/portworx/filesystemctl:3.3.0-dev"
-    pxBackupPrometheusImage: "docker.io/portworx/prometheus:v3.15.0"
+    pxBackupPrometheusImage: "docker.io/portworx/prometheus:v3.15.1"
     pxBackupAlertmanagerImage: "docker.io/portworx/alertmanager:v0.34.1"
     pxBackupPrometheusOperatorImage: "docker.io/portworx/prometheus-operator:v0.94.1"
     pxBackupPrometheusConfigReloaderImage: "docker.io/portworx/prometheus-config-reloader:v0.94.1"
