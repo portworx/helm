@@ -75,8 +75,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 
 | Parameter | Description | Default |
 | --- | --- | --- |
-| `imageVersion` | Version of the PX image | 3.7.1 |
-| `pxOperatorImageVersion` | Version of the PX operator image | 26.4.0 |
+| `imageVersion` | Version of the PX image | 3.7.1.1 |
+| `pxOperatorImageVersion` | Version of the PX operator image | 26.5.0 |
 | `verboseOperatorLogs` | Enable verbose logging for the Portworx operator | true |
 | `openshiftInstall` | Installing on Openshift? | false |
 | `nonDisruptivek8sUpgrade` | Used to disable or enable smart and parallel kubetnetes node upgrades. By default, S&P upgrades are disabled. To enable them, set this to true | false |
@@ -192,7 +192,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `componentK8sConfig.enabled` | Enables or disables creation of ComponentK8sConfig CR for component-level Kubernetes configuration | false |
 | `componentK8sConfig.name` | Name of the ComponentK8sConfig resource | "portworx-k8s-config" |
 | `componentK8sConfig.globalConfig` | Global configuration that applies to all Portworx components unless overridden by component-specific configuration. Supports annotations, labels, placement (nodeAffinity, tolerations), and priorityClass. Note: Global configuration cannot set container resource requests and limits. | {} |
-| `componentK8sConfig.components` | List of component-specific configurations. Each component can specify componentNames (e.g., "Autopilot", "CSI", "Portworx API") and workloadConfigs with workloadNames, annotations, labels, containerConfigs (resources), priorityClass, and placement settings. | \[\] |
+| `componentK8sConfig.components` | List of component-specific configurations. Each component can specify componentNames (e.g., "Autopilot", "CSI", "Portworx API") and workloadConfigs with workloadNames, annotations, labels, containerConfigs (resources, args, env), priorityClass, and placement settings. | \[\] |
 | `workloadIdentity.credentials` | List of cloud workload identity credentials used to annotate the Portworx ServiceAccount for cloud provider authentication. Each entry specifies `cloudProvider` (valid values: aws, azure), `key` (annotation key, e.g. `eks.amazonaws.com/role-arn` for AWS), and `value` (annotation value, e.g. the IAM role ARN to be assumed by the ServiceAccount). | \[\] |
 | `workloadIdentity.gcp.credentialsConfigMap` | Name of the ConfigMap containing GCP workload identity credentials. Supported only for GCP Gardener clusters. | "" |
 
