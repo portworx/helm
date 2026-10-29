@@ -321,7 +321,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: mongodb
-    tag: 8.0.34
+    tag: 8.3.13
     module: pxBackup
 
   ## Images required for PX-Backup Telemetry
