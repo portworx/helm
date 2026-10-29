@@ -1,12 +1,12 @@
 # Default values for px-observability-ui.
 
 nameOverride: ""
-fullnameOverride: ""
+fullnameOverride: "pxo-observability-ui"
 
 ui:
   image:
     repository: pure-artifactory.dev.purestorage.com:443/px-docker-dev-virtual/portworx-observability-ui
-    tag: "1.1.0-ea-rc1"
+    tag: "1.1.0-ea-rc2"
     pullPolicy: Always
   replicas: 1
   resources:
@@ -39,9 +39,9 @@ cacheAgent:
     tag: "1.1.0-pxo-ui"
     pullPolicy: Always
   serviceAccount:
-    name: px-cache-agent
+    name: pxo-cache-agent
   service:
-    name: px-cache-agent-service
+    name: pxo-cache-agent-service
   # Passed as px-cache-agent's --prometheus-endpoint arg.
   prometheusEndpoint: http://px-prometheus.portworx.svc.cluster.local:9090
   resources:

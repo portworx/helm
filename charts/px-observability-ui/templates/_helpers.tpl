@@ -52,7 +52,7 @@ PX Cache Agent's own resource name (kept distinct from the UI's fullname since i
 separate component copied from its own repo — see docs/helm-chart.md).
 */}}
 {{- define "px-observability-ui.cacheAgent.fullname" -}}
-{{- printf "px-cache-agent" }}
+{{- printf "pxo-cache-agent" }}
 {{- end }}
 
 {{- define "px-observability-ui.cacheAgent.labels" -}}
