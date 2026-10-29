@@ -38,3 +38,5 @@ spec:
     enabled: true
   clusterDiags:
     enabled: true
+  platformAgent:
+    image: portworx/platform-agent:1.0.0

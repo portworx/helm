@@ -794,14 +794,17 @@ spec:
   {{- end }}
 
   {{- $pa := .Values.platformAgent }}
-  {{- if or (eq $pa.enabled true) (eq $pa.enabled false) }}
+  {{- $paEnabled := or (eq $pa.enabled true) (eq $pa.enabled false) }}
+  {{- if or $paEnabled $pa.image }}
   platformAgent:
+    {{- if $paEnabled }}
     enabled: {{ $pa.enabled }}
-    {{- /* image and ui settings are only honored by the operator when the platform agent is enabled */}}
-    {{- if eq $pa.enabled true }}
+    {{- end }}
     {{- if $pa.image }}
     image: {{ $pa.image }}
     {{- end }}
+    {{- /* ui settings are only honored by the operator when the platform agent is enabled */}}
+    {{- if eq $pa.enabled true }}
     {{- $uiEnabled := or (eq $pa.ui.enabled true) (eq $pa.ui.enabled false) }}
     {{- if or $uiEnabled $pa.ui.image }}
     ui:
