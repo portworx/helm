@@ -341,7 +341,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: realtime-metrics
-    tag: 1.0.39
+    tag: 1.0.41
     module: pxBackup
   telemetryDataCollectorImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
