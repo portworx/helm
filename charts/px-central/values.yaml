@@ -295,7 +295,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: mysql
-    tag: "8.4.11"
+    tag: "8.4.13"
     module: pxCentral
   preSetupHookImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
