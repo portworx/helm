@@ -698,7 +698,7 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 			},
 		},
 		{
-			name:           "TestPlatformAgentEnabledUnsetIgnoresImageAndUI",
+			name:           "TestPlatformAgentImageWithoutEnabled",
 			resultFileName: "storagecluster_platform_agent_unset_enabled.yaml",
 			helmOption: &helm.Options{
 				ValuesFiles: []string{"./testValues/storagecluster_platform_agent_unset_enabled.yaml"},

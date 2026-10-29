@@ -40,3 +40,4 @@ spec:
     enabled: true
   platformAgent:
     enabled: false
+    image: portworx/platform-agent:1.0.0
