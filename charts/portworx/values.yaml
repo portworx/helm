@@ -4,8 +4,8 @@ deployOperator: true                    # Deploy the Portworx operator
 deployCluster: true                     # Deploy the Portworx cluster
 verboseOperatorLogs: false              # Enable verbose logging for the Portworx operator.
 
-imageVersion: 3.7.1                    # Version of the PX Image.
-pxOperatorImageVersion: 26.4.0         # Version of the PX operator image.
+imageVersion: 3.7.1.1                   # Version of the PX Image.
+pxOperatorImageVersion: 26.5.0          # Version of the PX operator image.
 
 openshiftInstall: false                 # Defaults to false for installing Portworx on Openshift .
 isTargetOSCoreOS: false                 # Is your target OS CoreOS? Defaults to false.
@@ -265,9 +265,18 @@ autopilot:
   #   params: ""                        # Pass params to provider. Example: url=http://datadog:9090;auth=foobar
 
 ocpDynamicPlugin:
-  cacheAgentImage: ""                   # Cache agent image
+  cacheAgentImage: ""                   # DEPRECATED: Use platformAgent.image instead. Legacy image override for the PX Platform Agent,
+                                        # overridden by platformAgent.image when both are set.
   pluginImage: ""                       # Plugin image
   proxyImage: ""                        # Proxy image
+
+platformAgent:                        # PX Platform Agent, supported on OpenShift and other Kubernetes distributions for eligible PXE clusters.
+  enabled:                            # Set explicitly to true/false. When unset, the operator enables it on OpenShift and leaves it disabled on other Kubernetes platforms.
+                                      # The image and ui settings below are applied only when this is set to true.
+  image: ""                           # Overrides the PX Platform Agent image resolved from the release manifest.
+  ui:                                 # PX Observability UI that uses the PX Platform Agent.
+    enabled:                          # When unset, the UI is disabled.
+    image: ""                         # Overrides the PX Observability UI image resolved from the release manifest.
 
 internalKVDB: true                   # internal KVDB
 kvdbDevice: none                      # specify a separate device to store KVDB data, only used when internalKVDB is set to true
@@ -417,6 +426,11 @@ componentK8sConfig:
   #         example-label: "value"
   #       containerConfigs:                                          # Configuration applied at container level
   #         - containerNames: ["autopilot"]                          # List of container names inside the workload
+  #           args: ["log-level=debug"]                              # Args merged into existing container args keyed by the text before the first "=";
+  #                                                                  # a matching key is replaced in place, otherwise appended. Unsupported keys are rejected.
+  #           env:                                                   # Env vars merged by name (replace in place or append). Unsupported names are rejected.
+  #             - name: EXAMPLE_ENV
+  #               value: "example"
   #           resources:                                             # Resource requirements for the containers
   #             requests:
   #               cpu: "100m"

@@ -793,4 +793,29 @@ spec:
     {{- end }}
   {{- end }}
 
+  {{- $pa := .Values.platformAgent }}
+  {{- $paEnabled := or (eq $pa.enabled true) (eq $pa.enabled false) }}
+  {{- if or $paEnabled $pa.image }}
+  platformAgent:
+    {{- if $paEnabled }}
+    enabled: {{ $pa.enabled }}
+    {{- end }}
+    {{- if $pa.image }}
+    image: {{ $pa.image }}
+    {{- end }}
+    {{- /* ui settings are only honored by the operator when the platform agent is enabled */}}
+    {{- if eq $pa.enabled true }}
+    {{- $uiEnabled := or (eq $pa.ui.enabled true) (eq $pa.ui.enabled false) }}
+    {{- if or $uiEnabled $pa.ui.image }}
+    ui:
+      {{- if $uiEnabled }}
+      enabled: {{ $pa.ui.enabled }}
+      {{- end }}
+      {{- if $pa.ui.image }}
+      image: {{ $pa.ui.image }}
+      {{- end }}
+    {{- end }}
+    {{- end }}
+  {{- end }}
+
 {{- end }}

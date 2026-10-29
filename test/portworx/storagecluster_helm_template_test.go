@@ -683,6 +683,27 @@ func TestStorageClusterHelmTemplate(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:           "TestPlatformAgent",
+			resultFileName: "storagecluster_platform_agent.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_platform_agent.yaml"},
+			},
+		},
+		{
+			name:           "TestPlatformAgentDisabled",
+			resultFileName: "storagecluster_platform_agent_disabled.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_platform_agent_disabled.yaml"},
+			},
+		},
+		{
+			name:           "TestPlatformAgentImageWithoutEnabled",
+			resultFileName: "storagecluster_platform_agent_unset_enabled.yaml",
+			helmOption: &helm.Options{
+				ValuesFiles: []string{"./testValues/storagecluster_platform_agent_unset_enabled.yaml"},
+			},
+		},
 	}
 
 	for _, testCase := range testCases {

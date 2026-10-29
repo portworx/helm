@@ -1,0 +1,4 @@
+platformAgent:
+  image: "portworx/platform-agent:1.0.0"
+  ui:
+    enabled: true

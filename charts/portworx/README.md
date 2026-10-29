@@ -75,8 +75,8 @@ The following tables lists the configurable parameters of the Portworx chart and
 
 | Parameter | Description | Default |
 | --- | --- | --- |
-| `imageVersion` | Version of the PX image | 3.7.1 |
-| `pxOperatorImageVersion` | Version of the PX operator image | 26.4.0 |
+| `imageVersion` | Version of the PX image | 3.7.1.1 |
+| `pxOperatorImageVersion` | Version of the PX operator image | 26.5.0 |
 | `verboseOperatorLogs` | Enable verbose logging for the Portworx operator | true |
 | `openshiftInstall` | Installing on Openshift? | false |
 | `nonDisruptivek8sUpgrade` | Used to disable or enable smart and parallel kubetnetes node upgrades. By default, S&P upgrades are disabled. To enable them, set this to true | false |
@@ -135,7 +135,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `pxfslibsUpdate.onDemandTrigger` | On-demand trigger for pxfslibs update. Set a timestamp in RFC3339 format to trigger the update (e.g., "2026-02-09T12:00:00Z") | "" |
 | `pxfslibsUpdate.autoDelete` | Auto delete the pxfslibs update job after completion | true |
 | `pxfslibsUpdate.schedule` | Schedule the pxfslibs update job in cronjob format (e.g., "0 2 \* \* \*" for daily at 2 AM) | "" |
-| `ocpDynamicPlugin.cacheAgentImage` | Cache agent image for OpenShift dynamic plugin | "" |
+| `ocpDynamicPlugin.cacheAgentImage` | DEPRECATED: use `platformAgent.image`. Legacy image override for the PX Platform Agent; overridden by `platformAgent.image` when both are set | "" |
 | `ocpDynamicPlugin.pluginImage` | Plugin image for OpenShift dynamic plugin | "" |
 | `ocpDynamicPlugin.proxyImage` | Proxy image for OpenShift dynamic plugin | "" |
 | `monitoring.prometheus.enabled` | Enable or disable Prometheus | false |
@@ -175,6 +175,10 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `etcd.key` | Location of certificate key for etcd authentication Should be /path/to/servery.key (Depricated : use `kvdb.authSecretName`) | "none" |
 | `consul.token` | ACL token value used for Consul authentication. (example: 398073a8-5091-4d9c-871a-bbbeb030d1f6) (Depricated : use `kvdb.authSecretName`) (Depricated : use `kvdb.authSecretName`) |  |
 | `volumes` | Specifies volumes for Portworx by defining a name, mount path, mount propagation (None, HostToContainer, Bidirectional), and whether the volume is read-only. For secrets, provide the secret name and map specific keys to paths. Supported volume types include Host, Secret, and ConfigMap | \[\] |
+| `platformAgent.enabled` | Enables or disables the PX Platform Agent. `platformAgent.image` and `platformAgent.ui.*` are applied only when this is set to true. When unset, it is enabled on OpenShift and disabled on other Kubernetes platforms | None |
+| `platformAgent.image` | Overrides the PX Platform Agent image resolved from the release manifest | "" |
+| `platformAgent.ui.enabled` | Enables or disables the PX Observability UI that uses the PX Platform Agent. When unset, the UI is disabled | None |
+| `platformAgent.ui.image` | Overrides the PX Observability UI image resolved from the release manifest | "" |
 | `taintBasedScheduling.enabled` | Enables taint-based scheduling for Portworx. Applies taints on Px nodes, adds tolerations to Portworx components, and enables Stork to add tolerations to application pods using Px backend | None |
 | `tolerations` | Specifies tolerations for scheduling Portworx pods. | \[\] |
 | `nodeAffinity` | Specifies node affinity rules for Portworx pods. | {} |
@@ -192,7 +196,7 @@ The following tables lists the configurable parameters of the Portworx chart and
 | `componentK8sConfig.enabled` | Enables or disables creation of ComponentK8sConfig CR for component-level Kubernetes configuration | false |
 | `componentK8sConfig.name` | Name of the ComponentK8sConfig resource | "portworx-k8s-config" |
 | `componentK8sConfig.globalConfig` | Global configuration that applies to all Portworx components unless overridden by component-specific configuration. Supports annotations, labels, placement (nodeAffinity, tolerations), and priorityClass. Note: Global configuration cannot set container resource requests and limits. | {} |
-| `componentK8sConfig.components` | List of component-specific configurations. Each component can specify componentNames (e.g., "Autopilot", "CSI", "Portworx API") and workloadConfigs with workloadNames, annotations, labels, containerConfigs (resources), priorityClass, and placement settings. | \[\] |
+| `componentK8sConfig.components` | List of component-specific configurations. Each component can specify componentNames (e.g., "Autopilot", "CSI", "Portworx API") and workloadConfigs with workloadNames, annotations, labels, containerConfigs (resources, args, env), priorityClass, and placement settings. | \[\] |
 | `workloadIdentity.credentials` | List of cloud workload identity credentials used to annotate the Portworx ServiceAccount for cloud provider authentication. Each entry specifies `cloudProvider` (valid values: aws, azure), `key` (annotation key, e.g. `eks.amazonaws.com/role-arn` for AWS), and `value` (annotation value, e.g. the IAM role ARN to be assumed by the ServiceAccount). | \[\] |
 | `workloadIdentity.gcp.credentialsConfigMap` | Name of the ConfigMap containing GCP workload identity credentials. Supported only for GCP Gardener clusters. | "" |
 
