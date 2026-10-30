@@ -11,10 +11,10 @@ docker.io/portworx/busybox:1.38.0
 docker.io/portworx/mysql:8.4.13
 docker.io/portworx/px-backup:3.3.0-dev
 docker.io/portworx/px-backup-telemetry-collector:3.3.0-dev
-docker.io/portworx/edge-envoy:2.0.134
-docker.io/portworx/ccm-go:1.4.61
+docker.io/portworx/edge-envoy:2.0.156
+docker.io/portworx/ccm-go:1.4.82
 docker.io/portworx/realtime-metrics:1.0.41
-docker.io/portworx/log-upload:px-1.1.169
+docker.io/portworx/log-upload:1.1.181
 docker.io/portworx/mongodb:8.3.13
 docker.io/portworx/mongodb:7.0.15-debian-12-r2
 docker.io/portworx/mongodb:6.0.13-debian-11-r21
@@ -23,7 +23,7 @@ docker.io/portworx/kopiaexecutor:3.3.0-dev
 docker.io/portworx/nfsexecutor:3.3.0-dev
 docker.io/portworx/filesystemctl:3.3.0-dev
 docker.io/portworx/prometheus:v3.15.1
-docker.io/portworx/alertmanager:v0.34.1
+docker.io/portworx/alertmanager:v0.34.2
 docker.io/portworx/prometheus-operator:v0.94.2
 docker.io/portworx/prometheus-config-reloader:v0.94.1
 docker.io/portworx/cortex:v1.13.1
