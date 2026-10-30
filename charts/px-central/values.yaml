@@ -400,7 +400,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
     imageName: alertmanager
-    tag: v0.34.1
+    tag: v0.34.2
     module: pxBackup
   pxBackupPrometheusOperatorImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
