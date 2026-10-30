@@ -353,7 +353,7 @@ images:
     registry: pure-artifactory.dev.purestorage.com/px-docker-prod-virtual
     repo: portworx
     imageName: log-upload
-    tag: px-1.1.169
+    tag: 1.1.181
     module: pxBackup
 
   ## Images required for enabling px-monitor
