@@ -1,0 +1,32 @@
+{{/*-
+Target PostgreSQL blueprint for the pre-upgrade migration hook (PB-15738).
+
+Rendered from the SAME named helper as the canonical StatefulSet so the hook
+never reconstructs immutable fields from the old live object. The hook
+checksums this document and verifies it at every destructive boundary.
+Contains no secret material.
+-*/}}
+{{- $centralOIDC := .Values.oidc.centralOIDC.enabled | default false -}}
+{{- if and (eq $centralOIDC true) (or .Release.IsUpgrade .Values.isUpgrade) -}}
+{{- $sts := include "px-central.keycloakPostgresStatefulSet" . | fromYaml -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pxcentral-postgres-upgrade-blueprint
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app.kubernetes.io/component: postgres-migration
+{{- include "px-central.labels" . | nindent 4 }}
+data:
+  blueprint.yaml: |
+    targetMajor: {{ include "px-central.keycloakPostgresMajor" . }}
+    targetImage: "{{ include "px.image" (dict "key" "keycloakBackendImage" "root" .) }}"
+    claimTemplateName: "{{ include "px-central.keycloakPostgresClaimName" . }}"
+    workVolumeSizeLimit: "{{ (default dict .Values.pgUpgrade).workVolumeSizeLimit | default "40Gi" }}"
+    statefulSet:
+{{ $sts | toPrettyJson | indent 6 }}
+{{- end -}}

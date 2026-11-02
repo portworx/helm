@@ -120,7 +120,10 @@ rules:
     verbs: ["get", "create", "delete", "update", "list"]
   - apiGroups: [""]
     resources: ["pods"]
-    verbs: ["get", "list", "delete"]
+    verbs: ["get", "list", "delete", "create"]
+  - apiGroups: ["apps"]
+    resources: ["statefulsets/scale"]
+    verbs: ["get", "update"]
   - apiGroups: [""]
     resources: ["pods/log"]
     verbs: ["get", "list"]
@@ -147,7 +150,7 @@ rules:
     verbs: ["create", "update", "get", "patch", "list", "delete"]
   - apiGroups: [""]
     resources: ["pods/exec"]
-    verbs: ["create"]
+    verbs: ["create", "get"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -214,6 +217,9 @@ metadata:
     meta.helm.sh/release-name: {{ .Release.Name }}
     meta.helm.sh/release-namespace: {{ .Release.Namespace }}
 spec:
+  # activeDeadlineSeconds covers the migration work budget (9000s), the
+  # rollback reserve (1800s) and the workPod reserve (design Section 14).
+  activeDeadlineSeconds: {{ (default dict .Values.pgUpgrade).activeDeadlineSeconds | default 10800 }}
   template:  
     {{- if and (eq $azureProxyEnabled true) (not (has "pre-upgrade-check" .Values.proxy.excludeAzureProxyList)) }}
     metadata:
@@ -341,7 +347,13 @@ spec:
             - name: POSTGRES_DB
               value: "keycloak"
             - name: POSTGRES_PVC_NAME
-              value: pxcentral-keycloak-data-postgres18
+              value: {{ include "px-central.keycloakPostgresClaimName" . }}
+            - name: POSTGRES_BLUEPRINT_CM_NAME
+              value: pxcentral-postgres-upgrade-blueprint
+            - name: PX_PG_TIMEOUT_WORK_TOTAL_SECONDS
+              value: {{ (default dict .Values.pgUpgrade).workTimeoutSeconds | default 9000 | quote }}
+            - name: PX_PG_TIMEOUT_ROLLBACK_SECONDS
+              value: {{ (default dict .Values.pgUpgrade).rollbackTimeoutSeconds | default 1200 | quote }}
             - name: JOB_TIMEOUT_SECONDS
               value: "600"
             - name: PX_BACKUP_ENABLED

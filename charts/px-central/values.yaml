@@ -95,6 +95,17 @@ isUpgrade: false
 isOpenshift: false
 isArgoCD: false
 
+# PG major-version migration engine (PB-15738).
+pgUpgrade:
+  # emptyDir limit for the migration work volume in the temporary target pod
+  # (mirrored into ephemeral-storage request/limit for that pod).
+  workVolumeSizeLimit: "40Gi"
+  # Total forward-work budget; the job's activeDeadlineSeconds additionally
+  # reserves the rollback budget below plus pod startup headroom.
+  workTimeoutSeconds: 9000
+  rollbackTimeoutSeconds: 1200
+  activeDeadlineSeconds: 10800
+
 pxbackup:
   enabled: false
   orgName: default
