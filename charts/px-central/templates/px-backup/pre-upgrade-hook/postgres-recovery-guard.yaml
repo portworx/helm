@@ -1,0 +1,97 @@
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
+{{- if or .Release.IsUpgrade .Values.isUpgrade }}
+# Run before the dump PVC hook (weight 5, or 6 under Argo CD). An unfinished
+# migration must stop Helm before its default before-hook-creation policy
+# deletes the PVC holding the only copy of the recovery dump.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: pxcentral-postgres-recovery-guard
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-4"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: pxcentral-postgres-recovery-guard
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-3"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+rules:
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["pxcentral-postgres-recovery"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: pxcentral-postgres-recovery-guard
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-2"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+subjects:
+  - kind: ServiceAccount
+    name: pxcentral-postgres-recovery-guard
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: pxcentral-postgres-recovery-guard
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pxcentral-postgres-recovery-guard
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    spec:
+      serviceAccountName: pxcentral-postgres-recovery-guard
+      {{- if not $isOpenshiftCluster }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+                  - key: {{ .Values.nodeAffinityLabel }}
+                    operator: Exists
+              {{- else }}
+                  - key: pxbackup/enabled
+                    operator: NotIn
+                    values:
+                      - "false"
+              {{- end }}
+      containers:
+        - name: guard
+          image: {{ include "px.image" (dict "key" "setupHookImage" "root" .) }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          command: ["/pxcentral-hook/bin/pxcentral-hook"]
+          args: ["--hook=postgres-recovery-guard"]
+          env:
+            - name: NAMESPACE
+              value: {{ .Release.Namespace | quote }}
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      restartPolicy: Never
+  backoffLimit: 0
+{{- end }}
