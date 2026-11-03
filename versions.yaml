@@ -1,16 +1,16 @@
 pxCentralVersion: 3.3.0
 modules:
   pxCentral:
-    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:3.3.0-dev"
-    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:3.3.0-dev"
-    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:3.3.0-dev"
-    pxcentralOnpremSetup: "docker.io/portworx/pxcentral-onprem-hook-base:3.3.0-dev"
+    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api:3.3.0-dev"
+    pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend:3.3.0-dev"
+    pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend:3.3.0-dev"
+    pxcentralOnpremSetup: "docker.io/portworx/pxcentral-onprem-hook:3.3.0-dev"
     postgresql: "docker.io/portworx/postgresql:18.6"
     keycloak: "docker.io/portworx/keycloak:26.8.0_v2"
-    keycloakLoginTheme: "docker.io/portworx/sb-keycloak-login-theme:3.3.0-dev"
+    keycloakLoginTheme: "docker.io/portworx/keycloak-login-theme:3.3.0-dev"
     busybox: "docker.io/portworx/busybox:1.38.0"
   pxBackup:
-    pxBackup: "docker.io/portworx/px-backup-base:3.3.0-dev"
+    pxBackup: "docker.io/portworx/px-backup:3.3.0-dev"
     mongodb: "docker.io/portworx/mongodb:8.0.34"
     mongodb7: "docker.io/portworx/mongodb:7.0.15-debian-12-r2"
     mongodb6: "docker.io/portworx/mongodb:6.0.13-debian-11-r21"
@@ -24,5 +24,5 @@ modules:
     pxBackupPrometheusConfigReloaderImage: "docker.io/portworx/prometheus-config-reloader:v0.94.2"
     telemetryEnvoyImage: "docker.io/portworx/edge-envoy:2.0.150"
     telemetryRegistrationImage: "docker.io/portworx/ccm-go:1.4.80"
-    telemetryDataCollectorImage: "docker.io/portworx/px-backup-telemetry-collector-base:3.3.0-dev"
+    telemetryDataCollectorImage: "docker.io/portworx/px-backup-telemetry-collector:3.3.0-dev"
     telemetryLogUploadImage: "docker.io/portworx/log-upload:1.1.179"

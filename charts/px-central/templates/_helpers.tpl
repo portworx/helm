@@ -207,16 +207,16 @@ on their own release cadence; entries without a tag are PX-owned and built at th
 */}}
 {{- define "px.imageCatalog" -}}
 {{- $images := dict
-    "pxcentralApiServerImage"               (dict "name" "pxcentral-onprem-api-base"             "module" "pxCentral")
-    "pxcentralFrontendImage"                (dict "name" "pxcentral-onprem-ui-frontend-private"  "module" "pxCentral")
-    "pxcentralMiddlewareImage"              (dict "name" "pxcentral-onprem-ui-lhbackend-private" "module" "pxCentral")
-    "setupHookImage"                        (dict "name" "pxcentral-onprem-hook-base"            "module" "pxCentral")
-    "keycloakLoginThemeImage"               (dict "name" "sb-keycloak-login-theme"               "module" "pxCentral")
+    "pxcentralApiServerImage"               (dict "name" "pxcentral-onprem-api"          "module" "pxCentral")
+    "pxcentralFrontendImage"                (dict "name" "pxcentral-onprem-ui-frontend"  "module" "pxCentral")
+    "pxcentralMiddlewareImage"              (dict "name" "pxcentral-onprem-ui-lhbackend" "module" "pxCentral")
+    "setupHookImage"                        (dict "name" "pxcentral-onprem-hook"         "module" "pxCentral")
+    "keycloakLoginThemeImage"               (dict "name" "keycloak-login-theme"          "module" "pxCentral")
     "keycloakBackendImage"                  (dict "name" "postgresql"                 "tag" "18.6"       "module" "pxCentral")
     "keycloakFrontendImage"                 (dict "name" "keycloak"                   "tag" "26.8.0_v2"  "module" "pxCentral")
     "keycloakInitContainerImage"            (dict "name" "busybox"                    "tag" "1.38.0"     "module" "pxCentral")
-    "pxBackupImage"                         (dict "name" "px-backup-base"                        "module" "pxBackup")
-    "telemetryDataCollectorImage"           (dict "name" "px-backup-telemetry-collector-base"    "module" "pxBackup")
+    "pxBackupImage"                         (dict "name" "px-backup"                     "module" "pxBackup")
+    "telemetryDataCollectorImage"           (dict "name" "px-backup-telemetry-collector" "module" "pxBackup")
     "mongodbImage"                          (dict "name" "mongodb"                    "tag" "8.0.34"     "module" "pxBackup")
     "pxBackupPrometheusImage"               (dict "name" "prometheus"                 "tag" "v3.15.1"    "module" "pxBackup")
     "pxBackupAlertmanagerImage"             (dict "name" "alertmanager"               "tag" "v0.34.1"    "module" "pxBackup")

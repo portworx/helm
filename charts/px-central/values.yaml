@@ -204,63 +204,63 @@ images:
   insecureRegistry: false
 
   pxcentralApiServerImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
   pxcentralFrontendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
   pxcentralMiddlewareImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
   keycloakBackendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
   keycloakFrontendImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
   keycloakLoginThemeImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
   keycloakInitContainerImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
   setupHookImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
 
   ## Images required for enabling px-backup
   pxBackupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
   mongodbImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
 
   ## Images required for PX-Backup Telemetry
   telemetryEnvoyImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
   telemetryRegistrationImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
   telemetryDataCollectorImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
   telemetryLogUploadImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
 
   pxBackupPrometheusImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
   pxBackupAlertmanagerImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
   pxBackupPrometheusOperatorImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
   pxBackupPrometheusConfigReloaderImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
+    registry: docker.io
     repo: portworx
   
   ## Images required for intermediate Mongo upgrades
