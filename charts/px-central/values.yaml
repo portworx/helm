@@ -309,7 +309,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: mysql
-    tag: "8.4.10"
+    tag: "8.4.13"
     module: pxCentral
   preSetupHookImage:
     registry: docker.io
