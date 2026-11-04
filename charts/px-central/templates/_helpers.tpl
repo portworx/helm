@@ -294,7 +294,7 @@ builds those refs from the resolved mongodbImage registry/repo/imageName plus ea
 
 {{/*
 px.requireVersionMatch fails an install or upgrade whose pxbackup.version differs from the chart version, so the deployed version stays traceable from the values.
-Pre-release suffixes are ignored: pxbackup.version 3.3.0 matches chart 3.3.0 even when the images are 3.3.0-fc1.
+Pre-release suffixes are ignored: pxbackup.version 3.3.0 matches chart 3.3.0 even when the images are 3.3.0-staging.
 */}}
 {{- define "px.requireVersionMatch" -}}
 {{- $requested := toString .Values.pxbackup.version -}}
