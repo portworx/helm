@@ -382,7 +382,7 @@ set `images.registry` / `images.repo`. When those are empty, each image uses its
 `images.<key>.registry` / `images.<key>.repo`, and falls back to `docker.io/portworx`.
 
 Image names and default tags are fixed in the chart (`templates/_helpers.tpl`, `px.imageCatalog`),
-not in `values.yaml`. Portworx-built images use the release version (`3.3.0-fc1`); third-party images
+not in `values.yaml`. Portworx-built images use the release version (`3.3.0-staging`); third-party images
 keep their upstream tag (see [Third-party images](#third-party-images)). Set `images.<key>.tag` only
 to override one image's tag.
 
@@ -402,20 +402,20 @@ Images (`images.<key>`), with the name and default tag set by the chart:
 
 Image (`images.<key>`) | Image name | Default tag | Module
 --- | --- | --- | ---
-`pxcentralApiServerImage` | `pxcentral-onprem-api-base` | `3.3.0-fc1` | `pxCentral`
-`pxcentralFrontendImage` | `pxcentral-onprem-ui-frontend-private` | `3.3.0-fc1` | `pxCentral`
-`pxcentralMiddlewareImage` | `pxcentral-onprem-ui-lhbackend-private` | `3.3.0-fc1` | `pxCentral`
+`pxcentralApiServerImage` | `pxcentral-onprem-api-base` | `3.3.0-staging` | `pxCentral`
+`pxcentralFrontendImage` | `pxcentral-onprem-ui-frontend-private` | `3.3.0-staging` | `pxCentral`
+`pxcentralMiddlewareImage` | `pxcentral-onprem-ui-lhbackend-private` | `3.3.0-staging` | `pxCentral`
 `keycloakBackendImage` | `postgresql` | `18.4` | `pxCentral`
 `keycloakFrontendImage` | `keycloak` | `26.6.4_v2` | `pxCentral`
-`keycloakLoginThemeImage` | `sb-keycloak-login-theme` | `3.3.0-fc1` | `pxCentral`
+`keycloakLoginThemeImage` | `sb-keycloak-login-theme` | `3.3.0-staging` | `pxCentral`
 `keycloakInitContainerImage` | `busybox` | `1.35.0` | `pxCentral`
-`setupHookImage` | `pxcentral-onprem-hook-base` | `3.3.0-fc1` | `pxCentral`
-`pxBackupImage` | `px-backup-base` | `3.3.0-fc1` | `pxBackup`
+`setupHookImage` | `pxcentral-onprem-hook-base` | `3.3.0-staging` | `pxCentral`
+`pxBackupImage` | `px-backup-base` | `3.3.0-staging` | `pxBackup`
 `mongodbImage` | `mongodb` | `8.0.20` | `pxBackup`
 `telemetryEnvoyImage` | `edge-envoy` | `2.0.115` | `pxBackup`
 `telemetryRegistrationImage` | `ccm-go` | `1.4.54` | `pxBackup`
 `telemetryMetricsCollectorImage` | `realtime-metrics` | `1.0.38` | `pxBackup`
-`telemetryDataCollectorImage` | `px-backup-telemetry-collector-base` | `3.3.0-fc1` | `pxBackup`
+`telemetryDataCollectorImage` | `px-backup-telemetry-collector-base` | `3.3.0-staging` | `pxBackup`
 `telemetryLogUploadImage` | `log-upload` | `px-1.1.155` | `pxBackup`
 `pxBackupPrometheusImage` | `prometheus` | `v3.13.1` | `pxBackup`
 `pxBackupAlertmanagerImage` | `alertmanager` | `v0.33.0` | `pxBackup`
