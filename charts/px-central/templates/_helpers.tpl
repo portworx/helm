@@ -213,18 +213,18 @@ on their own release cadence; entries without a tag are PX-owned and built at th
     "setupHookImage"                        (dict "name" "pxcentral-onprem-hook-base"            "module" "pxCentral")
     "keycloakLoginThemeImage"               (dict "name" "sb-keycloak-login-theme"               "module" "pxCentral")
     "keycloakBackendImage"                  (dict "name" "postgresql"                 "tag" "18.6"       "module" "pxCentral")
-    "keycloakFrontendImage"                 (dict "name" "keycloak"                   "tag" "26.8.0_v2"  "module" "pxCentral")
+    "keycloakFrontendImage"                 (dict "name" "keycloak"                   "tag" "26.8.1_v2"  "module" "pxCentral")
     "keycloakInitContainerImage"            (dict "name" "busybox"                    "tag" "1.38.0"     "module" "pxCentral")
     "pxBackupImage"                         (dict "name" "px-backup-base"                        "module" "pxBackup")
     "telemetryDataCollectorImage"           (dict "name" "px-backup-telemetry-collector-base"    "module" "pxBackup")
     "mongodbImage"                          (dict "name" "mongodb"                    "tag" "8.0.34"     "module" "pxBackup")
     "pxBackupPrometheusImage"               (dict "name" "prometheus"                 "tag" "v3.15.1"    "module" "pxBackup")
-    "pxBackupAlertmanagerImage"             (dict "name" "alertmanager"               "tag" "v0.34.1"    "module" "pxBackup")
+    "pxBackupAlertmanagerImage"             (dict "name" "alertmanager"               "tag" "v0.34.2"    "module" "pxBackup")
     "pxBackupPrometheusOperatorImage"       (dict "name" "prometheus-operator"        "tag" "v0.94.2"    "module" "pxBackup")
     "pxBackupPrometheusConfigReloaderImage" (dict "name" "prometheus-config-reloader" "tag" "v0.94.2"    "module" "pxBackup")
-    "telemetryEnvoyImage"                   (dict "name" "edge-envoy"                 "tag" "2.0.150"    "module" "pxBackup")
-    "telemetryRegistrationImage"            (dict "name" "ccm-go"                     "tag" "1.4.80"     "module" "pxBackup")
-    "telemetryLogUploadImage"               (dict "name" "log-upload"                 "tag" "1.1.179"    "module" "pxBackup")
+    "telemetryEnvoyImage"                   (dict "name" "edge-envoy"                 "tag" "2.0.156"    "module" "pxBackup")
+    "telemetryRegistrationImage"            (dict "name" "ccm-go"                     "tag" "1.4.82"     "module" "pxBackup")
+    "telemetryLogUploadImage"               (dict "name" "log-upload"                 "tag" "1.1.181"    "module" "pxBackup")
 -}}
 {{- toJson $images -}}
 {{- end -}}
