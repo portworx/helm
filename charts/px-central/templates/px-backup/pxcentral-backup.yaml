@@ -154,6 +154,7 @@ metadata:
     {{- include "pxcentral.render" (dict "value" .Values.service.pxBackupServiceAnnotations "context" $) | nindent 4 }}
     {{- end }}
 spec:
+  ipFamilyPolicy: PreferDualStack
   ports:
   - protocol: TCP
     port: 10002
@@ -216,6 +217,10 @@ spec:
           valueFrom:
             fieldRef:
               fieldPath: metadata.namespace
+        - name: POD_IPS
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIPs
         - name: PX_BACKUP_DEFAULT_ORG
           value: {{ .Values.pxbackup.orgName }}
         {{- if .Values.telemetry.enabled }}

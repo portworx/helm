@@ -138,24 +138,11 @@ pxbackup:
   volDeleteWorker: 5
   backupInfoMetricsBackfillHours: ""
   dashboardMetricsBackfillDays: ""
-  version: 3.1.2
+  version: 3.2.0
   skipValidations: false
   usePlatformRbac: false
   encryptMongoDB: false
   federated: false
-
-pxlicenseserver:
-  enabled: false
-  internal:
-    enabled: true
-    lsTypeUAT: false
-    lsTypeAirgapped: false
-  external:
-    enabled: false
-  mainNodeIP: ""
-  backupNodeIP: ""
-  adminUserName: admin
-  adminUserPassword: Adm1n!Ur
 
 pxmonitor:
   enabled: false
@@ -171,9 +158,6 @@ pxmonitor:
 telemetry:
   enabled: false
   environment: production # Environment: staging or production
-  metricsCollector:
-    enabled: false
-    scrapeInterval: 10  # seconds
   logsCollector:
     enabled: true
     collectionInterval: 3600  # seconds (1 hour)
@@ -221,7 +205,6 @@ cassandra:
     maxHeapSize:
     newHeapSize:
 
-installCRDs: false
 clusterDomain: "cluster.local"
 cassandraUsername: cassandra
 cassandraPassword: cassandra
@@ -255,31 +238,31 @@ images:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-api
-    tag: 3.1.2
+    tag: 3.2.0
     module: pxCentral
   pxcentralFrontendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-frontend
-    tag: 3.1.2
+    tag: 3.2.0
     module: pxCentral
   pxcentralBackendImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-backend
-    tag: 3.1.2
+    tag: 3.2.0
     module: pxCentral
   pxcentralMiddlewareImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-ui-lhbackend
-    tag: 3.1.2
+    tag: 3.2.0
     module: pxCentral
   postInstallSetupImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-post-setup
-    tag: 3.1.2
+    tag: 3.2.0
     module: pxCentral
   keycloakBackendImage:
     registry: docker.io
@@ -291,13 +274,13 @@ images:
     registry: docker.io
     repo: portworx
     imageName: keycloak
-    tag: "26.6.4_v2"
+    tag: "26.8.1_v2"
     module: pxCentral
   keycloakLoginThemeImage:
     registry: docker.io
     repo: portworx
     imageName: keycloak-login-theme
-    tag: 3.1.2
+    tag: 3.2.0
     module: pxCentral
   keycloakInitContainerImage:
     registry: docker.io
@@ -309,13 +292,13 @@ images:
     registry: docker.io
     repo: portworx
     imageName: mysql
-    tag: "8.4.10"
+    tag: "8.4.13"
     module: pxCentral
   preSetupHookImage:
     registry: docker.io
     repo: portworx
     imageName: pxcentral-onprem-hook
-    tag: 3.1.2
+    tag: 3.2.0
     module: pxCentral
   mysqlInitImage:
     registry: docker.io
@@ -329,13 +312,13 @@ images:
     registry: docker.io
     repo: portworx
     imageName: px-backup
-    tag: 3.1.2
+    tag: 3.2.0
     module: pxBackup
   mongodbImage:
     registry: docker.io
     repo: portworx
     imageName: mongodb
-    tag: 8.0.20
+    tag: 8.0.34
     module: pxBackup
 
   ## Images required for PX-Backup Telemetry
@@ -343,40 +326,26 @@ images:
     registry: docker.io
     repo: portworx
     imageName: edge-envoy
-    tag: 2.0.115
+    tag: 2.0.156
     module: pxBackup
   telemetryRegistrationImage:
     registry: docker.io
     repo: portworx
     imageName: ccm-go
-    tag: 1.4.54
-    module: pxBackup
-  telemetryMetricsCollectorImage:
-    registry: docker.io
-    repo: portworx
-    imageName: realtime-metrics
-    tag: 1.0.38
+    tag: 1.4.82
     module: pxBackup
   telemetryDataCollectorImage:
     registry: docker.io
     repo: portworx
     imageName: px-backup-telemetry-collector
-    tag: 3.1.2
+    tag: 3.2.0
     module: pxBackup
   telemetryLogUploadImage:
     registry: docker.io
     repo: portworx
     imageName: log-upload
-    tag: px-1.1.155
+    tag: 1.1.181
     module: pxBackup
-
-  ## Images required for enabling px-license-server
-  licenseServerImage:
-    registry: docker.io
-    repo: portworx
-    imageName: px-els
-    tag: 2.8.0
-    module: pxLicenseServer
 
   ## Images required for enabling px-monitor
   cortexImage:
@@ -425,25 +394,25 @@ images:
     registry: docker.io
     repo: portworx
     imageName: prometheus
-    tag: v3.13.1
+    tag: v3.15.1
     module: pxBackup
   pxBackupAlertmanagerImage:
     registry: docker.io
     repo: portworx
     imageName: alertmanager
-    tag: v0.34.0
+    tag: v0.34.2
     module: pxBackup
   pxBackupPrometheusOperatorImage:
     registry: docker.io
     repo: portworx
     imageName: prometheus-operator
-    tag: v0.92.0
+    tag: v0.94.2
     module: pxBackup
   pxBackupPrometheusConfigReloaderImage:
     registry: docker.io
     repo: portworx
     imageName: prometheus-config-reloader
-    tag: v0.92.0
+    tag: v0.94.2
     module: pxBackup
   prometheusConfigReloadrImage:
     registry: docker.io
