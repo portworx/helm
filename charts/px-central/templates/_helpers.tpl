@@ -70,9 +70,6 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- if .Values.pxmonitor.enabled }}
   {{- $default = printf "%s%s" $default "pxcentral-grafana,pxcentral-cortex-nginx,pxcentral-cortex-cassandra-headless,pxcentral-cortex-cassandra,pxcentral-memcached-index-read,pxcentral-memcached-index-write,pxcentral-memcached,pxcentral-cortex-alertmanager-headless,pxcentral-cortex-alertmanager,pxcentral-cortex-configs,pxcentral-cortex-distributor,pxcentral-cortex-ingester,pxcentral-cortex-querier,pxcentral-cortex-query-frontend-headless,pxcentral-cortex-consul,pxcentral-cortex-query-frontend,pxcentral-cortex-ruler,pxcentral-cortex-table-manager,pxcentral-prometheus,"}}
 {{- end }}
-{{- if .Values.pxlicenseserver.enabled }}
-  {{- $default = printf "%s%s" $default "pxcentral-license," }}
-{{- end }}
 {{- if not .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $promHostname := regexReplaceAll "[/:].*" (trimPrefix "https://" (trimPrefix "http://" .Values.pxbackup.prometheusEndpoint)) "" -}}
 {{- $amHostname := regexReplaceAll "[/:].*" (trimPrefix "https://" (trimPrefix "http://" .Values.pxbackup.alertmanagerEndpoint)) "" -}}
