@@ -1,0 +1,28 @@
+---
+# Source: portworx/templates/component-k8s-config.yaml
+apiVersion: core.libopenstorage.org/v1
+kind: ComponentK8sConfig
+metadata:
+  name: portworx-k8s-config
+  namespace: portworx
+spec:
+  components:
+    - componentNames:
+      - Autopilot
+      workloadConfigs:
+      - containerConfigs:
+        - args:
+          - log-level=debug
+          - min_poll_interval=4
+          containerNames:
+          - autopilot
+          env:
+          - name: EXAMPLE_ENV
+            value: example
+          - name: EXAMPLE_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: example-key
+                name: example-secret
+        workloadNames:
+        - autopilot
