@@ -10,7 +10,7 @@ modules:
     busybox: "docker.io/portworx/busybox:1.38.0"
   pxBackup:
     pxBackup: "docker.io/portworx/px-backup-base:3.3.0-staging"
-    mongodb: "docker.io/portworx/mongodb:8.0.34"
+    mongodb: "docker.io/portworx/mongodb:8.0.38"
     mongodb7: "docker.io/portworx/mongodb:7.0.15-debian-12-r2"
     mongodb6: "docker.io/portworx/mongodb:6.0.13-debian-11-r21"
     mongodb5: "docker.io/portworx/mongodb:5.0.24-debian-11-r20"

@@ -10,7 +10,7 @@ docker.io/portworx/px-backup-telemetry-collector:3.3.0-staging
 docker.io/portworx/edge-envoy:2.0.156
 docker.io/portworx/ccm-go:1.4.82
 docker.io/portworx/log-upload:1.1.181
-docker.io/portworx/mongodb:8.0.34
+docker.io/portworx/mongodb:8.0.38
 docker.io/portworx/mongodb:7.0.15-debian-12-r2
 docker.io/portworx/mongodb:6.0.13-debian-11-r21
 docker.io/portworx/mongodb:5.0.24-debian-11-r20
