@@ -46,7 +46,6 @@ proxy:
   # - prometheus-operator
   # - px-backup-dashboard-prometheus
   # - pre-upgrade-check
-  # - pxcentral-apiserver
   # - pxcentral-post-install-hook
   # - pxcentral-keycloak-postgresql
   # - pxcentral-keycloak
@@ -67,7 +66,6 @@ proxy:
   # - prometheus-operator
   # - px-backup-dashboard-prometheus
   # - pre-upgrade-check
-  # - pxcentral-apiserver
   # - pxcentral-post-install-hook
   # - pxcentral-keycloak-postgresql
   # - pxcentral-keycloak
@@ -203,9 +201,6 @@ images:
   pullPolicy: Always
   insecureRegistry: false
 
-  pxcentralApiServerImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
   pxcentralFrontendImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx

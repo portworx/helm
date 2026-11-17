@@ -402,7 +402,6 @@ Images (`images.<key>`), with the name and default tag set by the chart:
 
 Image (`images.<key>`) | Image name | Default tag | Module
 --- | --- | --- | ---
-`pxcentralApiServerImage` | `pxcentral-onprem-api-base` | `3.3.0-staging` | `pxCentral`
 `pxcentralFrontendImage` | `pxcentral-onprem-ui-frontend-private` | `3.3.0-staging` | `pxCentral`
 `pxcentralMiddlewareImage` | `pxcentral-onprem-ui-lhbackend-private` | `3.3.0-staging` | `pxCentral`
 `keycloakBackendImage` | `postgresql` | `18.4` | `pxCentral`
