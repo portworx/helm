@@ -1,4 +1,3 @@
-docker.io/portworx/pxcentral-onprem-api:3.3.0-staging
 docker.io/portworx/pxcentral-onprem-ui-frontend:3.3.0-staging
 docker.io/portworx/pxcentral-onprem-ui-lhbackend:3.3.0-staging
 docker.io/portworx/pxcentral-onprem-hook:3.3.0-staging

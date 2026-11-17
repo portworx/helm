@@ -1,7 +1,6 @@
 pxCentralVersion: 3.3.0
 modules:
   pxCentral:
-    pxcentralOnpremApi: "docker.io/portworx/pxcentral-onprem-api-base:3.3.0-staging"
     pxcentralOnpremUiFrontend: "docker.io/portworx/pxcentral-onprem-ui-frontend-private:3.3.0-staging"
     pxcentralOnpremUiLhbackend: "docker.io/portworx/pxcentral-onprem-ui-lhbackend-private:3.3.0-staging"
     pxcentralOnpremSetup: "docker.io/portworx/pxcentral-onprem-hook-base:3.3.0-staging"
