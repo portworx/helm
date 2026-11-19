@@ -78,6 +78,16 @@ $ kubectl delete ns central
   $ helm upgrade --name px-central portworx/px-central --namespace central -f values.yaml
   ```
 
+  ### Leftover `px-central` ClusterRole after upgrading to 3.3.0
+  Charts up to 3.2.x create a cluster-scoped ClusterRole and ClusterRoleBinding named after the release (`px-central`) for the removed `pxcentral-apiserver`. Starting with 3.3.0, the chart keeps both with no permissions, and only while they exist, so that `helm uninstall` removes them even after a failed upgrade.
+
+  If a failed upgrade to an earlier 3.3.0 build was followed by `helm uninstall`, both objects can be left behind. A later install then fails with `ClusterRole "px-central" ... exists and cannot be imported into the current release`. Check that no other release uses them, then delete them:
+
+  ```console
+  $ kubectl delete clusterrole px-central
+  $ kubectl delete clusterrolebinding px-central
+  ```
+
   ### To Upgrade from 1.2.X versions:
   In 1.2.x and previous versions , there are three charts (px-backup, px-monitor, px-license-server) which got merged into one chart(px-central)
 

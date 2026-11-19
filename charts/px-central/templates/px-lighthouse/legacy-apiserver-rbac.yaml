@@ -1,0 +1,63 @@
+{{- /*
+Legacy cluster-scoped RBAC of the removed pxcentral-apiserver (PB-17193, PB-20177).
+
+Charts <= 3.2.x created a ClusterRole and ClusterRoleBinding named after the
+release. 3.3.0 no longer ships pxcentral-apiserver, so it no longer needs them.
+But if the 3.3.0 manifest simply drops them, a FAILED upgrade (for example one
+stopped by the pre-upgrade hook) records a revision whose manifest doesn't list
+them. A later `helm uninstall` deletes only what that manifest lists, so both
+objects are orphaned, and any later install of an older chart fails with an
+ownership-metadata conflict.
+
+To prevent that, keep rendering both objects, with no permissions, but only
+when they already exist and belong to this release (same release name and
+namespace). That way:
+  * a fresh install never creates them;
+  * Helm keeps owning them through every 3.3.x revision, including failed
+    ones, and `helm uninstall` deletes them;
+  * objects that belong to a release in another namespace are left alone.
+
+`lookup` returns nothing under `helm template` / Argo CD, so nothing renders
+there and Argo CD's own pruning applies.
+*/ -}}
+{{- $legacyName := .Release.Name }}
+{{- $ownedByRelease := dict }}
+{{- range $kind := list "ClusterRole" "ClusterRoleBinding" }}
+  {{- $obj := lookup "rbac.authorization.k8s.io/v1" $kind "" $legacyName }}
+  {{- if $obj }}
+    {{- $annotations := $obj.metadata.annotations | default dict }}
+    {{- if and (eq (index $annotations "meta.helm.sh/release-name" | default "") $.Release.Name) (eq (index $annotations "meta.helm.sh/release-namespace" | default "") $.Release.Namespace) }}
+      {{- $_ := set $ownedByRelease $kind true }}
+    {{- end }}
+  {{- end }}
+{{- end }}
+{{- if hasKey $ownedByRelease "ClusterRole" }}
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ $legacyName | quote }}
+  labels:
+    app.kubernetes.io/component: pxcentral-apiserver-legacy
+{{- include "px-central.labels" . | nindent 4 }}
+  annotations:
+    px-central/note: "Deprecated, grants no permissions. Kept so that helm uninstall removes it (PB-20177)."
+rules: []
+{{- end }}
+{{- if hasKey $ownedByRelease "ClusterRoleBinding" }}
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ $legacyName | quote }}
+  labels:
+    app.kubernetes.io/component: pxcentral-apiserver-legacy
+{{- include "px-central.labels" . | nindent 4 }}
+  annotations:
+    px-central/note: "Deprecated, binds no subjects. Kept so that helm uninstall removes it (PB-20177)."
+subjects: []
+roleRef:
+  kind: ClusterRole
+  name: {{ $legacyName | quote }}
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}
