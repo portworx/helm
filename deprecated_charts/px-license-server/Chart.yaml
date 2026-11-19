@@ -1,0 +1,12 @@
+apiVersion: v1
+description: A Helm chart for install and configure PX-License-Server on Kubernetes and Openshift
+home: https://portworx.com/
+icon: https://raw.githubusercontent.com/portworx/helm/master/doc/media/px-logo.png
+keywords:
+- px-central
+- px-license-server
+name: px-license-server
+sources:
+- https://github.com/portworx/helm/tree/master/charts/px-license-server
+version: 1.2.1
+appVersion: 1.0.0
