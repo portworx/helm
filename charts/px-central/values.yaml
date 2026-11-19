@@ -394,25 +394,25 @@ images:
     registry: docker.io
     repo: portworx
     imageName: prometheus
-    tag: v3.15.1
+    tag: v3.16.0
     module: pxBackup
   pxBackupAlertmanagerImage:
     registry: docker.io
     repo: portworx
     imageName: alertmanager
-    tag: v0.34.2
+    tag: v0.35.0
     module: pxBackup
   pxBackupPrometheusOperatorImage:
     registry: docker.io
     repo: portworx
     imageName: prometheus-operator
-    tag: v0.94.2
+    tag: v0.95.2
     module: pxBackup
   pxBackupPrometheusConfigReloaderImage:
     registry: docker.io
     repo: portworx
     imageName: prometheus-config-reloader
-    tag: v0.94.2
+    tag: v0.95.2
     module: pxBackup
   prometheusConfigReloadrImage:
     registry: docker.io
