@@ -318,7 +318,7 @@ images:
     registry: docker.io
     repo: portworx
     imageName: mongodb
-    tag: 8.0.34
+    tag: 8.0.38
     module: pxBackup
 
   ## Images required for PX-Backup Telemetry
