@@ -216,7 +216,7 @@ on their own release cadence; entries without a tag are PX-owned and built at th
     "keycloakInitContainerImage"            (dict "name" "busybox"                    "tag" "1.38.0"     "module" "pxCentral")
     "pxBackupImage"                         (dict "name" "px-backup-base"                        "module" "pxBackup")
     "telemetryDataCollectorImage"           (dict "name" "px-backup-telemetry-collector-base"    "module" "pxBackup")
-    "mongodbImage"                          (dict "name" "mongodb"                    "tag" "8.0.34"     "module" "pxBackup")
+    "mongodbImage"                          (dict "name" "mongodb"                    "tag" "8.0.38"     "module" "pxBackup")
     "pxBackupPrometheusImage"               (dict "name" "prometheus"                 "tag" "v3.15.1"    "module" "pxBackup")
     "pxBackupAlertmanagerImage"             (dict "name" "alertmanager"               "tag" "v0.34.2"    "module" "pxBackup")
     "pxBackupPrometheusOperatorImage"       (dict "name" "prometheus-operator"        "tag" "v0.94.2"    "module" "pxBackup")
