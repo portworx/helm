@@ -1,0 +1,243 @@
+{{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
+{{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
+{{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
+{{- $mongoRecoveryTimeoutSeconds := int (.Values.pxbackup.mongoRecoveryTimeoutSeconds | default 900) }}
+
+{{- /*
+mongodb-recovery pre-upgrade hook: runs after preflight-check (weight 4) and before
+pre-upgrade-check (weight 6). If MongoDB replicas are not all ready it restarts only the
+unhealthy pods when a primary exists, or scales the StatefulSet 0->3 when there is no
+primary, and records the outcome in the px-central-report ConfigMap.
+*/}}
+{{- if and (or .Release.IsUpgrade .Values.isUpgrade) (eq $pxBackupEnabled true) (not .Values.pxbackup.skipValidations) }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: px-backup-mongodb-recovery
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "-1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-mongodb-recovery-hook
+    app.kubernetes.io/component: pxcentral-mongodb-recovery-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: px-backup-mongodb-recovery-role
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-mongodb-recovery-hook
+    app.kubernetes.io/component: pxcentral-mongodb-recovery-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
+rules:
+  # Read replica status and scale the MongoDB StatefulSet (0 -> 3) when no primary exists
+  - apiGroups: ["apps"]
+    resources: ["statefulsets"]
+    verbs: ["get", "patch"]
+  # Inspect and restart only the unhealthy MongoDB pods
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["get", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["pods/log"]
+    verbs: ["get"]
+  # Diagnose pending pods (PVC binding / scheduling events) for the report
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list"]
+  # MongoDB root credentials
+  - apiGroups: [""]
+    resources: ["secrets"]
+    resourceNames: ["pxc-backup-mongodb"]
+    verbs: ["get"]
+  # Recovery report
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["px-central-report"]
+    verbs: ["get", "update"]
+  # create cannot be restricted by resourceNames
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    verbs: ["create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: px-backup-mongodb-recovery-node-role
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-mongodb-recovery-hook
+    app.kubernetes.io/component: pxcentral-mongodb-recovery-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
+rules:
+  # Check readiness of the node hosting a stuck MongoDB pod
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: px-backup-mongodb-recovery-rolebinding
+  namespace: {{ .Release.Namespace }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-mongodb-recovery-hook
+    app.kubernetes.io/component: pxcentral-mongodb-recovery-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: px-backup-mongodb-recovery
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: px-backup-mongodb-recovery-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: px-backup-mongodb-recovery-node-rolebinding
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "1"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    name: pxcentral-mongodb-recovery-hook
+    app.kubernetes.io/component: pxcentral-mongodb-recovery-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
+subjects:
+  - kind: ServiceAccount
+    name: px-backup-mongodb-recovery
+    namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: ClusterRole
+  name: px-backup-mongodb-recovery-node-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongodb-recovery
+  namespace: {{ .Release.Namespace }}
+  labels:
+    name: pxcentral-mongodb-recovery-hook
+    app.kubernetes.io/component: pxcentral-mongodb-recovery-hook
+{{- include "px-central.partOfLabel" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "5"
+    # Failed Jobs are intentionally kept so their logs can be collected.
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    "argocd.argoproj.io/hook-delete-policy": BeforeHookCreation
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
+spec:
+  # Recovery timeout plus margin for the final grace re-check and report write
+  activeDeadlineSeconds: {{ add $mongoRecoveryTimeoutSeconds 300 }}
+  template:
+    {{- if and (eq $azureProxyEnabled true) (not (has "mongodb-recovery" .Values.proxy.excludeAzureProxyList)) }}
+    metadata:
+      annotations:
+        kubernetes.azure.com/no-http-proxy-vars: "true"
+    {{- end }}
+    spec:
+      serviceAccountName: px-backup-mongodb-recovery
+      {{- if $isOpenshiftCluster }}
+      {{- else }}
+      securityContext:
+{{ toYaml .Values.securityContext | indent 8 }}
+      {{- end }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              {{- if .Values.nodeAffinityLabel }}
+              - key: {{ .Values.nodeAffinityLabel }}
+                operator: Exists
+              {{- else }}
+              - key: pxbackup/enabled
+                operator: NotIn
+                values:
+                - "false"
+              {{- end }}
+      containers:
+        - name: pxc-mongodb-recovery
+          image: {{ include "px.image" (dict "key" "setupHookImage" "root" .) }}
+          imagePullPolicy: {{ .Values.images.pullPolicy }}
+          securityContext:
+            readOnlyRootFilesystem: true
+          command: ["/pxcentral-hook/bin/pxcentral-hook"]
+          args: ["--hook=mongodb-recovery"]
+          env:
+            - name: NAMESPACE
+              value: {{ .Release.Namespace }}
+            - name: MONGODB_STATEFULSET_NAME
+              value: pxc-backup-mongodb
+            - name: MONGODB_SERVICE_NAME
+              value: pxc-backup-mongodb-headless
+            - name: MONGODB_PORT
+              value: "27017"
+            - name: MONGODB_ROOT_USERNAME
+              value: root
+            - name: MONGODB_RECOVERY_TIMEOUT_SECONDS
+              value: {{ $mongoRecoveryTimeoutSeconds | quote }}
+            - name: IS_ARGOCD
+              value: {{ .Values.isArgoCD | default false | quote }}
+            - name: TARGET_PXBACKUP_VERSION
+              value: "{{ .Values.pxbackup.version }}"
+          {{- include "serviceMesh.env" . | nindent 12 }}
+            {{- if or (empty .Values.proxy.includeNoProxyList) (has "mongodb-recovery" .Values.proxy.includeNoProxyList) }}
+            {{- include "proxy.proxyEnv" . | nindent 12 }}
+            {{- end }}
+          {{- if .Values.proxy.configSecretName }}
+          volumeMounts:
+            - mountPath: /etc/ssl/certs/proxy-ca.pem
+              subPath: proxy-ca.pem
+              name: proxy-ca-volume
+              readOnly: true
+          {{- end }}
+      {{- if .Values.proxy.configSecretName }}
+      volumes:
+        - name: proxy-ca-volume
+          secret:
+            items:
+            - key: CA
+              path: proxy-ca.pem
+            optional: true
+            secretName: {{ .Values.proxy.configSecretName }}
+      {{- end }}
+      {{- if .Values.images.pullSecrets }}
+      imagePullSecrets:
+        {{- range $sec := .Values.images.pullSecrets }}
+        - name: {{ $sec | quote }}
+        {{- end }}
+      {{- end }}
+      restartPolicy: Never
+      # Time for the hook to restore MongoDB replicas and write its report on SIGTERM.
+      terminationGracePeriodSeconds: 60
+      {{- with .Values.tolerations }}
+      tolerations:
+      {{- toYaml . | nindent 8 }}
+      {{- end }}
+  backoffLimit: 0
+{{- end }}
