@@ -123,6 +123,8 @@ pxbackup:
   dashboardMetricsBackfillDays: ""
   version: 3.3.0
   skipValidations: false
+  # Max seconds the MongoDB recovery (run at the start of the pre-upgrade-check / pre-install-check hooks) spends restarting unhealthy MongoDB replicas, after a grace wait of up to 2m (10m after an interrupted run); helm --timeout must exceed this plus the hook's other work
+  mongoRecoveryTimeoutSeconds: 900
   usePlatformRbac: false
   encryptMongoDB: false
   federated: false

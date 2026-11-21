@@ -3,34 +3,9 @@
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $minimumKubernetesVersion := "1.30.0"}}
+{{- $mongoRecoveryTimeoutSeconds := int (.Values.pxbackup.mongoRecoveryTimeoutSeconds | default 900) }}
 
 {{- if or .Release.IsUpgrade .Values.isUpgrade }}
-
-{{- if .Release.IsUpgrade }}
-  {{- $sts := lookup "apps/v1" "StatefulSet" .Release.Namespace "pxc-backup-mongodb" -}}
-  {{- if $sts }}
-
-    # Expected image from helm chart values
-    {{- $expectedImage := include "px.image" (dict "key" "mongodbImage" "root" .) -}}
-
-    {{- range $container := $sts.spec.template.spec.containers }}
-      {{- if ne $container.image $expectedImage }}
-        # Images do not match, check for ready replicas
-        {{- $readyReplicas := $sts.status.readyReplicas | default 0 -}}
-
-        {{- if lt $readyReplicas 3 }}
-          {{ fail (printf "ERROR MongoDB ready replicas expected = 3, received = %d. Please refer to the documentation to bring up all 3 pods." $readyReplicas) }}
-        {{- else }}
-          # Image mismatch, but ready replicas are sufficient
-        {{- end }}
-      {{- else }}
-        # Images match
-      {{- end }}
-    {{- end }}
-  {{- else }}
-    # StatefulSet not found
-  {{- end }}
-{{- end }}
 
 apiVersion: v1
 kind: ServiceAccount
@@ -68,6 +43,10 @@ rules:
   # (namespaces is cluster-scoped, so this must live on the ClusterRole, not the namespaced Role)
   - apiGroups: [""]
     resources: ["namespaces"]
+    verbs: ["get"]
+  # MongoDB recovery (PB-18616): check readiness of the node hosting an unhealthy MongoDB pod
+  - apiGroups: [""]
+    resources: ["nodes"]
     verbs: ["get"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -267,6 +246,9 @@ spec:
               value: "27017"
             - name: MONGODB_ROOT_USERNAME
               value: root
+            # MongoDB recovery runs at the start of this hook (PB-18616)
+            - name: MONGODB_RECOVERY_TIMEOUT_SECONDS
+              value: {{ $mongoRecoveryTimeoutSeconds | quote }}
             - name: MINIMUM_KUBERNETES_VERSION
               value: "{{ $minimumKubernetesVersion }}"
             {{- if and .Values.images.mongodbImageMap .Values.images.mongodbImageMap.tags }}
@@ -401,6 +383,9 @@ spec:
         {{- end }}
       {{- end }}
       restartPolicy: Never
+      # Time for the MongoDB recovery to restore StatefulSet replicas and the hook to
+      # write its report on SIGTERM.
+      terminationGracePeriodSeconds: 60
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}
