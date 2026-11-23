@@ -40,9 +40,10 @@ rules:
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["delete","get", "list", "watch","create","update"]
+  # create: the hook creates the Alertmanager ServiceAccount if it is missing (Argo CD).
   - apiGroups: [""]
     resources: ["serviceaccounts"]
-    verbs: ["get", "list", "watch"]
+    verbs: ["get", "list", "watch", "create"]
   - apiGroups: [""]
     resources: ["configmaps"]
     verbs: ["delete","get", "list", "watch","update","create"]
@@ -234,6 +235,13 @@ spec:
           command: ["/pxcentral-hook/bin/pxcentral-hook"]
           args: ["--hook=pre-install"]
           env:
+            # Release identity for the Alertmanager ServiceAccount the hook creates under Argo CD.
+            - name: PX_RELEASE_NAME
+              value: {{ .Release.Name | quote }}
+            - name: PX_RELEASE_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
             - name: NAMESPACE
               value: {{ .Release.Namespace }}
             # UI service types — used by the pre-install hook to emit a
