@@ -799,10 +799,18 @@ kind: ServiceAccount
 metadata:
   name: px-backup-alertmanager
   namespace: {{ .Release.Namespace }}
+  {{- if not .Values.isArgoCD }}
+  # Plain Helm: a pre-hook, so it exists before the hook Job applies the Alertmanager CR.
+  # Helm cannot adopt an object created by its own pre-hook, so it stays a hook here.
+  # Argo CD: a plain resource. A leftover first-wave PreSync hook trips Argo CD's
+  # stale-syncResult bug (argoproj/argo-cd#20119), and Argo CD applies plain resources
+  # only after PreSync, so the pre-install/pre-upgrade hook binary creates this SA
+  # (create-if-absent) before it applies the Alertmanager CR.
   annotations:
     "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-weight": "-6"
     "helm.sh/hook-delete-policy": before-hook-creation
+  {{- end }}
   labels:
     app.kubernetes.io/component: px-backup
 {{- include "px-central.labels" . | nindent 4 }}
@@ -819,7 +827,9 @@ metadata:
   annotations:
     "helm.sh/hook": pre-install,pre-upgrade
     "helm.sh/hook-weight": "-5"
-    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+    # hook-failed too: under Argo CD this is the lowest-wave PreSync hook, and leaving it
+    # behind after a failed sync replays the stale failure on the next sync.
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed
 data:
 {{- if eq $deployDedicatedMonitoringSystem true }}
   prometheus.yaml: |
