@@ -1,5 +1,6 @@
 {{- $pxBackupEnabled := .Values.pxbackup.enabled | default false }}
 {{- $minimumKubernetesVersion := "1.30.0"}}
+{{- $mongoRecoveryTimeoutSeconds := int (.Values.pxbackup.mongoRecoveryTimeoutSeconds | default 900) }}
 {{- $deployDedicatedMonitoringSystem := .Values.pxbackup.deployDedicatedMonitoringSystem }}
 {{- $isOpenshiftCluster := or .Values.isOpenshift (.Capabilities.APIVersions.Has "apps.openshift.io/v1") -}}
 {{- $azureProxyEnabled := .Values.proxy.azureProxyEnabled | default false }}
@@ -34,9 +35,10 @@ metadata:
     app.kubernetes.io/component: pxcentral-pre-install-hook
 {{- include "px-central.partOfLabel" . | nindent 4 }}
 rules:
+  # patch: MongoDB recovery (PB-18616) restarts MongoDB by scaling its StatefulSet to 0 and back
   - apiGroups: ["apps"]
     resources: ["statefulsets"]
-    verbs: ["get", "list","update"]
+    verbs: ["get", "list", "update", "patch"]
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["delete","get", "list", "watch","create","update"]
@@ -110,6 +112,10 @@ rules:
   - apiGroups: ["monitoring.coreos.com"]
     resources: ["prometheuses", "alertmanagers", "servicemonitors", "prometheusrules"]
     verbs: ["get", "create", "update", "patch"]
+  # MongoDB recovery (PB-18616): check readiness of the node hosting an unhealthy MongoDB pod
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -276,6 +282,18 @@ spec:
               value: {{ .Values.pxbackup.skipValidations | default false | quote }}
             - name: ENCRYPT_MONGODB
               value: {{ .Values.pxbackup.encryptMongoDB | default false | quote }}
+            # MongoDB recovery runs at the start of this hook (PB-18616); a no-op on a
+            # fresh install, where the MongoDB StatefulSet does not exist yet.
+            - name: MONGODB_STATEFULSET_NAME
+              value: pxc-backup-mongodb
+            - name: MONGODB_SERVICE_NAME
+              value: pxc-backup-mongodb-headless
+            - name: MONGODB_PORT
+              value: "27017"
+            - name: MONGODB_ROOT_USERNAME
+              value: root
+            - name: MONGODB_RECOVERY_TIMEOUT_SECONDS
+              value: {{ $mongoRecoveryTimeoutSeconds | quote }}
             {{- if or (empty .Values.proxy.includeNoProxyList) (has "pre-install-check" .Values.proxy.includeNoProxyList) }}
             {{- include "proxy.proxyEnv" . | nindent 12 }}
             {{- end }}
@@ -314,6 +332,9 @@ spec:
         {{- end }}
       {{- end }}
       restartPolicy: Never
+      # Time for the MongoDB recovery to restore StatefulSet replicas and the hook to
+      # write its report on SIGTERM.
+      terminationGracePeriodSeconds: 60
       {{- with .Values.tolerations }}
       tolerations:
       {{- toYaml . | nindent 8 }}

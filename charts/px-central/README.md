@@ -72,6 +72,8 @@ $ kubectl delete ns central
   $ helm upgrade px-central portworx/px-central --namespace central -f values.yaml
   ```
 
+  Note: when PX-Backup is enabled, the `pre-upgrade-check` hook (or `pre-install-check`, which ArgoCD runs on every sync when `isUpgrade` is not set) first recovers an unhealthy MongoDB replica set. It may wait up to 2m (10m after an interrupted run) for MongoDB to recover on its own and then spend up to `pxbackup.mongoRecoveryTimeoutSeconds` (default 900s) restarting it, on top of its other checks, so pass a `--timeout` that exceeds this (e.g. `--timeout 30m`).
+
   Helm 2:
   ```console
   $ helm upgrade --name px-central portworx/px-central --namespace central -f values.yaml
@@ -430,6 +432,7 @@ Parameter | Description | Default
 `pxbackup.orgName` | PX-Backup organization name — **not a values input**; fixed to `default` in the chart (`PX_BACKUP_DEFAULT_ORG`) | `default`
 `pxbackup.livenessProbeInitialDelay` | initialDelaySeconds for livenessProbe of PX-Backup pod | `1800`
 `pxbackup.federated` | Enable federated mode for PX-Backup | `false`
+`pxbackup.mongoRecoveryTimeoutSeconds` | Max seconds the MongoDB recovery, which runs at the start of the `pre-upgrade-check` and `pre-install-check` hooks, spends restarting unhealthy MongoDB replicas (after a grace wait of up to 2m, 10m after an interrupted run); `helm upgrade`/`helm install --timeout` must exceed this plus the hook's other work | `900`
 `persistentStorage.mongodbVolumeSize` | mongodb volume size | `"64Gi"`
 `persistentStorage.mongoCacheSize` | mongodb cache size in GB | `"4"`
 `service.pxBackupUIServiceType` | service type of PX-Backup UI | `"LoadBalancer"`
