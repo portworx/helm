@@ -1,0 +1,13 @@
+Your Release is named: {{ .Release.Name | quote }}
+PX-Monitor deployed in the namespace: {{ .Release.Namespace }}
+
+--------------------------------------------------
+Monitor PX-Monitor Install:
+--------------------------------------------------
+Wait for px-monitor status to be in "Completed" state.
+
+    kubectl get po --namespace {{ .Release.Namespace }} -ljob-name=pxcentral-monitor-post-install-setup  -o wide | awk '{print $1, $3}' | grep -iv error
+
+For more information: https://github.com/portworx/helm/blob/master/charts/px-monitor/README.md
+
+--------------------------------------------------
