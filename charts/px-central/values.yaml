@@ -225,8 +225,9 @@ images:
 
   ## Images required for enabling px-backup
   pxBackupImage:
-    registry: pure-artifactory.dev.purestorage.com/px-docker-remote
-    repo: portworx
+    registry: pure-artifactory.dev.purestorage.com/px-docker-dev-virtual
+    repo: users/yassharma
+    tagOverride: PB-20463
   mongodbImage:
     registry: pure-artifactory.dev.purestorage.com/px-docker-remote
     repo: portworx
